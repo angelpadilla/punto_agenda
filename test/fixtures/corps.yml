@@ -1,0 +1,49 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  tiktok_url: MyString
+  phone: MyString
+  whatsapp: MyString
+  email: MyString
+  facebook_url: MyString
+  text_factura: MyString
+  text_remision: MyString
+  text_cotizacion: MyString
+  razon: MyString
+  rfc: MyString
+  regimen: MyString
+  key_pass: MyString
+  estado: MyString
+  cp: MyString
+  ciudad: MyString
+  colonia: MyString
+  localidad: MyString
+  calle: MyString
+  num_ext: MyString
+  num_int: MyString
+  timbres: 1
+
+two:
+  name: MyString
+  tiktok_url: MyString
+  phone: MyString
+  whatsapp: MyString
+  email: MyString
+  facebook_url: MyString
+  text_factura: MyString
+  text_remision: MyString
+  text_cotizacion: MyString
+  razon: MyString
+  rfc: MyString
+  regimen: MyString
+  key_pass: MyString
+  estado: MyString
+  cp: MyString
+  ciudad: MyString
+  colonia: MyString
+  localidad: MyString
+  calle: MyString
+  num_ext: MyString
+  num_int: MyString
+  timbres: 1

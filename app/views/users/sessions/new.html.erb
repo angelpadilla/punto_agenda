@@ -1,0 +1,27 @@
+<% content_for :title, "Inicio de sesión usuario" %>
+<% @body_class = 'login' %>
+<div class="container">
+  <div class="boxx has-text-centered">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+      <div class="field">
+        <div class="control">
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'input', placeholder: 'Email', required: true %>
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <%= f.password_field :password, autocomplete: "current-password", class: 'input', placeholder: 'Contraseña', required: true %>
+        </div>
+      </div>
+      <%= f.submit "Iniciar", class: 'button is-block is-fullwidth' %>
+      <br>
+      <% if devise_mapping.rememberable? %>
+        <div class="field">
+          <%= f.check_box :remember_me %>
+          <%= f.label :remember_me, 'Recuerdame' %>
+        </div>
+      <% end %>
+      <%= render "users/shared/links" %>
+    <% end %>
+  </div>
+</div>

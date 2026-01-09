@@ -1,0 +1,20 @@
+<% content_for :title, "Registro" %>
+<% @body_class = 'login' %>
+<div class="container">
+  <div class="boxx has-text-centered">
+    <%= link_to root_path, class: 'logo' do  %>
+      <%= image_tag 'logo2.svg', class: "logo_login", alt: 'logo' %>
+    <% end %>
+    <h1 class="title is-4">¿Olvidaste tu contraseña?</h1>
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name)) do |f| %>
+      <div class="field">
+        <div class="control">
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'input', placeholder: 'Email' %>
+        </div>
+      </div>
+      <%= f.submit "Enviame instrucciones", class: 'button is-block is-fullwidth' %>
+      <br>
+      <%= render "customers/shared/links" %>
+    <% end %>
+  </div>
+</div>

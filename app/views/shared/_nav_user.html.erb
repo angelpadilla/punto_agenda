@@ -1,0 +1,183 @@
+<nav class="is-hidden-touch navbar is-white is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <%= link_to root_path, class: 'navbar-item' do %>
+        <%= image_tag 'logo.png', height: '200px', class: 'logo', alt: 'fresh club logo' %>
+      <% end %>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <% if user_signed_in? %>
+        <div class="navbar-start">
+          <%= link_to root_path, class: 'navbar-item' do %>
+            <span class="icon">
+              <%= image_tag 'house.svg', alt: 'carrito' %>
+              <div class="tooltip down">inicio</div>
+            </span>
+          <% end %>
+          <% if current_user.can_view? :order and !current_user.mayorista? %>
+            <%= link_to landing_orders_path, class: 'navbar-item' do %>
+              <span class="icon">
+                <%= image_tag 'dollar.svg', alt: 'carrito' %>
+                <div class="tooltip down">ventas</div>
+                <% if @pre_facturas_count > 0 %>
+                  <div class="notification_dot"></div>
+                <% end %>
+              </span>
+            <% end %>
+          <% end %>
+          <% if current_user.can_view? :item or current_user.mayorista? %>
+            <%= link_to landing_items_path, class: 'navbar-item' do %>
+              <span class="icon">
+                <%= image_tag 'items.svg', alt: 'carrito' %>
+                <div class="tooltip down">inventario</div>
+                <% if @inventario_bajo > 0 and !current_user.mayorista? %>
+                  <div class="notification_dot"></div>
+                <% end %>
+              </span>
+            <% end %>
+          <% end %>
+          <% if current_user.can_view? :transfer and !current_user.mayorista? %>
+            <%= link_to landing_transfers_path, class: 'navbar-item' do %>
+              <span class="icon">
+                <%= image_tag 'almacen.svg', alt: 'carrito' %>
+                <div class="tooltip down">almacen y transferencias</div>
+                <% if @transfers_pendientes_count > 0 or @por_surtir_count > 0 %>
+                  <div class="notification_dot"></div>
+                <% end %>
+              </span>
+            <% end %>
+          <% end %>
+          <% if (current_user.can_view? :customer or current_user.can_view? :provider) and !current_user.mayorista? %>
+            <%= link_to landing_customers_providers_path, class: 'navbar-item' do %>
+              <span class="icon">
+                <%= image_tag 'clientes.svg', alt: 'carrito' %>
+                <div class="tooltip down">clientes y proveedores</div>
+              </span>
+            <% end %>
+          <% end %>
+          <% if current_user.can_view? :purchase and !current_user.mayorista? %>
+            <%= link_to purchases_path, class: 'navbar-item' do %>
+              <span class="icon">
+                <%= image_tag 'compras.svg', alt: 'carrito' %>
+                <div class="tooltip down">compras y gastos</div>
+              </span>
+            <% end %>
+          <% end %>
+          <% if current_user.admin? %>
+            <%= link_to settings_landing_path, class: 'navbar-item' do %>
+              <span class="icon">
+                <%= image_tag 'opciones.svg', alt: 'carrito' %>
+                <div class="tooltip down">opciones</div>
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="navbar-end">
+        <% if @carrito and !@carrito.line_items&.empty? %>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              <span class="icon">
+                <%= image_tag 'cart.svg', alt: 'carrito' %>
+                <div class="tooltip down">Carrito</div>
+                <div class="notification_dot"></div>
+              </span>
+            </a>
+            <div class="navbar-dropdown is-boxed is-right">
+              <div class="navbar-item">
+                <strong><%= @carrito.line_items.sum(:cantidad) %> item(s)</strong>
+              </div>
+              <div class="navbar-item">
+                <strong>Total: <%= number_to_currency @carrito.line_items.sum { |line| line.total } %></strong>
+              </div>
+              <hr class="navbar-divider">
+              <div class="navbar-item">
+                <%= link_to 'Ver carrito', new_order_path, class: 'button is-fullwidth' %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <% if user_signed_in? %>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              <span class="icon">
+                <%= image_tag 'user.svg', alt: 'user' %>
+              </span>
+            </a>
+            <div class="navbar-dropdown is-boxed is-right">
+              <div class="navbar-item">
+                <%= current_user.email %>
+              </div>
+              <%= link_to 'Mi perfil', user_show_path(current_user), class: 'navbar-item' %>
+              <hr class="navbar-divider">
+              <%= link_to 'Salir', destroy_user_session_path, data: { turbo_method: :delete }, class: 'navbar-item' %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
+<% if user_signed_in? %>
+  <div class="is-hidden-desktop nav_movil">
+    <div class="inner">
+      <%= link_to root_path, class: 'icon' do %>
+        <%= image_tag 'house.svg', alt: 'inicio' %>
+      <% end %>
+      <% if current_user.can_view? :order and !current_user.mayorista? %>
+        <%= link_to landing_orders_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'dollar.svg', alt: 'carrito' %>
+            <% if @pre_facturas_count > 0 %>
+              <div class="notification_dot2"></div>
+            <% end %>
+          </span>
+        <% end %>
+      <% end %>
+      <% if current_user.can_view? :item or current_user.mayorista? %>
+        <%= link_to landing_items_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'items.svg', alt: 'carrito' %>
+            <% if @inventario_bajo > 0 and !current_user.mayorista? %>
+              <div class="notification_dot2"></div>
+            <% end %>
+          </span>
+        <% end %>
+      <% end %>
+      <% if current_user.can_view? :transfer %>
+        <%= link_to landing_transfers_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'almacen.svg', alt: 'carrito' %>
+            <% if (@transfers_pendientes_count > 0 or @por_surtir_count > 0) and !current_user.mayorista? %>
+              <div class="notification_dot2"></div>
+            <% end %>
+          </span>
+        <% end %>
+      <% end %>
+      <% if (current_user.can_view? :customer or current_user.can_view? :provider) and !current_user.mayorista? %>
+        <%= link_to landing_customers_providers_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'clientes.svg', alt: 'carrito' %>
+          </span>
+        <% end %>
+      <% end %>
+      <% if current_user.can_view? :purchase and !current_user.mayorista? %>
+        <%= link_to purchases_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'compras.svg', alt: 'carrito' %>
+          </span>
+        <% end %>
+      <% end %>
+      <% if current_user.admin? %>
+        <%= link_to settings_landing_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'opciones.svg', alt: 'carrito' %>
+          </span>
+        <% end %>
+      <% end %>
+      <%= link_to user_show_path(current_user), class: 'icon' do %>
+        <%= image_tag 'user.svg', alt: 'mi perfil' %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
