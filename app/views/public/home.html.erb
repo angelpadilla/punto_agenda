@@ -1,3 +1,139 @@
-<div class="box">
-  <p>asdoijasdoijasd</p>
+<div class="notification is-success is-light">
+  <button class="delete"></button>
+  Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum
+  dolor. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta
+  nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus
+  diam, et dictum <a>felis venenatis</a> efficitur.
 </div>
+<div class="notification is-info is-light">
+  <button class="delete"></button>
+  Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum
+  dolor. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta
+  nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus
+  diam, et dictum <a>felis venenatis</a> efficitur.
+</div>
+<div class="notification is-warning is-light">
+  <button class="delete"></button>
+  Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum
+  dolor. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta
+  nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus
+  diam, et dictum <a>felis venenatis</a> efficitur.
+</div>
+<div class="notification is-danger is-light">
+  <button class="delete"></button>
+  Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum
+  dolor. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta
+  nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus
+  diam, et dictum <a>felis venenatis</a> efficitur.
+</div>
+<article class="message is-warning">
+  <div class="message-body">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta nec
+    nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus
+    diam, et dictum <a>felis venenatis</a> efficitur. Aenean ac
+    <em>eleifend lacus</em>, in mollis lectus. Donec sodales, arcu et
+    sollicitudin porttitor, tortor urna tempor ligula, id porttitor mi magna a
+    neque. Donec dui urna, vehicula et sem eget, facilisis sodales sem.
+  </div>
+</article>
+<div class="box">
+  <p>diseno web aqui ...</p>
+</div>
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">Component</p>
+    <button class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </button>
+  </header>
+  <div class="card-content">
+    <div class="content">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec
+      iaculis mauris.
+      <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
+      <br />
+      <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+    </div>
+  </div>
+  <footer class="card-footer">
+    <a href="#" class="card-footer-item">Save</a>
+    <a href="#" class="card-footer-item">Edit</a>
+    <a href="#" class="card-footer-item">Delete</a>
+  </footer>
+</div>
+<button class="mtrigger button" data-target="hola">
+  modal
+</button>
+<div id="hola" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      hola mundo
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<br>
+<button class="mtrigger button" data-target="hola2">
+  modal 2
+</button>
+<div class="modal" id="hola2">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Modal titlewww</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <h1>Modal Content</h2>
+      <h2>Modal Content</h2>
+      <h3>Modal Content</h3>
+      <p>aosidjaosidj</p>
+    </section>
+    <footer class="modal-card-foot">
+      <div class="buttons">
+        <button class="button is-success is-rounded">Save changes</button>
+        <button class="button is-rounded">Cancel</button>
+      </div>
+    </footer>
+  </div>
+</div>
+<% if true %>
+  <div class="button is-rounded is-primary">Hola</div>
+  <div class="button is-rounded is-success">Hola</div>
+  <div class="button is-rounded is-link">Hola</div>
+  <div class="button is-rounded is-info">Hola</div>
+  <div class="button is-rounded is-warning">Hola</div>
+  <div class="button is-rounded is-danger">Hola</div>
+  <p>
+    <%= @stripe_token %>
+  </p>
+  <p>
+    <%= @awstoken %>
+  </p>
+  <p>
+    <%= @corp %>
+  </p>
+  <p>
+    <%= @user %>
+  </p>
+  <% if false %>
+    <div data-controllerrrr="pos-printer">
+      <div class="box" data-pos-printer-target="status">
+        Estado: Buscando impresora...
+      </div>
+      <button class="button is-primary" 
+          data-action="click->pos-printer#connectPrinter" 
+        data-pos-printer-target="connectButton">
+        Conectar Impresora Térmica
+      </button>
+      <button class="button is-success" 
+          data-action="click->pos-printer#printSampleTicket">
+        Imprimir Ticket de Prueba
+      </button>
+    </div>
+  <% end %>
+<% end %>

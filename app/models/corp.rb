@@ -1,19 +1,30 @@
 class Corp < ApplicationRecord
   audited max_audits: 100
-  has_many :users
+  has_many :users, dependent: :destroy
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy
   has_one_attached :logo, dependent: :destroy
 
-  has_many :orders, dependent: :destroy
-  has_many :items, dependent: :destroy
+  # has_many :orders, dependent: :destroy
+  # has_many :items, dependent: :destroy
 
-  validates :razon, :rfc, :regimen, :estado, :cp, :ciudad, :colonia, :calle, :num_ext, :phone, presence: true
-  validates :cp, numericality: true, length: { is: 5 }
-  validates :rfc, length: { in: 10..13 }
+  TipoNegocios = [
+    [ "Barberia", "barberia" ],
+    [ "Salon de belleza", "salon_belleza" ],
+    [ "Restaurante", "restaurante" ],
+    [ "Cafetería", "cafeteria" ],
+    [ "Tienda", "tienda" ],
+    [ "Servicios", "servicios" ],
+    [ "Otro", "otro" ]
+  ]
 
-  normalizes :name, :razon, :cp, :ciudad, :colonia, :localidad, :calle, :num_ext, :num_int, :phone, with: ->(e) { e.strip }
+  validates :tipo_negocio, presence: { message: "El tipo de negocio es requerido" }, inclusion: { in: TipoNegocios.map(&:last), message: "Tipo de negocio no válido" }
+  validates :razon, :rfc, :regimen, :estado, :cp, :ciudad, :colonia, :calle, :num_ext, :phone, presence: true, on: :update
+  validates :cp, numericality: true, length: { is: 5 }, on: :update
+  validates :rfc, length: { in: 10..13 }, on: :update
+
+  normalizes :name, :razon, :cp, :ciudad, :colonia, :localidad, :calle, :num_ext, :num_int, :phone, with: ->(e) { e.strip.downcase }
   normalizes :rfc, with: ->(e) { e.strip.upcase }
 
   def self.ransackable_attributes(auth_object = nil)
@@ -27,6 +38,7 @@ class Corp < ApplicationRecord
   def full_name
     "#{razon} #{rfc}"
   end
+
 
   States = [
     [ "Aguascalientes", "aguascalientes" ],

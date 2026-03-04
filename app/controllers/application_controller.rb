@@ -8,11 +8,27 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
+  private
+
   def record_not_found
     redirect_to root_path, notice: "Objeto no encontrado"
   end
 
-  def after_sign_out_path_for(_resource)
+  def after_sign_out_path_for(model)
     root_path
+  end
+
+  def after_sign_in_path_for(model)
+    puts "----- after_sign_in_path_for #{model.inspect} -----"
+    if model.model_name.name == "User"
+      puts "***1"
+      user_panel_home_path
+    elsif model.model_name.name == "Admin"
+      puts "***2"
+      root_path
+    else
+      puts "***3"
+      super
+    end
   end
 end

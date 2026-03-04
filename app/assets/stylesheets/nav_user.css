@@ -1,0 +1,53 @@
+.nav_movil_user {
+    padding: 0 15px;
+    position: fixed;
+    left: 0;
+    bottom: 20px;
+    width: 100%;
+    z-index: 99;
+
+    .inner {
+        padding: 10px;
+        display: flex;
+        background-color: var(--dark);
+        border-radius: 6pt;
+        box-shadow: 0 0rem 2rem rgba(30, 30, 30, 0.18);
+
+        .icon {
+            flex: 1;
+            padding: 20px 0;
+
+            img {
+                height: 20px;
+
+                &.logo {
+                    height: 35px;
+                }
+            }
+
+            .counter {
+                background-color: #e44545;
+                color: white;
+                border-radius: 50%;
+                padding: 2px 5px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                position: relative;
+                top: -7px;
+                left: -10px;
+            }
+
+            .counter2 {
+                background-color: #e44545;
+                color: white;
+                border-radius: 50%;
+                padding: 0px 5px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                position: relative;
+                top: -7px;
+                left: -10px;
+            }
+        }
+    }
+}

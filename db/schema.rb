@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_23_103441) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_03_210836) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -95,8 +95,35 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_103441) do
     t.string "text_remision"
     t.string "tiktok_url"
     t.integer "timbres"
+    t.string "tipo_negocio"
     t.datetime "updated_at", null: false
     t.string "whatsapp"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.string "bar_code"
+    t.integer "brand_id"
+    t.string "brandd"
+    t.integer "cate"
+    t.decimal "cost", precision: 17, scale: 4
+    t.datetime "created_at", null: false
+    t.text "desc"
+    t.string "error"
+    t.string "garantia"
+    t.string "name"
+    t.decimal "offer", precision: 17, scale: 4
+    t.decimal "price", precision: 17, scale: 4
+    t.decimal "price2", precision: 17, scale: 4
+    t.decimal "price3", precision: 17, scale: 4
+    t.integer "sat_product_id", null: false
+    t.string "sku"
+    t.integer "status", default: 0
+    t.decimal "stock", precision: 17, scale: 4, default: "0.0"
+    t.string "unidad"
+    t.datetime "updated_at", null: false
+    t.index ["brand_id"], name: "index_items_on_brand_id"
+    t.index ["sat_product_id"], name: "index_items_on_sat_product_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -104,12 +131,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_103441) do
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
+    t.integer "corp_id"
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "current_sign_in_ip"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.integer "failed_attempts", default: 0, null: false
+    t.string "full_name"
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
     t.datetime "locked_at"
@@ -117,11 +146,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_103441) do
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.integer "sign_in_count", default: 0, null: false
+    t.string "tel"
     t.string "tipo", default: "usuario"
     t.string "unconfirmed_email"
     t.string "unlock_token"
     t.datetime "updated_at", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["corp_id"], name: "index_users_on_corp_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
@@ -129,4 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_103441) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "items", "brands"
+  add_foreign_key "items", "sat_products"
+  add_foreign_key "users", "corps"
 end

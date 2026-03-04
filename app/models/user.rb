@@ -1,13 +1,29 @@
 class User < ApplicationRecord
+  audited max_audits: 100
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable, :lockable, :timeoutable, :trackable
+         :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :trackable
+
+
+  belongs_to :corp, optional: true
+
+  ## Validations
+  normalizes :email, with: ->(e) { e.strip.downcase }
+  validates :tipo, inclusion: { in: %w[admin usuario] }
+  # validates :tipo, presence: { message: "El tipo de usuario es requerido" }
+  validates :full_name, presence: { message: "El Nombre es requerido" }
+  validates :email, presence: { message: "El Email es requerido" }
+  validates :email, uniqueness: { message: "El Email ya ha sido tomado por alguien más" }
+  validates :tel, presence: { message: "Teléfono es requerido" }
+  validates :tel, numericality: { only_integer: true, message: "Teléfono debe ser un número" }
+  validates :tel, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
+  validates :tel, uniqueness: { message: "Teléfono ya ha sido tomado por alguien más" }
 
   ## Scopes
-  scope :default, -> { order(name: :asc) }
+  scope :default, -> { order(full_name: :asc) }
   scope :admins, -> { where(tipo: "admin") }
-  scope :users, -> { where(tipo: "user") }
+  scope :users, -> { where(tipo: "usuario") }
 
   scope :actives, -> { default.where(active: true) }
   scope :inactives, -> { where(active: false) }
@@ -73,7 +89,7 @@ class User < ApplicationRecord
 
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)
-    %w[id name tipo email phone]
+    %w[id full_name tipo email tel active]
   end
 
   def self.ransackable_associations(auth_object = nil)
