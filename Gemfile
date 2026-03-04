@@ -93,7 +93,7 @@ gem "prawn-svg"
 gem "prawn-table"
 
 # https://github.com/whomwah/rqrcode
-gem "rqrcode", "~> 2.0"
+gem "rqrcode", "~> 3.2"
 
 gem "csv", "~> 3.3"
 gem "rubyXL", "3.4.33"
