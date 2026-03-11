@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_03_210836) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_10_224738) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -71,6 +71,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_210836) do
     t.index ["user_id", "user_type"], name: "user_index"
   end
 
+  create_table "brands", force: :cascade do |t|
+    t.string "body"
+    t.integer "corp_id"
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.index ["corp_id"], name: "index_brands_on_corp_id"
+  end
+
   create_table "corps", force: :cascade do |t|
     t.string "calle"
     t.string "ciudad"
@@ -90,6 +99,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_210836) do
     t.string "razon"
     t.string "regimen"
     t.string "rfc"
+    t.string "sku"
     t.string "text_cotizacion"
     t.string "text_factura"
     t.string "text_remision"
@@ -101,11 +111,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_210836) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.boolean "active", default: true
     t.string "bar_code"
     t.integer "brand_id"
-    t.string "brandd"
     t.integer "cate"
+    t.integer "corp_id", null: false
     t.decimal "cost", precision: 17, scale: 4
     t.datetime "created_at", null: false
     t.text "desc"
@@ -123,7 +132,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_210836) do
     t.string "unidad"
     t.datetime "updated_at", null: false
     t.index ["brand_id"], name: "index_items_on_brand_id"
+    t.index ["corp_id"], name: "index_items_on_corp_id"
     t.index ["sat_product_id"], name: "index_items_on_sat_product_id"
+  end
+
+  create_table "sat_products", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "sku"
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -160,7 +177,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_210836) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "brands", "corps"
   add_foreign_key "items", "brands"
+  add_foreign_key "items", "corps"
   add_foreign_key "items", "sat_products"
   add_foreign_key "users", "corps"
 end

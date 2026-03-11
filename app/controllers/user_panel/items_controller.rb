@@ -1,9 +1,24 @@
 class UserPanel::ItemsController < UserPanelController
   before_action :set_item, only: %i[ show edit update destroy ]
+  before_action :validate_corp, only: %i[ show edit update destroy ]
 
   # GET /items or /items.json
   def index
-    @items = Item.all
+    @brands = Rails.cache.fetch("brands_for_items_index", expires_in: 1.month) do
+      @corp.brands.default
+    end
+    
+    items = @corp.items.default.includes(
+      :brand,
+      img1_attachment: :blob,
+      img2_attachment: :blob,
+      img3_attachment: :blob,
+      img4_attachment: :blob,
+      img5_attachment: :blob
+    )
+
+    @q = items.ransack(params[:q])
+    @pagy, @items = pagy(@q.result(distinct: true), limit: 8)
   end
 
   # GET /items/1 or /items/1.json
@@ -21,11 +36,11 @@ class UserPanel::ItemsController < UserPanelController
 
   # POST /items or /items.json
   def create
-    @item = Item.new(item_params)
+    @item = @corp.items.new(item_params)
 
     respond_to do |format|
       if @item.save
-        format.html { redirect_to @item, notice: "Item was successfully created." }
+        format.html { redirect_to items_path, notice: "Item creado." }
         format.json { render :show, status: :created, location: @item }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,7 +53,7 @@ class UserPanel::ItemsController < UserPanelController
   def update
     respond_to do |format|
       if @item.update(item_params)
-        format.html { redirect_to @item, notice: "Item was successfully updated.", status: :see_other }
+        format.html { redirect_to items_path, notice: "Item actualizado.", status: :see_other }
         format.json { render :show, status: :ok, location: @item }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +67,7 @@ class UserPanel::ItemsController < UserPanelController
     @item.destroy!
 
     respond_to do |format|
-      format.html { redirect_to items_path, notice: "Item was successfully destroyed.", status: :see_other }
+      format.html { redirect_to items_path, notice: "Item eliminado.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -65,6 +80,12 @@ class UserPanel::ItemsController < UserPanelController
 
     # Only allow a list of trusted parameters through.
     def item_params
-      params.expect(item: [ :name, :brand, :quantity ])
+      params.expect(item: [ :name, :bar_code, :brand_id, :brand_name, :quantity, :cate, :cost, :desc, :garantia, :offer, :price, :price2, :price3, :sat_product_id, :sku, :status, :stock, :unidad, :img1, :img2, :img3, :img4, :img5 ])
+    end
+
+    def validate_corp
+      if @item.corp_id != @corp.id
+        redirect_to items_path, alert: "El item que intentas editar no fue encontrado."
+      end
     end
 end

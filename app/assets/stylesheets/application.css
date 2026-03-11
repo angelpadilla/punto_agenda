@@ -22,10 +22,41 @@
     --radius: 1.7rem;
 }
 
+/* en mobil .container tiene padding a los lados */
+@media (max-width: 1023px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+}
+
+.padding_top_nav {
+    padding-top: 1rem;
+}
+
+/* para escritorio */
+@media (min-width: 1023px) {
+    .padding_top_nav {
+        padding-top: 4.5rem;
+    }
+}
+
+
 .navbar {
     .logo {
         height: 100%;
     }
+}
+
+input,
+select, textarea {
+    background-color: var(--black) !important;
+    border-color: var(--gray) !important;
+}
+
+.select.is-rounded select {
+    border-radius: 15px !important;
 }
 
 a,
@@ -83,9 +114,6 @@ html {
     filter: invert(0.9);
 }
 
-.padding_top_nav {
-    padding-top: 5.5rem;
-}
 
 
 
@@ -137,6 +165,7 @@ a.link {
         color: white;
         padding: 5px 10px;
         border-radius: 1.3rem;
+        border: 1px solid var(--gray);
         font-size: 0.8rem;
         z-index: 2;
         opacity: 0;
@@ -185,6 +214,19 @@ a.link {
     }
 }
 
+.flexx {
+    display: flex;
+    /* gap: 1rem; */
+}
+
+.space-b {
+    justify-content: space-between;
+}
+
+.flex-end {
+    align-items: flex-end;
+}
+
 .flexx-1 {
     flex: 1;
 }
@@ -205,7 +247,14 @@ a.link {
     flex: 15;
 }
 
-input {
+.titlee {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--light-gray);
+}
+
+input,
+select {
     &:focus {
         outline: none;
         border: 1px solid var(--neon-green) !important;
@@ -219,6 +268,13 @@ input {
     select {
         width: 100%;
     }
+}
+
+.navbar-link:not(.is-arrowless)::after,
+.select:not(.is-multiple):not(.is-loading)::after {
+    border: 0.125em solid var(--neon-green) !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
 }
 
 
@@ -260,7 +316,137 @@ div.navbar-dropdown {
     a.navbar-item:hover {
         background-color: #111111 !important;
     }
+
     .icon img {
         max-height: 1.2rem;
     }
+}
+
+.dropdown-menu {
+    .icon {
+        vertical-align: middle;
+    }
+}
+
+.dropdown-item.is-active {
+    background-color: var(--neon-green) !important;
+    color: var(--dark);
+}
+
+.ss2 {
+    /* padding: 13px !important; */
+    /* border-radius: var(--radius) !important; */
+    /* Colors */
+    --ss-primary-color: #a8fb22;
+    --ss-bg-color: #111111;
+    --ss-font-color: #d1d5da;
+    --ss-border-color: #313131;
+    --ss-border-radius: var(--radius);
+
+    /* Heights */
+    --ss-main-height: 30px;
+    --ss-search-height: 30px;
+    --ss-option-height: auto;
+    --ss-content-height: 300px;
+
+    /* Spacing */
+    --ss-spacing-l: 9px;
+    --ss-spacing-m: 7px;
+    --ss-spacing-s: 7px;
+
+    /* Other Properties */
+    --ss-border-radius: 15px;
+    --ss-animation-timing: 0.1s;
+
+    input {
+        color: var(--light-gray);
+    }
+}
+
+.field.has-addons select, .field.has-addons .ss2 {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.select-is-danger {
+    .ss-main {
+        border: 1px solid #e44545 !important;
+
+    }
+}
+
+/* .............. */
+
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.image-tile {
+    background: var(--black);
+    border: 1px dashed #2b2f36;
+    border-radius: 1.2rem;
+    padding: 0.9rem;
+    min-height: 150px;
+    position: relative;
+    transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.image-tile:hover {
+    border-color: var(--neon-green);
+    transform: translateY(-2px);
+}
+
+.image-tile__drop {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    height: 100%;
+    cursor: pointer;
+}
+
+.image-tile__title {
+    color: #e6e9ef;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.image-tile__subtitle {
+    color: #a3a9b3;
+    font-size: 0.85rem;
+    text-wrap: wrap;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; /* Asegura que respete el max-width */
+}
+
+.image-tile__meta {
+    color: #7f8792;
+    font-size: 0.75rem;
+}
+
+.image-tile__action {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid #2b2f36;
+    background: #0b0d10;
+    color: #e6e9ef;
+    font-size: 0.75rem;
+}
+
+.image-tile__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
 }

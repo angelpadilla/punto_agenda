@@ -1,0 +1,71 @@
+<% content_for :title, "Inventario" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Mis productos</h2>
+  <div class="actions">
+    <%= link_to new_item_path, class: "button is-primary" do  %>
+      <span class="icon mr-2">
+        <%= image_tag 'plus.svg', alt: 'carrito' %>
+      </span>
+      Nuevo producto
+    <% end %>
+    <div class="button">
+      <span class="icon">
+        <%# boton AI para generar reportes especiales %>
+        <%= image_tag 'wand.svg', alt: 'filter', class: 'invert' %>
+      </span>
+    </div>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to new_item_path, class: "dropdown-item" do  %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Exportar CSV
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: items_path do |f| %>
+  <div class="columns is-multiline">
+    <div class="column is-3">
+      <%= f.search_field :name_cont, class: 'input is-rounded', placeholder: 'Nombre' %>
+    </div>
+    <div class="column is-2">
+      <%= f.search_field :id_eq, placeholder: "ID", class: "input is-rounded" %>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :brand_id_eq, options_for_select(@brands.map {|b| [b.name, b.id]}, @q.brand_id_eq), {prompt: "Marca"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :cate_eq, options_for_select(Item.cates.collect {|k, v| [k.humanize,v]}, (params[:q] and !params[:q][:cate_eq].blank?) ? params[:q][:cate_eq] : nil), {prompt: "Categoria"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
+    </div>
+  </div>
+<% end %>
+<div class="columns is-multiline is-mobile">
+  <%= render @items %>
+</div>
+<% if @pagy.pages > 1 %>
+  <%== pagy_bulma_nav(@pagy) %>
+  <br>
+<% end %>
+<br>
+<br>

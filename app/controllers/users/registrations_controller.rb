@@ -11,35 +11,52 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
+    puts "Verificando turnstile..."
+    puts "--- ip request: #{request.remote_ip} ---"
+    token = params["cf-turnstile-response"]
+    secret_key =  Rails.env.production? ? Rails.application.credentials.turnstile.prod_secret_key : Rails.application.credentials.turnstile.dev_secret_key
+    response = HTTP.post("https://challenges.cloudflare.com/turnstile/v0/siteverify", form: {
+      secret: secret_key,
+      response: token,
+      remoteip: request.remote_ip
+    })
+
     corp = Corp.new(
       tipo_negocio: params[:user][:tipo_negocio] || "otro"
     )
 
-    build_resource(sign_up_params)
-    resource.tipo = "admin"
+    if response.status.success?
+      body = JSON.parse(response.to_s)
+      puts body
+      build_resource(sign_up_params)
+      resource.tipo = "admin"
 
-    if resource.save
-      if corp.save # Guardar el Corp solo si el usuario se guarda correctamente
-        resource.update(corp_id: corp.id)
-        yield resource if block_given?
-        if resource.active_for_authentication?
-          set_flash_message! :notice, :signed_up
-          sign_up(resource_name, resource)
-          respond_with resource, location: after_sign_up_path_for(resource)
+      if resource.save
+        if corp.save # Guardar el Corp solo si el usuario se guarda correctamente
+          resource.update(corp_id: corp.id)
+          yield resource if block_given?
+          if resource.active_for_authentication?
+            set_flash_message! :notice, :signed_up
+            sign_up(resource_name, resource)
+            respond_with resource, location: after_sign_up_path_for(resource)
+          else
+            set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
+            expire_data_after_sign_in!
+            respond_with resource, location: after_inactive_sign_up_path_for(resource)
+          end
         else
-          set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
-          expire_data_after_sign_in!
-          respond_with resource, location: after_inactive_sign_up_path_for(resource)
+          resource.destroy # Eliminar el usuario si el Corp no se guarda
+          flash[:alert] = "Error al crear el usuario: #{corp.errors.full_messages.join(', ')}"
+          redirect_to new_user_registration_path
         end
       else
-        resource.destroy # Eliminar el usuario si el Corp no se guarda
-        flash[:alert] = "Error al crear el usuario: #{corp.errors.full_messages.join(', ')}"
-        redirect_to new_user_registration_path
+        clean_up_passwords resource
+        set_minimum_password_length
+        respond_with resource
       end
     else
-      clean_up_passwords resource
-      set_minimum_password_length
-      respond_with resource
+      flash[:alert] = "Error en verificación, status: #{response.status}"
+      redirect_to new_user_registration_path
     end
   end
 

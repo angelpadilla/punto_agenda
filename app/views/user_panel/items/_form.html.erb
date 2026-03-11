@@ -1,0 +1,106 @@
+<div class="box">
+  <%= form_with(model: item, data: {controller: 'new-item'}) do |form| %>
+    <% if item.errors.any? %>
+      <div class="notification is-warning">
+        <h2 class="subtitle"><%= pluralize(item.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
+        <ul>
+          <% item.errors.each do |error| %>
+            <li><%= error.message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="image-grid">
+      <% image_fields = [
+        [:img1, "Imagen 1"],
+        [:img2, "Imagen 2"],
+        [:img3, "Imagen 3"],
+        [:img4, "Imagen 4"],
+        [:img5, "Imagen 5"]
+      ] %>
+      <% image_fields.each_with_index do |(field, label), index| %>
+        <div class="image-tile">
+          <label class="image-tile__drop">
+            <span class="image-tile__title"><%= label %></span>
+            <span class="image-tile__subtitle"></span>
+            <span class="image-tile__meta">JPG o PNG · max 5MB</span>
+            <%= form.file_field field, class: "image-tile__input", accept: ".jpg,.jpeg,.png", data: { action: "change->new-item#previewImage" } %>
+            <span class="image-tile__action">Seleccionar archivo</span>
+          </label>
+        </div>
+      <% end %>
+    </div>
+    <div class="columns">
+      <div class="column is-7">
+        <div class="columns is-multiline">
+          <%= t_field(form, :name, label: "Nombre", placeholder: "Ej. Laptop Lenovo ThinkPad") %>
+          <%= t_field(form, :sku, label: "SKU (Identificador interno)", placeholder: "Ej. ABC12345", clas: "field column is-6") %>
+          <div class="field column is-6">
+            <%= form.label :sat_product_id, "Clave producto SAT", class: "label" %>
+            <div class="control <%= item.errors.include?(:sat_product_id) ? 'select-is-danger' : '' %>">
+              <%= form.select :sat_product_id, options_for_select(SatProduct.order(:name).map { |k| ["#{k.sku} #{k.name}", k.id] }, item.sat_product_id),
+                {prompt: "Selecciona", required: field_required?(Item, :sat_product_id)},
+                { "data-controller": "slimselect", class: "ss2"}
+                %>
+            </div>
+          </div>
+          <div class="field has-addons column is-12">
+            <div class="control is-expanded <%= item.errors.include?(:brand_id) ? 'select-is-danger' : '' %>">
+              <%= form.select :brand_id, options_for_select(Brand.default.map { |k| [k.name&.titleize, k.id] }, item.brand_id),
+                {prompt: "Selecciona Marca", required: field_required?(Item, :brand_id)},
+                { "data-controller": "slimselect", class: "ss2"}
+                %>
+            </div>
+            <div class="control">
+              <div class="button mtrigger" data-target="new_brand">
+                <span class="icon">
+                  <%= image_tag 'plus.svg', alt: 'new-brand', class: 'invert' %>
+                </span>
+              </div>
+            </div>
+          </div>
+          <%= s_field(form, :unidad, options: Item::UnidadSAT, label: "Unidad", clas: "field column is-6") %>
+          <%= s_field(form, :cate, options: Item.cates.keys.map { |k| [k.humanize, k] }, label: "Categoria", clas: "field column is-6") %>
+          <%= a_field(form, :desc, label: "Descripción", placeholder: "Descripción del item") %>
+          <%= t_field(form, :garantia, label: "Garantía o terminos y condiciones de tu producto", placeholder: "Ej. 1 año de garantía") %>
+        </div>
+      </div>
+      <div class="column is-5">
+        <div class="columns is-multiline">
+          <%= n_field(form, :price, label: "Precio", clas: "field column is-6") %>
+          <%= n_field(form, :offer, label: "Precio oferta", clas: "field column is-6") %>
+          <%= n_field(form, :price2, label: "Precio 2", clas: "field column is-6") %>
+          <%= n_field(form, :price3, label: "Precio 3", clas: "field column is-6") %>
+          <%= s_field(form, :status, options: Item.statuses.keys.map { |k| [k.humanize, k] }, label: "Status") %>
+          <%= n_field(form, :stock, label: "Inventario disponible") %>
+        </div>
+      </div>
+    </div>
+    <br>
+    <p>* Campos obligatorios</p>
+    <div class="field is-grouped is-justify-content-space-between mt-5">
+      <div class="control">
+        <%= link_to "Cancelar", items_path, class: "button is-rounded" %>
+      </div>
+      <div class="control">
+        <%= form.submit "Guardar item", class: "button is-rounded is-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+<%# modals %>
+<div id="new_brand" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <h3 class="title is-4">Crear nueva marca</h3>
+      <%= form_with(model: Brand.new, url: create_from_item_brands_path, format: :turbo_stream) do |f| %>
+        <div class="columns is-multiline">
+          <%= t_field(f, :name, placeholder: "Nombre de la marca") %>
+        </div>
+        <%= f.submit "Guardar", class: "button is-primary is-fullwidth is-rounded" %>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>

@@ -1,0 +1,24 @@
+<%= form_with(model: brand) do |form| %>
+  <% if brand.errors.any? %>
+    <div class="notification is-warning">
+      <h2 class="subtitle"><%= pluralize(brand.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
+      <ul>
+        <% brand.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class='box'>
+    <h2 class='subtitle'>Datos basicos</h2>
+    <div class='columns is-multiline'>
+      <div class='field column is-12'>
+        <label class='label'>Nombre</label>
+        <%= form.text_field :name, class: "control input #{form.object.errors.include?(:name) ? 'is-danger' : ''}", placeholder: 'Nombre' %>
+      </div>
+    </div>
+  </div>
+  <%= form.submit 'Guardar', class: 'button is-success has-text-white is-fullwidth' %>
+<% end %>
+<br>
+<br

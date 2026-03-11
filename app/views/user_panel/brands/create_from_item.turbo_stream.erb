@@ -1,0 +1,23 @@
+<%# 1. Agregar la nueva opción al final de nuestro select %>
+<%= turbo_stream.append "item_brand_id" do %>
+  <option value="<%= @brand.id %>"><%= @brand.name&.titleize %></option>
+<% end %>
+<%# 2. Cerrar el modal y refrescar el select con Javascript %>
+<%= turbo_stream.append "item_brand_id" do %>
+  <script>
+    // Seleccionar automáticamente el nueva marca
+    var select = document.getElementById("item_brand_id");
+    select.value = "<%= @brand.id %>";
+
+    // Cerrar el modal (removiendo clase is-active)
+    document.getElementById("new_brand").classList.remove("is-active");
+
+    // Limpiar formulario modal
+    document.querySelector("#new_brand form").reset();
+
+    // Si estás usando `slimselect`, necesitas actualizar su instancia
+    // Usualmente disparando un evento "change" o invocando su API
+    var event = new Event('change', { bubbles: true });
+    select.dispatchEvent(event);
+  </script>
+<% end %>

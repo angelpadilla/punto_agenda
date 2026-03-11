@@ -1,6 +1,8 @@
 class Corp < ApplicationRecord
   audited max_audits: 100
   has_many :users, dependent: :destroy
+  has_many :brands, dependent: :destroy
+  has_many :items, dependent: :destroy
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy
@@ -99,4 +101,19 @@ class Corp < ApplicationRecord
     [ "Enajenación de acciones en bolsa de valores", "630" ],
     [ "Régimen de los ingresos por obtención de premios", "615" ]
   ]
+
+  before_create :set_defaults
+
+  private
+
+  def set_defaults
+    self.sku = generate_unique_sku
+  end
+
+  def generate_unique_sku
+    token = SecureRandom.hex(7)
+    return token unless self.class.exists?(sku: token)
+
+    generate_unique_sku
+  end
 end

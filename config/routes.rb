@@ -18,5 +18,10 @@ Rails.application.routes.draw do
 
     ## user_panel/items_controller.rb
     resources :items, controller: "user_panel/items"
+    resources :brands, controller: "user_panel/brands" do 
+      collection do
+        post :create_from_item
+      end
+    end
   end
 end
