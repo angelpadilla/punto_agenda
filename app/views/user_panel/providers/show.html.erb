@@ -1,0 +1,116 @@
+<% content_for :title, "Detalle del Proveedor" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle del Proveedor</h2>
+  <div class="actions">
+    <%= link_to providers_path, class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'clientes.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <%= link_to edit_provider_path(@provider), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+      </span>
+      Editar
+    <% end %>
+  </div>
+</div>
+<div class='box mt-4'>
+  <div class='columns is-multiline'>
+    <div class="column is-2">
+      <% odd_even = rand(1..2) %>
+      <% if odd_even.even? %>
+        <%= image_tag 'provider1.png', alt: 'item', class: 'rounded', loading: 'lazy' %>
+      <% else %>
+        <%= image_tag 'provider2.png', alt: 'item', class: 'rounded', loading: 'lazy' %>
+      <% end %>
+    </div>
+    <div class="column is-10">
+      <h3 class="titlee2 is-3 mb-4"><%= @provider.razon %></h3>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Email</div>
+          <p class="contentt"><%= @provider.email %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Teléfono</div>
+          <p class="contentt"><%= @provider.tel %></p>
+        </div>
+        <div class="column is-12">
+          <div class="labell">Notas</div>
+          <p class=""><%= @provider.notas %></p>
+        </div>
+      </div>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Fecha de creación</div>
+          <p class=""><%= l(@provider.created_at, format: :long) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Fecha de última actualización</div>
+          <p class=""><%= l(@provider.updated_at, format: :long) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box expandable <%= @provider.rfc != 'XAXX010101000' ? 'is_active' : '' %>">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'sat2.svg', alt: "Datos fiscales" %>
+      </span>
+      Datos fiscales 
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Regimen fiscal</div>
+        <p class="contentt"><%= @provider.regimen %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">RFC</div>
+        <p class="contentt"><%= @provider.rfc %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Estado</div>
+        <p class="contentt"><%= @provider.estado %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Ciudad</div>
+        <p class="contentt"><%= @provider.ciudad %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Código Postal</div>
+        <p class="contentt"><%= @provider.cp %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Colonia</div>
+        <p class="contentt"><%= @provider.colonia %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Localidad</div>
+        <p class="contentt"><%= @provider.localidad %></p>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-8-desktop">
+        <div class="labell">Calle</div>
+        <p class="contentt"><%= @provider.calle %></p>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <div class="labell"># Exterior</div>
+        <p class="contentt"><%= @provider.num_ext %></p>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <div class="labell"># Interior</div>
+        <p class="contentt"><%= @provider.num_int %></p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="flexx space-b flex-end mt-4">
+  <%= render 'user_panel/events/button_selector' %>
+  <div class="calendar-heading">
+    <nav>
+      <%= link_to t('simple_calendar.previous', default: 'Anterior'), calendar.url_for_previous_view %>
+      <%= link_to t('simple_calendar.today', default: 'Hoy'), calendar.url_for_today_view %>
+      <%= link_to t('simple_calendar.next', default: 'Siguiente'), calendar.url_for_next_view %>
+    </nav>
+  </div>
+  <div class="actions">
+    <div class="button is-rounded">
+      <span class="icon">
+        <%# boton AI para generar reportes especiales %>
+        <%= image_tag 'search2.svg', alt: 'filter', class: 'invert' %>
+      </span>
+    </div>
+    <%= link_to new_event_path, class: "button is-primary is-rounded" do  %>
+      <span class="icon mr-2">
+        <%= image_tag 'calendar_plus.svg', alt: 'carrito' %>
+      </span>
+      Nueva cita
+    <% end %>
+  </div>
+</div>

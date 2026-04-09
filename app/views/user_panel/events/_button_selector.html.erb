@@ -1,0 +1,20 @@
+<div class="buttons has-addons events_actions">
+  <%= link_to daily_events_path, class: "button #{action_name == 'daily' ? 'is-primary' : '' }" do %>
+    <span class="icon mr-2">
+      <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'daily' ? '' : 'invert' %>
+    </span>
+    Dia
+  <% end %>
+  <%= link_to weekly_events_path, class: "button #{action_name == 'weekly' ? 'is-primary' : '' }" do %>
+    <span class="icon mr-2">
+      <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'weekly' ? '' : 'invert' %>
+    </span>
+    Semana
+  <% end %>
+  <%= link_to monthly_events_path, class: "button #{action_name == 'monthly' ? 'is-primary' : '' }" do %>
+    <span class="icon mr-2">
+      <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'monthly' ? '' : 'invert' %>
+    </span>
+    Mes
+  <% end %>
+</div>

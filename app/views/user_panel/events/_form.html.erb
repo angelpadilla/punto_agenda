@@ -1,0 +1,87 @@
+<%= form_with(model: event, data: {controller: ''}) do |form| %>
+  <% if event.errors.any? %>
+    <div class="notification is-warning mt-4">
+      <h2 class="subtitle"><%= pluralize(event.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
+      <ul>
+        <% event.errors.each do |error| %>
+          <li><%= error.message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="box mt-4">
+    <div class="columns is-multiline">
+      <%= t_field(form, :title, label: "Título", placeholder: "Ej. Cita con Juan Pérez") %>
+      <div class="field column is-6">
+        <div class="control is-expanded <%= event.errors.include?(:customer_id) ? 'select-is-danger' : '' %>">
+          <%= form.select :customer_id, options_for_select(Customer.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, event.customer_id),
+                {prompt: "Selecciona Cliente", required: field_required?(Event, :customer_id)},
+                { "data-controller": "slimselect", class: "ss2"}
+                %>
+        </div>
+      </div>
+      <div class="field column is-6">
+        <div class="control is-expanded <%= event.errors.include?(:user_id) ? 'select-is-danger' : '' %>">
+          <%= form.select :user_id, options_for_select(@corp.users.default.map { |k| [k.full_name&.titleize, k.id] }, event.user_id),
+                {prompt: "Selecciona Agente/vendedor/usuario", required: field_required?(Event, :user_id)},
+                { "data-controller": "slimselect", class: "ss2"}
+                %>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-multiline">
+      <div class="field column is-6">
+        <label class="label">Día y hora de la cita</label>
+        <%= form.datetime_field :hora_inicio, required: true, class: "control input #{event.errors.include?(:hora_inicio) ? 'is-danger' : ''}" %>
+      </div>
+      <div class="field column is-6">
+        <label class="label">Duración de la cita</label>
+        <div class="control">
+          <div class="select <%= event.errors.include?(:horas) ? 'is-danger' : '' %>">
+            <% if event.hora_inicio %>
+              <%= form.select(:horas, (1..24).map { |hour|
+                (0..3).map { |quarter|
+                  time = sprintf("%02d:%02d", hour, quarter * 15)
+                  [time, time]
+                }
+              }.flatten(1), selected: event.hora_inicio.strftime('%H:%M')) %>
+            <% else %>
+              <%= form.select(:horas, (1..24).map { |hour|
+                (0..3).map { |quarter|
+                  time = sprintf("%02d:%02d", hour, quarter * 15)
+                  ["#{time} horas", time]
+                }
+              }.flatten(1)) %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box expandable">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'documento.svg', alt: "sat", class: 'invert' %>
+        </span>
+        Extra (opcional)
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <div class="columns is-multiline">
+        <%= a_field(form, :body, label: "Descripción o notas") %>
+      </div>
+    </div>
+  </div>
+  <div class="field is-grouped is-justify-content-space-between mt-5">
+    <div class="control">
+      <%= link_to "Cancelar", monthly_events_path, class: "button is-rounded" %>
+    </div>
+    <div class="control">
+      <%= form.submit "Guardar", class: "button is-rounded is-primary" %>
+    </div>
+  </div>
+<% end %>

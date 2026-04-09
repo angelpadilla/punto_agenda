@@ -1,0 +1,45 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tipo: MyString
+  status_pago: MyString
+  forma_pago: MyString
+  total: 9.99
+  subtotal: 9.99
+  impuestos: 9.99
+  descuento: 9.99
+  costo: 9.99
+  ganancia: 9.99
+  debe: 9.99
+  abonado: 9.99
+  folio: MyString
+  nota_interna: MyText
+  nota_customer: MyText
+  error: MyString
+  deadline: 2026-04-06
+  fecha: 2026-04-06
+  xml: MyText
+  sat_cfdi: MyText
+  sat_sello: MyText
+
+two:
+  tipo: MyString
+  status_pago: MyString
+  forma_pago: MyString
+  total: 9.99
+  subtotal: 9.99
+  impuestos: 9.99
+  descuento: 9.99
+  costo: 9.99
+  ganancia: 9.99
+  debe: 9.99
+  abonado: 9.99
+  folio: MyString
+  nota_interna: MyText
+  nota_customer: MyText
+  error: MyString
+  deadline: 2026-04-06
+  fecha: 2026-04-06
+  xml: MyText
+  sat_cfdi: MyText
+  sat_sello: MyText

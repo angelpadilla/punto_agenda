@@ -1,0 +1,72 @@
+<div class="item_box">
+  <div class="table_item">
+    <div class="item_image">
+      <% odd_even = rand(1..2) %>
+      <% if odd_even.even? %>
+        <%= image_tag 'provider1.png', alt: 'item', class: 'rounded', loading: 'lazy' %>
+      <% else %>
+        <%= image_tag 'provider2.png', alt: 'item', class: 'rounded', loading: 'lazy' %>
+      <% end %>
+    </div>
+    <div class="item_info flexx-3">
+      <h3 class="item_info_name">
+        <%= provider.razon %>
+      </h3>
+      <!-- info -->
+      <div class="columns is-mobile is-multiline mt-2">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Email</div>
+          <p class="contentt"><%= provider.email %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Teléfono</div>
+          <p class="contentt"><%= provider.tel %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">RFC</div>
+          <p class="contentt"><%= provider.rfc %></p>
+        </div>
+      </div>
+      <% if provider.notas.present? %>
+        <div class="columns is-mobile is-multiline mt-2">
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Notas</div>
+            <p class=""><%= provider.notas %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="item_actions">
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button aria-haspopup="true">
+            <span class="icon d90">
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <%= link_to edit_provider_path(provider), class: "dropdown-item" do  %>
+              <span class="icon mr-2">
+                <%= image_tag 'edit.svg', alt: 'edit', class: 'invert' %>
+              </span>
+              Editar
+            <% end %>
+            <%= link_to provider_path(provider), data: { turbo_confirm: "¿Estás seguro?", turbo_method: :delete }, class: "dropdown-item" do  %>
+              <span class="icon mr-2">
+                <%= image_tag 'trash.svg', alt: 'delete', class: 'invert' %>
+              </span>
+              Eliminar
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item_buttons mt-6">
+    <%= link_to provider_path(provider), class: "button is-rounded is-fullwidth" do  %>
+      Ver detalles
+    <% end %>
+  </div>
+</div>

@@ -1,15 +1,15 @@
-<div class="box">
-  <%= form_with(model: item, data: {controller: 'new-item'}) do |form| %>
-    <% if item.errors.any? %>
-      <div class="notification is-warning">
-        <h2 class="subtitle"><%= pluralize(item.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
-        <ul>
-          <% item.errors.each do |error| %>
-            <li><%= error.message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
+  <%= form_with(model: item, data: {controller: 'form-item'}) do |form| %>
+  <% if item.errors.any? %>
+    <div class="notification is-warning">
+      <h2 class="subtitle"><%= pluralize(item.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
+      <ul>
+        <% item.errors.each do |error| %>
+          <li><%= error.message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="box mt-4">
     <div class="image-grid">
       <% image_fields = [
         [:img1, "Imagen 1"],
@@ -21,10 +21,16 @@
       <% image_fields.each_with_index do |(field, label), index| %>
         <div class="image-tile">
           <label class="image-tile__drop">
-            <span class="image-tile__title"><%= label %></span>
+            <span class="image-tile__title">
+              <% if item.send(field).attached? %>
+                <%= image_tag item.send(field).variant(resize_to_limit: [400, 400]), alt: "Imagen #{index + 1}", class: 'image-tile__preview' %>
+              <% else %>
+                <%= label %>
+              <% end %>
+            </span>
             <span class="image-tile__subtitle"></span>
             <span class="image-tile__meta">JPG o PNG · max 5MB</span>
-            <%= form.file_field field, class: "image-tile__input", accept: ".jpg,.jpeg,.png", data: { action: "change->new-item#previewImage" } %>
+            <%= form.file_field field, class: "image-tile__input", accept: ".jpg,.jpeg,.png", data: { action: "change->form-item#previewImage" } %>
             <span class="image-tile__action">Seleccionar archivo</span>
           </label>
         </div>
@@ -62,32 +68,32 @@
           <%= s_field(form, :unidad, options: Item::UnidadSAT, label: "Unidad", clas: "field column is-6") %>
           <%= s_field(form, :cate, options: Item.cates.keys.map { |k| [k.humanize, k] }, label: "Categoria", clas: "field column is-6") %>
           <%= a_field(form, :desc, label: "Descripción", placeholder: "Descripción del item") %>
-          <%= t_field(form, :garantia, label: "Garantía o terminos y condiciones de tu producto", placeholder: "Ej. 1 año de garantía") %>
+          <%= t_field(form, :garantia, label: "Garantía o términos y condiciones de tu producto", placeholder: "Ej. 1 año de garantía") %>
         </div>
       </div>
       <div class="column is-5">
         <div class="columns is-multiline">
           <%= n_field(form, :price, label: "Precio", clas: "field column is-6") %>
           <%= n_field(form, :offer, label: "Precio oferta", clas: "field column is-6") %>
-          <%= n_field(form, :price2, label: "Precio 2", clas: "field column is-6") %>
-          <%= n_field(form, :price3, label: "Precio 3", clas: "field column is-6") %>
+          <%= n_field(form, :cost, label: "Costo", clas: "field column is-12") %>
           <%= s_field(form, :status, options: Item.statuses.keys.map { |k| [k.humanize, k] }, label: "Status") %>
-          <%= n_field(form, :stock, label: "Inventario disponible") %>
+          <%= n_field(form, :stock, label: "Inventario") %>
+          <%= n_field(form, :alerta_stock, label: "Alerta inventario", placeholder: "Ej. 10") %>
         </div>
       </div>
     </div>
     <br>
     <p>* Campos obligatorios</p>
-    <div class="field is-grouped is-justify-content-space-between mt-5">
-      <div class="control">
-        <%= link_to "Cancelar", items_path, class: "button is-rounded" %>
-      </div>
-      <div class="control">
-        <%= form.submit "Guardar item", class: "button is-rounded is-primary" %>
-      </div>
+  </div>
+  <div class="field is-grouped is-justify-content-space-between mt-5">
+    <div class="control">
+      <%= link_to "Cancelar", items_path, class: "button is-rounded" %>
     </div>
-  <% end %>
-</div>
+    <div class="control">
+      <%= form.submit "Guardar item", class: "button is-rounded is-primary" %>
+    </div>
+  </div>
+<% end %>
 <%# modals %>
 <div id="new_brand" class="modal">
   <div class="modal-background"></div>

@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  item: one
+  order: one
+  cantidad: 9.99
+  precio: 9.99
+  descuento: 9.99
+  costo: 9.99
+  comentario: MyString
+  iva: 9.99
+  error: MyString
+
+two:
+  item: two
+  order: two
+  cantidad: 9.99
+  precio: 9.99
+  descuento: 9.99
+  costo: 9.99
+  comentario: MyString
+  iva: 9.99
+  error: MyString

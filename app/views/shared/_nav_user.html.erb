@@ -10,76 +10,59 @@
         <div class="navbar-start">
           <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
             <span class="icon">
-              <%= image_tag 'house.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
             </span>
-            <div class="tooltip down">inicio</div>
+            <div class="tooltip down">Inicio</div>
           <% end %>
-          <% if current_user.can_view? :order %>
-            <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
+          <%= link_to user_panel_landing_orders_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'ticket.svg', alt: 'ventas', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Ventas</div>
+          <% end %>
+          <% if current_user.can_view? :event %>
+            <%= link_to daily_events_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
-                <%= image_tag 'dollar.svg', alt: 'carrito', class: 'invert' %>
+                <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
               </span>
-              <div class="tooltip down">ventas</div>
+              <div class="tooltip down">Citas</div>
             <% end %>
           <% end %>
           <% if current_user.can_view? :item %>
             <%= link_to items_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
-                <%= image_tag 'items.svg', alt: 'carrito', class: 'invert' %>
+                <%= image_tag 'items.svg', alt: 'inventario', class: 'invert' %>
               </span>
-              <div class="tooltip down">inventario</div>
+              <div class="tooltip down">Inventario</div>
             <% end %>
           <% end %>
           <% if (current_user.can_view? :customer or current_user.can_view? :provider) %>
-            <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
+            <%= link_to customers_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
-                <%= image_tag 'clientes.svg', alt: 'carrito', class: 'invert' %>
+                <%= image_tag 'clientes.svg', alt: 'clientes y proveedores', class: 'invert' %>
               </span>
-              <div class="tooltip down">clientes y proveedores</div>
+              <div class="tooltip down">Clientes</div>
             <% end %>
           <% end %>
-          <% if current_user.can_view? :purchase %>
-            <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
+          <% if current_user.can_view? :purchase and false %>
+            <%= link_to user_panel_landing_purchases_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
-                <%= image_tag 'compras.svg', alt: 'carrito', class: 'invert' %>
+                <%= image_tag 'compras.svg', alt: 'compras y gastos', class: 'invert' %>
               </span>
-              <div class="tooltip down">compras y gastos</div>
+              <div class="tooltip down">Compras y Gastos</div>
             <% end %>
           <% end %>
           <% if current_user.admin? %>
             <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
-                <%= image_tag 'opciones.svg', alt: 'carrito', class: 'invert' %>
+                <%= image_tag 'opciones.svg', alt: 'opciones', class: 'invert' %>
               </span>
-              <div class="tooltip down">opciones</div>
+              <div class="tooltip down">Opciones</div>
             <% end %>
           <% end %>
         </div>
       <% end %>
       <div class="navbar-end">
-        <% if @carrito and !@carrito.line_items&.empty? %>
-          <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link">
-              <span class="icon">
-                <%= image_tag 'cart.svg', alt: 'carrito' %>
-                <div class="tooltip down">Carrito</div>
-                <div class="notification_dot"></div>
-              </span>
-            </a>
-            <div class="navbar-dropdown is-boxed is-right">
-              <div class="navbar-item">
-                <strong><%= @carrito.line_items.sum(:cantidad) %> item(s)</strong>
-              </div>
-              <div class="navbar-item">
-                <strong>Total: <%= number_to_currency @carrito.line_items.sum { |line| line.total } %></strong>
-              </div>
-              <hr class="navbar-divider">
-              <div class="navbar-item">
-                <%= link_to 'Ver carrito', new_order_path, class: 'button is-fullwidth' %>
-              </div>
-            </div>
-          </div>
-        <% end %>
         <% if user_signed_in? %>
           <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">
@@ -93,21 +76,9 @@
               </div>
               <%= link_to user_panel_home_path, class: 'navbar-item' do  %>
                 <span class="icon">
-                  <%= image_tag 'opciones.svg', alt: 'inicio', class: 'invert' %>
-                </span>
-                Mi empresa
-              <% end %>
-              <%= link_to user_panel_home_path, class: 'navbar-item' do  %>
-                <span class="icon">
                   <%= image_tag 'user.svg', alt: 'inicio', class: 'invert' %>
                 </span>
                 Mi perfil
-              <% end %>
-              <%= link_to user_panel_home_path, class: 'navbar-item' do  %>
-                <span class="icon">
-                  <%= image_tag 'dollar.svg', alt: 'inicio', class: 'invert' %>
-                </span>
-                Facturación
               <% end %>
               <hr class="navbar-divider">
               <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: 'navbar-item' do %>
@@ -140,14 +111,21 @@
         <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
       <% end %>
       <% if current_user.can_view? :order %>
-        <%= link_to user_panel_home_path, class: 'icon' do %>
+        <%= link_to user_panel_landing_orders_path, class: 'icon' do %>
           <span class="icon">
-            <%= image_tag 'dollar.svg', alt: 'carrito', class: 'invert' %>
+            <%= image_tag 'ticket.svg', alt: 'carrito', class: 'invert' %>
+          </span>
+        <% end %>
+      <% end %>
+      <% if current_user.can_view? :event %>
+        <%= link_to daily_events_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'calendar.svg', alt: 'event', class: 'invert' %>
           </span>
         <% end %>
       <% end %>
       <% if current_user.can_view? :item or current_user.mayorista? %>
-        <%= link_to user_panel_home_path, class: 'icon' do %>
+        <%= link_to items_path, class: 'icon' do %>
           <span class="icon">
             <%= image_tag 'items.svg', alt: 'carrito', class: 'invert' %>
             <% if 1 > 0 %>
@@ -157,14 +135,14 @@
         <% end %>
       <% end %>
       <% if (current_user.can_view? :customer or current_user.can_view? :provider) %>
-        <%= link_to user_panel_home_path, class: 'icon' do %>
+        <%= link_to customers_path, class: 'icon' do %>
           <span class="icon">
             <%= image_tag 'clientes.svg', alt: 'carrito', class: 'invert' %>
           </span>
         <% end %>
       <% end %>
       <% if current_user.can_view? :purchase %>
-        <%= link_to user_panel_home_path, class: 'icon' do %>
+        <%= link_to user_panel_landing_purchases_path, class: 'icon' do %>
           <span class="icon">
             <%= image_tag 'compras.svg', alt: 'carrito', class: 'invert' %>
           </span>

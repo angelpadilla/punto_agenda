@@ -1,0 +1,107 @@
+<div class="panel">
+  <div class="panel-heading">
+    <div>
+      <p class="title is-5 mb-0">Resumen ticket</p>
+      <p class="is-size-7 has-text-grey-light">
+        Folio: <%= order.folio %>
+      </p>
+    </div>
+  </div>
+  <% if @carrito.line_items.empty? %>
+    <div class="panel-block is-block p-5">
+      <p class="has-text-grey">Carrito vacio</p>
+    </div>
+  <% else %>
+    <div class="panel-block is-block p-5">
+      <!-- Cart Items -->
+      <% @carrito.line_items.each do |line_item| %>
+        <div class="ticket-item mb-5">
+          <div class="columns is-mobile is-vcentered is-variable is-2">
+            <div class="column is-narrow">
+              <figure class="image is-48x48">
+                <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
+              </figure>
+            </div>
+            <div class="column">
+              <p class="is-size-7 has-text-weight-bold"><%= line_item.item.name %></p>
+              <p class="is-size-7 has-text-grey"><%= number_to_currency(line_item.item.price) %></p>
+            </div>
+            <div class="column is-narrow has-text-centered">
+              <div class="is-flex is-flex-direction-column">
+                <%= form_with url: add_item_line_items_path, method: :post do |form| %>
+                  <%= form.hidden_field :item_id, value: line_item.item.id %>
+                  <%= form.hidden_field :order_id, value: @carrito.id %>
+                  <%= form.hidden_field :cantidad, value: 1 %>
+                  <button class="button py-0" 
+                    type="submit"
+                    style="height: 20px;">
+                    +
+                  </button>
+                <% end %>
+                <span class="has-text-weight-bold"><%= line_item.cantidad %></span>
+                <%= form_with url: remove_item_line_items_path, method: :post do |form| %>
+                  <%= form.hidden_field :line_id, value: line_item.id %>
+                  <%= form.hidden_field :order_id, value: @carrito.id %>
+                  <%= form.hidden_field :cantidad, value: 1 %>
+                  <button class="button py-0"
+                      type="submit"
+                      style="height: 20px;">
+                    -
+                  </button>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <!-- Totals -->
+      <div class="mt-6">
+        <div class="flexx space-b flex-end">
+          <span class="has-text-grey">Subtotal</span>
+          <span><%= number_to_currency(order.subtotal) %></span>
+        </div>
+        <div class="flexx space-b flex-end">
+          <span class="has-text-grey">Impuestos (16%)</span>
+          <span><%= number_to_currency(order.impuestos) %></span>
+        </div>
+        <%# total %>
+        <div class="flexx space-b flex-end mt-4">
+          <span class="bold">
+            Total
+          </span>
+          <span class="has-text-neon bold">
+            <%= number_to_currency(order.total) %>
+          </span>
+        </div>
+        <button class="button is-primary is-fullwidth is-large mb-3 mt-3 is-rounded mtrigger" data-target="finalizar_ticket">
+          <span class="icon mr-2">
+            <%= image_tag 'login.svg', alt: 'carrito' %>
+          </span>
+          Finalizar
+        </button>
+        <%= link_to clear_items_line_items_path(order_id: @carrito.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded" do %>
+          <span class="icon mr-2">
+            <%= image_tag 'trash.svg', alt: 'carrito' %>
+          </span>
+          Cancelar ticket
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+<%# modal finalizar %>
+<div class="modal" id="finalizar_ticket">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Finalizar ticket</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>contenido, forma de pago, etc ....</p>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-rounded is-primary is-fullwidth">Finalizar</button>
+    </footer>
+  </div>
+</div>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :customers
   devise_for :users, controllers: { registrations: "users/registrations" }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -15,12 +16,34 @@ Rails.application.routes.draw do
 
   scope "panel" do
     get "", to: "user_panel#home", as: :user_panel_home
+    get "landing-purchases", to: "user_panel#landing_purchases", as: :user_panel_landing_purchases
+    get "landing-orders", to: "user_panel#landing_orders", as: :user_panel_landing_orders
 
     ## user_panel/items_controller.rb
     resources :items, controller: "user_panel/items"
-    resources :brands, controller: "user_panel/brands" do 
+    resources :customers, controller: "user_panel/customers"
+    resources :providers, controller: "user_panel/providers"
+    resources :events, controller: "user_panel/events" do
+      collection do
+        get :monthly
+        get :weekly
+        get :daily
+        post :marcar_asistencia
+        post :marcar_ausencia
+      end
+    end
+    resources :brands, controller: "user_panel/brands" do
       collection do
         post :create_from_item
+      end
+    end
+
+    resources :orders, controller: "user_panel/orders"
+    resources :line_items, controller: "user_panel/line_items" do
+      collection do
+        post :add_item
+        post :remove_item
+        post :clear_items
       end
     end
   end

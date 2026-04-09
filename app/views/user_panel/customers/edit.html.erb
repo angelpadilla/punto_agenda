@@ -1,0 +1,19 @@
+<% content_for :title, "Editar cliente" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Edición de cliente</h2>
+  <div class="actions">
+    <%= link_to customers_path, class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'clientes.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado
+    <% end %>
+    <%= link_to customer_path(@customer), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'eye.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a cliente
+    <% end %>
+  </div>
+</div>
+<%= render 'form', customer: @customer %>

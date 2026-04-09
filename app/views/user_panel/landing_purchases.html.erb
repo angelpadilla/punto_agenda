@@ -1,0 +1,13 @@
+<% content_for :title, "Compras y gastos" %>
+<div class="columns is-multiline">
+  <% if current_user.can_view? :provider %>
+    <div class="column is-6">
+      <%= link_to providers_path do %>
+        <div class="linkk">
+          <%= image_tag 'layers.svg', alt: 'cargos', class: 'invert' %>
+          Proveedores
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,83 @@
+<div class="event_snippet mtrigger" data-target="event_<%= event.id %>">
+  <% if event.pendiente? %>
+    <span class="circle warning"></span>
+  <% elsif event.cancelado? %>
+    <span class="circle danger"></span>
+  <% else %>
+    <span class="circle"></span>
+  <% end %>
+  <div class="snippet_body">
+    <%= event.hora_inicio.strftime('%l:%M%p') %> <%= event.title&.titleize %>
+  </div>
+</div>
+<div class="modal" id="event_<%= event.id %>">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title"><%= event.title&.titleize %></p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        <span class="icon material-icons-round mr-2">
+          check_circle
+        </span>
+        <% if event.pendiente? %>
+          <span class="tag is-rounded is-warning"><%= event.status&.titleize %></span>
+        <% elsif event.completado? %>
+          <span class="tag is-rounded is-success"><%= event.status&.titleize %></span>
+        <% else %>
+          <span class="tag is-rounded is-danger"><%= event.status&.titleize %></span>
+        <% end %>
+      </p>
+      <p class="mt-2">
+        <span class="icon material-icons-round mr-2">
+          assignment_ind
+        </span>
+        <%= event.customer&.razon&.titleize %> (<%= event.customer&.tel %>)
+      </p>
+      <p class="mt-2">
+        <span class="icon material-icons-round mr-2">
+          access_time_filled
+        </span>
+        <%= l(event.hora_inicio, format: :long) %> - <%= l(event.hora_final, format: :long) %>
+      </p>
+      <% if event.body.present? %>
+        <p class="mt-2">
+          <span class="icon material-icons-round mr-2">
+            description
+          </span>
+          <%= event.body %>
+        </p>
+      <% end %>
+    </section>
+    <footer class="modal-card-foot">
+      <div class="buttons">
+        <% if event.pendiente? %>
+          <%= link_to marcar_asistencia_events_path(id: event), data: { turbo_method: :post }, class: "button is-primary is-rounded" do %>
+            <span class="material-icons-round has-text-dark mr-2">
+              check
+            </span>
+            Marcar asistencia
+          <% end %>
+          <%= link_to marcar_ausencia_events_path(id: event), data: { turbo_method: :post }, class: "button is-info is-rounded" do %>
+            <span class="material-icons-round has-text-white mr-2">
+              clear
+            </span>
+            Marcar ausencia
+          <% end %>
+          <%= link_to edit_event_path(event), class: "button  is-rounded" do %>
+            <span class="material-icons-round has-text-white">
+              edit
+            </span>
+          <% end %>
+        <% end %>
+        <%= link_to event_path(event), data: { turbo_confirm: "¿Estás seguro de eliminar esta cita?", turbo_method: :delete }, class: "button is-danger is-rounded" do %>
+          <span class="material-icons-round has-text-white">
+            delete_forever
+          </span>
+        <% end %>
+      </div>
+    </footer>
+  </div>
+</div>

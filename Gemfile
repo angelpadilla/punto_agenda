@@ -113,3 +113,7 @@ gem "nokogiri", "~> 1.18"
 
 gem "sentry-ruby"
 gem "sentry-rails"
+
+gem "generatepass", "~> 0.3.0"
+gem "simple_calendar"
+gem "rails-i18n", "~> 8.1.0"

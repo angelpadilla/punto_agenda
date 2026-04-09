@@ -7,6 +7,31 @@ import "@rails/actiontext"
 
 
 document.addEventListener("turbo:load", (e) => {
+
+    const toggleBoxes = document.querySelectorAll(".box.expandable .box_header");
+
+    toggleBoxes.forEach((header) => {
+        header.addEventListener("click", () => {
+            const box = header.parentElement;
+            const content = header.nextElementSibling;
+            const icon = header.querySelector(".toggle_icon");
+
+            box.classList.toggle("is_active");
+
+            // if (box.classList.contains("is_active")) {
+            //     // content.style.height = 0;
+            //     box.classList.remove("is_active");
+            //     // icon.style.transform = "rotate(0deg)";
+            // } else {
+            //     // content.style.height = content.scrollHeight + "px";
+            //     box.classList.add("is_active");
+            //     // icon.style.transform = "rotate(180deg)";
+            // }
+        });
+    });
+
+
+
     var modal_backgrounds = document.querySelectorAll(".modal-background");
     var modal_closes = document.querySelectorAll(".modal-close");
     var modal_closes2 = document.querySelectorAll(".delete");

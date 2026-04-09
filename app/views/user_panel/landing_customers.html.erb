@@ -1,0 +1,43 @@
+<% content_for :title, "ventas landing" %>
+<div class="columns is-multiline">
+  <% if current_user.can_create? :customer %>
+    <div class="column is-6">
+      <%= link_to new_customer_path do %>
+        <div class="linkk">
+          <%= image_tag 'plus.svg', alt: 'usuarios', class: 'invert' %>
+          Nuevo cliente
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if current_user.can_create? :provider %>
+    <div class="column is-6">
+      <%= link_to new_provider_path do %>
+        <div class="linkk">
+          <%= image_tag 'plus.svg', alt: 'usuarios', class: 'invert' %>
+          Nuevo proveedor
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if current_user.can_view? :customer %>
+    <div class="column is-6">
+      <%= link_to customers_path do %>
+        <div class="linkk">
+          <%= image_tag 'clientes.svg', alt: 'cargos', class: 'invert' %>
+          Clientes
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if current_user.can_view? :provider %>
+    <div class="column is-6">
+      <%= link_to providers_path do %>
+        <div class="linkk">
+          <%= image_tag 'layers.svg', alt: 'cargos', class: 'invert' %>
+          Proveedores
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

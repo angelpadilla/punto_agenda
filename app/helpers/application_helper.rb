@@ -7,13 +7,13 @@ module ApplicationHelper
     !field_required?(model_class, field)
   end
 
-  def n_field(form, field, clas: "field column is-12", label: nil, step: 0.10, placeholder: "$ 0.00")
+  def n_field(form, field, clas: "field column is-12", label: nil, step: 0.10, placeholder: "$ 0.00", min: 0.10, max: nil)
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
       if label
         concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
       end
-      concat form.number_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", step: step, placeholder: placeholder, required: requiredd)
+      concat form.number_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", step: step, placeholder: placeholder, required: requiredd, min: min, max: max)
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
@@ -31,6 +31,23 @@ module ApplicationHelper
         concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
       end
       concat form.text_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder)
+      if form.object.errors[field].any?
+        concat(content_tag(:p, class: "help is-danger") do
+          form.object.errors.messages_for(field).each do |mss|
+            concat "#{mss}. "
+          end
+        end)
+      end
+    end
+  end
+
+  def e_field(form, field, clas: "field column is-12", label: nil, placeholder: nil)
+    requiredd =  field_required?(form.object.class, field)
+    content_tag :div, class: clas do
+      if label
+        concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
+      end
+      concat form.email_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder)
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|

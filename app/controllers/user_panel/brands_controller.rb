@@ -3,7 +3,6 @@ class UserPanel::BrandsController < UserPanelController
 
   # GET /brands or /brands.json
   def index
-    
     brands = @corp.brands.default
 
     @q = brands.ransack(params[:q])

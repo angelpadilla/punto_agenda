@@ -1,2 +1,13 @@
 <% content_for :title, "Nuevo item" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Nuevo item</h2>
+  <div class="actions">
+    <%= link_to items_path, class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'items.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado
+    <% end %>
+  </div>
+</div>
 <%= render 'form', item: @item %>

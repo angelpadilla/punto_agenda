@@ -1,1 +1,93 @@
-asdsad
+<div class="item_box <%= dom_id item %>">
+  <div class="table_item">
+    <div class="item_image">
+      <% images = [item.img1, item.img2, item.img3, item.img4, item.img5].select(&:attached?) %>
+      <% if (first_image = images.first) %>
+        <%= image_tag first_image.variant(resize_to_limit: [400, 400]), alt: item.name, loading: 'lazy' %>
+      <% else %>
+        <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
+      <% end %>
+    </div>
+    <div class="item_info flexx-3">
+      <div>
+        <% unless item.activo? %>
+          <span class="tag is-danger is-light is-rounded"><%= item.status.titleize %></span>
+        <% end %>
+        <% if item.offer.present? %>
+          <span class="tag is-warning is-light is-rounded">Oferta</span>
+        <% end %>
+      </div>
+      <h3 class="item_info_name">
+        <%= item.name %>
+      </h3>
+      <!-- info -->
+      <div class="columns is-mobile is-multiline mt-2">
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="has-text-grey is-size-7">Marca</div>
+          <p class="title is-6"><%= item.brand&.name&.titleize %></p>
+        </div>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="has-text-grey is-size-7">SKU</div>
+          <p class="title is-6"><%= item.sku %></p>
+        </div>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="has-text-grey is-size-7">Categoria</div>
+          <p class="title is-6"><%= item.cate&.titleize %></p>
+        </div>
+      </div>
+      <!-- Precios -->
+      <div class="columns is-mobile is-multiline">
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="has-text-grey is-size-7">Precio</div>
+          <p class="title is-6 <%= item.offer.present? ? 'tacha' : 'has-text-primary' %>"><%= number_to_currency(item.price) %></p>
+        </div>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="has-text-grey is-size-7">Oferta</div>
+          <p class="title is-6 <%= item.offer.present? ? 'has-text-primary' : '' %>"><%= item.offer.present? && item.offer > 0 ? number_to_currency(item.offer) : '-' %></p>
+        </div>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="has-text-grey is-size-7">Inventario</div>
+          <p class="title is-6"><%= item.stock %></p>
+        </div>
+      </div>
+    </div>
+    <div class="item_actions">
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button aria-haspopup="true">
+            <span class="icon d90">
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <% if current_user.editor? %>
+              <%= link_to edit_item_path(item), class: "dropdown-item" do  %>
+                <span class="icon mr-2">
+                  <%= image_tag 'edit.svg', alt: 'edit', class: 'invert' %>
+                </span>
+                Editar
+              <% end %>
+            <% end %>
+            <% if current_user.admin? %>
+              <%= link_to item_path(item), data: { turbo_confirm: "¿Estás seguro?", turbo_method: :delete }, class: "dropdown-item" do  %>
+                <span class="icon mr-2">
+                  <%= image_tag 'trash.svg', alt: 'delete', class: 'invert' %>
+                </span>
+                Eliminar
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item_buttons columns mt-2">
+    <div class="column is-12">
+      <%= link_to item_path(item), class: "button is-rounded is-fullwidth" do  %>
+        Ver
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,13 +1,14 @@
 class UserPanel::ItemsController < UserPanelController
   before_action :set_item, only: %i[ show edit update destroy ]
   before_action :validate_corp, only: %i[ show edit update destroy ]
+  before_action :validate_item, only: %i[ show edit update destroy ]
 
   # GET /items or /items.json
   def index
     @brands = Rails.cache.fetch("brands_for_items_index", expires_in: 1.month) do
       @corp.brands.default
     end
-    
+
     items = @corp.items.default.includes(
       :brand,
       img1_attachment: :blob,
@@ -18,7 +19,7 @@ class UserPanel::ItemsController < UserPanelController
     )
 
     @q = items.ransack(params[:q])
-    @pagy, @items = pagy(@q.result(distinct: true), limit: 8)
+    @pagy, @items = pagy(@q.result(distinct: true), limit: 25)
   end
 
   # GET /items/1 or /items/1.json
@@ -80,10 +81,16 @@ class UserPanel::ItemsController < UserPanelController
 
     # Only allow a list of trusted parameters through.
     def item_params
-      params.expect(item: [ :name, :bar_code, :brand_id, :brand_name, :quantity, :cate, :cost, :desc, :garantia, :offer, :price, :price2, :price3, :sat_product_id, :sku, :status, :stock, :unidad, :img1, :img2, :img3, :img4, :img5 ])
+      params.expect(item: [ :name, :bar_code, :brand_id, :brand_name, :quantity, :cate, :cost, :desc, :garantia, :offer, :price, :price2, :price3, :sat_product_id, :sku, :status, :stock, :alerta_stock, :unidad, :img1, :img2, :img3, :img4, :img5 ])
     end
 
     def validate_corp
+      if @item.corp_id != @corp.id
+        redirect_to items_path, alert: "El item que intentas editar no fue encontrado."
+      end
+    end
+
+    def validate_item
       if @item.corp_id != @corp.id
         redirect_to items_path, alert: "El item que intentas editar no fue encontrado."
       end

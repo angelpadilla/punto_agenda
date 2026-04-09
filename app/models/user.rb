@@ -8,6 +8,8 @@ class User < ApplicationRecord
 
   belongs_to :corp, optional: true
 
+  has_many :events, dependent: :nullify
+
   ## Validations
   normalizes :email, with: ->(e) { e.strip.downcase }
   validates :tipo, inclusion: { in: %w[admin usuario] }
@@ -30,7 +32,8 @@ class User < ApplicationRecord
 
   Tipos = [
     [ "Administrador (acceso a todas la herramientas)", "admin" ],
-    [ "Usuario normal", "usuario" ]
+    [ "Usuario editor (no puede eliminar objetos)", "editor" ],
+    [ "Usuario básico (solo puede ver)", "usuario" ]
   ]
 
 
@@ -38,8 +41,12 @@ class User < ApplicationRecord
     tipo == "admin"
   end
 
-  def user?
-    tipo == "usuario" or tipo == "admin"
+  def editor?
+    tipo == "editor" or tipo == "admin"
+  end
+
+  def basic?
+    tipo == "usuario"
   end
 
   def can_view?(model)

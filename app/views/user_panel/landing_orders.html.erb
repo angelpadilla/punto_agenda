@@ -1,0 +1,19 @@
+<% content_for :title, "Ventas" %>
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <%= link_to new_order_path do %>
+      <div class="linkk">
+        <%= image_tag 'plus.svg', alt: 'cargos', class: 'invert' %>
+        Nueva venta
+      </div>
+    <% end %>
+  </div>
+  <div class="column is-12">
+    <%= link_to orders_path do %>
+      <div class="linkk">
+        <%= image_tag 'layers.svg', alt: 'cargos', class: 'invert' %>
+        Ventas
+      </div>
+    <% end %>
+  </div>
+</div>

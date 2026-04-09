@@ -1,0 +1,11 @@
+<% content_for :title, "Citas en la semana" %>
+<h2 class="titlee">Citas en la semana</h2>
+<%= week_calendar(number_of_weeks: 1, events: @events) do |date, events| %>
+  <div class="today_number">
+    <%= date.day %>
+  </div>
+  <br>
+  <% events.each do |event| %>
+    <%= render 'snippet', event: event %>
+  <% end %>
+<% end %>

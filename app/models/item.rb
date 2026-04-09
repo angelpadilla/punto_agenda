@@ -11,17 +11,29 @@ class Item < ApplicationRecord
   has_one_attached :img4, dependent: :destroy
   has_one_attached :img5, dependent: :destroy
 
-  enum :status, { activo: 0, inactivo: 1 }
+  enum :status, activo: 0, borrador: 1
   enum :cate, producto: 0, servicio: 1, consumible: 2
 
   ## validaciones
-  validates :brand_id, presence: { message: "La marca es obligatoria" }
+  # validates :brand_id, presence: { message: "La marca es obligatoria" }
   validates :sat_product_id, presence: { message: "La clave de producto SAT es obligatorio" }
   validates :corp_id, presence: { message: "La empresa es obligatoria" }
   validates :name, presence: { message: "El nombre es obligatorio" }
-  validates :price, presence: { message: "El precio es obligatorio" }
   validates :unidad, presence: { message: "La unidad es obligatoria" }
   validates :cate, presence: { message: "La categoria es obligatoria" }
+  validates :price, presence: { message: "El precio es obligatorio" }
+  validates :price, numericality: { greater_than: 0, message: "El precio de contado debe ser mayor a 0" }
+  validates :offer, numericality: { greater_than: 0, message: "El precio oferta debe ser mayor a 0" }, allow_blank: true
+  validates :cost, numericality: { greater_than: 0, message: "El costo debe ser mayor a 0" }, allow_blank: true
+
+  validates :offer,
+          numericality: {
+            greater_than: 0,
+            less_than: :price,
+            message: "El precio oferta debe ser mayor a 0 y menor al precio normal"
+          },
+          allow_blank: true,
+          if: :price
 
   validates :img1, content_type: %w[image/png image/jpeg]
   validates :img1, size: { less_than_or_equal_to: 5.megabytes, message: "La imagen 1 debe ser menor a 5MB" }
@@ -34,7 +46,15 @@ class Item < ApplicationRecord
   validates :img5, content_type: %w[image/png image/jpeg]
   validates :img5, size: { less_than_or_equal_to: 5.megabytes, message: "La imagen 5 debe ser menor a 5MB" }
 
+  normalizes :name, with: ->(item) { item.strip.downcase.titleize }
+
   scope :default, -> { order("id asc") }
+  scope :available, -> { activo.where("stock > 0") }
+
+  ## broadcasting
+  # after_create_commit { broadcast_prepend_to "items", partial: "user_panel/items/item", locals: { item: self }, target: "items" }
+  # after_update_commit { broadcast_replace_to "items", partial: "user_panel/items/item", locals: { item: self }, target: "#{dom_id(self)}" }
+  # after_destroy_commit { broadcast_remove_to "items", target: "#{dom_id(self)}" }
 
   UnidadSAT = [
     [ "Pieza", "H87" ],
@@ -58,14 +78,12 @@ class Item < ApplicationRecord
     [ "Miligramo", "MGM" ],
     [ "Paquete", "XPK" ],
     [ "Kit (Conjunto de piezas)", "XKI" ],
-    [ "Variedad", "AS" ],
     [ "Gramo", "GRM" ],
     [ "Par", "PR" ],
     [ "Docenas de piezas", "DPC" ],
     [ "Unidad", "xun" ],
     [ "Día", "DAY" ],
     [ "Lote", "XPK" ],
-    [ "Grupos", "10" ],
     [ "Mililitro", "MLT" ],
     [ "Viaje", "E54" ]
   ]
@@ -76,5 +94,50 @@ class Item < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     %W[brand sat_product]
+  end
+
+
+  ## Class methods
+  def self.similar(item)
+    where.not(id: item.id).where("name LIKE ?", "%#{item.name}%")
+  end
+
+  # enum :tipo,  {
+  #   carrito: "carrito",
+  #   # credito: "credito",
+  #   # pagado: "pagado",
+  #   # cancelado: "cancelado",
+  #   pre_factura: "pre_factura",
+  #   cotizacion: "cotizacion",
+  #   remision:
+  #   factura:
+  # }
+
+  # enum :status_pago, {
+  #   pagado: 0,
+  #   credito: 1,
+  #   cancelado: 2
+  # }
+
+
+  ## Instance methods
+  def low_stock?
+    if self.alerta_stock
+      self.stock <= self.alerta_stock
+    else
+      self.stock <= 0
+    end
+  end
+
+  def self.low_stock
+    self.all.sum { |item| item.low_stock? ? 1 : 0 }
+  end
+
+  def last_order_at
+    self.orders.order(created_at: :desc).last&.created_at
+  end
+
+  def last_event_at
+    self.events.order(created_at: :desc).last&.created_at
   end
 end

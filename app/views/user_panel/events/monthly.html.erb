@@ -1,0 +1,10 @@
+<% content_for :title, "Citas en el mes" %>
+<h2 class="titlee">Citas en el mes</h2>
+<%= month_calendar(events: @events) do |date, events| %>
+  <div class="today_number">
+    <%= date.day %>
+  </div>
+  <% events.each do |event| %>
+    <%= render 'snippet', event: event %>
+  <% end %>
+<% end %>

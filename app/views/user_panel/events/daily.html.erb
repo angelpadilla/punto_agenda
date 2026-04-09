@@ -1,0 +1,12 @@
+<% content_for :title, "Citas en el día" %>
+<h2 class="titlee">Citas en el día</h2>
+<%= calendar(number_of_days: 1, events: @events) do |date, events| %>
+  <div class="subtitle">
+    <b>
+      <%= l(date, format: :long) %>
+    </b>
+  </div>
+  <% events.each do |event| %>
+    <%= render 'snippet', event: event %>
+  <% end %>
+<% end %>

@@ -1,0 +1,77 @@
+<% content_for :title, "Proveedores" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Mis proveedores</h2>
+  <div class="actions">
+    <%= link_to new_provider_path, class: "button is-primary is-rounded" do  %>
+      <span class="icon mr-2">
+        <%= image_tag 'plus.svg', alt: 'carrito' %>
+      </span>
+      Nuevo proveedor
+    <% end %>
+    <div class="button is-rounded">
+      <span class="icon">
+        <%# boton AI para generar reportes especiales %>
+        <%= image_tag 'wand.svg', alt: 'filter', class: 'invert' %>
+      </span>
+    </div>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to new_provider_path, class: "dropdown-item" do  %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Exportar CSV
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: providers_path do |f| %>
+  <div class="columns is-multiline">
+    <div class="column is-6">
+      <%= f.search_field :razon_or_rfc_cont, class: 'is-rounded search_input', placeholder: 'Nombre, Razon, RFC' %>
+    </div>
+    <div class="column is-3">
+      <%= f.search_field :tel_eq, placeholder: "Teléfono", class: "is-rounded search_input" %>
+    </div>
+    <div class="column is-3">
+      <div class="buttons">
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
+        <%= link_to providers_path, class: "button is-rounded has_tooltip" do  %>
+          <span class="icon reset">
+            <%= image_tag 'trash.svg', alt: 'clear', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Limpiar busqueda</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="table_box">
+  <div class="table_header flexx">
+    <div class="table_cell"><%= sort_link(@q, :razon, 'Nombre') %></div>
+    <div class="table_cell"><%= sort_link(@q, :rfc, 'RFC') %></div>
+    <div class="table_cell"><%= sort_link(@q, :tel, 'Teléfono') %></div>
+    <div class="table_cell"><%= sort_link(@q, :email, 'Email') %></div>
+  </div>
+  <div class="table_content">
+    <%= render @providers %>
+  </div>
+</div>
+<% if @pagy.pages > 1 %>
+  <br>
+  <%== @pagy.series_nav(:bulma) %>
+  <br>
+<% end %>
+<br>
+<br>
