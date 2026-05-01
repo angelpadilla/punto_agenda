@@ -72,7 +72,7 @@ export default class extends Controller {
                     .catch(failureCallback)
             },
 
-            // Clicking an event navigates to its edit URL
+            // Clicking an event navigates to its show URL
             eventClick: (info) => {
                 if (info.event.url) {
                     info.jsEvent.preventDefault()
