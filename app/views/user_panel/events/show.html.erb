@@ -1,0 +1,100 @@
+<% content_for :title, "Detalle de la venta" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle del evento</h2>
+  <div class="actions">
+    <%= link_to events_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <%= link_to edit_event_path(@event), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+      </span>
+      Editar
+    <% end %>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <div class="mtrigger dropdown-item" data-target="send_order_email">
+            <span class="icon">
+              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Enviar por email
+          </div>
+          <div class="mtrigger dropdown-item" data-target="send_order_sms">
+            <span class="icon">
+              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Enviar por SMS
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box mt-4">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'calendar2.svg', class: "invert", alt: "Totales" %>
+      </span>
+      Detalles 
+    </h2>
+  </div>
+  <div class="box_content">
+    <p>
+      <span class="icon material-icons-round mr-2">
+        check_circle
+      </span>
+      <% if @event.pendiente? %>
+        <span class="tag is-rounded is-warning"><%= @event.status&.titleize %></span>
+      <% elsif @event.completado? %>
+        <span class="tag is-rounded is-success"><%= @event.status&.titleize %></span>
+      <% else %>
+        <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
+      <% end %>
+    </p>
+    <p class="mt-2">
+      <span class="icon material-icons-round mr-2">
+        assignment_ind
+      </span>
+      <%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel %>)
+    </p>
+    <p class="mt-2">
+      <span class="icon material-icons-round mr-2">
+        fingerprint
+      </span>
+      <%= @event.folio ? @event.folio : "?" %>
+    </p>
+    <p class="mt-2">
+      <span class="icon material-icons-round mr-2">
+        access_time_filled
+      </span>
+      <%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %>
+    </p>
+    <p class="mt-2">
+      <span class="icon material-icons-round mr-2">
+        event
+      </span>
+      <%= @event.hora_inicio.strftime("%d/%m/%Y") %>
+    </p>
+    <% if @event.body.present? %>
+      <p class="mt-2">
+        <span class="icon material-icons-round mr-2">
+          description
+        </span>
+        <%= @event.body %>
+      </p>
+    <% end %>
+  </div>
+</div>

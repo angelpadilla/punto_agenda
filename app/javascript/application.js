@@ -32,49 +32,34 @@ document.addEventListener("turbo:load", (e) => {
 
 
 
-    var modal_backgrounds = document.querySelectorAll(".modal-background");
-    var modal_closes = document.querySelectorAll(".modal-close");
-    var modal_closes2 = document.querySelectorAll(".delete");
+    document.addEventListener("click", (e) => {
+        // Abrir modal (.mtrigger)
+        const trigger = e.target.closest(".mtrigger");
+        if (trigger) {
+            e.preventDefault();
+            const target = trigger.dataset.target;
+            const $target = document.getElementById(target);
+            if ($target) $target.classList.add("is-active");
+        }
 
-    var triggers = document.querySelectorAll(".mtrigger");
+        // Cerrar modal al clickear el fondo
+        if (e.target.matches(".modal-background")) {
+            e.target.parentElement.classList.remove("is-active");
+        }
 
-    if (triggers) {
-        triggers.forEach((el) => {
-            el.addEventListener("click", () => {
-                const target = el.dataset.target;
-                const $target = document.getElementById(target);
+        // Cerrar modal al clickear `.modal-close`
+        const modalClose = e.target.closest(".modal-close");
+        if (modalClose) {
+            modalClose.parentElement.classList.remove("is-active");
+        }
 
-                $target.classList.add("is-active");
-            });
-        });
-    }
-
-    if (modal_backgrounds) {
-        modal_backgrounds.forEach((el) => {
-            el.addEventListener("click", (e) => {
-                el.parentElement.classList.remove("is-active");
-            });
-        });
-    }
-
-    if (modal_closes) {
-        modal_closes.forEach((el) => {
-            el.addEventListener("click", (e) => {
-                console.log(el.parentElement);
-                el.parentElement.classList.remove("is-active");
-            });
-        });
-    }
-
-    if (modal_closes2) {
-        modal_closes2.forEach((el) => {
-            el.addEventListener("click", (e) => {
-                const parent = el.parentElement.parentElement.parentElement;
-                console.log(parent);
-                parent.classList.remove("is-active");
-            });
-        });
-    }
+        // Cerrar modal al clickear `.delete` dentro del `.modal`
+        const deleteBtn = e.target.closest(".modal .delete");
+        if (deleteBtn) {
+            const modal = deleteBtn.closest(".modal");
+            if (modal) modal.classList.remove("is-active");
+        }
+    });
 
     // Get all "navbar-burger" elements
     const $navbarBurgers = Array.prototype.slice.call(

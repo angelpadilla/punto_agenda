@@ -15,7 +15,7 @@ class UserPanelController < ApplicationController
   end
 
   def record_not_found
-    redirect_to user_panel_home_path, alert: "El item que intentas ver no fue encontrado."
+    redirect_to user_panel_home_path, alert: "Ups, Objeto no fue encontrado."
   end
 
   private
@@ -26,11 +26,6 @@ class UserPanelController < ApplicationController
 
     if session[:carrito_id]
       @carrito = Order.find_by(id: session[:carrito_id])
-    end
-
-    unless @carrito
-      @carrito = Order.create!(user_id: current_user.id, corp_id: @corp.id)
-      session[:carrito_id] = @carrito.id
     end
   end
 end

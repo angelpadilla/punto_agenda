@@ -20,20 +20,12 @@
             </span>
             <div class="tooltip down">Ventas</div>
           <% end %>
-          <% if current_user.can_view? :event %>
-            <%= link_to daily_events_path, class: 'navbar-item has_tooltip' do %>
+          <% if current_user.can_view? :event and @corp.calendar %>
+            <%= link_to events_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
                 <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
               </span>
-              <div class="tooltip down">Citas</div>
-            <% end %>
-          <% end %>
-          <% if current_user.can_view? :item %>
-            <%= link_to items_path, class: 'navbar-item has_tooltip' do %>
-              <span class="icon">
-                <%= image_tag 'items.svg', alt: 'inventario', class: 'invert' %>
-              </span>
-              <div class="tooltip down">Inventario</div>
+              <div class="tooltip down">Eventos</div>
             <% end %>
           <% end %>
           <% if (current_user.can_view? :customer or current_user.can_view? :provider) %>
@@ -42,6 +34,14 @@
                 <%= image_tag 'clientes.svg', alt: 'clientes y proveedores', class: 'invert' %>
               </span>
               <div class="tooltip down">Clientes</div>
+            <% end %>
+          <% end %>
+          <% if current_user.can_view? :item %>
+            <%= link_to items_path, class: 'navbar-item has_tooltip' do %>
+              <span class="icon">
+                <%= image_tag 'items.svg', alt: 'inventario', class: 'invert' %>
+              </span>
+              <div class="tooltip down">Inventario</div>
             <% end %>
           <% end %>
           <% if current_user.can_view? :purchase and false %>
@@ -53,11 +53,11 @@
             <% end %>
           <% end %>
           <% if current_user.admin? %>
-            <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
+            <%= link_to user_corp_landing_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
                 <%= image_tag 'opciones.svg', alt: 'opciones', class: 'invert' %>
               </span>
-              <div class="tooltip down">Opciones</div>
+              <div class="tooltip down">Ajustes</div>
             <% end %>
           <% end %>
         </div>
@@ -74,7 +74,7 @@
               <div class="navbar-item">
                 <%= current_user.email %>
               </div>
-              <%= link_to user_panel_home_path, class: 'navbar-item' do  %>
+              <%= link_to user_corp_landing_path, class: 'navbar-item' do  %>
                 <span class="icon">
                   <%= image_tag 'user.svg', alt: 'inicio', class: 'invert' %>
                 </span>
@@ -117,10 +117,17 @@
           </span>
         <% end %>
       <% end %>
-      <% if current_user.can_view? :event %>
-        <%= link_to daily_events_path, class: 'icon' do %>
+      <% if current_user.can_view? :event and @corp.calendar %>
+        <%= link_to events_path, class: 'icon' do %>
           <span class="icon">
             <%= image_tag 'calendar.svg', alt: 'event', class: 'invert' %>
+          </span>
+        <% end %>
+      <% end %>
+      <% if (current_user.can_view? :customer or current_user.can_view? :provider) %>
+        <%= link_to customers_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'clientes.svg', alt: 'carrito', class: 'invert' %>
           </span>
         <% end %>
       <% end %>
@@ -134,13 +141,6 @@
           </span>
         <% end %>
       <% end %>
-      <% if (current_user.can_view? :customer or current_user.can_view? :provider) %>
-        <%= link_to customers_path, class: 'icon' do %>
-          <span class="icon">
-            <%= image_tag 'clientes.svg', alt: 'carrito', class: 'invert' %>
-          </span>
-        <% end %>
-      <% end %>
       <% if current_user.can_view? :purchase %>
         <%= link_to user_panel_landing_purchases_path, class: 'icon' do %>
           <span class="icon">
@@ -149,13 +149,13 @@
         <% end %>
       <% end %>
       <% if current_user.admin? %>
-        <%= link_to user_panel_home_path, class: 'icon' do %>
+        <%= link_to user_corp_landing_path, class: 'icon' do %>
           <span class="icon">
             <%= image_tag 'opciones.svg', alt: 'carrito', class: 'invert' %>
           </span>
         <% end %>
       <% end %>
-      <%= link_to user_panel_home_path, class: 'icon' do %>
+      <%= link_to user_corp_landing_path, class: 'icon' do %>
         <%= image_tag 'user.svg', alt: 'mi perfil', class: 'invert' %>
       <% end %>
     </div>

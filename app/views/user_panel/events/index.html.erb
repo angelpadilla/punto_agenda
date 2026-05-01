@@ -1,0 +1,20 @@
+<% content_for :title, "Agenda" %>
+<div class="flexx space-b flex-end mt-4 mb-4">
+  <h2 class="titlee">Agenda</h2>
+  <div class="actions">
+    <%= link_to new_event_path, class: "button is-primary is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'calendar_plus.svg', alt: 'nuevo evento' %>
+      </span>
+      Nuevo evento
+    <% end %>
+  </div>
+</div>
+<div
+  id="fullcalendar"
+  data-controller="calendar"
+  data-calendar-events-url-value="<%= events_path(format: :json) %>"
+  data-calendar-business-hours-value="<%= @corp.to_fullcalendar_business_hours.to_json %>"
+  data-calendar-new-event-url-value="<%= new_event_path %>"
+  style="min-height: 600px;"
+></div>

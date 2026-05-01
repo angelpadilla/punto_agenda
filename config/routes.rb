@@ -9,15 +9,28 @@ Rails.application.routes.draw do
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get "KlQnEMoLkkAWfl8j2" => "public#html_elements", as: :html_elements
+
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
   root "public#home"
 
+  scope "public" do
+    get ":folio/ticket80", to: "public#ticket80", as: :ticket80
+  end
+
   scope "panel" do
     get "", to: "user_panel#home", as: :user_panel_home
     get "landing-purchases", to: "user_panel#landing_purchases", as: :user_panel_landing_purchases
     get "landing-orders", to: "user_panel#landing_orders", as: :user_panel_landing_orders
+
+    scope "corp" do
+      get "", to: "user_panel/corp#landing", as: :user_corp_landing
+      get "show", to: "user_panel/corp#show", as: :user_corp
+      get "edit", to: "user_panel/corp#edit", as: :edit_user_corp
+      patch "edit", to: "user_panel/corp#update", as: :update_user_corp
+    end
 
     ## user_panel/items_controller.rb
     resources :items, controller: "user_panel/items"

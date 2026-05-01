@@ -14,9 +14,7 @@
           <span class="tag is-danger is-light is-rounded">Inactivo</span>
         <% end %>
       </div>
-      <h3 class="item_info_name">
-        <%= customer.razon %>
-      </h3>
+      <h3 class="titlee2"><%= customer.razon %></h3>
       <!-- info -->
       <div class="columns is-mobile is-multiline mt-2">
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
@@ -45,7 +43,7 @@
       <div class="dropdown is-right is-hoverable">
         <div class="dropdown-trigger">
           <button aria-haspopup="true">
-            <span class="icon d90">
+            <span class="icon r90">
               <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
             </span>
           </button>
@@ -73,11 +71,11 @@
     <%= link_to customer_path(customer), class: "button is-rounded is-fullwidth" do  %>
       Ver detalles
     <% end %>
-    <%= link_to customer_path(customer), class: "button is-rounded is-primary has_tooltip" do  %>
+    <%= link_to new_event_path(customer_id: customer.id), class: "button is-rounded is-primary has_tooltip" do  %>
       <span class="icon reset">
         <%= image_tag 'calendar_plus.svg', alt: 'clear', class: '' %>
       </span>
-      <div class="tooltip up">Agenda cita</div>
+      <div class="tooltip up">Agenda evento</div>
     <% end %>
   </div>
 </div>

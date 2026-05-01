@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_06_094410) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_003704) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -81,6 +81,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_094410) do
   end
 
   create_table "corps", force: :cascade do |t|
+    t.text "business_hours"
+    t.boolean "calendar", default: false
     t.string "calle"
     t.string "ciudad"
     t.string "colonia"
@@ -89,16 +91,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_094410) do
     t.string "email"
     t.string "estado"
     t.string "facebook_url"
+    t.boolean "facturacion", default: false
     t.string "instagram_url"
     t.string "key_pass"
     t.string "localidad"
     t.string "name"
     t.string "num_ext"
     t.string "num_int"
+    t.boolean "online_payments", default: false
     t.string "phone"
+    t.boolean "public_site", default: false
     t.string "razon"
     t.string "regimen"
-    t.string "rfc"
+    t.string "rfc", default: "XAXX010101000"
     t.string "sku"
     t.string "text_cotizacion"
     t.string "text_factura"
@@ -107,6 +112,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_094410) do
     t.integer "timbres"
     t.string "tipo_negocio"
     t.datetime "updated_at", null: false
+    t.boolean "visto", default: false
     t.string "whatsapp"
   end
 
@@ -184,6 +190,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_094410) do
     t.integer "corp_id", null: false
     t.datetime "created_at", null: false
     t.integer "customer_id", null: false
+    t.string "folio"
     t.datetime "hora_final"
     t.datetime "hora_inicio"
     t.integer "status", default: 0, null: false

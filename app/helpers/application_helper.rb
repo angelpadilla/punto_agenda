@@ -24,13 +24,13 @@ module ApplicationHelper
     end
   end
 
-  def t_field(form, field, clas: "field column is-12", label: nil, placeholder: nil)
+  def t_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, pattern: nil, title: nil)
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
       if label
         concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
       end
-      concat form.text_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder)
+      concat form.text_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder, pattern: pattern, title: title)
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
@@ -81,11 +81,11 @@ module ApplicationHelper
       raise ArgumentError, "Key and value must be provided for non-array options" if key.nil? || value.nil?
 
       options = options.map do |o|
-        [o.send(value), o.send(key)]
+        [ o.send(value), o.send(key) ]
       end
     end
     ## validar si options es un array o objeto de ActiveRecord para usar options_for_select o collection_select
-    options = options.is_a?(Array) ? options : options.map { |o| [o.send(value), o.send(key)] }
+    options = options.is_a?(Array) ? options : options.map { |o| [ o.send(value), o.send(key) ] }
 
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
@@ -93,9 +93,9 @@ module ApplicationHelper
         concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
       end
       concat(content_tag(:div, class: "select is-rounded #{'is-danger' if form.object.errors[field].any?}") do
-        form.select(field, options_for_select(options, form.object.send(field)), { prompt: "Selecciona", required: requiredd }, {})
+        form.select(field, options_for_select(options, form.object.send(field) ? form.object.send(field) : value), { prompt: "Selecciona", required: requiredd }, {})
       end)
-      
+
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|

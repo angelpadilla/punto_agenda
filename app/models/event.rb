@@ -11,9 +11,9 @@ class Event < ApplicationRecord
   validates :title, presence: { message: "El título es requerido" }
   # validates :body, presence: { message: "El cuerpo es requerido" }
   validates :hora_inicio, presence: { message: "La hora de inicio es requerida" }
-  # validates :hora_final, presence: { message: "La hora final es requerida" }
+  validates :hora_final, presence: { message: "La hora final es requerida" }
   validates :customer_id, presence: { message: "El cliente es requerido" }
-  # validates :user_id, presence: { message: "El usuario es requerido" }
+  validates :user_id, presence: { message: "El agente/vendedor es requerido" }
 
   ## validar que un evento no se repita en el mismo rango de tiempo en la misma Corp
   validate :no_overlap_events, on: :create
@@ -21,12 +21,12 @@ class Event < ApplicationRecord
   def no_overlap_events
     return if hora_inicio.blank? || hora_final.blank? || corp.blank?
 
-    overlapping_events = Event.where(corp_id: corp_id)
+    overlapping_events = Event.where(corp_id: corp_id, user_id: user_id)
                               .where.not(id: id)
                               .where("hora_inicio < ? AND hora_final > ?", hora_final, hora_inicio)
 
     if overlapping_events.exists?
-      errors.add(:base, "Ya existe una cita en ese rango de tiempo")
+      errors.add(:base, "Ya existe un evento en ese rango de tiempo con ese agente vendedor")
     end
   end
 
@@ -39,7 +39,16 @@ class Event < ApplicationRecord
     self.hora_final
   end
 
+  before_create :set_folio
+
   private
+  def set_folio
+    token = SecureRandom.alphanumeric(10).downcase
+    while Order.where(folio: token).exists?
+      token = SecureRandom.alphanumeric(10).downcase
+    end
+    self.folio = token
+  end
 
   def hora_final_after_hora_inicio
     return if hora_final.blank? || hora_inicio.blank?

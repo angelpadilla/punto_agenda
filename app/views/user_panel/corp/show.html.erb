@@ -1,0 +1,264 @@
+<% content_for :title, "Ajustes de empresa" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Ajustes <%= @corp.id %></h2>
+  <div class="actions">
+    <%= link_to user_corp_landing_path, class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver 
+    <% end %>
+    <%= link_to edit_user_corp_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+      </span>
+      Editar
+    <% end %>
+  </div>
+</div>
+<% if @corp.logo.attached? %>
+  <div class="docs_grid mt-4">
+    <div class="doc_tile">
+      <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
+      <div class="contentt">
+        <div class="file_name" ><%= @corp.logo.filename %></div>
+        <div class="labell"><%= @corp.logo.content_type %> · <%= number_to_human_size(@corp.logo.byte_size) %> </div>
+      </div>
+      <%= link_to rails_blob_path(@corp.logo, disposition: "attachment"), class: "button is-rounded actionn" do %>
+        Descargar
+      <% end %>
+    </div>
+  </div>
+<% end %>
+<div class="box mt-4">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'lightbulb-bolt-svgrepo-com.svg', alt: "Configuración", class: "invert" %>
+      </span>
+      Datos basicos
+    </h2>
+  </div>
+  <h3 class="titlee2 is-3 mb-4"><%= @corp.name %></h3>
+  <div class="columns is-multiline is-mobile">
+    <div class="column is-12-mobile is-6-tablet is-6-desktop">
+      <div class="labell">Nombre comercial</div>
+      <p class="contentt"><%= @corp.name %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-6-desktop">
+      <div class="labell">Email contacto</div>
+      <p class="contentt"><%= @corp.email %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-6-desktop">
+      <div class="labell">Teléfono de contacto</div>
+      <p class="contentt"><%= @corp.phone %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-6-desktop">
+      <div class="labell">WhatsApp</div>
+      <p class="contentt"><%= @corp.whatsapp %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-6-desktop">
+      <div class="labell">Tipo de negocio</div>
+      <p class="contentt"><%= @corp.tipo_negocio&.titleize %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-6-desktop">
+      <div class="labell">ID tienda</div>
+      <p class="contentt"><%= @corp.sku %></p>
+    </div>
+  </div>
+</div>
+<div class="box expandable is_active">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'lightbulb-bolt-svgrepo-com.svg', alt: "Configuración", class: "invert" %>
+      </span>
+      Configuración
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <label class="toggle_field disabled">
+      <div class="toggle_info">
+        <span class="toggle_label">Facturacion?</span>
+        <span class="toggle_desc">Activa si tu negocio realiza facturación</span>
+      </div>
+      <% if @corp.facturacion %>
+        <input type="checkbox" class="toggle_input" checked disabled>
+      <% else %>
+        <input type="checkbox" class="toggle_input" disabled>
+      <% end %>
+      <span class="toggle_track">
+        <span class="toggle_thumb"></span>
+      </span>
+    </label>
+    <label class="toggle_field disabled">
+      <div class="toggle_info">
+        <span class="toggle_label">Activar calendario</span>
+        <span class="toggle_desc">Activa si tu negocio utiliza un calendario para gestionar citas o eventos</span>
+      </div>
+      <% if @corp.calendar %>
+        <input type="checkbox" class="toggle_input" checked disabled>
+      <% else %>
+        <input type="checkbox" class="toggle_input" disabled>
+      <% end %>
+      <span class="toggle_track">
+        <span class="toggle_thumb"></span>
+      </span>
+    </label>
+    <label class="toggle_field disabled">
+      <div class="toggle_info">
+        <span class="toggle_label">Sitio publico?</span>
+        <span class="toggle_desc">Habilita tu sitio público, para que tus clientes puedan hacerte pedidos o citas</span>
+      </div>
+      <% if @corp.public_site %>
+        <input type="checkbox" class="toggle_input" checked disabled>
+      <% else %>
+        <input type="checkbox" class="toggle_input" disabled>
+      <% end %>
+      <span class="toggle_track">
+        <span class="toggle_thumb"></span>
+      </span>
+    </label>
+    <label class="toggle_field disabled">
+      <div class="toggle_info">
+        <span class="toggle_label">Acepta pagos en línea</span>
+        <span class="toggle_desc">Habilita Stripe como método de pago</span>
+      </div>
+      <% if @corp.online_payments %>
+        <input type="checkbox" class="toggle_input" checked disabled>
+      <% else %>
+        <input type="checkbox" class="toggle_input" disabled>
+      <% end %>
+      <span class="toggle_track">
+        <span class="toggle_thumb"></span>
+      </span>
+    </label>
+  </div>
+</div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'direcciones.svg', alt: "Social", class: "invert" %>
+      </span>
+      Social
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Facebook URL</div>
+        <p class="contentt"><%= @corp.facebook_url %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Instagram URL</div>
+        <p class="contentt"><%= @corp.instagram_url %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">TikTok URL</div>
+        <p class="contentt"><%= @corp.tiktok_url %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'sat2.svg', alt: "Datos fiscales" %>
+      </span>
+      Datos fiscales 
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Regimen fiscal</div>
+        <p class="contentt"><%= @corp.regimen %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">RFC</div>
+        <p class="contentt"><%= @corp.rfc %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Estado</div>
+        <p class="contentt"><%= @corp.estado %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Ciudad</div>
+        <p class="contentt"><%= @corp.ciudad %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Código Postal</div>
+        <p class="contentt"><%= @corp.cp %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Colonia</div>
+        <p class="contentt"><%= @corp.colonia %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Localidad</div>
+        <p class="contentt"><%= @corp.localidad %></p>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-8-desktop">
+        <div class="labell">Calle</div>
+        <p class="contentt"><%= @corp.calle %></p>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <div class="labell"># Exterior</div>
+        <p class="contentt"><%= @corp.num_ext %></p>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <div class="labell"># Interior</div>
+        <p class="contentt"><%= @corp.num_int %></p>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Contraseña llave</div>
+        <p class="contentt"><%= @corp.key_pass.present? ? "******#{@corp.key_pass[-4..-1]}" : "-" %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Timbres</div>
+        <p class="contentt"><%= @corp.timbres %></p>
+      </div>
+    </div>
+    <div class="docs_grid">
+      <% if @corp.key.attached? %>
+        <div class="doc_tile">
+          <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
+          <div class="contentt">
+            <div class="file_name" ><%= @corp.key.filename %></div>
+            <div class="labell"><%= @corp.key.content_type %> · <%= number_to_human_size(@corp.key.byte_size) %> </div>
+          </div>
+          <%= link_to rails_blob_path(@corp.key, disposition: "attachment"), class: "button is-rounded actionn" do %>
+            Descargar
+          <% end %>
+        </div>
+      <% end %>
+      <% if @corp.cer.attached? %>
+        <div class="doc_tile">
+          <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
+          <div class="contentt">
+            <div class="file_name" ><%= @corp.cer.filename %></div>
+            <div class="labell"><%= @corp.cer.content_type %> · <%= number_to_human_size(@corp.cer.byte_size) %> </div>
+          </div>
+          <%= link_to rails_blob_path(@corp.cer, disposition: "attachment"), class: "button is-rounded actionn" do %>
+            Descargar
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

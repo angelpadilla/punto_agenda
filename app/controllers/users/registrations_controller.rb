@@ -21,8 +21,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
       remoteip: request.remote_ip
     })
 
+    if params[:user][:tipo_negocio].present? and [ "barberia", "salon_belleza", "servicios" ].include?(params[:user][:tipo_negocio])
+      calendar = true
+    else
+      calendar = false
+    end
+
     corp = Corp.new(
-      tipo_negocio: params[:user][:tipo_negocio] || "otro"
+      tipo_negocio: params[:user][:tipo_negocio] || "otro",
+      calendar: calendar,
     )
 
     if response.status.success?

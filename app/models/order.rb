@@ -8,18 +8,47 @@ class Order < ApplicationRecord
   has_many :line_items, dependent: :destroy
   has_many :items, through: :line_items
 
+  ## ransack search
+  def self.ransackable_attributes(auth_object = nil)
+    %w[id tipo customer_id folio]
+  end
+
+  # Add this method to whitelist explicit associations for Ransack
+  def self.ransackable_associations(auth_object = nil)
+    %w[customer seller]
+  end
+
   enum :tipo,  {
     carrito: "carrito",
     pre_factura: "pre_factura",
     cotizacion: "cotizacion",
-    remision: "remision"
+    remision: "remision",
+    factura: "factura"
   }
+
+  Tipo2 = [
+    [ "Remisión", :remision ],
+    [ "Factura", :factura ],
+    [ "Cotización", :cotizacion ],
+    [ "Pre-factura", :pre_factura ]
+  ]
+
+  Tipo3 = [
+    [ "Remisión", :remision ],
+    [ "Cotización", :cotizacion ],
+    [ "Pre-factura", :pre_factura ]
+  ]
 
   enum :status_pago, {
     pagado: "pagado",
     credito: "credito",
-    cancelado: "cancelado"
+    cancelado: "cancelado",
   }
+
+  Status = [
+    [ "Pagado", :pagado ],
+    [ "Crédito", :credito ]
+  ]
 
   Status_new_sale = [
     [ "Pagado", :pagado ],
@@ -78,6 +107,7 @@ class Order < ApplicationRecord
   ## scopes ...
   scope :default, -> { order(created_at: :desc) }
   scope :carritos, -> { where(tipo: "carrito") }
+  scope :not_carritos, -> { default.where.not(tipo: "carrito") }
   scope :pre_facturas, -> { where(tipo: "pre_factura") }
   scope :cotizaciones, -> { where(tipo: "cotizacion") }
   scope :remisiones, -> { where(tipo: "remision") }
@@ -89,7 +119,7 @@ class Order < ApplicationRecord
 
   ## Validations
   validates :tipo, presence: { message: "El tipo de orden es requerido" }
-  validates :status_pago, presence: { message: "El status de pago es requerido" }
+  validates :status_pago, presence: { message: "El status de pago es requerido" }, if: :not_pre_factura_carrito?
   validates :total, numericality: { greater_than_or_equal_to: 0, message: "El total debe ser un número positivo" }, allow_nil: true
   validates :subtotal, numericality: { greater_than_or_equal_to: 0, message: "El subtotal debe ser un número positivo" }, allow_nil: true
   validates :impuestos, numericality: { greater_than_or_equal_to: 0, message: "Los impuestos deben ser un número positivo" }, allow_nil: true
@@ -101,6 +131,7 @@ class Order < ApplicationRecord
 
   validates :forma_pago, presence: { message: ": Forma de pago es requerida" }, on: :update
   validates :deadline, presence: { message: ": Plazo del crédito es requerida" }, if: :credito?
+  validates :fecha, presence: { message: ": Fecha de venta es requerida" }, on: :update
 
   validates :customer_id, presence: { message: ": Cliente es requerido" }, on: :update, if: :not_pre_factura_carrito?
 
@@ -109,7 +140,11 @@ class Order < ApplicationRecord
     self.tipo != "pre_factura" && self.tipo != "carrito"
   end
 
-  def factura?
+  def remision_factura?
+    self.tipo == "remision" || self.tipo == "factura"
+  end
+
+  def timbre?
     if self.xml.present? and self.sat_uuid.present?
       true
     else

@@ -14,9 +14,55 @@ es:
   time:
     formats:
       long: "%d de %B de %Y, %I:%M %p"
+      short: "%d %b %H:%M"
+      date: "%d/%m/%Y"
   simple_calendar:
     month_names: [~, "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
     abbr_month_names: [~, "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
     day_names: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
     abbr_day_names: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
     week: "Semana"
+  errors:
+    messages:
+      limit_out_of_range:
+        zero: "no se adjuntaron archivos (debe haber entre %{min} y %{max} archivos)"
+        one: "solo 1 archivo adjunto (debe haber entre %{min} y %{max} archivos)"
+        other: "el número total de archivos debe estar entre %{min} y %{max} archivos (hay %{count} archivos adjuntos)"
+      limit_min_not_reached:
+        zero: "no se adjuntaron archivos (debe haber al menos %{min} archivos)"
+        one: "solo 1 archivo adjunto (debe haber al menos %{min} archivos)"
+        other: "%{count} archivos adjuntos (debe haber al menos %{min} archivos)"
+      limit_max_exceeded:
+        zero: "no se adjuntaron archivos (el máximo es %{max} archivos)"
+        one: "demasiados archivos adjuntos (el máximo es %{max} archivos, se adjuntó %{count})"
+        other: "demasiados archivos adjuntos (el máximo es %{max} archivos, se adjuntaron %{count})"
+      content_type_invalid:
+        one: "tiene un tipo de contenido no válido (el tipo de contenido autorizado es %{authorized_human_content_types})"
+        other: "tiene un tipo de contenido no válido (los tipos de contenido autorizados son %{authorized_human_content_types})"
+      content_type_spoofed:
+        one: "tiene un tipo de contenido que no es equivalente al detectado a través de su contenido (el tipo de contenido autorizado es %{authorized_human_content_types})"
+        other: "tiene un tipo de contenido que no es equivalente al detectado a través de su contenido (los tipos de contenido autorizados son %{authorized_human_content_types})"
+      file_size_not_less_than: "el tamaño del archivo debe ser menor a %{max} (el tamaño actual es %{file_size})"
+      file_size_not_less_than_or_equal_to: "el tamaño del archivo debe ser menor o igual a %{max} (el tamaño actual es %{file_size})"
+      file_size_not_greater_than: "el tamaño del archivo debe ser mayor a %{min} (el tamaño actual es %{file_size})"
+      file_size_not_greater_than_or_equal_to: "el tamaño del archivo debe ser mayor o igual a %{min} (el tamaño actual es %{file_size})"
+      file_size_not_between: "el tamaño del archivo debe estar entre %{min} y %{max} (el tamaño actual es %{file_size})"
+      file_size_not_equal_to: "el tamaño del archivo debe ser igual a %{exact} (el tamaño actual es %{file_size})"
+      total_file_size_not_less_than: "el tamaño total de los archivos debe ser menor a %{max} (el tamaño actual es %{total_file_size})"
+      total_file_size_not_less_than_or_equal_to: "el tamaño total de los archivos debe ser menor o igual a %{max} (el tamaño actual es %{total_file_size})"
+      total_file_size_not_greater_than: "el tamaño total de los archivos debe ser mayor a %{min} (el tamaño actual es %{total_file_size})"
+      total_file_size_not_greater_than_or_equal_to: "el tamaño total de los archivos debe ser mayor o igual a %{min} (el tamaño actual es %{total_file_size})"
+      total_file_size_not_between: "el tamaño total de los archivos debe estar entre %{min} y %{max} (el tamaño actual es %{total_file_size})"
+      total_file_size_not_equal_to: "el tamaño total de los archivos debe ser igual a %{exact} (el tamaño actual es %{total_file_size})"
+      dimension_min_not_included_in: "debe ser mayor o igual a %{width} x %{height} píxeles"
+      dimension_max_not_included_in: "debe ser menor o igual a %{width} x %{height} píxeles"
+      dimension_width_not_included_in: "el ancho no está incluido entre %{min} y %{max} píxeles"
+      dimension_height_not_included_in: "la altura no está incluida entre %{min} y %{max} píxeles"
+      dimension_width_not_greater_than_or_equal_to: "el ancho debe ser mayor o igual a %{length} píxeles"
+      dimension_height_not_greater_than_or_equal_to: "la altura debe ser mayor o igual a %{length} píxeles"
+      dimension_width_not_less_than_or_equal_to: "el ancho debe ser menor o igual a %{length} píxeles"
+      dimension_height_not_less_than_or_equal_to: "la altura debe ser menor o igual a %{length} píxeles"
+      dimension_width_not_equal_to: "el ancho debe ser igual a %{length} píxeles"
+      dimension_height_not_equal_to: "la altura debe ser igual a %{length} píxeles"
+      media_metadata_missing: "no es un archivo multimedia válido"
+

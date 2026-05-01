@@ -3,18 +3,18 @@
     <div>
       <p class="title is-5 mb-0">Resumen ticket</p>
       <p class="is-size-7 has-text-grey-light">
-        Folio: <%= order.folio %>
+        Folio: <%= order.folio %> <%= order.id %>
       </p>
     </div>
   </div>
-  <% if @carrito.line_items.empty? %>
+  <% if order.line_items.empty? %>
     <div class="panel-block is-block p-5">
       <p class="has-text-grey">Carrito vacio</p>
     </div>
   <% else %>
     <div class="panel-block is-block p-5">
       <!-- Cart Items -->
-      <% @carrito.line_items.each do |line_item| %>
+      <% order.line_items.each do |line_item| %>
         <div class="ticket-item mb-5">
           <div class="columns is-mobile is-vcentered is-variable is-2">
             <div class="column is-narrow">
@@ -30,7 +30,7 @@
               <div class="is-flex is-flex-direction-column">
                 <%= form_with url: add_item_line_items_path, method: :post do |form| %>
                   <%= form.hidden_field :item_id, value: line_item.item.id %>
-                  <%= form.hidden_field :order_id, value: @carrito.id %>
+                  <%= form.hidden_field :order_id, value: order.id %>
                   <%= form.hidden_field :cantidad, value: 1 %>
                   <button class="button py-0" 
                     type="submit"
@@ -41,7 +41,7 @@
                 <span class="has-text-weight-bold"><%= line_item.cantidad %></span>
                 <%= form_with url: remove_item_line_items_path, method: :post do |form| %>
                   <%= form.hidden_field :line_id, value: line_item.id %>
-                  <%= form.hidden_field :order_id, value: @carrito.id %>
+                  <%= form.hidden_field :order_id, value: order.id %>
                   <%= form.hidden_field :cantidad, value: 1 %>
                   <button class="button py-0"
                       type="submit"
@@ -79,7 +79,7 @@
           </span>
           Finalizar
         </button>
-        <%= link_to clear_items_line_items_path(order_id: @carrito.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded" do %>
+        <%= link_to clear_items_line_items_path(order_id: order.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded" do %>
           <span class="icon mr-2">
             <%= image_tag 'trash.svg', alt: 'carrito' %>
           </span>
@@ -97,11 +97,6 @@
       <p class="modal-card-title">Finalizar ticket</p>
       <button class="delete" aria-label="close"></button>
     </header>
-    <section class="modal-card-body">
-      <p>contenido, forma de pago, etc ....</p>
-    </section>
-    <footer class="modal-card-foot">
-      <button class="button is-rounded is-primary is-fullwidth">Finalizar</button>
-    </footer>
+    <%= render 'user_panel/orders/form', order: order, path: order.carrito? ? orders_path(id: order.id) : order_path(order), method: order.carrito? ? :post : :patch %>
   </div>
 </div>

@@ -1,0 +1,86 @@
+<% content_for :title, "Ventas" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Mis ventas</h2>
+  <div class="actions">
+    <%= link_to new_order_path, class: "button is-primary is-rounded" do  %>
+      <span class="icon mr-2">
+        <%= image_tag 'plus.svg', alt: 'carrito' %>
+      </span>
+      Nueva venta
+    <% end %>
+    <div class="button is-rounded">
+      <span class="icon">
+        <%= image_tag 'wand.svg', alt: 'filter', class: 'invert' %>
+      </span>
+    </div>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to new_order_path, class: "dropdown-item" do  %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Exportar CSV
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: orders_path do |f| %>
+  <div class="columns is-multiline">
+    <div class="column is-3">
+      <%= f.search_field :folio_eq, class: 'is-rounded search_input', placeholder: 'Folio' %>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :customer_id_eq, options_for_select(@corp.customers.map {|c| [c.razon, c.id]}, @q.customer_id_eq), {prompt: "Cliente"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :tipo_eq, options_for_select(Order::Tipo2, (params[:q] and !params[:q][:tipo_eq].blank?) ? params[:q][:tipo_eq] : nil), {prompt: "Categoria"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="buttons">
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
+        <%= link_to orders_path, class: "button is-rounded has_tooltip" do  %>
+          <span class="icon reset">
+            <%= image_tag 'trash.svg', alt: 'clear', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Limpiar busqueda</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="table_box">
+  <div class="table_header flexx">
+    <div class="table_cell"><%= sort_link(@q, :name, 'Nombre') %></div>
+    <div class="table_cell"><%= sort_link(@q, :sku, 'SKU') %></div>
+    <div class="table_cell"><%= sort_link(@q, :brand_id, 'Marca') %></div>
+    <div class="table_cell"><%= sort_link(@q, :cate, 'Categoria') %></div>
+    <div class="table_cell"><%= sort_link(@q, :price, 'Precio') %></div>
+    <div class="table_cell"><%= sort_link(@q, :stock, "Inventario") %></div>
+  </div>
+  <div class="table_content">
+    <%= render @orders %>
+  </div>
+</div>
+<% if @pagy.pages > 1 %>
+  <br>
+  <%== @pagy.series_nav(:bulma) %>
+  <br>
+<% end %>
+<br>
+<br>

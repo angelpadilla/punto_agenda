@@ -24,7 +24,11 @@ class UserPanel::LineItemsController < UserPanelController
         @order.save(validate: false)
         format.turbo_stream
       else
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("order_errors", partial: "user_panel/orders/order_errors", locals: { error: "Item sin inventario disponible" }) }
+        @error_message = "No hay suficiente inventario disponible para agregar #{cantidad} unidades de #{item.name}. Solo quedan #{disponible} disponibles."
+        # format.turbo_stream {
+        #   render turbo_stream: turbo_stream.update("line_item_errors", partial: "user_panel/orders/line_item_errors", locals: { error_message: @error_message })
+        # }
+        format.turbo_stream
       end
     end
   end

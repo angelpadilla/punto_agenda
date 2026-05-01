@@ -129,9 +129,9 @@ class Item < ApplicationRecord
     end
   end
 
-  def self.low_stock
-    self.all.sum { |item| item.low_stock? ? 1 : 0 }
-  end
+  # def self.low_stock
+  #   self.all.sum { |item| item.low_stock? ? 1 : 0 }
+  # end
 
   def last_order_at
     self.orders.order(created_at: :desc).last&.created_at

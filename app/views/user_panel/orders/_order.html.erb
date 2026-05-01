@@ -1,0 +1,63 @@
+<div class="item_box">
+  <div class="table_item">
+    <div class="item_info flexx-3">
+      <div>
+        <span class="tag is-light is-rounded"><%= order.tipo.titleize %></span>
+        <% if order.status_pago == "pagado" %>
+          <span class="tag is-success is-rounded"><%= order.status_pago.titleize %></span>
+        <% elsif order.status_pago == "credito" %>
+          <span class="tag is-warning is-rounded"><%= order.status_pago.titleize %></span>
+        <% else %>
+          <span class="tag is-danger is-rounded"><%= order.status_pago.titleize %></span>
+        <% end %>
+      </div>
+      <h3 class="titlee2"><%= order.folio %></h3>
+      <!-- info -->
+      <div class="columns is-mobile is-multiline ">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Total</div>
+          <p class="contentt"><%= number_to_currency(order.total) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Cliente</div>
+          <p class="contentt"><%= order.customer&.razon %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Fecha</div>
+          <p class="contentt"><%= l(order.fecha, format: :long) %></p>
+        </div>
+      </div>
+      <% if order.credito? %>
+        <div class="columns is-mobile is-multiline">
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Debe</div>
+            <p class="contentt">
+              <%= number_to_currency(order.debe) %>
+            </p>
+          </div>
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Abonado</div>
+            <p class="contentt"><%= number_to_currency(order.abonado) %></p>
+          </div>
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Vence</div>
+            <p class="contentt"><%= l(order.deadline, format: :long) %></p>
+          </div>
+        </div>
+      <% end %>
+      <% if order.nota_interna.present? %>
+        <div class="columns is-mobile is-multiline mt-2">
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Notas</div>
+            <p class=""><%= order.nota_interna %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="item_buttons mt-4">
+    <%= link_to order_path(order), class: "button is-rounded is-fullwidth" do  %>
+      Ver detalles
+    <% end %>
+  </div>
+</div>

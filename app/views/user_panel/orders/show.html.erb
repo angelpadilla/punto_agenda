@@ -1,0 +1,280 @@
+<% content_for :title, "Detalle de la venta" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle de la venta</h2>
+  <div class="actions">
+    <%= link_to orders_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <% if !@order.timbre? %>
+      <button class="mtrigger button is-rounded" data-target="timbraa">
+        <span class="icon mr-2">
+          <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
+        </span>
+        Timbra
+      </button>
+    <% end %>
+    <%= link_to edit_order_path(@order), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+      </span>
+      Editar
+    <% end %>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <div class="mtrigger dropdown-item" data-target="send_order_email">
+            <span class="icon">
+              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Enviar por email
+          </div>
+          <div class="mtrigger dropdown-item" data-target="send_order_sms">
+            <span class="icon">
+              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Enviar por SMS
+          </div>
+          <%= link_to orders_path, class: "dropdown-item" do  %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            PDF
+          <% end %>
+          <%= link_to ticket80_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Ticket 80mm
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box mt-4">
+  <span class="tag is-light is-rounded"><%= @order.tipo.titleize %></span>
+  <% if @order.status_pago == "pagado" %>
+    <span class="tag is-success is-rounded"><%= @order.status_pago.titleize %></span>
+  <% elsif @order.status_pago == "credito" %>
+    <span class="tag is-warning is-rounded"><%= @order.status_pago.titleize %></span>
+  <% else %>
+    <span class="tag is-danger is-rounded"><%= @order.status_pago.titleize %></span>
+  <% end %>
+  <h3 class="titlee2"><%= @order.folio %></h3>
+  <!-- info -->
+  <div class="columns is-mobile is-multiline ">
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Folio</div>
+      <p class="contentt"><%= @order.folio %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Cliente</div>
+      <p class="contentt">
+        <% if @order.customer %>
+          <%= @order.customer.razon %> (<%= @order.customer.tel %>)
+        <% else %>
+          -
+        <% end %>
+      </p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Fecha venta</div>
+      <p class="contentt"><%= l(@order.fecha, format: :long) %></p>
+    </div>
+  </div>
+  <% if @order.credito? %>
+    <div class="columns is-mobile is-multiline">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Debe</div>
+        <p class="contentt">
+          <%= number_to_currency(@order.debe) %>
+        </p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Abonado</div>
+        <p class="contentt"><%= number_to_currency(@order.abonado) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Vence</div>
+        <p class="contentt"><%= l(@order.deadline, format: :long) %></p>
+      </div>
+    </div>
+  <% end %>
+  <% if @order.factura? and @order.timbre? %>
+    <div class="columns is-mobile is-multiline">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Debe</div>
+        <p class="contentt">
+          <%= number_to_currency(@order.debe) %>
+        </p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Abonado</div>
+        <p class="contentt"><%= number_to_currency(@order.abonado) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Vence</div>
+        <p class="contentt"><%= l(@order.deadline, format: :long) %></p>
+      </div>
+    </div>
+  <% end %>
+  <div class="columns is-mobile is-multiline">
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Agente/Vendedor</div>
+      <p class="contentt"><%= @order.seller ? @order.seller.full_name : "-" %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Creó</div>
+      <p class="contentt"><%= @order.user ? @order.user.full_name : "-" %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Fecha creación</div>
+      <p class="contentt"><%= l(@order.created_at, format: :long) %></p>
+    </div>
+  </div>
+  <% if @order.nota_interna.present? %>
+    <div class="columns is-mobile is-multiline mt-2">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Notas</div>
+        <p class=""><%= @order.nota_interna %></p>
+      </div>
+    </div>
+  <% end %>
+</div>
+<div class="box">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'cup.svg', class: "invert", alt: "Totales" %>
+      </span>
+      Totales 
+    </h2>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Total</div>
+        <p class="contentt"><%= number_to_currency(@order.total) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Subtotal</div>
+        <p class="contentt"><%= number_to_currency(@order.subtotal) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">IVA</div>
+        <p class="contentt"><%= number_to_currency(@order.impuestos) %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'layers.svg', class: "invert", alt: "Items" %>
+      </span>
+      Items 
+    </h2>
+  </div>
+  <div class="box_content">
+    <table class="table is-fullwidth">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio unitario</th>
+          <th>Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order.line_items.each do |line| %>
+          <tr>
+            <th>
+              <%= link_to line.item.name.titleize, line.item, target: '_blank' %>
+            </th>
+            <td><%= line.cantidad %></td>
+            <td><%= number_to_currency(line.precio) %></td>
+            <td><%= number_to_currency(line.total) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%# modals %>
+<div id="timbraa" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <%= form_with url: "#", method: :post do |form| %>
+        <%= form.hidden_field :id, value: @order.id %>
+        <div class="columns is-multiline">
+          <div class="field column is-12">
+            <label class="label">Uso de CFDI</label>
+            <div class="select is-rounded">
+              <%= form.select :uso_cfdi, Order::UsoCFDI, {required: true}, {} %>
+            </div>
+          </div>
+          <div class="field column is-12">
+            <label class="label">Cliente</label>
+            <div class="control">
+              <%= form.select :customer_id, options_for_select(@corp.customers.active.default.collect {|cus| ["#{cus.tel} - #{cus.razon}", cus.id] }, @order.customer_id),
+              {prompt: "Selecciona un cliente", required: true},
+              { "data-controller": "slimselect", class: "ss2"}
+              %>
+            </div>
+          </div>
+        </div>
+        <%= form.submit "Timbrar", class: "button is-primary is-fullwidth is-rounded" %>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<%# modal for send_order_email %>
+<div id="send_order_email" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <%= form_with url: "#", method: :post do |form| %>
+        <div class="columns is-multiline">
+          <div class="field column is-12">
+            <label class="label">Email</label>
+            <%= form.email_field :email, value: @order.customer&.email.present? ? @order.customer.email : '', class: 'input is-rounded', required: true %>
+          </div>
+        </div>
+        <%= form.submit "Enviar", class: "button is-primary is-fullwidth is-rounded" %>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<%# modal for send_order_sms %>
+<div id="send_order_sms" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <%= form_with url: "#", method: :post do |form| %>
+        <div class="columns is-multiline">
+          <div class="field column is-12">
+            <label class="label">Tel</label>
+            <%= form.telephone_field :tel, value: @order.customer&.tel.present? ? @order.customer.tel : '', class: 'input is-rounded', required: true %>
+          </div>
+        </div>
+        <%= form.submit "Enviar", class: "button is-primary is-fullwidth is-rounded" %>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
