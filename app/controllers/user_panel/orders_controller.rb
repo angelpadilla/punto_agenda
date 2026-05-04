@@ -173,8 +173,29 @@ class UserPanel::OrdersController < UserPanelController
 
     tel = params[:tel]
 
+    ## Altiria SMS
+    ## clean tel, remove '+' and strip spaces
+    # tel = tel.gsub("+", "").strip
+
+    # if tel.present?
+    #   response = Services.send_sms_b(to: [ tel ], from: "Venta", body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
+
+    #   puts " --- Enviando SMS a #{tel}"
+    #   puts response
+
+    #   if response[:success]
+    #     redirect_to order_path(@order), notice: "SMS enviado exitosamente."
+    #   else
+    #     redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
+    #   end
+    # else
+    #   redirect_to order_path(@order), alert: "El número de teléfono es requerido para enviar el SMS."
+    # end
+    # 
+
+    ## Twilio SMS
     if tel.present?
-      response = Twilio.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
+      response = Services.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
 
       puts " --- Enviando SMS a #{tel}"
       puts response
@@ -187,7 +208,6 @@ class UserPanel::OrdersController < UserPanelController
     else
       redirect_to order_path(@order), alert: "El número de teléfono es requerido para enviar el SMS."
     end
-
   end
 
   private

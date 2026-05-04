@@ -1,0 +1,71 @@
+require "http"
+module Services
+  BaseUrl = "https://api.twilio.com/2010-04-01/Accounts/"
+  EventsServiceID = "MG8351d82a20db3128f7beb3c3f4f72d2d"
+  Account_sid = Rails.application.credentials.dig(:twilio, :account_sid)
+  Auth_token = Rails.application.credentials.dig(:twilio, :auth_token)
+  Base_url_sms = "#{BaseUrl}#{Account_sid}/Messages.json"
+
+
+  def self.send_sms(to:, body:)
+    response = HTTP.basic_auth(user: Account_sid, pass: Auth_token).post(Base_url_sms, form: {
+      To: to,
+      MessagingServiceSid: EventsServiceID,
+      Body: body }
+    )
+
+    {
+      success: response.status.success?,
+      status: response.status.code,
+      full_status: response.status.to_s,
+      error: response.status.success? ? nil : JSON.parse(response.body.to_s)["error_message"],
+      error_code: response.status.success? ? nil : JSON.parse(response.body.to_s)["error_code"],
+      body: JSON.parse(response.body.to_s)
+    }
+  end
+
+  # Envía un SMS usando la API de Altiria.
+  #
+  # @param :to [Array<String>] Número de teléfono destino, con prefijo internacional, sin el signo. (obligatorio, ej: "521234567890")
+  # @param :from [String] Sender text, this label will consist of 15 numbers or 11 alphanumeric characters. (opcional, por defecto "POSAgenda")
+  # @param :body [String] Contenido del mensaje (obligatorio)
+  # @param :scheduleDate [String] Fecha y hora de envío programado en formato YYYYmmddHHiiss (opcional)
+  # @param :notificationUrl [String] URL para recibir notificaciones de entrega (opcional)
+  # @param :campaignName [String] Nombre de la campaña para reportes en panel de Altiria (opcional)
+  # @param :flash [Boolean] Si true, el mensaje se mostrará como mensaje flash en el dispositivo del destinatario (opcional)
+  # @return [Hash] Resultado de la petición con las siguientes claves:
+  #   - :success [Boolean] true si el envío fue exitoso
+  #   - :status [Integer] código HTTP de respuesta
+  #   - :error [String, nil] mensaje de error o nil si fue exitoso
+  #   - :body [Hash] respuesta completa de la API
+  def self.send_sms_b(to:, from: "POSAgenda", body:, scheduleDate: nil, notificationUrl: nil, campaignName: nil, flash: false)
+    username = Rails.application.credentials.dig(:altiria, :username)
+    api_password = Rails.application.credentials.dig(:altiria, :api_password)
+    url_sms_altiria = "https://api.altiria.com/api/rest/sms"
+    token = Base64.strict_encode64("#{username}:#{api_password}")
+
+    ## aseguramos :from no tenga espacios y no exceda 11 caracteres
+    from = from.gsub(/\s+/, "").slice(0, 11)
+
+    response = HTTP.headers(content_type: "application/json", authorization: "Basic #{token}").post(url_sms_altiria, json: {
+      to: to,
+      from: from,
+      message: body,
+      scheduleDate: scheduleDate,
+      notificationUrl: notificationUrl,
+      campaignName: campaignName,
+      flash: flash
+    })
+
+    {
+      success: response.status.success?,
+      status: response.status.code,
+      full_status: response.status.to_s,
+      error: response.status.success? ? nil : JSON.parse(response.to_s)["error"]["description"],
+      error_code: response.status.success? ? nil : JSON.parse(response.to_s)["error"]["code"],
+      campaignId: response.status.success? ? JSON.parse(response.to_s)["campaignId"] : nil,
+      sendingId: response.status.success? ? JSON.parse(response.to_s)["sendingId"] : nil,
+      body: JSON.parse(response.to_s)["result"]
+    }
+  end
+end
