@@ -15,4 +15,13 @@ class PublicController < ApplicationController
     pdf = Order80Pdf.new(order: @order)
     send_data pdf.render, filename: "venta_#{@order.folio}.pdf", type: "application/pdf", disposition: "inline"
   end
+
+  def ticket
+    @order = Order.includes(:customer, :line_items).find_by(folio: params[:folio])
+
+    redirect_to root_path, alert: "Order not found" if !@order
+
+    pdf = OrderPdf.new(order: @order)
+    send_data pdf.render, filename: "venta_#{@order.folio}.pdf", type: "application/pdf", disposition: "inline"
+  end
 end

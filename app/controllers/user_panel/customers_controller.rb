@@ -88,6 +88,7 @@ class UserPanel::CustomersController < UserPanelController
       :regimen,
       :rfc,
       :tel,
+      :tel_prefix,
       :tipo,
       :limite_credito,
       :notas,

@@ -12,9 +12,81 @@ class Customer < ApplicationRecord
 
   enum :tipo, publico: 0, mayorista: 1
 
-  validates :razon, :tel, presence: true
+  TelPrefixes = {
+    "+52" => "Mexico",
+    "+1" => "Estados Unidos",
+    "+44" => "Reino Unido",
+    "+34" => "España",
+    "+91" => "India",
+    "+81" => "Japón",
+    "+49" => "Alemania",
+    "+33" => "Francia",
+    "+55" => "Brasil",
+    "+61" => "Australia",
+    "+86" => "China",
+    "+7" => "Rusia",
+    "+39" => "Italia",
+    "+27" => "Sudáfrica",
+    "+82" => "Corea del Sur",
+    "+46" => "Suecia",
+    "+31" => "Países Bajos",
+    "+41" => "Suiza",
+    "+64" => "Nueva Zelanda",
+    "+65" => "Singapur",
+    "+90" => "Turquía",
+    "+48" => "Polonia",
+    "+20" => "Egipto",
+    "+47" => "Noruega",
+    "+43" => "Austria",
+    "+32" => "Bélgica",
+    "+351" => "Portugal",
+    "+358" => "Finlandia",
+    "+420" => "República Checa",
+    "+421" => "Eslovaquia",
+    "+386" => "Eslovenia",
+    "+370" => "Lituania",
+    "+371" => "Letonia",
+    "+373" => "Moldavia",
+    "+374" => "Armenia",
+    "+375" => "Bielorrusia",
+    "+376" => "Andorra",
+    "+377" => "Mónaco",
+    "+378" => "San Marino",
+    "+379" => "Vaticano",
+    "+380" => "Ucrania",
+    "+381" => "Serbia",
+    "+382" => "Montenegro",
+    "+383" => "Kosovo",
+    "+385" => "Croacia",
+    "+386" => "Eslovenia",
+    "+387" => "Bosnia y Herzegovina",
+    "+389" => "Macedonia del Norte",
+    "+420" => "Republica Checa",
+    "+421" => "Eslovaquia",
+    "+386" => "Eslovenia",
+    "+370" => "Lituania",
+    "+371" => "Letonia",
+    "+373" => "Moldavia",
+    "+374" => "Armenia",
+    "+375" => "Bielorrusia",
+    "+376" => "Andorra",
+    "+377" => "Monaco",
+    "+378" => "San Marino",
+    "+379" => "Vaticano",
+    "+380" => "Ucrania",
+    "+381" => "Serbia",
+    "+382" => "Montenegro",
+    "+383" => "Kosovo",
+    "+385" => "Croacia",
+    "+386" => "Eslovenia",
+    "+387" => "Bosnia y Herzegovina",
+    "+389" => "Macedonia del Norte",
+  }.freeze
+
+  validates :razon, :tel, :tel_prefix, presence: true
   validates :tipo, presence: { message: "El tipo de cliente es requerido" }
   validates :tel, format: { with: /\A\d+\z/, message: "Teléfono debe ser un número" }
+  validates :tel_prefix, inclusion: { in: TelPrefixes.keys, message: "Prefijo internacional no válido" }
   validates :tel, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
   validates :tel, uniqueness: { scope: :corp_id, message: "Teléfono ya ha sido tomado" }
   validates :email, uniqueness: { scope: :corp_id, case_sensitive: false, message: "Email ya ha sido tomado" }
@@ -94,6 +166,8 @@ class Customer < ApplicationRecord
   def last_event_at
     self.events.order(created_at: :desc).last&.created_at
   end
+
+  
 
   private
 

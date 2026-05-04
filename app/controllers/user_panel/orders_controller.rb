@@ -166,6 +166,30 @@ class UserPanel::OrdersController < UserPanelController
     redirect_to user_panel_orders_url, notice: "Venta eliminada exitosamente."
   end
 
+  def send_sms
+    @order = Order.find_by(folio: params[:folio])
+
+    redirect_to root_path, alert: "Order not found" if !@order
+
+    tel = params[:tel]
+
+    if tel.present?
+      response = Twilio.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
+
+      puts " --- Enviando SMS a #{tel}"
+      puts response
+
+      if response[:success]
+        redirect_to order_path(@order), notice: "SMS enviado exitosamente."
+      else
+        redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
+      end
+    else
+      redirect_to order_path(@order), alert: "El número de teléfono es requerido para enviar el SMS."
+    end
+
+  end
+
   private
 
     def set_order

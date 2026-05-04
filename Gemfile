@@ -79,6 +79,7 @@ gem "pagy"
 # sample data https://github.com/faker-ruby/faker
 gem "faker"
 
+# https://github.com/httprb/http
 gem "http"
 
 gem "devise", "~> 4.9"

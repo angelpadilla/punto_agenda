@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_003704) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_04_090234) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -152,6 +152,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_003704) do
     t.integer "sign_in_count", default: 0, null: false
     t.integer "success_events", default: 0
     t.string "tel"
+    t.string "tel_prefix"
     t.integer "tipo", default: 0
     t.integer "total_events", default: 0
     t.decimal "total_spent", precision: 17, scale: 2, default: "0.0"

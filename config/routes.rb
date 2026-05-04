@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
   scope "public" do
     get ":folio/ticket80", to: "public#ticket80", as: :ticket80
+    get ":folio/ticket", to: "public#ticket", as: :ticket
   end
 
   scope "panel" do
@@ -51,7 +52,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :orders, controller: "user_panel/orders"
+    resources :orders, controller: "user_panel/orders" do 
+      collection do
+        post ":folio/send_sms", to: "user_panel/orders#send_sms", as: :send_sms
+      end
+    end
     resources :line_items, controller: "user_panel/line_items" do
       collection do
         post :add_item

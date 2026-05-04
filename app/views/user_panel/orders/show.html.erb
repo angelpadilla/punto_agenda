@@ -45,17 +45,17 @@
             </span>
             Enviar por SMS
           </div>
-          <%= link_to orders_path, class: "dropdown-item" do  %>
-            <span class="icon">
-              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
-            </span>
-            PDF
-          <% end %>
           <%= link_to ticket80_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
             <span class="icon">
               <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
             </span>
             Ticket 80mm
+          <% end %>
+          <%= link_to ticket_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            PDF
           <% end %>
         </div>
       </div>
@@ -265,11 +265,14 @@
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box">
-      <%= form_with url: "#", method: :post do |form| %>
+      <%= form_with url: send_sms_orders_path(@order.folio), method: :post do |form| %>
         <div class="columns is-multiline">
+          <% if Rails.env.development? %>
+            <%= "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!" %>
+          <% end %>
           <div class="field column is-12">
             <label class="label">Tel</label>
-            <%= form.telephone_field :tel, value: @order.customer&.tel.present? ? @order.customer.tel : '', class: 'input is-rounded', required: true %>
+            <%= form.telephone_field :tel, value: @order.customer&.tel.present? && @order.customer.tel_prefix.present? ? "#{@order.customer.tel_prefix}#{@order.customer.tel}" : '', class: 'input is-rounded', required: true %>
           </div>
         </div>
         <%= form.submit "Enviar", class: "button is-primary is-fullwidth is-rounded" %>
