@@ -38,6 +38,8 @@ module Services
   #   - :status [Integer] código HTTP de respuesta
   #   - :error [String, nil] mensaje de error o nil si fue exitoso
   #   - :body [Hash] respuesta completa de la API
+  #   - :campaignId [String, nil] ID de campaña asignada por Altiria si fue exitoso
+  #   - :sendingId [String, nil] ID de envío asignada por Altiria si fue exitoso
   def self.send_sms_b(to:, from: "POSAgenda", body:, scheduleDate: nil, notificationUrl: nil, campaignName: nil, flash: false)
     username = Rails.application.credentials.dig(:altiria, :username)
     api_password = Rails.application.credentials.dig(:altiria, :api_password)
