@@ -6,7 +6,7 @@ module Atools
 
   def self.timbra_order(order, uso_cfdi = "G03")
     @factura = self.set_factura(order)
-    @alias = order.alias
+    @alias = order.corp
     time_noww = DateTime.current
 
     # fecha_timbre = order.fecha.strftime("%Y-%m-%dT%H:%M:%S")
@@ -106,7 +106,7 @@ module Atools
 
   def self.cancela_order(order)
     @factura = self.set_factura(order)
-    @alias = order.alias
+    @alias = order.corp
 
     params = {
       uuid: order.sat_uuid,
@@ -137,7 +137,7 @@ module Atools
 
   def self.timbra_deposito(order, deposit)
     @factura = self.set_factura(order)
-    @alias = order.alias
+    @alias = order.corp
 
     timenow = DateTime.current.strftime("%Y-%m-%dT%H:%M:00")
 
@@ -208,7 +208,7 @@ module Atools
 
   def self.cancela_deposito(order, deposit)
     @factura = self.set_factura(order)
-    @alias = order.alias
+    @alias = order.corp
 
     params = {
       uuid: deposit.sat_uuid,
@@ -240,12 +240,12 @@ module Atools
   def self.set_factura(order)
     Factura.new(
       Vars::Factura_id,
-      order.alias.rfc,
-      order.alias.razon,
-      order.alias.regimen,
-      ActiveStorage::Blob.service.path_for(order.alias.key.key),
-      order.alias.key_pass,
-      ActiveStorage::Blob.service.path_for(order.alias.cer.key),
+      order.corp.rfc,
+      order.corp.razon,
+      order.corp.regimen,
+      ActiveStorage::Blob.service.path_for(order.corp.key.key),
+      order.corp.key_pass,
+      ActiveStorage::Blob.service.path_for(order.corp.cer.key),
     )
   end
 end

@@ -41,7 +41,7 @@
           </div>
           <div class="column is-12-mobile is-6-tablet is-4-desktop">
             <div class="labell">Vence</div>
-            <p class="contentt"><%= l(order.deadline, format: :long) %></p>
+            <p class="contentt <%= order.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(order.deadline, format: :long) %></p>
           </div>
         </div>
       <% end %>

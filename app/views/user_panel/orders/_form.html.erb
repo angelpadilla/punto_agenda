@@ -24,7 +24,7 @@
         <label class="label">Fecha venta</label>
         <%= form.date_field :fecha, class: 'control input', max: Date.today, value: Date.today, required: true %>
       </div>
-      <%= s_field(form, :tipo, options: Order::Tipo2, label: "Tipo", clas: "field column is-6") %>
+      <%= s_field(form, :tipo, options: @corp.fac_and_timbres? ? Order::Tipo2 : Order::Tipo3, label: "Tipo", clas: "field column is-6") %>
       <div class="field column is-12">
         <label class="label">Forma pago</label>
         <div class="select is-rounded <%= order.errors.include?(:forma_pago) ? 'is-danger' : '' %>">

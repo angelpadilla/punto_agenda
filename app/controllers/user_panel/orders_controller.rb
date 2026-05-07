@@ -1,5 +1,5 @@
 class UserPanel::OrdersController < UserPanelController
-  before_action :set_order, only: %i[ show edit update destroy ]
+  before_action :set_order, only: %i[ show edit update destroy cancel ]
 
   def index
     orders = @corp.orders.not_carritos.includes(:customer)
@@ -66,7 +66,7 @@ class UserPanel::OrdersController < UserPanelController
       return redirect_back(fallback_location: user_panel_home_path, alert: "La venta no tiene productos")
     end
 
-    @order.forma_pago = "por_definir" if @order.pre_factura?
+    @order.forma_pago = "por_definir" if @order.pre_factura? or @order.cotizacion? or @order.credito?
     @order.created_at = Time.current.in_time_zone("America/Mexico_City")
 
     unless params[:order][:fecha].present?
@@ -166,12 +166,43 @@ class UserPanel::OrdersController < UserPanelController
     redirect_to user_panel_orders_url, notice: "Venta eliminada exitosamente."
   end
 
+  def cancel
+    return redirect_to orders_path, alert: "La venta ya está cancelada." if @order.cancelado?
+
+
+    @order.status_pago = :cancelado
+    @order.deposits.destroy_all
+
+    if @order.factura? and @order.sat_uuid.present?
+      Atools.cancela_order(@order)
+    elsif @order.factura? and !@order.sat_uuid.present?
+      @order.tipo = "remision"
+    end
+
+    if !@order.cotizacion?
+      ## regresamos inventario
+      @order.line_items.each do |line|
+        if line and line.item
+          item = line.item
+          item.stock += line.cantidad
+          item.save
+        end
+      end
+      @order.error = "Venta cancelada por el usuario #{current_user.email} con fecha #{Time.current.in_time_zone("America/Mexico_City").strftime("%d/%m/%Y %I:%M %p")}."
+    end
+
+    @order.save
+    redirect_back(fallback_location: orders_path, alert: "Venta cancelada.")
+  end
+
   def send_sms
     @order = Order.find_by(folio: params[:folio])
 
-    redirect_to root_path, alert: "Order not found" if !@order
+    redirect_to user_panel_home_path, alert: "Objeto no encontrado" if !@order
 
     tel = params[:tel]
+
+    redirect_to order_path(@order), alert: "Número de teléfono no proporcionado" if !tel.present?
 
     ## Altiria SMS
     ## clean tel, remove '+' and strip spaces
@@ -191,23 +222,34 @@ class UserPanel::OrdersController < UserPanelController
     # else
     #   redirect_to order_path(@order), alert: "El número de teléfono es requerido para enviar el SMS."
     # end
-    # 
+    #
 
     ## Twilio SMS
-    if tel.present?
-      response = Services.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
+    response = Services.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
 
-      puts " --- Enviando SMS a #{tel}"
-      puts response
+    puts " --- Enviando SMS a #{tel}"
+    puts response
 
-      if response[:success]
-        redirect_to order_path(@order), notice: "SMS enviado exitosamente."
-      else
-        redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
-      end
+    if response[:success]
+      redirect_to order_path(@order), notice: "SMS enviado exitosamente."
     else
-      redirect_to order_path(@order), alert: "El número de teléfono es requerido para enviar el SMS."
+      redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
     end
+  end
+
+  def send_email
+    ## validate id and email present
+    if !params[:folio].present? or !params[:email].present?
+      return redirect_back(fallback_location: user_panel_home_path, alert: "Folio de venta o email no proporcionado")
+    end
+
+    order = @corp.orders.find_by(folio: params[:folio])
+    redirect_back(fallback_location: user_panel_home_path, alert: "Venta no encontrada") if !order
+
+    email = params[:email]
+
+    OrderMailer.with(order: order, email: email).send_order.deliver_later
+    redirect_back(fallback_location: order_path(order), notice: "Email de la venta enviado a #{email}")
   end
 
   private

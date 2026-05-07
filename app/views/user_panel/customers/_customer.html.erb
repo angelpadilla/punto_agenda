@@ -29,6 +29,10 @@
           <div class="labell">RFC</div>
           <p class="contentt"><%= customer.rfc %></p>
         </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Canal</div>
+          <p class="contentt"><%= customer.canal&.titleize %></p>
+        </div>
       </div>
       <% if customer.notas.present? %>
         <div class="columns is-mobile is-multiline mt-2">

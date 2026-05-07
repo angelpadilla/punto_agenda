@@ -1,6 +1,19 @@
 class Corp < ApplicationRecord
   audited max_audits: 100
 
+  has_many :users, dependent: :nullify
+  has_many :items, dependent: :nullify
+  has_many :customers, dependent: :nullify
+  has_many :events, dependent: :nullify
+  has_many :providers, dependent: :nullify
+  has_many :brands, dependent: :destroy
+  has_many :orders, dependent: :nullify
+  has_many :deposits, through: :orders
+
+  has_one_attached :key, dependent: :destroy
+  has_one_attached :cer, dependent: :destroy
+  has_one_attached :logo, dependent: :destroy
+
   serialize :business_hours, coder: JSON
 
   DAYS_OF_WEEK = {
@@ -22,18 +35,9 @@ class Corp < ApplicationRecord
     "5" => { "active" => true,  "open" => "09:00", "close" => "18:00" },
     "6" => { "active" => false, "open" => "09:00", "close" => "18:00" }
   }.freeze
-  
-  has_many :users, dependent: :nullify
-  has_many :items, dependent: :nullify
-  has_many :customers, dependent: :nullify
-  has_many :events, dependent: :nullify
-  has_many :providers, dependent: :nullify
-  has_many :brands, dependent: :destroy
-  has_many :orders, dependent: :nullify
 
-  has_one_attached :key, dependent: :destroy
-  has_one_attached :cer, dependent: :destroy
-  has_one_attached :logo, dependent: :destroy
+  enum :tipo_plan, basico: 0, medio: 1, premium: 2
+
 
   # has_many :orders, dependent: :destroy
   # has_many :items, dependent: :destroy
@@ -64,7 +68,7 @@ class Corp < ApplicationRecord
 
   validates :key, content_type: ".key", size: { less_than: 5.megabytes, message: "El archivo debe ser menor a 5MB" }, allow_blank: true, on: :update
   validates :cer, content_type: ".cer", size: { less_than: 5.megabytes, message: "El archivo debe ser menor a 5MB" }, allow_blank: true, on: :update
-  validates :logo, content_type: ["image/png", "image/jpeg"], size: { less_than: 5.megabytes, message: "El archivo debe ser menor a 5MB" }, allow_blank: true, on: :update
+  validates :logo, content_type: [ "image/png", "image/jpeg" ], size: { less_than: 5.megabytes, message: "El archivo debe ser menor a 5MB" }, allow_blank: true, on: :update
 
   normalizes :name, :razon, :cp, :ciudad, :colonia, :localidad, :calle, :num_ext, :num_int, :phone, with: ->(e) { e.strip.downcase }
   normalizes :rfc, with: ->(e) { e.strip.upcase }
@@ -82,7 +86,19 @@ class Corp < ApplicationRecord
   end
 
   def facturacion?
-    facturacion
+    if self.facturacion and self.cp.present? and self.rfc.present? and self.razon.present? and self.regimen.present? and self.estado.present? and self.key_pass.present? and self.key.attached? and self.cer.attached?
+      true
+    else
+      false
+    end
+  end
+
+  def fac_and_timbres?
+    if self.facturacion and self.cp.present? and self.rfc.present? and self.razon.present? and self.regimen.present? and self.estado.present? and self.key_pass.present? and self.key.attached? and self.cer.attached? and self.timbres > 0
+      true
+    else
+      false
+    end
   end
 
   def facturacion_datos

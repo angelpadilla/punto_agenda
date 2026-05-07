@@ -86,7 +86,7 @@ class Item < ApplicationRecord
     [ "Lote", "XPK" ],
     [ "Mililitro", "MLT" ],
     [ "Viaje", "E54" ]
-  ]
+  ].freeze
 
   def self.ransackable_attributes(auth_object = nil)
     %W[id name cate price offer sku brand_name stock]

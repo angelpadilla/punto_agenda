@@ -19,6 +19,9 @@ Rails.application.routes.draw do
   scope "public" do
     get ":folio/ticket80", to: "public#ticket80", as: :ticket80
     get ":folio/ticket", to: "public#ticket", as: :ticket
+    get ":folio/abono_pdf", to: "public#pdf_abono", as: :pdf_abono
+    get ":folio/abono_ticket", to: "public#ticket_abono", as: :ticket_abono
+    get ":folio/abono_xml", to: "public#abono_xml", as: :abono_xml
   end
 
   scope "panel" do
@@ -52,9 +55,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :orders, controller: "user_panel/orders" do 
+    resources :orders, controller: "user_panel/orders" do
       collection do
         post ":folio/send_sms", to: "user_panel/orders#send_sms", as: :send_sms
+        post :send_email, as: :send_email
+        post :cancel
       end
     end
     resources :line_items, controller: "user_panel/line_items" do
@@ -62,6 +67,13 @@ Rails.application.routes.draw do
         post :add_item
         post :remove_item
         post :clear_items
+      end
+    end
+
+    resources :deposits, controller: "user_panel/deposits", except: [ :new, :edit, :update ] do 
+      collection do
+        post :modificar_forma_pago, as: :modificar_forma_pago
+        post :send_abono_email, as: :send_abono_email
       end
     end
   end

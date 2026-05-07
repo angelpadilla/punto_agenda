@@ -28,6 +28,34 @@
         <%= t_field(form, :phone, label: "Teléfono de contacto", placeholder: "Ej. +34 123 456 789", clas: "field column is-6") %>
         <%= t_field(form, :whatsapp, label: "Whatsapp", placeholder: "Ej. +34 123 456 789", clas: "field column is-6") %>
         <%= s_field(form, :tipo_negocio, options: Corp::TipoNegocios, label: "Tipo de negocio", clas: "field column is-12") %>
+        <div class="column is-12-mobile">
+          <div class="doc_input">
+            <div class="doc_file_name"></div>
+            <div class="doc_file_size"></div>
+            <%= form.file_field :logo, class: "doc_file_field", accept: ".png, .jpg, .jpeg", data: { action: "change->form-corp#previewDoc" } %>
+            <span class="doc_action">Selecciona logo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box expandable mt-4">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'documento.svg', alt: "Extras de ticket", class: "invert" %>
+        </span>
+        Extras de ticket
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <div class="columns is-multiline">
+        <%= a_field(form, :text_cotizacion, label: "Texto extra en cotización", placeholder: "Ej. Gracias por su preferencia") %>
+        <%= a_field(form, :text_remision, label: "Texto extra en remisión", placeholder: "Ej. Gracias por su preferencia") %>
+        <%= a_field(form, :text_factura, label: "Texto extra en factura", placeholder: "Ej. Gracias por su preferencia") %>
       </div>
     </div>
   </div>
@@ -192,6 +220,7 @@
     </div>
     <div class="box_content">
       <div class="columns is-multiline is-mobile">
+        <%= t_field(form, :razon, label: "Razon fiscal", placeholder: "Ej. Mi Empresa S.A. de C.V.") %>
         <%= s_field(form, :regimen, options: Corp::RegimenFiscales, label: "Regimen fiscal", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
         <%= t_field(form, :rfc, label: "RFC", placeholder: "Ej. XAXX010101000", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
         <%= s_field(form, :estado, options: Corp::States, label: "Estado", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>

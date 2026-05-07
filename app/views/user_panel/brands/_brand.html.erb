@@ -1,0 +1,34 @@
+<tr>
+  <td><%= brand.name.titleize %></td>
+  <td><%= brand.items.count %></td>
+  <td class="has-text-right">
+    <%= link_to brand_path(brand), class: "button is-rounded is-small mr-2" do %>
+      Ver
+    <% end %>
+    <div class="dropdown is-right is-hoverable has-text-left">
+      <div class="dropdown-trigger">
+        <button aria-haspopup="true">
+          <span class="icon r90">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to edit_brand_path(brand), class: "dropdown-item" do %>
+            <span class="icon mr-2">
+              <%= image_tag 'edit.svg', alt: 'edit', class: 'invert' %>
+            </span>
+            Editar
+          <% end %>
+          <%= link_to brand_path(brand), data: { turbo_confirm: "¿Estás seguro?", turbo_method: :delete }, class: "dropdown-item" do %>
+            <span class="icon mr-2">
+              <%= image_tag 'trash.svg', alt: 'delete', class: 'invert' %>
+            </span>
+            Eliminar
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </td>
+</tr>

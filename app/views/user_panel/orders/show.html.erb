@@ -8,12 +8,29 @@
       </span>
       Volver a listado 
     <% end %>
-    <% if !@order.timbre? %>
-      <button class="mtrigger button is-rounded" data-target="timbraa">
+    <% if !@order.timbre? and @corp.facturacion? %>
+      <% if @corp.timbres > 0 %>
+        <button class="mtrigger button is-rounded" data-target="timbraa">
+          <span class="icon mr-2">
+            <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
+          </span>
+          Timbra
+        </button>
+      <% else %>
+        <button class="button is-rounded" disabled>
+          <span class="icon mr-2">
+            <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
+          </span>
+          Sin timbres
+        </button>
+      <% end %>
+    <% end %>
+    <% if @order.credito? and @order.debe > 0 and @order.customer %>
+      <button class="mtrigger button is-rounded" data-target="anadir_abono">
         <span class="icon mr-2">
-          <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
+          <%= image_tag 'plus.svg', alt: 'editar', class: "invert" %>
         </span>
-        Timbra
+        Añadir abono
       </button>
     <% end %>
     <%= link_to edit_order_path(@order), class: "button is-rounded" do %>
@@ -33,6 +50,18 @@
       </div>
       <div class="dropdown-menu" role="menu">
         <div class="dropdown-content">
+          <%= link_to ticket_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            PDF
+          <% end %>
+          <%= link_to ticket80_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Ticket 80mm
+          <% end %>
           <div class="mtrigger dropdown-item" data-target="send_order_email">
             <span class="icon">
               <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
@@ -45,23 +74,24 @@
             </span>
             Enviar por SMS
           </div>
-          <%= link_to ticket80_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
+          <%= link_to cancel_orders_path(id: @order.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar esta orden?"}, class: "dropdown-item" do %>
             <span class="icon">
-              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+              <%= image_tag 'folder-error-svgrepo-com.svg', alt: 'cancel', class: 'invert' %>
             </span>
-            Ticket 80mm
-          <% end %>
-          <%= link_to ticket_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
-            <span class="icon">
-              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
-            </span>
-            PDF
+            Cancelar
           <% end %>
         </div>
       </div>
     </div>
   </div>
 </div>
+<% if @order.error.present? %>
+  <div class="noti is-danger mt-4">
+    <p>
+      <%= @order.error %>
+    </p>
+  </div>
+<% end %>
 <div class="box mt-4">
   <span class="tag is-light is-rounded"><%= @order.tipo.titleize %></span>
   <% if @order.status_pago == "pagado" %>
@@ -92,43 +122,11 @@
       <div class="labell">Fecha venta</div>
       <p class="contentt"><%= l(@order.fecha, format: :long) %></p>
     </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Forma de pago</div>
+      <p class="contentt"><%= @order.forma_pago&.titleize %></p>
+    </div>
   </div>
-  <% if @order.credito? %>
-    <div class="columns is-mobile is-multiline">
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Debe</div>
-        <p class="contentt">
-          <%= number_to_currency(@order.debe) %>
-        </p>
-      </div>
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Abonado</div>
-        <p class="contentt"><%= number_to_currency(@order.abonado) %></p>
-      </div>
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Vence</div>
-        <p class="contentt"><%= l(@order.deadline, format: :long) %></p>
-      </div>
-    </div>
-  <% end %>
-  <% if @order.factura? and @order.timbre? %>
-    <div class="columns is-mobile is-multiline">
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Debe</div>
-        <p class="contentt">
-          <%= number_to_currency(@order.debe) %>
-        </p>
-      </div>
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Abonado</div>
-        <p class="contentt"><%= number_to_currency(@order.abonado) %></p>
-      </div>
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Vence</div>
-        <p class="contentt"><%= l(@order.deadline, format: :long) %></p>
-      </div>
-    </div>
-  <% end %>
   <div class="columns is-mobile is-multiline">
     <div class="column is-12-mobile is-6-tablet is-4-desktop">
       <div class="labell">Agente/Vendedor</div>
@@ -156,7 +154,7 @@
   <div class="box_header">
     <h2>
       <span class="icon mr-2">
-        <%= image_tag 'cup.svg', class: "invert", alt: "Totales" %>
+        <%= image_tag 'cup-star-svgrepo-com.svg', class: "invert", alt: "Totales" %>
       </span>
       Totales 
     </h2>
@@ -212,42 +210,245 @@
     </table>
   </div>
 </div>
-<%# modals %>
-<div id="timbraa" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-content">
-    <div class="box">
-      <%= form_with url: "#", method: :post do |form| %>
-        <%= form.hidden_field :id, value: @order.id %>
-        <div class="columns is-multiline">
-          <div class="field column is-12">
-            <label class="label">Uso de CFDI</label>
-            <div class="select is-rounded">
-              <%= form.select :uso_cfdi, Order::UsoCFDI, {required: true}, {} %>
-            </div>
-          </div>
-          <div class="field column is-12">
-            <label class="label">Cliente</label>
-            <div class="control">
-              <%= form.select :customer_id, options_for_select(@corp.customers.active.default.collect {|cus| ["#{cus.tel} - #{cus.razon}", cus.id] }, @order.customer_id),
-              {prompt: "Selecciona un cliente", required: true},
-              { "data-controller": "slimselect", class: "ss2"}
-              %>
-            </div>
-          </div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'sale-svgrepo-com.svg', class: "invert", alt: "Totales" %>
+      </span>
+      Utilidad y costo 
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Costo</div>
+        <p class="contentt has-text-warning"><%= number_to_currency(@order.costo) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Utilidad</div>
+        <% if @order.ganancia > 0 %>
+          <p class="contentt has-text-success"><%= number_to_currency(@order.ganancia) %></p>
+        <% else %>
+          <p class="contentt"><%= number_to_currency(@order.ganancia) %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<% if @order.credito? %>
+  <div class="box">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'donut-bitten-svgrepo-com.svg', class: "invert", alt: "Deuda" %>
+        </span>
+        Depositos y deuda 
+      </h2>
+    </div>
+    <div class="box_content">
+      <div class="columns is-mobile is-multiline">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Debe</div>
+          <p class="contentt">
+            <%= number_to_currency(@order.debe) %>
+          </p>
         </div>
-        <%= form.submit "Timbrar", class: "button is-primary is-fullwidth is-rounded" %>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Abonado</div>
+          <p class="contentt"><%= number_to_currency(@order.abonado) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Vence</div>
+          <p class="contentt <%= @order.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(@order.deadline, format: :long) %></p>
+        </div>
+      </div>
+      <% if @order.deposits.any? %>
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Num operación</th>
+              <th>Forma de pago</th>
+              <th>Monto</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @order.deposits.each do |depo| %>
+              <tr>
+                <td>
+                  <%= depo.folio %>
+                </td>
+                <td>
+                  <%= depo.created_at.strftime("%d/%m/%Y %I:%M %p") %>
+                </td>
+                <td>
+                  <%= depo.num_operacion ? depo.num_operacion : '-' %>
+                </td>
+                <td>
+                  <%= depo.forma_pago&.titleize %>
+                </td>
+                <td>
+                  <%= number_to_currency depo.monto %>
+                </td>
+                <td>
+                  <div class="buttons">
+                    <% if depo.sat_error.present? %>
+                      <button class="mtrigger button is-danger is-small is-rounded" data-target="sat_error_<%= depo.id %>">
+                        <span class="material-icons-round mr-2">
+                          assignment_late
+                        </span>
+                      </button>
+                      <%# modal for deposit.sat_error %>
+                      <div id="sat_error_<%= depo.id %>" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-content">
+                          <div class="box">
+                            <h2 class="subtitle is-6">
+                              <span class="material-icons-round">
+                                assignment_late
+                              </span>
+                              Error SAT del abono ID <%= depo.id %>
+                            </h2>
+                            <p class="has-text-danger"><%= depo.sat_error %></p>
+                          </div>
+                        </div>
+                        <button class="modal-close is-large" aria-label="close"></button>
+                      </div>
+                    <% end %>
+                    <%= link_to pdf_abono_path( depo.folio), class: "button is-link is-small is-rounded", target: '_blank' do %>
+                      <span class="material-icons-round">
+                        picture_as_pdf
+                      </span>
+                      PDF
+                    <% end %>
+                    <%= link_to ticket_abono_path(depo.folio), class: "button is-link is-small is-rounded", target: '_blank' do %>
+                      <span class="material-icons-round">
+                        theaters
+                      </span>
+                      Ticket
+                    <% end %>
+                    <% if depo.xml.present? %>
+                      <%= link_to abono_xml_path(depo.folio), class: "button is-link is-small is-rounded", target: '_blank' do %>
+                        <span class="material-icons-round">
+                          code
+                        </span>
+                        XML
+                      <% end %>
+                    <% end %>
+                    <button class="mtrigger button is-rounded is-link is-small" data-target="send_abono_email_<%= depo.id %>">
+                      <span class="material-icons-round mr-2">
+                        email
+                      </span>
+                      Enviar por email
+                    </button>
+                    <%# modal for send_abono_email %>
+                    <div id="send_abono_email_<%= depo.id %>" class="modal">
+                      <div class="modal-background"></div>
+                      <div class="modal-content">
+                        <div class="box">
+                          <%= form_with url: send_abono_email_deposits_path(folio: depo.folio), method: :post do |form| %>
+                            <div class="columns is-multiline">
+                              <div class="field column is-12">
+                                <label class="label">Email</label>
+                                <%= form.email_field :email, value: @order.customer&.email.present? ? @order.customer.email : '', class: 'control input is-rounded', required: true %>
+                              </div>
+                            </div>
+                            <%= form.submit "Enviar", class: "button is-primary is-fullwidth is-rounded" %>
+                          <% end %>
+                        </div>
+                      </div>
+                      <button class="modal-close is-large" aria-label="close"></button>
+                    </div>
+                    <% if current_user.admin? and @order.tipo == 'remision' and (@order.pagado? or @order.credito?) and false  %>
+                      <button class="mtrigger button is-rounded is-warning is-small" data-target="mod_forma_pago_<%= depo.id %>">
+                        <span class="material-icons-round mr-2">
+                          edit
+                        </span>
+                        Modificar forma de pago
+                      </button>
+                      <%# modal for modificar_forma_pago %>
+                      <div id="mod_forma_pago_<%= depo.id %>" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-content">
+                          <div class="box">
+                            <%= form_with url: modificar_forma_pago_deposits_path(deposit_id: depo.id, order_id: @order.id), method: :post do |form| %>
+                              <div class="columns is-multiline">
+                                <div class="field column is-12">
+                                  <label class="label">Forma pago</label>
+                                  <div class="select">
+                                    <%= form.select(:forma_pago, options_for_select(Deposit.forma_pagos.collect {|k, v| [k.humanize, k] }, depo.forma_pago), {class: ""}) %>
+                                  </div>
+                                </div>
+                              </div>
+                              <%= form.submit "Modificar", class: "button is-primary is-fullwidth is-rounded" %>
+                            <% end %>
+                          </div>
+                        </div>
+                        <button class="modal-close is-large" aria-label="close"></button>
+                      </div>
+                    <% end %>
+                    <% if !@order.pagado? or current_user.admin? %>
+                      <%= button_to deposit_path(depo), data: { turbo_confirm: "Estas seguro?" }, method: :delete, class: "button is-danger is-small is-rounded" do %>
+                        <span class="material-icons-round">
+                          delete_forever
+                        </span>
+                        Cancelar
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       <% end %>
     </div>
   </div>
-  <button class="modal-close is-large" aria-label="close"></button>
-</div>
+<% end %>
+<%# modals %>
+<% if !@order.timbre? and @corp.fac_and_timbres? %>
+  <div id="timbraa" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <%= form_with url: "#", method: :post do |form| %>
+          <%= form.hidden_field :id, value: @order.id %>
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <label class="label">Uso de CFDI</label>
+              <div class="select is-rounded">
+                <%= form.select :uso_cfdi, Order::UsoCFDI, {required: true}, {} %>
+              </div>
+            </div>
+            <div class="field column is-12">
+              <label class="label">Cliente</label>
+              <div class="control">
+                <%= form.select :customer_id, options_for_select(@corp.customers.active.default.collect {|cus| ["#{cus.tel} - #{cus.razon}", cus.id] }, @order.customer_id),
+              {prompt: "Selecciona un cliente", required: true},
+              { "data-controller": "slimselect", class: "ss2"}
+              %>
+              </div>
+            </div>
+          </div>
+          <%= form.submit "Timbrar", class: "button is-primary is-fullwidth is-rounded" %>
+        <% end %>
+      </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+<% end %>
 <%# modal for send_order_email %>
 <div id="send_order_email" class="modal">
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box">
-      <%= form_with url: "#", method: :post do |form| %>
+      <%= form_with url: send_email_orders_path(folio: @order.folio), method: :post do |form| %>
         <div class="columns is-multiline">
           <div class="field column is-12">
             <label class="label">Email</label>
@@ -276,6 +477,45 @@
           </div>
         </div>
         <%= form.submit "Enviar", class: "button is-primary is-fullwidth is-rounded" %>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<%# modal anadir abono %>
+<div id="anadir_abono" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <%= form_with url: deposits_path, method: :post do |form| %>
+        <div class="columns is-multiline">
+          <%= form.hidden_field :order_id, value: @order.id %>
+          <div class="field column is-12">
+            <label class="label">Monto (debe: $<%= @order.debe %>)</label>
+            <div class="control">
+              <%= form.number_field :monto, class: 'input is-rounded', step: 'any', min: '0.01', max: @order.debe, required: true %>
+            </div>
+          </div>
+          <div class="field column is-6">
+            <label class="label">Fecha pago</label>
+            <div class="control">
+              <%= form.datetime_field :created_at, class: 'input is-rounded', required: true, max: Time.current + 1.hour %>
+            </div>
+          </div>
+          <div class="field column is-6">
+            <label class="label">Forma pago</label>
+            <div class="select is-rounded">
+              <%= form.select :forma_pago, Order.forma_pagos.collect {|k, v| [k.humanize, v] }, {include_blank: true, required: true} %>
+            </div>
+          </div>
+          <div class="field column is-12">
+            <label class="label">Numero de operación</label>
+            <div class="control">
+              <%= form.text_field :num_operacion, class: 'input is-rounded' %>
+            </div>
+          </div>
+        </div>
+        <%= form.submit "Añadir", class: "button is-primary is-fullwidth is-rounded" %>
       <% end %>
     </div>
   </div>

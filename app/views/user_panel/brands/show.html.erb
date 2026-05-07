@@ -1,0 +1,35 @@
+<% content_for :title, "Detalle de la Marca" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle de la Marca</h2>
+  <div class="actions">
+    <%= link_to brands_path, class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <%= link_to edit_brand_path(@brand), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+      </span>
+      Editar
+    <% end %>
+  </div>
+</div>
+<div class='box mt-4'>
+  <div class='columns is-multiline'>
+    <div class="column is-2">
+      <% odd_even = rand(1..2) %>
+      <%= image_tag 'items.svg', alt: 'item', class: 'invert', loading: 'lazy' %>
+    </div>
+    <div class="column is-10">
+      <h3 class="titlee2 is-3 mb-4"><%= @brand.name %></h3>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Fecha de creación</div>
+          <p class="contentt"><%= l(@brand.created_at, format: :long) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,11 +6,11 @@
     <%= search_form_for @q, url: new_order_path do |f| %>
       <div class="columns is-multiline">
         <div class="column is-8">
-          <%= f.search_field :name_or_sku_cont, class: 'is-rounded search_input', placeholder: 'Nombre' %>
+          <%= f.search_field :name_or_sku_cont, class: 'is-rounded search_input', placeholder: 'Nombre/SKU' %>
         </div>
         <div class="column is-2">
           <div class="select is-rounded">
-            <%= f.select :brand_id_eq, options_for_select(@brands.map {|b| [b.name, b.id]}, @q.brand_id_eq), {prompt: "Marca"}, {class: ""} %>
+            <%= f.select :brand_id_eq, options_for_select(@brands.map {|b| [b.name&.titleize, b.id]}, @q.brand_id_eq), {prompt: "Marca"}, {class: ""} %>
           </div>
         </div>
         <div class="column is-2">
@@ -19,40 +19,34 @@
       </div>
     <% end %>
     <%# categorias %>
-    <div class="columns is-multiline mt-2">
-      <div class="column is-4">
-        <%= link_to new_order_path do %>
-          <div class="linkk big neon <%= 'active' if @q.cate_eq.nil? %>">
-            <%= image_tag 'layers.svg', alt: 'cargos' %>
-            <div>
-              <div class="labell">Categoria</div>
-              <div class="bold">Todo</div>
-            </div>
+    <div class="columns is-multiline is-mobile mt-2">
+      <% Item.cates.each_with_index do |cate, index| %>
+        <% if index == 0  %>
+          <div class="column is-4-desktop is-6-tablet is-6-mobile">
+            <%= link_to new_order_path do %>
+              <div class="linkk big neon <%= 'active' if @q.cate_eq.nil? %>">
+                <%= image_tag 'layers.svg', alt: 'cargos' %>
+                <div>
+                  <div class="labell">Categoria</div>
+                  <div class="bold">Todo</div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="column is-4-desktop is-6-tablet is-6-mobile">
+            <%= link_to new_order_path(q: { cate_eq: cate[1] }) do %>
+              <div class="linkk big neon <%= 'active' if @q.cate_eq == cate[1] %>">
+                <%= image_tag 'layers.svg', alt: 'cargos' %>
+                <div>
+                  <div class="labell">Categoria</div>
+                  <div class="bold"><%= cate[0].titleize %></div>
+                </div>
+              </div>
+            <% end %>
           </div>
         <% end %>
-      </div>
-      <div class="column is-4">
-        <%= link_to new_order_path(q: { cate_eq: 0 }) do %>
-          <div class="linkk big neon <%= 'active' if @q.cate_eq == 0 %>">
-            <%= image_tag 'layers.svg', alt: 'cargos' %>
-            <div>
-              <div class="labell">Categoria</div>
-              <div class="bold">Productos</div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-      <div class="column is-4">
-        <%= link_to new_order_path(q: { cate_eq: 1 }) do %>
-          <div class="linkk big neon <%= 'active' if @q.cate_eq == 1 %>">
-            <%= image_tag 'layers.svg', alt: 'cargos' %>
-            <div>
-              <div class="labell">Categoria</div>
-              <div class="bold">Servicios</div>
-            </div>
-          </div>
-        <% end %>
-      </div>
+      <% end %>
     </div>
     <div class="columns is-multiline">
       <% @items.each do |item| %>
@@ -70,15 +64,23 @@
               </div>
             </div>
             <div class="card-content pt-0">
-              <p class="is-size-7 has-text-weight-bold" style="color: var(--neon-green);">
-                <%= item.cate&.titleize %></p>
-              <h3 class="title is-5 mb-2 font-headline"><%= item.name %></h3>
+              <p class="is-size-7 has-text-weight-bold has-text-neon" >
+                <%= item.cate&.titleize %>
+              </p>
+              <h3 class="title is-5 mb-2 font-headline"><%= item.brand&.name&.titleize %> | <%= item.name %></h3>
               <div class="level is-mobile">
                 <div class="level-left">
                   <p class="is-size-7 has-text-grey"><%= item.sku %></p>
                 </div>
                 <div class="level-right">
-                  <p class="has-text-weight-bold"><%= number_to_currency(item.price) %></p>
+                  <% if item.offer.present? %>
+                    <span class="has-text-weight-bold has-text-neon">
+                      <%= number_to_currency(item.offer) %>
+                    </span>
+                    <span class="has-text-weight-bold tacha"><%= number_to_currency(item.price) %></span>
+                  <% else %>
+                    <span class="has-text-weight-bold"><%= number_to_currency(item.price) %></span>
+                  <% end %>
                 </div>
               </div>
               <button class="button is-primary is-fullwidth is-rounded mtrigger" data-target="<%= item.id %>">
@@ -106,7 +108,7 @@
                   <div class="field column is-6">
                     <label class="label">Precio</label>
                     <div class="control">
-                      <%= form.number_field :precio, value: item.price, min: 1, step: 'any', class: "input is-rounded" %>
+                      <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 1, step: 'any', class: "input is-rounded" %>
                     </div>
                   </div>
                   <div class="field column is-6">

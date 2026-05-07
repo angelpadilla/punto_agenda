@@ -9,16 +9,20 @@
       </ul>
     </div>
   <% end %>
-  <div class='box'>
+  <div class='box mt-4'>
     <h2 class='subtitle'>Datos basicos</h2>
     <div class='columns is-multiline'>
-      <div class='field column is-12'>
-        <label class='label'>Nombre</label>
-        <%= form.text_field :name, class: "control input #{form.object.errors.include?(:name) ? 'is-danger' : ''}", placeholder: 'Nombre' %>
-      </div>
+      <%= t_field(form, :name, label: "Nombre de la marca", placeholder: "Ej. Coca-Cola") %>
     </div>
   </div>
-  <%= form.submit 'Guardar', class: 'button is-success has-text-white is-fullwidth' %>
+  <div class="field is-grouped is-justify-content-space-between mt-5">
+    <div class="control">
+      <%= link_to "Cancelar", brands_path, class: "button is-rounded" %>
+    </div>
+    <div class="control">
+      <%= form.submit "Guardar", class: "button is-rounded is-primary" %>
+    </div>
+  </div>
 <% end %>
 <br>
 <br>

@@ -1,12 +1,11 @@
 class AbonoPdf < Prawn::Document
   def initialize(deposit:)
     super(top_margin: 20)
-    @setting = Setting.first
     @order = deposit.depositable
     @deposit = deposit
     @customer = @order.customer
-    @alias = @order.alias
     @fontsize = 9
+    @corp = @order.corp
     font_size @fontsize
     head
     cliente
@@ -17,9 +16,9 @@ class AbonoPdf < Prawn::Document
   def head
     move_down 5
 
-    if @setting.logo.attached?
-      logo_path = ActiveStorage::Blob.service.path_for(@setting.logo.key)
-      image(logo_path, width: 200)
+    if @corp.logo.attached?
+      logo_path = ActiveStorage::Blob.service.path_for(@corp.logo.key)
+      image(logo_path, height: 80)
       move_down 10
     end
 
@@ -33,10 +32,10 @@ class AbonoPdf < Prawn::Document
 
     text_box(
       %(<strong>Emisor</strong>\n
-        <strong>RFC</strong>: #{@alias.rfc}
-        <strong>Razon</strong>: #{@alias.razon}
-        <strong>Direccion</strong>: #{@alias.calle.titleize} #{@alias.num_ext} #{@alias.num_int}, #{@alias.colonia}, #{@alias.ciudad}, #{@alias.estado.titleize}
-        <strong>Tel</strong>: #{@alias.phone}
+        <strong>RFC</strong>: #{@corp.rfc}
+        <strong>Razon</strong>: #{@corp.razon}
+        <strong>Direccion</strong>: #{@corp.calle.titleize} #{@corp.num_ext} #{@corp.num_int}, #{@corp.colonia}, #{@corp.ciudad}, #{@corp.estado.titleize}
+        <strong>Tel</strong>: #{@corp.phone}
       ),
       at: [ 0, y_pos ],
       width: (bounds.width / 2),
@@ -46,16 +45,13 @@ class AbonoPdf < Prawn::Document
     )
 
       text_box(
-        %(<strong>Detalles complemento (abono)</strong> \n
-        <strong>Folio</strong>: #{@deposit.id}
+        %(<strong>Folio</strong>: #{@deposit.folio}
         <strong>Fecha</strong>: #{@deposit.created_at.strftime('%d/%m/%Y')}
         <strong>Forma de pago</strong>: #{@deposit.forma_pago&.titleize}
         #{@deposit.xml.present? ? "<strong>Uso CFDI</strong>: #{@deposit.uso_cfdi}" : nil}
-
         <strong>Detalles venta</strong>
-
-        <strong>Folio venta</strong>: #{@order.sku}
-        <strong>Estatus de venta</strong>: #{@order.status&.titleize}
+        <strong>Folio venta</strong>: #{@order.folio}
+        <strong>Estatus de venta</strong>: #{@order.status_pago&.titleize}
         <strong>Uso CFDI</strong>: Por definir
         <strong>Forma de pago</strong>: #{@order.forma_pago&.titleize}
         ),
@@ -71,16 +67,16 @@ class AbonoPdf < Prawn::Document
 
   def cliente
     move_down 10
-    text "Receptor", style: :bold, size: (@fontsize + 1)
+    text "Receptor", style: :bold, size: (@fontsize)
     move_down 5
 
     if @customer
       text "<strong>Razon</strong>: #{@customer.razon}", inline_format: true
       text "<strong>RFC</strong>: #{@customer.rfc}", inline_format: true
       unless @order.cotizacion?
-        text "<strong>Estado</strong>: #{@customer.estado}", inline_format: true
-        text "<strong>C.P.</strong>: #{@customer.cp}, #{@customer.estado}", inline_format: true
-        text "<strong>Ciudad</strong>: #{@customer.ciudad}", inline_format: true
+        text "<strong>Estado</strong>: #{@customer.estado}", inline_format: true if @customer.estado.present?
+        text "<strong>C.P.</strong>: #{@customer.cp}, #{@customer.estado}", inline_format: true if @customer.cp.present?
+        text "<strong>Ciudad</strong>: #{@customer.ciudad}", inline_format: true if @customer.ciudad.present?
       end
     else
       text "Cliente eliminado de sistema", bold: true
@@ -89,11 +85,21 @@ class AbonoPdf < Prawn::Document
 
   def body
     move_down 10
-    table_content = [
-      [ "Unidad", "Clave Prod. Serv.", "Concepto", "Cantidad" ],
-      [ "ACT", "84111506", "Pago", "1" ]
-    ]
 
+    if @deposit.xml.present?
+      table_content = [
+        [ "Unidad", "Clave Prod. Serv.", "Metodo", "Concepto", "Cantidad", "Monto" ],
+        [ "ACT", "84111506", @deposit.forma_pago&.titleize, "Pago", "1", number_to_currency(@deposit.monto) ]
+      ]
+    else
+      table_content = [
+        [ "Concepto", "Metodo", "Cantidad", "Monto" ],
+        [ "Pago", @deposit.forma_pago&.titleize, "1", number_to_currency(@deposit.monto) ]
+      ]
+    end
+
+    text "Detalles de complemento (abono)", style: :bold, size: (@fontsize + 1)
+    move_down 5
     table(table_content) do
       self.header = true
       row(0).font_style = :bold
@@ -101,8 +107,10 @@ class AbonoPdf < Prawn::Document
       self.row_colors = [ "F4F4F4", "ffffff" ]
       self.width = 540
     end
-    move_down 10
+    move_down 25
 
+    text "Historial de abonos", style: :bold, size: (@fontsize + 1)
+    move_down 5
     table(items_abono) do
       self.header = true
       row(0).font_style = :bold
@@ -112,7 +120,6 @@ class AbonoPdf < Prawn::Document
     end
 
     move_down 20
-    text "Saldo pagado: $ #{@deposit.monto}", size: @fontsize, align: :right, style: :bold
   end
 
   def items_abono
@@ -123,7 +130,7 @@ class AbonoPdf < Prawn::Document
     @order.deposits.each_with_index do |dep, index|
       item = [
         (index + 1).to_s,
-        dep.id,
+        dep.folio,
         dep.forma_pago&.titleize,
         saldo_anterior.to_s,
         dep.monto.to_s,
@@ -140,7 +147,7 @@ class AbonoPdf < Prawn::Document
     move_down 20
 
     y_pos = cursor
-    qr = RQRCode::QRCode.new("https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@deposit.sat_uuid}&re=#{@alias.rfc}&rr=#{@order.customer.rfc}&tt=#{@deposit.monto}&fe=#{@deposit.sat_cfdi[-8..-1]}")
+    qr = RQRCode::QRCode.new("https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@deposit.sat_uuid}&re=#{@corp.rfc}&rr=#{@order.customer.rfc}&tt=#{@deposit.monto}&fe=#{@deposit.sat_cfdi[-8..-1]}")
     svg "#{qr.as_svg}", at: [ 0, y_pos ], width: 150
 
     bounding_box([ 160, y_pos ], width: 370, height: 180) do
@@ -167,4 +174,10 @@ class AbonoPdf < Prawn::Document
       text "Este documento es una representación impresa de un CFDI", size: 7
     end
   end
+
+  private
+  def number_to_currency(number)
+    ActionController::Base.helpers.number_to_currency(number)
+  end
+
 end

@@ -26,6 +26,8 @@ export default class extends Controller {
         this.setFormaPago(pagable);
         this.setStatusPago(pagable);
         this.setUsoCFDI(tipo === "factura");
+
+        this.checkStatusPago();
     }
 
     checkStatusPago() {
@@ -43,6 +45,7 @@ export default class extends Controller {
         this.status_pago.value = visible ? "pagado" : "";
         this.status_pago.required = visible;
         this.$show(this.status_pago_container, visible);
+        this.setFormaPago(visible);
     }
 
     setFormaPago(visible) {

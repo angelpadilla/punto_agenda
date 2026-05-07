@@ -10,7 +10,7 @@ class Order < ApplicationRecord
 
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)
-    %w[id tipo customer_id folio]
+    %w[id tipo customer_id folio status_pago]
   end
 
   # Add this method to whitelist explicit associations for Ransack

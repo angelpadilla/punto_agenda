@@ -1,10 +1,9 @@
 class OrderPdf < Prawn::Document
   def initialize(order:)
     super(top_margin: 20)
-    @setting = Setting.first
     @order = order
+    @corp = order.corp
     @customer = order.customer
-    @alias = order.alias
 
     font_size 9
 
@@ -21,9 +20,9 @@ class OrderPdf < Prawn::Document
     # text "Let's see which font we are using: #{font.inspect}"
     move_down 5
 
-    if @setting.logo.attached?
-      logo_path = ActiveStorage::Blob.service.path_for(@setting.logo.key)
-      image(logo_path, width: 200)
+    if @corp.logo.attached?
+      logo_path = ActiveStorage::Blob.service.path_for(@corp.logo.key)
+      image(logo_path, height: 100)
       move_down 10
     end
 
@@ -38,10 +37,10 @@ class OrderPdf < Prawn::Document
 
     text_box(
       %(<strong>Emisor</strong> \n
-        <strong>RFC</strong>: #{@alias.rfc}
-        <strong>Razon</strong>: #{@alias.razon}
-        <strong>Direccion</strong>: #{@alias.calle.titleize} #{@alias.num_ext} #{@alias.num_int}, #{@alias.colonia}, #{@alias.ciudad}, #{@alias.estado.titleize}
-        <strong>Tel</strong>: #{@alias.phone}
+        <strong>RFC</strong>: #{@corp.rfc}
+        <strong>Razon</strong>: #{@corp.razon}
+        <strong>Direccion</strong>: #{@corp.calle.titleize} #{@corp.num_ext} #{@corp.num_int}, #{@corp.colonia}, #{@corp.ciudad}, #{@corp.estado.titleize}
+        <strong>Tel</strong>: #{@corp.phone}
       ),
       at: [ 0, y_pos ],
       width: (bounds.width / 2),
@@ -68,11 +67,11 @@ class OrderPdf < Prawn::Document
     else
       text_box(
         %(<strong>Detalles</strong> \n
-          <strong>Folio</strong>: #{@order.cotizacion? ?  @order.id : @order.sku}
+          <strong>Folio</strong>: #{@order.folio}
           <strong>Fecha folio</strong>: #{@order.fecha.strftime('%d/%m/%Y')}
           #{@order.cotizacion? ? "<strong>Tipo</strong>: Cotización" : nil }
           #{!@order.cotizacion? ? "<strong>Forma de pago</strong>: #{@order.forma_pago&.titleize}" : nil }
-          #{!@order.cotizacion? ? "<strong>Estatus del pago</strong>: #{@order.status&.titleize}" : nil }
+          #{!@order.cotizacion? ? "<strong>Estatus del pago</strong>: #{@order.status_pago&.titleize}" : nil }
         ),
         at: [ (bounds.width / 2), y_pos ],
         width: (bounds.width / 2),
@@ -118,11 +117,11 @@ class OrderPdf < Prawn::Document
 
     if @order.tipo == "factura"
       text "<strong>Subtotal</strong>: #{number_to_currency(@order.subtotal.round(4))} #{@order.moneda}", inline_format: true
-      text "<strong>IVA (16%)</strong>: #{number_to_currency(@order.iva.round(4))} #{@order.moneda}", inline_format: true
+      text "<strong>IVA (16%)</strong>: #{number_to_currency(@order.impuestos.round(4))} #{@order.moneda}", inline_format: true
       text "<strong>Total</strong>: #{number_to_currency(@order.total.round(4))} #{@order.moneda}", inline_format: true
     else
       text "<strong>Subtotal</strong>: #{number_to_currency(@order.subtotal.round(2))} #{@order.moneda}", inline_format: true
-      text "<strong>IVA (16%)</strong>: #{number_to_currency(@order.iva.round(2))} #{@order.moneda}", inline_format: true
+      text "<strong>IVA (16%)</strong>: #{number_to_currency(@order.impuestos.round(2))} #{@order.moneda}", inline_format: true
       text "<strong>Total</strong>: #{number_to_currency(@order.total.round(2))} #{@order.moneda}", inline_format: true
     end
 
@@ -133,17 +132,17 @@ class OrderPdf < Prawn::Document
 
   def notas
     move_down 20
-    if @order.nota_pdf.present?
-      text "*** #{@order.nota_pdf}", size: 8
+    if @order.nota_customer.present?
+      text "*** #{@order.nota_customer}", size: 8
     end
-    if @setting.factura_extra.present? and @order.tipo == "factura"
-      text @setting.factura_extra, size: 8
+    if @corp.text_factura.present? and @order.tipo == "factura"
+      text @corp.text_factura, size: 8
     end
-    if @setting.remision_extra.present? and @order.tipo == "remision"
-      text @setting.remision_extra, size: 8
+    if @corp.text_remision.present? and @order.tipo == "remision"
+      text @corp.text_remision, size: 8
     end
-    if @setting.cotizacion_extra.present? and @order.cotizacion?
-      text @setting.cotizacion_extra, size: 8
+    if @corp.text_cotizacion.present? and @order.cotizacion?
+      text @corp.text_cotizacion, size: 8
     end
   end
 
@@ -152,7 +151,7 @@ class OrderPdf < Prawn::Document
 
       # text "tamaño de hoja: #{bounds.width}"
       y_pos = cursor
-      qr = RQRCode::QRCode.new("https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@order.sat_uuid}&re=#{@alias.rfc}&rr=#{@order.customer.rfc}&tt=#{@order.total}&fe=#{@order.sat_cfdi[-8..-1]}")
+      qr = RQRCode::QRCode.new("https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@order.sat_uuid}&re=#{@corp.rfc}&rr=#{@order.customer.rfc}&tt=#{@order.total}&fe=#{@order.sat_cfdi[-8..-1]}")
       svg "#{qr.as_svg}", at: [ 0, y_pos ], width: 150
 
       bounding_box([ 160, y_pos ], width: 370, height: 180) do

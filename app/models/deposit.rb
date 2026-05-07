@@ -38,4 +38,15 @@ class Deposit < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     %W[depositable]
   end
+
+  before_create :set_1
+
+  private
+  def set_1
+    token = SecureRandom.alphanumeric(10).downcase
+    while Order.where(folio: token).exists?
+      token = SecureRandom.alphanumeric(10).downcase
+    end
+    self.folio = token
+  end
 end

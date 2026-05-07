@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_04_090234) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_103538) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -109,8 +109,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_090234) do
     t.string "text_factura"
     t.string "text_remision"
     t.string "tiktok_url"
-    t.integer "timbres"
+    t.integer "timbres", default: 0
     t.string "tipo_negocio"
+    t.integer "tipo_plan", default: 0, null: false
     t.datetime "updated_at", null: false
     t.boolean "visto", default: false
     t.string "whatsapp"
@@ -119,6 +120,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_090234) do
   create_table "customers", force: :cascade do |t|
     t.boolean "active", default: true
     t.string "calle"
+    t.string "canal", default: "interno"
     t.string "ciudad"
     t.string "colonia"
     t.integer "corp_id", null: false
@@ -169,6 +171,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_090234) do
     t.datetime "created_at", null: false
     t.integer "depositable_id"
     t.string "depositable_type"
+    t.string "folio"
     t.string "forma_pago"
     t.string "moneda", default: "MXN"
     t.decimal "monto", precision: 17, scale: 4

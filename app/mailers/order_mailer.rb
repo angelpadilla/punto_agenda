@@ -4,13 +4,13 @@ class OrderMailer < ApplicationMailer
     email = params[:email]
 
     pdf = OrderPdf.new(order: @order)
-    attachments["venta_#{@order.sku}.pdf"] = pdf.render
+    attachments["venta_#{@order.folio}.pdf"] = pdf.render
 
     if @order.xml.present? and @order.tipo == "factura"
-      attachments["venta_#{@order.sku}.xml"] = @order.xml
+      attachments["venta_#{@order.folio}.xml"] = @order.xml
     end
 
-    mail(to: email, subject: "POSS Venta #{@order.sku}")
+    mail(to: email, subject: "POSS Venta #{@order.folio}")
   end
 
   def send_abono
@@ -18,12 +18,12 @@ class OrderMailer < ApplicationMailer
     email = params[:email]
 
     pdf = AbonoPdf.new(deposit: @deposit)
-    attachments["abono_#{@deposit.id}.pdf"] = pdf.render
+    attachments["abono_#{@deposit.folio}.pdf"] = pdf.render
 
     if @deposit.xml.present? and @deposit.depositable&.tipo == "factura"
-      attachments["abono_#{@deposit.id}.xml"] = @deposit.xml
+      attachments["abono_#{@deposit.folio}.xml"] = @deposit.xml
     end
 
-    mail(to: email, subject: "POSS Abono #{@deposit.id}")
+    mail(to: email, subject: "POSS Abono #{@deposit.folio}")
   end
 end

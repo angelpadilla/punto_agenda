@@ -6,7 +6,7 @@ class UserPanel::BrandsController < UserPanelController
     brands = @corp.brands.default
 
     @q = brands.ransack(params[:q])
-    @pagy, @brands = pagy(@q.result(distinct: true), limit: 8)
+    @pagy, @brands = pagy(@q.result(distinct: true), limit: 10)
   end
 
   # GET /brands/1 or /brands/1.json
@@ -28,7 +28,7 @@ class UserPanel::BrandsController < UserPanelController
 
     respond_to do |format|
       if @brand.save
-        format.html { redirect_to @brand, notice: "Brand was successfully created." }
+        format.html { redirect_to @brand, notice: "Marca creada exitosamente." }
         format.json { render :show, status: :created, location: @brand }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -53,7 +53,7 @@ class UserPanel::BrandsController < UserPanelController
   def update
     respond_to do |format|
       if @brand.update(brand_params)
-        format.html { redirect_to @brand, notice: "Brand was successfully updated.", status: :see_other }
+        format.html { redirect_to @brand, notice: "Marca actualizada exitosamente.", status: :see_other }
         format.json { render :show, status: :ok, location: @brand }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -67,7 +67,7 @@ class UserPanel::BrandsController < UserPanelController
     @brand.destroy!
 
     respond_to do |format|
-      format.html { redirect_to brands_path, notice: "Brand was successfully destroyed.", status: :see_other }
+      format.html { redirect_to brands_path, notice: "Marca eliminada exitosamente.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -75,7 +75,7 @@ class UserPanel::BrandsController < UserPanelController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_brand
-      @brand = Brand.find(params.expect(:id))
+      @brand = @corp.brands.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

@@ -12,6 +12,11 @@ class Customer < ApplicationRecord
 
   enum :tipo, publico: 0, mayorista: 1
 
+  Canales = [
+    [ "Web", :web ],
+    [ "Interno", :interno ]
+  ]
+
   TelPrefixes = {
     "+52" => "Mexico",
     "+1" => "Estados Unidos",
@@ -125,11 +130,16 @@ class Customer < ApplicationRecord
       .order("COUNT(orders.id) DESC") ## Si quieres ordenar por cantidad de vencidas en lugar de por ID del cliente
   }
 
-  # Enum for tipo
-
+  def facturacion?
+    if self.cp.present? and self.rfc.present? and self.razon.present? and self.regimen.present? and self.estado.present?
+      true
+    else
+      false
+    end
+  end
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)
-    %w[id tipo tel razon rfc estado deuda_total]
+    %w[id tipo tel razon rfc estado deuda_total canal]
   end
 
   # Add this method to whitelist explicit associations for Ransack

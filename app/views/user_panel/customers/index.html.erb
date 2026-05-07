@@ -38,11 +38,16 @@
 <hr>
 <%= search_form_for @q, url: customers_path do |f| %>
   <div class="columns is-multiline">
-    <div class="column is-6">
+    <div class="column is-4">
       <%= f.search_field :razon_or_rfc_cont, class: 'is-rounded search_input', placeholder: 'Nombre, Razon, RFC' %>
     </div>
     <div class="column is-3">
       <%= f.search_field :tel_eq, placeholder: "Teléfono", class: "is-rounded search_input" %>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :canal_eq, options_for_select(Customer::Canales, (params[:q] and !params[:q][:canal_eq].blank?) ? params[:q][:canal_eq] : nil), {prompt: "Canal"}, {class: ""} %>
+      </div>
     </div>
     <div class="column is-3">
       <div class="buttons">
@@ -63,6 +68,7 @@
     <div class="table_cell"><%= sort_link(@q, :rfc, 'RFC') %></div>
     <div class="table_cell"><%= sort_link(@q, :tel, 'Teléfono') %></div>
     <div class="table_cell"><%= sort_link(@q, :email, 'Email') %></div>
+    <div class="table_cell"><%= sort_link(@q, :canal, 'Canal') %></div>
   </div>
   <div class="table_content">
     <%= render @customers %>

@@ -1,6 +1,11 @@
 <% content_for :title, "Ajustes de empresa" %>
 <div class="flexx space-b flex-end">
-  <h2 class="titlee">Ajustes <%= @corp.id %></h2>
+  <h2 class="titlee">
+    Ajustes 
+    <% if Rails.env.development? %>
+      (<%= @corp.id %>)
+    <% end %>
+  </h2>
   <div class="actions">
     <%= link_to user_corp_landing_path, class: "button is-rounded mr-2" do %>
       <span class="icon mr-2">
@@ -12,25 +17,29 @@
       <span class="icon mr-2">
         <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
       </span>
-      Editar
+      Editar ajustes
     <% end %>
   </div>
 </div>
-<% if @corp.logo.attached? %>
-  <div class="docs_grid mt-4">
-    <div class="doc_tile">
-      <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
-      <div class="contentt">
-        <div class="file_name" ><%= @corp.logo.filename %></div>
-        <div class="labell"><%= @corp.logo.content_type %> · <%= number_to_human_size(@corp.logo.byte_size) %> </div>
+<% if !@corp.premium? %>
+  <div class="box mt-4">
+    <div class="columns">
+      <div class="column is-9">
+        <h2>Tipo de plan</h2>
+        <p class="has-text-neon"><%= @corp.tipo_plan.titleize %></p>
       </div>
-      <%= link_to rails_blob_path(@corp.logo, disposition: "attachment"), class: "button is-rounded actionn" do %>
-        Descargar
-      <% end %>
+      <div class="column">
+        <div class="button is-rounded is-fullwidth is-primary">
+          <span class="icon mr-1">
+            <%= image_tag 'shield-star-svgrepo-com.svg', alt: 'login' %>
+          </span>
+          Actualizar plan
+        </div>
+      </div>
     </div>
   </div>
 <% end %>
-<div class="box mt-4">
+<div class="box expandable is_active mt-4">
   <div class="box_header">
     <h2>
       <span class="icon mr-2">
@@ -38,32 +47,80 @@
       </span>
       Datos basicos
     </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
   </div>
-  <h3 class="titlee2 is-3 mb-4"><%= @corp.name %></h3>
-  <div class="columns is-multiline is-mobile">
-    <div class="column is-12-mobile is-6-tablet is-6-desktop">
-      <div class="labell">Nombre comercial</div>
-      <p class="contentt"><%= @corp.name %></p>
+  <div class="box_content">
+    <h3 class="titlee2 is-3 mb-4"><%= @corp.name %></h3>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Nombre comercial</div>
+        <p class="contentt"><%= @corp.name %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Email contacto</div>
+        <p class="contentt"><%= @corp.email %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Teléfono de contacto</div>
+        <p class="contentt"><%= @corp.phone %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">WhatsApp</div>
+        <p class="contentt"><%= @corp.whatsapp %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Tipo de negocio</div>
+        <p class="contentt"><%= @corp.tipo_negocio&.titleize %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">ID tienda</div>
+        <p class="contentt"><%= @corp.sku %></p>
+      </div>
     </div>
-    <div class="column is-12-mobile is-6-tablet is-6-desktop">
-      <div class="labell">Email contacto</div>
-      <p class="contentt"><%= @corp.email %></p>
+    <div class="docs_grid">
+      <% if @corp.logo.attached? %>
+        <div class="doc_tile">
+          <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
+          <div class="contentt">
+            <div class="file_name" >Logo</div>
+            <div class="labell"><%= @corp.logo.content_type %> · <%= number_to_human_size(@corp.logo.byte_size) %> </div>
+          </div>
+          <%= link_to rails_blob_path(@corp.logo, disposition: "attachment"), class: "button is-rounded actionn" do %>
+            Descargar
+          <% end %>
+        </div>
+      <% end %>
     </div>
-    <div class="column is-12-mobile is-6-tablet is-6-desktop">
-      <div class="labell">Teléfono de contacto</div>
-      <p class="contentt"><%= @corp.phone %></p>
-    </div>
-    <div class="column is-12-mobile is-6-tablet is-6-desktop">
-      <div class="labell">WhatsApp</div>
-      <p class="contentt"><%= @corp.whatsapp %></p>
-    </div>
-    <div class="column is-12-mobile is-6-tablet is-6-desktop">
-      <div class="labell">Tipo de negocio</div>
-      <p class="contentt"><%= @corp.tipo_negocio&.titleize %></p>
-    </div>
-    <div class="column is-12-mobile is-6-tablet is-6-desktop">
-      <div class="labell">ID tienda</div>
-      <p class="contentt"><%= @corp.sku %></p>
+  </div>
+</div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'documento.svg', alt: "Extras de ticket", class: "invert" %>
+      </span>
+      Extras de ticket
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline">
+      <div class="column is-12">
+        <div class="labell">Texto extra en cotizaciónnnn</div>
+        <p class="contentt"><%= @corp.text_cotizacion %></p>
+      </div>
+      <div class="column is-12">
+        <div class="labell">Texto extra en remisión</div>
+        <p class="contentt"><%= @corp.text_remision %></p>
+      </div>
+      <div class="column is-12">
+        <div class="labell">Texto extra en factura</div>
+        <p class="contentt"><%= @corp.text_factura %></p>
+      </div>
     </div>
   </div>
 </div>
@@ -173,7 +230,7 @@
       <span class="icon mr-2">
         <%= image_tag 'sat2.svg', alt: "Datos fiscales" %>
       </span>
-      Datos fiscales 
+      Datos fiscales (<%= @corp.timbres %> timbres disponibles)
     </h2>
     <span class="icon toggle_icon">
       <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
@@ -181,6 +238,10 @@
   </div>
   <div class="box_content">
     <div class="columns is-multiline is-mobile">
+      <div class="column is-12">
+        <div class="labell">Razon fiscal</div>
+        <p class="contentt"><%= @corp.razon %></p>
+      </div>
       <div class="column is-12-mobile is-6-tablet is-4-desktop">
         <div class="labell">Regimen fiscal</div>
         <p class="contentt"><%= @corp.regimen %></p>

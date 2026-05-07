@@ -4,12 +4,10 @@ class Abono80Pdf < Prawn::Document
     page_width = 72 * 2.8346
     super(page_size: [ page_width, 900 ], margin: [ 0, 5, 0, 0 ])
 
-    @setting = Setting.first
     @order = deposit.depositable
-    @alias = @order.alias
     @deposit = deposit
     @customer = @order.customer
-    @alias = @order.alias
+    @corp = @order.corp
     @fontsize = 9
     font_size @fontsize
     head
@@ -20,16 +18,17 @@ class Abono80Pdf < Prawn::Document
 
   def head
     move_down 10
-    if @setting.logo.attached?
-      logo_path = ActiveStorage::Blob.service.path_for(@setting.logo.key)
-      image(logo_path, width: 100, position: :center)
+    if @corp.logo.attached?
+      logo_path = ActiveStorage::Blob.service.path_for(@corp.logo.key)
+      image(logo_path, height: 80, position: :center)
       move_down 10
     end
 
     text "** Complemento de pago (abono) **", size: (@fontsize + 2), style: :bold, align: :center
     move_down 10
-    text "<strong>Folio</strong>: #{@deposit.id}", inline_format: true, size: (@fontsize + 2)
+    text "<strong>Folio</strong>: #{@deposit.folio}", inline_format: true, size: (@fontsize + 2)
     text "<strong>Monto pagado</strong>: #{number_to_currency(@deposit.monto)}", inline_format: true, size: (@fontsize + 2)
+    text "<strong>Metodo</strong>: #{@deposit.forma_pago&.titleize}", inline_format: true, size: (@fontsize + 2)
     move_down 10
     text "<strong>Fecha</strong>: #{@deposit.created_at.strftime('%d/%m/%Y')}", inline_format: true
     text "<strong>Forma de pago</strong>: #{@deposit.forma_pago&.titleize}", inline_format: true
@@ -39,8 +38,8 @@ class Abono80Pdf < Prawn::Document
 
     move_down 5
     text "Detalles venta", style: :bold, size: (@fontsize + 1)
-    text "<strong>Folio venta</strong>: #{@order.sku}", inline_format: true
-    text "<strong>Estatus de venta</strong>: #{@order.status&.titleize}", inline_format: true
+    text "<strong>Folio venta</strong>: #{@order.folio}", inline_format: true
+    text "<strong>Estatus de venta</strong>: #{@order.status_pago&.titleize}", inline_format: true
     text "<strong>Uso CFDI</strong>: Por definir", inline_format: true
     text "<strong>Forma de pago</strong>: #{@order.forma_pago&.titleize}", inline_format: true
     move_down 10
@@ -50,10 +49,10 @@ class Abono80Pdf < Prawn::Document
     move_down 5
 
     text "Emisor", style: :bold, size: (@fontsize + 1)
-    text @alias.razon
-    text "<strong>RFC</strong>: #{@alias.rfc}", inline_format: true
-    text "<strong>Direccion</strong>: #{@alias.calle.titleize} #{@alias.num_ext} #{@alias.num_int}, #{@alias.colonia}, #{@alias.ciudad}, #{@alias.estado.titleize}", inline_format: true
-    text "<strong>Tel</strong>: #{@alias.phone}", inline_format: true
+    text @corp.razon
+    text "<strong>RFC</strong>: #{@corp.rfc}", inline_format: true
+    text "<strong>Direccion</strong>: #{@corp.calle.titleize} #{@corp.num_ext} #{@corp.num_int}, #{@corp.colonia}, #{@corp.ciudad}, #{@corp.estado.titleize}", inline_format: true
+    text "<strong>Tel</strong>: #{@corp.phone}", inline_format: true
     move_down 5
 
     text "Receptor (cliente)", style: :bold, size: (@fontsize + 1)
@@ -84,17 +83,17 @@ class Abono80Pdf < Prawn::Document
     saldo_anterior = @order.total
 
     @order.deposits.each_with_index do |deposit, index|
-      num_deposit = "#{(index + 1)}                                  #{deposit.id}"
+      num_deposit = "#{(index + 1)}"
       table([
-        [ "Num. Parcialidad    Folio", "Metodo pago" ],
-        [ num_deposit, "#{deposit.forma_pago&.titleize}" ]
-      ], width: bounds.width, column_widths: [ (ancho * 0.6), (ancho * 0.4) ]) do
-        self.cell_style = { borders: [], padding: 0, size: font_size }
+        [ "Num. Parcialidad", "Folio", "Metodo pago" ],
+        [ num_deposit, deposit.folio, deposit.forma_pago&.titleize ]
+      ], width: bounds.width, column_widths: [ (ancho * 0.35), (ancho * 0.45), (ancho * 0.2) ]) do
+        self.cell_style = { borders: [], padding: 1, size: font_size }
         row(0).font_style = :bold
         # row(0).size = font_size - 1
-        columns(1).align = :right
+        # columns(1).align = :center
       end
-      move_down 3
+      move_down 5
 
       table([
         [ "Saldo anterior", "Saldo pagado", "Saldo insoluto" ],
@@ -121,7 +120,7 @@ class Abono80Pdf < Prawn::Document
 
   def factura
     move_down 20
-    qr_data = "https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@deposit.sat_uuid}&re=#{@alias.rfc}&rr=#{@order.customer.rfc}&tt=#{@deposit.monto}&fe=#{@deposit.sat_cfdi[-8..-1]}"
+    qr_data = "https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@deposit.sat_uuid}&re=#{@corp.rfc}&rr=#{@order.customer.rfc}&tt=#{@deposit.monto}&fe=#{@deposit.sat_cfdi[-8..-1]}"
     qr = RQRCode::QRCode.new(qr_data)
     svg qr.as_svg(module_size: 2), at: [ bounds.width / 2 - 70, cursor ], width: 150
     move_down 20

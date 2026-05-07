@@ -4,10 +4,9 @@ class Order80Pdf < Prawn::Document
     page_width = 72 * 2.8346
     super(page_size: [ page_width, 900 ], margin: [ 0, 5, 0, 0 ])
 
-    @setting = Setting.first
     @order = order
+    @corp = order.corp
     @customer = order.customer
-    @alias = order.alias
 
     @timee = Time.current.in_time_zone("America/Mexico_City")
 
@@ -24,9 +23,9 @@ class Order80Pdf < Prawn::Document
 
   def head
     move_down 10
-    if @setting.logo.attached?
-      logo_path = ActiveStorage::Blob.service.path_for(@setting.logo.key)
-      image(logo_path, width: 100, position: :center)
+    if @corp.logo.attached?
+      logo_path = ActiveStorage::Blob.service.path_for(@corp.logo.key)
+      image(logo_path, height: 100, position: :center)
       move_down 10
     end
 
@@ -38,15 +37,11 @@ class Order80Pdf < Prawn::Document
       move_down 10
     end
 
-    if @order.cotizacion?
-      text "<strong>Folio</strong>: #{@order.id}", inline_format: true
-    else
-      text "<strong>Folio</strong>: #{@order.sku}", inline_format: true
-    end
+    text "<strong>Folio</strong>: #{@order.folio}", inline_format: true
 
     text "<strong>Fecha venta</strong>: #{@order.fecha.strftime('%d/%m/%Y')}", inline_format: true
     text "<strong>Forma de pago</strong>: #{@order.forma_pago&.titleize}", inline_format: true unless @order.cotizacion?
-    text "<strong>Estatus de venta</strong>: #{@order.status&.titleize}", inline_format: true if @order.status
+    text "<strong>Estatus de venta</strong>: #{@order.status_pago&.titleize}", inline_format: true if @order.status_pago.present? && !@order.cotizacion?
 
     text "<strong>Tipo</strong>: #{@order.tipo&.titleize}", inline_format: true if @order.cotizacion?
 
@@ -60,10 +55,10 @@ class Order80Pdf < Prawn::Document
     move_down 5
 
     text "Emisor", style: :bold, size: (@fontsize + 1)
-    text @alias.razon
-    text "<strong>RFC</strong>: #{@alias.rfc}", inline_format: true
-    text "<strong>Direccion</strong>: #{@alias.calle.titleize} #{@alias.num_ext} #{@alias.num_int}, #{@alias.colonia}, #{@alias.ciudad}, #{@alias.estado.titleize}", inline_format: true
-    text "<strong>Tel</strong>: #{@alias.phone}", inline_format: true
+    text @corp.razon
+    text "<strong>RFC</strong>: #{@corp.rfc}", inline_format: true
+    text "<strong>Direccion</strong>: #{@corp.calle.titleize} #{@corp.num_ext} #{@corp.num_int}, #{@corp.colonia}, #{@corp.ciudad}, #{@corp.estado.titleize}", inline_format: true
+    text "<strong>Tel</strong>: #{@corp.phone}", inline_format: true
     move_down 5
 
     text "Receptor (cliente)", style: :bold, size: (@fontsize + 1)
@@ -123,7 +118,7 @@ class Order80Pdf < Prawn::Document
     stroke_horizontal_rule
     table([
       [ "Subtotal:", "#{number_to_currency(@order.subtotal)}" ],
-      [ "IVA:", "#{number_to_currency(@order.iva)}" ],
+      [ "IVA:", "#{number_to_currency(@order.impuestos)}" ],
       [ "Total:", "#{number_to_currency(@order.total)}" ]
     ], width: bounds.width) do
       self.cell_style = { borders: [], padding: 2, size: @fontsize }
@@ -134,23 +129,23 @@ class Order80Pdf < Prawn::Document
 
   def notas
     move_down 20
-    if @order.nota_pdf.present?
-      text "*** #{@order.nota_pdf}"
+    if @order.nota_customer.present?
+      text "*** #{@order.nota_customer}"
     end
-    if @setting.factura_extra.present? and @order.tipo == "factura"
-      text @setting.factura_extra
+    if @corp.text_factura.present? and @order.tipo == "factura" 
+      text @corp.text_factura
     end
-    if @setting.remision_extra.present? and @order.tipo == "remision"
-      text @setting.remision_extra
+    if @corp.text_remision.present? and @order.tipo == "remision"
+      text @corp.text_remision
     end
-    if @setting.cotizacion_extra.present? and @order.cotizacion?
-      text @setting.cotizacion_extra
+    if @corp.text_cotizacion.present? and @order.cotizacion?
+      text @corp.text_cotizacion
     end
   end
 
   def factura
     move_down 20
-    qr_data = "https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@order.sat_uuid}&re=#{@alias.rfc}&rr=#{@order.customer.rfc}&tt=#{@order.total}&fe=#{@order.sat_cfdi[-8..-1]}"
+    qr_data = "https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@order.sat_uuid}&re=#{@corp.rfc}&rr=#{@order.customer.rfc}&tt=#{@order.total}&fe=#{@order.sat_cfdi[-8..-1]}"
     qr = RQRCode::QRCode.new(qr_data)
     svg qr.as_svg(module_size: 2), at: [ bounds.width / 2 - 70, cursor ], width: 150
     move_down 20

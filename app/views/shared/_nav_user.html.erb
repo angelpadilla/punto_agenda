@@ -55,7 +55,7 @@
           <% if current_user.admin? %>
             <%= link_to user_corp_landing_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
-                <%= image_tag 'opciones.svg', alt: 'opciones', class: 'invert' %>
+                <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
               </span>
               <div class="tooltip down">Ajustes</div>
             <% end %>
@@ -79,6 +79,12 @@
                   <%= image_tag 'user.svg', alt: 'inicio', class: 'invert' %>
                 </span>
                 Mi perfil
+              <% end %>
+              <%= link_to user_corp_path, class: 'navbar-item' do  %>
+                <span class="icon">
+                  <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
+                </span>
+                Ajustes
               <% end %>
               <hr class="navbar-divider">
               <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: 'navbar-item' do %>

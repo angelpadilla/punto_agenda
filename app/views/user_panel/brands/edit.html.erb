@@ -1,12 +1,18 @@
-<% content_for :title, "Nueva Marca" %>
+<% content_for :title, "Editar Marca" %>
 <div class="flexx space-b flex-end">
-  <h2 class="titlee">Nueva Marca</h2>
+  <h2 class="titlee">Editar Marca</h2>
   <div class="actions">
     <%= link_to brands_path, class: "button is-rounded mr-2" do %>
       <span class="icon mr-2">
         <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
       </span>
       Volver a listado
+    <% end %>
+    <%= link_to brand_path(@brand), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'eye.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a item
     <% end %>
   </div>
 </div>

@@ -1,18 +1,18 @@
 <% content_for :title, "Ajustes" %>
 <div class="columns is-multiline">
   <div class="column is-6">
-    <%= link_to user_corp_path do %>
+    <%= link_to brands_path do %>
       <div class="linkk">
-        <%= image_tag 'opciones.svg', alt: 'settings', class: 'invert' %>
-        Ajustes generales
+        <%= image_tag 'layers.svg', alt: 'brands', class: 'invert' %>
+        Listado de marcas
       </div>
     <% end %>
   </div>
   <div class="column is-6">
-    <%= link_to orders_path do %>
+    <%= link_to user_corp_path do %>
       <div class="linkk">
-        <%= image_tag 'layers.svg', alt: 'brands', class: 'invert' %>
-        Marcas
+        <%= image_tag 'opciones.svg', alt: 'settings', class: 'invert' %>
+        Ajustes generales
       </div>
     <% end %>
   </div>
