@@ -1,4 +1,4 @@
-<nav class="navbar is-black is-fixed-top" role="navigation" aria-label="main navigation">
+<nav class="is-hidden-touch navbar navbar is-black is-fixed-top" role="navigation" aria-label="main navigation">
   <div class="container">
     <div class="navbar-brand">
       <%= link_to root_path, class: 'navbar-item' do %>
@@ -34,3 +34,22 @@
     </div>
   </div>
 </nav>
+<div class="is-hidden-desktop nav_movil">
+  <div class="inner">
+    <% if user_signed_in? %>
+      <%= link_to user_panel_home_path, class: 'icon' do %>
+        <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
+      <% end %>
+      <%= link_to new_user_session_path, class: 'icon' do %>
+        <%= image_tag 'login.svg', alt: 'mi perfil', class: 'invert' %>
+      <% end %>
+    <% else %>
+      <%= link_to root_path, class: 'icon' do %>
+        <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
+      <% end %>
+      <%= link_to new_user_session_path, class: 'icon' do %>
+        <%= image_tag 'login.svg', alt: 'login', class: 'invert' %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

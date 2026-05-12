@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_212339) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -81,6 +81,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_11_120000) do
   end
 
   create_table "corps", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
     t.text "business_hours"
     t.boolean "calendar", default: false
     t.string "calle"

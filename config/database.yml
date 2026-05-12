@@ -20,22 +20,33 @@ test:
   <<: *default
   database: storage/test.sqlite3
 
+# Production uses PostgreSQL. Ensure the pg gem is defined in your Gemfile
+postgres: &postgres
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
+  username: postgres
+  password: <%= ENV["POSTGRES_PASSWORD"] %>
+
 
 # Store production database in the storage/ directory, which by default
 # is mounted as a persistent Docker volume in config/deploy.yml.
 production:
   primary:
-    <<: *default
-    database: storage/production.sqlite3
+    <<: *postgres
+    database: pos_agenda_production
   cache:
-    <<: *default
-    database: storage/production_cache.sqlite3
+    <<: *postgres
+    database: pos_agenda_cache
     migrations_paths: db/cache_migrate
   queue:
-    <<: *default
-    database: storage/production_queue.sqlite3
+    <<: *postgres
+    database: pos_agenda_queue
     migrations_paths: db/queue_migrate
   cable:
-    <<: *default
-    database: storage/production_cable.sqlite3
+    <<: *postgres
+    database: pos_agenda_cable
     migrations_paths: db/cable_migrate

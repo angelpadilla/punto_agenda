@@ -1,10 +1,16 @@
-#drawing_canvas {
-    position: absolute;
-    margin: auto;
-    width: 50dvh;
-    height: 50dvh;
-    top: 40dvh;
-    bottom: 0;
-    left: 0;
-    right: 0;
+:root {
+    --spacing: 0.25rem;
+}
+
+.s1 {
+    .inner {
+        margin-top: calc(var(--spacing) * 48);
+        align-items: center;
+        text-align: center;
+        max-width: 50dvw;
+
+        @media (max-width: 1023px) {
+            max-width: 80dvw;
+        }
+    }
 }

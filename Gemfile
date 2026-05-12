@@ -65,6 +65,13 @@ group :test do
   gem "selenium-webdriver"
 end
 
+group :production do
+  # Use a backend for Active Job (and separate queues per environment)
+  # gem "sidekiq"
+  # Use PostgreSQL as the database for Active Record
+  gem "pg", "~> 1.1"
+end
+
 
 # Logs https://github.com/collectiveidea/audited
 gem "audited"

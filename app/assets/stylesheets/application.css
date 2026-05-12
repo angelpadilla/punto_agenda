@@ -20,8 +20,9 @@ h2,
 h3,
 h4,
 h5,
-h6 {
-    font-family: 'Space Grotesk', sans-serif;
+h6,
+body {
+    font-family: 'Space Grotesk', sans-serif !important;
     font-optical-sizing: auto;
     font-style: normal;
     font-weight: 700 !important;
@@ -42,13 +43,12 @@ html {
     cursor: pointer;
 }
 
-
 :root {
     --black: #111111;
     --dark: #222222;
     --gray: #313131;
     --light-gray: #d1d5da;
-    --gray-text: #69748c;
+    --gray-text: #a1a1a1;
     --neon-green: #a8fb22;
     --green2: #222b15;
     --green3: #4b6c17;
@@ -380,6 +380,10 @@ html {
     color: var(--neon-green) !important;
 }
 
+.text-gray {
+    color: var(--gray-text) !important;
+}
+
 .bold {
     font-weight: 600;
 }
@@ -486,6 +490,10 @@ a.link {
     justify-content: space-between;
 }
 
+.justify-center {
+    justify-content: center;
+}
+
 .flex-end {
     align-items: flex-end;
 }
@@ -531,7 +539,7 @@ a.link {
     font-optical-sizing: auto;
     font-style: normal;
     font-size: 1.5rem;
-    font-weight: 500;
+    /* font-weight: 500; */
     color: var(--white);
 }
 
@@ -540,7 +548,7 @@ a.link {
     font-optical-sizing: auto;
     font-style: normal;
     font-size: 2rem;
-    font-weight: 500;
+    /* font-weight: 500; */
     color: var(--white);
 }
 

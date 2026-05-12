@@ -1,24 +1,36 @@
-.nav_movil_user {
-    padding: 10px 0;
+.nav_movil_user,
+.nav_movil {
+    padding: 0 35px;
     position: fixed;
     left: 0;
-    top: 0;
-    width: auto;
-    height: 100dvh;
+    bottom: 30px;
+    width: 100%;
     z-index: 99;
 
     .inner {
         padding: 10px;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100%;
-        background-color: var(--dark);
-        border-radius: 0 6pt 6pt 0;
-        box-shadow: 0.5rem 0 2rem rgba(30, 30, 30, 0.18);
+        border-radius: var(--radius);
+        background: rgba(20, 20, 20, 0.8);
+        /* background: rgba(255, 255, 255, 0.5); */
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.1),
+            0 4px 16px rgba(0, 0, 0, 0.05);
+
+        &:before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: url(#wave-distort);
+        }
 
         .icon {
-            padding: 2rem 0;
+            flex: 1;
+            padding: 20px 0;
 
             img {
                 height: 20px;
@@ -55,7 +67,7 @@
     }
 }
 
-/* en mobil .container tiene padding a los lados */
+/* en tablet .container tiene padding a los lados */
 @media (max-width: 1023px) {
     .container {
         padding-left: 10px;

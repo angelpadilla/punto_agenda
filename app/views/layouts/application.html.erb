@@ -31,9 +31,7 @@
       </div>
     <% else %>
       <%= render 'shared/nav' %>
-      <div class="container padding_top_nav">
-        <%= yield %>
-      </div>
+      <%= yield %>
       <%= render 'shared/footer' %>
     <% end %>
     <%= yield :body %>

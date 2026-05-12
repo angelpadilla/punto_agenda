@@ -61,12 +61,23 @@ export default class extends Controller {
             nowIndicatorSnap: false, // Snap to slot intervals
             allDaySlot: false,
             businessHours,
+            slotLabelFormat: { hour: "numeric", minute: "2-digit", omitZeroMinute: true, hour12: true },
+            slotLabelContent: (arg) => {
+                // e.g. "3 PM" or "3:30 PM"
+                const h = arg.date.getHours()
+                const m = arg.date.getMinutes()
+                const ampm = h >= 12 ? "PM" : "AM"
+                const h12 = h % 12 || 12
+                const timeStr = m === 0 ? `${h12} ${ampm}` : `${h12}:${String(m).padStart(2, "0")} ${ampm}`
+                return { html: timeStr }
+            },
             views: {
-                dayGridMonth: {
-                    // Show business hours in month view as well (shaded)
-                    // titleFormat: { year: 'numeric', month: '2-digit', day: '2-digit' }
-
-
+                dayGridMonth: {},
+                timeGridWeek: {
+                    dayHeaderFormat: { weekday: "short", day: "numeric" }
+                },
+                timeGridDay: {
+                    dayHeaderFormat: { weekday: "long", day: "numeric", month: "long" }
                 }
             },
             // Dim non-business slots visually (FullCalendar built-in)

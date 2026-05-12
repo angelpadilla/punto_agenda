@@ -1,499 +1,151 @@
 <% content_for :title, "Dashboard" %>
-<% content_for :body do %>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<% end %>
-<%# ── Header ──────────────────────────────────────────────────────── %>
-<div class="flexx space-b flex-end mt-4 mb-5">
-  <div>
-    <p class="labell">Bienvenido de vuelta,</p>
-    <h2 class="titlee"><%= @user.full_name&.titleize || @user.email %></h2>
-    <p class="labell"><%= Date.today.strftime("%-d de %B de %Y") %></p>
-  </div>
-  <div class="actions">
-    <%= link_to new_order_path, class: "button is-primary is-rounded" do %>
-      <span class="icon mr-1"><%= image_tag 'plus.svg', alt: 'nueva venta' %></span>
-      Nueva venta
-    <% end %>
-    <% if @corp.calendar %>
-      <%= link_to new_event_path, class: "button is-rounded" do %>
-        <span class="icon mr-1"><%= image_tag 'calendar_plus.svg', class: 'invert' %></span>
-        Nueva cita
-      <% end %>
-    <% end %>
-  </div>
-</div>
-<%# ── Tabs ────────────────────────────────────────────────────────── %>
-<div data-controller="dash-tabs">
-  <div class="dash_tabs_nav">
-    <button class="dash_tab_btn is_active" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="hoy">
-      <%= image_tag 'house.svg', class: 'invert' %> Hoy
-    </button>
-    <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="ventas">
-      <%= image_tag 'dollar.svg', class: 'invert' %> Ventas
-    </button>
-    <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="clientes">
-      <%= image_tag 'clientes.svg', class: 'invert' %> Clientes
-    </button>
-    <% if @corp.calendar %>
-      <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="agenda">
-        <%= image_tag 'calendar.svg', class: 'invert' %> Agenda
-      </button>
-    <% end %>
-    <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="inventario">
-      <%= image_tag 'layers.svg', class: 'invert' %> Inventario
-    </button>
-  </div>
-  <%# ══ HOY ══════════════════════════════════════════════════════ %>
-  <div id="panel-hoy" class="dash_panel">
-    <div class="columns is-multiline is-mobile mb-2">
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card">
-          <div class="stat_icon"><%= image_tag 'bill-list-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= @orders_hoy_count %></div>
-          <div class="stat_label">Órdenes hoy</div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card is-accent">
-          <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= number_to_currency(@venta_bruta_hoy, precision: 0, delimiter: ",", unit: "$") %></div>
-          <div class="stat_label">Venta bruta hoy</div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card">
-          <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= number_to_currency(@ticket_promedio, precision: 0, delimiter: ",", unit: "$") %></div>
-          <div class="stat_label">Ticket promedio hoy</div>
-        </div>
-      </div>
-      <% if @cuentas_por_cobrar > 0 %>
-        <div class="column is-6-mobile is-3-tablet">
-          <div class="box stat_card is-danger">
-            <div class="stat_icon"><%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert' %></div>
-            <div class="stat_val"><%= number_to_currency(@cuentas_por_cobrar, precision: 0, delimiter: ",", unit: "$") %></div>
-            <div class="stat_label">Por cobrar (créditos)</div>
-          </div>
-        </div>
-      <% end %>
+<% if @corp.active %>
+  <% content_for :body_extra do %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <% end %>
+  <%# ── Header ──────────────────────────────────────────────────────── %>
+  <div class="flexx space-b flex-end mt-4 mb-5">
+    <div>
+      <p class="labell">Bienvenido de vuelta,</p>
+      <h2 class="titlee"><%= @user.full_name&.titleize || @user.email %></h2>
+      <p class="labell"><%= Date.today.strftime("%-d de %B de %Y") %></p>
     </div>
-    <div class="columns mb-2">
+    <div class="actions">
+      <%= link_to new_order_path, class: "button is-primary is-rounded" do %>
+        <span class="icon mr-1"><%= image_tag 'plus.svg', alt: 'nueva venta' %></span>
+        Nueva venta
+      <% end %>
       <% if @corp.calendar %>
-        <div class="column is-5-tablet">
-          <div class="box dashboard_box">
-            <div class="flexx space-b flex-end mb-4">
-              <h3 class="dashboard_section_title">Próximos eventos hoy</h3>
-              <%= link_to events_path, class: "button is-rounded is-small" do %>Ver agenda<% end %>
-            </div>
-            <% if @proximos_eventos.any? %>
-              <% @proximos_eventos.each do |ev| %>
-                <%= link_to event_path(ev), class: "upcoming_event" do %>
-                  <div class="event_time"><%= ev.hora_inicio.strftime("%I:%M %p") %></div>
-                  <div class="event_body">
-                    <div class="event_title"><%= ev.title %></div>
-                    <div class="event_meta">
-                      <%= ev.customer&.razon&.titleize %>
-                      <% if ev.user %> · <%= ev.user.full_name&.titleize %><% end %>
-                    </div>
-                  </div>
-                <% end %>
-              <% end %>
-            <% else %>
-              <div class="empty_state">
-                <%= image_tag 'calendar-search-svgrepo-com.svg', class: 'invert empty_state_icon' %>
-                <p>Sin eventos pendientes hoy</p>
-              </div>
-            <% end %>
-          </div>
-        </div>
-        <% if @slots_info %>
-          <div class="column is-4-tablet">
-            <div class="box dashboard_box">
-              <h3 class="dashboard_section_title mb-3">Slots hoy</h3>
-              <p class="labell mb-3"><%= @slots_info[:open] %> – <%= @slots_info[:close] %> · <%= @corp.slot_duration_label %> / cita</p>
-              <div class="flexx space-b flex-end mb-1">
-                <span class="labell">Ocupados</span>
-                <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>
-              </div>
-              <div class="slot_bar mb-3">
-                <div class="slot_fill <%= @slots_info[:pct] >= 100 ? 'is-full' : (@slots_info[:pct] >= 70 ? 'is-busy' : '') %>"
-                     style="width:<%= @slots_info[:pct] %>%;"></div>
-              </div>
-              <div class="stat_val has-text-neon" style="font-size:2.5rem;line-height:1;"><%= @slots_info[:disponibles] %></div>
-              <div class="labell">slots disponibles</div>
-            </div>
-          </div>
+        <%= link_to new_event_path, class: "button is-rounded" do %>
+          <span class="icon mr-1"><%= image_tag 'calendar_plus.svg', class: 'invert' %></span>
+          Nueva cita
         <% end %>
       <% end %>
-      <div class="column">
-        <div class="box dashboard_box">
-          <div class="flexx space-b flex-end mb-3">
-            <h3 class="dashboard_section_title">
-              <%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert', style: 'width:1rem;vertical-align:middle;' %>
-              Stock bajo
-            </h3>
-            <button class="button is-rounded is-small" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="inventario">Ver todo</button>
-          </div>
-          <% if @alertas_inventario.any? %>
-            <% @alertas_inventario.first(5).each do |item| %>
-              <%= link_to item_path(item), class: "alerta_item" do %>
-                <div class="alerta_name"><%= item.name %></div>
-                <div class="alerta_stock"><%= item.stock.to_f.round(2).to_s.sub(/\.?0+$/, '') %> <%= item.unidad %></div>
-              <% end %>
-            <% end %>
-          <% else %>
-            <div class="empty_state">
-              <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
-              <p>Sin alertas</p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-    <div class="box">
-      <div class="flexx space-b flex-end mb-4">
-        <h3 class="dashboard_section_title">Órdenes recientes</h3>
-        <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
-      </div>
-      <% if @ordenes_recientes.any? %>
-        <div class="table-container">
-          <table class="table is-fullwidth">
-            <thead>
-              <tr>
-                <th>Folio</th>
-                <th>Cliente</th>
-                <th>Tipo</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @ordenes_recientes.each do |o| %>
-                <tr class="is-clickable" onclick="window.location.href='<%= order_path(o) %>'">
-                  <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= o.folio %></span></td>
-                  <td><%= o.customer&.razon&.titleize || "—" %></td>
-                  <td><span class="tag is-rounded"><%= o.tipo&.titleize %></span></td>
-                  <td class="has-text-neon"><strong><%= number_to_currency(o.total, precision: 2, delimiter: ",", unit: "$") %></strong></td>
-                  <td>
-                    <% if o.pagado? %><span class="tag is-rounded is-success">Pagado</span>
-                    <% elsif o.credito? %><span class="tag is-rounded is-warning">Crédito</span>
-                    <% elsif o.cancelado? %><span class="tag is-rounded is-danger">Cancelado</span>
-                    <% end %>
-                  </td>
-                  <td><span class="labell"><%= o.created_at.strftime("%-d/%m/%Y") %></span></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% else %>
-        <div class="empty_state">
-          <p>Sin órdenes recientes</p>
-        </div>
-      <% end %>
     </div>
   </div>
-  <%# /hoy %>
-  <%# ══ VENTAS ═══════════════════════════════════════════════════ %>
-  <div id="panel-ventas" class="dash_panel" style="display:none;">
-    <div class="columns is-multiline is-mobile mb-2">
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card is-accent">
-          <div class="stat_icon"><%= image_tag 'graph-up-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= number_to_currency(@venta_mes, precision: 0, delimiter: ",", unit: "$") %></div>
-          <div class="stat_label">
-            Venta este mes
-            <% if @venta_mes_pct %>
-              <br>
-              <span style="color:<%= @venta_mes_pct >= 0 ? 'var(--neon-green)' : 'var(--danger)' %>;font-size:0.9em;">
-                <%= @venta_mes_pct >= 0 ? '▲' : '▼' %> <%= @venta_mes_pct.abs %>% vs mes ant.
-              </span>
-            <% end %>
-          </div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card">
-          <div class="stat_icon"><%= image_tag 'cup-star-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= number_to_currency(@margen_mes, precision: 0, delimiter: ",", unit: "$") %></div>
-          <div class="stat_label">Margen bruto este mes</div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card">
-          <div class="stat_icon"><%= image_tag 'bill-list-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= number_to_currency(@ticket_promedio, precision: 0, delimiter: ",", unit: "$") %></div>
-          <div class="stat_label">Ticket promedio hoy</div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card <%= @cuentas_por_cobrar > 0 ? 'is-danger' : '' %>">
-          <div class="stat_icon"><%= image_tag 'hand-money-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= number_to_currency(@cuentas_por_cobrar, precision: 0, delimiter: ",", unit: "$") %></div>
-          <div class="stat_label">Cuentas por cobrar</div>
-        </div>
-      </div>
-    </div>
-    <div class="columns mb-2">
-      <div class="column is-8-tablet">
-        <div class="box dashboard_box">
-          <div class="flexx space-b flex-end mb-4">
-            <h3 class="dashboard_section_title">Venta bruta — últimos 7 días</h3>
-            <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
-          </div>
-          <div data-controller="home-chart"
-               data-home-chart-chart-data-value="<%= @ventas_semana.to_json %>"
-               data-home-chart-type-value="bar"
-               style="position:relative;height:220px;">
-            <canvas data-home-chart-target="canvas"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="column is-4-tablet">
-        <div class="box dashboard_box">
-          <h3 class="dashboard_section_title mb-3">Por tipo de orden — mes</h3>
-          <% if @venta_por_tipo.any? %>
-            <div data-controller="home-chart"
-                 data-home-chart-chart-data-value="<%= @venta_por_tipo.to_json %>"
-                 data-home-chart-type-value="doughnut"
-                 style="position:relative;height:180px;">
-              <canvas data-home-chart-target="canvas"></canvas>
-            </div>
-          <% else %>
-            <div class="empty_state">
-              <p>Sin datos este mes</p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-    <div class="columns mb-2">
-      <div class="column is-6-tablet">
-        <div class="box dashboard_box">
-          <h3 class="dashboard_section_title mb-3">Por forma de pago — mes</h3>
-          <% if @venta_por_pago.any? %>
-            <div data-controller="home-chart"
-                 data-home-chart-chart-data-value="<%= @venta_por_pago.to_json %>"
-                 data-home-chart-type-value="doughnut"
-                 style="position:relative;height:180px;">
-              <canvas data-home-chart-target="canvas"></canvas>
-            </div>
-          <% else %>
-            <div class="empty_state">
-              <p>Sin datos este mes</p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-      <div class="column is-6-tablet">
-        <div class="box dashboard_box">
-          <div class="flexx space-b flex-end mb-3">
-            <h3 class="dashboard_section_title">Órdenes recientes</h3>
-            <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
-          </div>
-          <% @ordenes_recientes.first(5).each do |o| %>
-            <%= link_to order_path(o), class: "alerta_item" do %>
-              <div class="alerta_name">
-                <%= o.customer&.razon&.titleize || "—" %>
-                <span class="labell" style="margin-left:0.3rem;"><%= o.tipo&.titleize %></span>
-              </div>
-              <div style="text-align:right;">
-                <div class="has-text-neon" style="font-size:0.9rem;font-weight:600;">
-                  <%= number_to_currency(o.total, precision: 0, delimiter: ",", unit: "$") %>
-                </div>
-                <span class="labell"><%= o.created_at.strftime("%-d/%m") %></span>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </div>
-  <%# /ventas %>
-  <%# ══ CLIENTES ═════════════════════════════════════════════════ %>
-  <div id="panel-clientes" class="dash_panel" style="display:none;">
-    <div class="columns is-multiline is-mobile mb-2">
-      <div class="column is-6-mobile is-4-tablet">
-        <div class="box stat_card is-accent">
-          <div class="stat_icon"><%= image_tag 'user-plus-rounded-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= @nuevos_clientes_mes %></div>
-          <div class="stat_label">Clientes nuevos este mes</div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-4-tablet">
-        <div class="box stat_card <%= @clientes_con_deuda.any? ? 'is-danger' : '' %>">
-          <div class="stat_icon"><%= image_tag 'hand-money-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= @clientes_con_deuda.size %></div>
-          <div class="stat_label">Clientes con saldo vencido</div>
-        </div>
-      </div>
+  <%# ── Tabs ────────────────────────────────────────────────────────── %>
+  <div data-controller="dash-tabs">
+    <div class="dash_tabs_nav">
+      <button class="dash_tab_btn is_active" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="hoy">
+        <%= image_tag 'house.svg', class: 'invert' %> Hoy
+      </button>
+      <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="ventas">
+        <%= image_tag 'dollar.svg', class: 'invert' %> Ventas
+      </button>
+      <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="clientes">
+        <%= image_tag 'clientes.svg', class: 'invert' %> Clientes
+      </button>
       <% if @corp.calendar %>
-        <div class="column is-6-mobile is-4-tablet">
-          <div class="box stat_card">
-            <div class="stat_icon"><%= image_tag 'dislike-svgrepo-com.svg', class: 'invert' %></div>
-            <div class="stat_val"><%= @clientes_riesgo&.size || 0 %></div>
-            <div class="stat_label">Clientes con inasistencias</div>
-          </div>
-        </div>
+        <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="agenda">
+          <%= image_tag 'calendar.svg', class: 'invert' %> Agenda
+        </button>
       <% end %>
+      <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="inventario">
+        <%= image_tag 'layers.svg', class: 'invert' %> Inventario
+      </button>
     </div>
-    <div class="columns mb-2">
-      <div class="column is-6-tablet">
-        <div class="box dashboard_box">
-          <div class="flexx space-b flex-end mb-4">
-            <h3 class="dashboard_section_title">⭐ Top clientes por gasto</h3>
-            <%= link_to customers_path, class: "button is-rounded is-small" do %>Ver todos<% end %>
-          </div>
-          <% if @top_clientes.any? %>
-            <% max_spent = @top_clientes.first.total_spent.to_f %>
-            <% @top_clientes.each_with_index do |c, i| %>
-              <%= link_to customer_path(c), class: "rank_item" do %>
-                <div class="rank_num">#<%= i + 1 %></div>
-                <div class="rank_body">
-                  <div class="rank_name"><%= c.razon&.titleize || c.email %></div>
-                  <div class="rank_bar_wrap">
-                    <div class="rank_bar" style="width:<%= max_spent > 0 ? (c.total_spent.to_f / max_spent * 100).round : 0 %>%;"></div>
-                  </div>
-                </div>
-                <div class="rank_val"><%= number_to_currency(c.total_spent, precision: 0, delimiter: ",", unit: "$") %></div>
-              <% end %>
-            <% end %>
-          <% else %>
-            <div class="empty_state">
-              <p>Sin datos de gasto</p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-      <div class="column is-6-tablet">
-        <div class="box dashboard_box">
-          <div class="flexx space-b flex-end mb-4">
-            <h3 class="dashboard_section_title">Saldos vencidos</h3>
-            <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver órdenes<% end %>
-          </div>
-          <% if @clientes_con_deuda.any? %>
-            <% @clientes_con_deuda.each do |o| %>
-              <%= link_to order_path(o), class: "alerta_item" do %>
-                <div class="alerta_name"><%= o.customer&.razon&.titleize || "—" %></div>
-                <div class="alerta_stock" style="color:var(--danger);">
-                  <%= number_to_currency(o.debe, precision: 0, delimiter: ",", unit: "$") %>
-                </div>
-              <% end %>
-            <% end %>
-          <% else %>
-            <div class="empty_state">
-              <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
-              <p>Sin saldos pendientes</p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-    <% if @corp.calendar && @clientes_riesgo&.any? %>
-      <div class="box">
-        <h3 class="dashboard_section_title mb-3">Clientes con inasistencias recurrentes</h3>
-        <table class="table is-fullwidth">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Inasistencias</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @clientes_riesgo.each do |c| %>
-              <tr class="is-clickable" onclick="window.location.href='<%= customer_path(c) %>'">
-                <td><%= c.razon&.titleize || c.email %></td>
-                <td><span class="tag is-rounded is-danger"><%= c.failed_events %></span></td>
-                <td class="labell"><%= c.email %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    <% end %>
-  </div>
-  <%# /clientes %>
-  <%# ══ AGENDA ════════════════════════════════════════════════════ %>
-  <% if @corp.calendar %>
-    <div id="panel-agenda" class="dash_panel" style="display:none;">
+    <%# ══ HOY ══════════════════════════════════════════════════════ %>
+    <div id="panel-hoy" class="dash_panel">
       <div class="columns is-multiline is-mobile mb-2">
-        <div class="column is-6-mobile is-4-tablet">
-          <div class="box stat_card is-accent">
-            <div class="stat_icon"><%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert' %></div>
-            <div class="stat_val"><%= @eventos_completados_mes %></div>
-            <div class="stat_label">Eventos completados este mes</div>
-          </div>
-        </div>
-        <div class="column is-6-mobile is-4-tablet">
+        <div class="column is-6-mobile is-3-tablet">
           <div class="box stat_card">
-            <div class="stat_icon"><%= image_tag 'verified-check-svgrepo-com.svg', class: 'invert' %></div>
-            <div class="stat_val"><%= @tasa_asistencia ? "#{@tasa_asistencia}%" : "—" %></div>
-            <div class="stat_label">Tasa de asistencia</div>
+            <div class="stat_icon"><%= image_tag 'bill-list-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= @orders_hoy_count %></div>
+            <div class="stat_label">Órdenes hoy</div>
           </div>
         </div>
-        <% if @slots_info %>
-          <div class="column is-6-mobile is-4-tablet">
-            <div class="box stat_card">
-              <div class="stat_icon"><%= image_tag 'calendar-date-svgrepo-com.svg', class: 'invert' %></div>
-              <div class="stat_val"><%= @slots_info[:disponibles] %></div>
-              <div class="stat_label">Slots disponibles hoy</div>
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card is-accent">
+            <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= number_to_currency(@venta_bruta_hoy, precision: 0, delimiter: ",", unit: "$") %></div>
+            <div class="stat_label">Venta bruta hoy</div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card">
+            <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= number_to_currency(@ticket_promedio, precision: 0, delimiter: ",", unit: "$") %></div>
+            <div class="stat_label">Ticket promedio hoy</div>
+          </div>
+        </div>
+        <% if @cuentas_por_cobrar > 0 %>
+          <div class="column is-6-mobile is-3-tablet">
+            <div class="box stat_card is-danger">
+              <div class="stat_icon"><%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert' %></div>
+              <div class="stat_val"><%= number_to_currency(@cuentas_por_cobrar, precision: 0, delimiter: ",", unit: "$") %></div>
+              <div class="stat_label">Por cobrar (créditos)</div>
             </div>
           </div>
         <% end %>
       </div>
       <div class="columns mb-2">
-        <div class="column is-5-tablet">
-          <div class="box dashboard_box">
-            <h3 class="dashboard_section_title mb-3">Ocupación hoy</h3>
-            <% if @slots_info %>
-              <p class="labell mb-2"><%= @slots_info[:open] %> – <%= @slots_info[:close] %> · <%= @corp.slot_duration_label %> / cita</p>
-              <div class="flexx space-b flex-end mb-1">
-                <span class="labell">Ocupados</span>
-                <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>
+        <% if @corp.calendar %>
+          <div class="column is-5-tablet">
+            <div class="box dashboard_box">
+              <div class="flexx space-b flex-end mb-4">
+                <h3 class="dashboard_section_title">Próximos eventos hoy</h3>
+                <%= link_to events_path, class: "button is-rounded is-small" do %>Ver agenda<% end %>
               </div>
-              <div class="slot_bar mb-4">
-                <div class="slot_fill <%= @slots_info[:pct] >= 100 ? 'is-full' : (@slots_info[:pct] >= 70 ? 'is-busy' : '') %>"
-                     style="width:<%= @slots_info[:pct] %>%;"></div>
-              </div>
-            <% else %>
-              <p class="labell">Hoy no es día laborable</p>
-            <% end %>
-            <h3 class="dashboard_section_title mt-4 mb-2">Asistencia este mes</h3>
-            <% if @tasa_asistencia %>
-              <div class="flexx space-b flex-end mb-1">
-                <span class="labell">Tasa</span><span class="labell"><%= @tasa_asistencia %>%</span>
-              </div>
-              <div class="slot_bar">
-                <div class="slot_fill <%= @tasa_asistencia < 60 ? 'is-full' : (@tasa_asistencia < 80 ? 'is-busy' : '') %>"
-                     style="width:<%= @tasa_asistencia %>%;"></div>
-              </div>
-            <% else %>
-              <p class="labell mt-2">Sin eventos este mes</p>
-            <% end %>
+              <% if @proximos_eventos.any? %>
+                <% @proximos_eventos.each do |ev| %>
+                  <%= link_to event_path(ev), class: "upcoming_event" do %>
+                    <div class="event_time"><%= ev.hora_inicio.strftime("%I:%M %p") %></div>
+                    <div class="event_body">
+                      <div class="event_title"><%= ev.title %></div>
+                      <div class="event_meta">
+                        <%= ev.customer&.razon&.titleize %>
+                        <% if ev.user %> · <%= ev.user.full_name&.titleize %><% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+              <% else %>
+                <div class="empty_state">
+                  <%= image_tag 'calendar-search-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+                  <p>Sin eventos pendientes hoy</p>
+                </div>
+              <% end %>
+            </div>
           </div>
-        </div>
+          <% if @slots_info %>
+            <div class="column is-4-tablet">
+              <div class="box dashboard_box">
+                <h3 class="dashboard_section_title mb-3">Slots hoy</h3>
+                <p class="labell mb-3"><%= @slots_info[:open] %> – <%= @slots_info[:close] %> · <%= @corp.slot_duration_label %> / cita</p>
+                <div class="flexx space-b flex-end mb-1">
+                  <span class="labell">Ocupados</span>
+                  <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>
+                </div>
+                <div class="slot_bar mb-3">
+                  <div class="slot_fill <%= @slots_info[:pct] >= 100 ? 'is-full' : (@slots_info[:pct] >= 70 ? 'is-busy' : '') %>"
+                     style="width:<%= @slots_info[:pct] %>%;"></div>
+                </div>
+                <div class="stat_val has-text-neon" style="font-size:2.5rem;line-height:1;"><%= @slots_info[:disponibles] %></div>
+                <div class="labell">slots disponibles</div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
         <div class="column">
           <div class="box dashboard_box">
-            <h3 class="dashboard_section_title mb-3">Eventos completados por agente — mes</h3>
-            <% if @eventos_por_agente&.any? %>
-              <% max_ev = @eventos_por_agente.first[:value].to_f %>
-              <% @eventos_por_agente.each_with_index do |ag, i| %>
-                <div class="rank_item" style="cursor:default;">
-                  <div class="rank_num">#<%= i + 1 %></div>
-                  <div class="rank_body">
-                    <div class="rank_name"><%= ag[:label] %></div>
-                    <div class="rank_bar_wrap">
-                      <div class="rank_bar" style="width:<%= max_ev > 0 ? (ag[:value] / max_ev * 100).round : 0 %>%;"></div>
-                    </div>
-                  </div>
-                  <div class="rank_val"><%= ag[:value] %></div>
-                </div>
+            <div class="flexx space-b flex-end mb-3">
+              <h3 class="dashboard_section_title">
+                <%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert', style: 'width:1rem;vertical-align:middle;' %>
+                Stock bajo
+              </h3>
+              <button class="button is-rounded is-small" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="inventario">Ver todo</button>
+            </div>
+            <% if @alertas_inventario.any? %>
+              <% @alertas_inventario.first(5).each do |item| %>
+                <%= link_to item_path(item), class: "alerta_item" do %>
+                  <div class="alerta_name"><%= item.name %></div>
+                  <div class="alerta_stock"><%= item.stock.to_f.round(2).to_s.sub(/\.?0+$/, '') %> <%= item.unidad %></div>
+                <% end %>
               <% end %>
             <% else %>
               <div class="empty_state">
-                <p>Sin datos de agentes este mes</p>
+                <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+                <p>Sin alertas</p>
               </div>
             <% end %>
           </div>
@@ -501,158 +153,514 @@
       </div>
       <div class="box">
         <div class="flexx space-b flex-end mb-4">
-          <h3 class="dashboard_section_title">Agenda de hoy</h3>
-          <%= link_to events_path, class: "button is-rounded is-small" do %>Ver agenda completa<% end %>
+          <h3 class="dashboard_section_title">Órdenes recientes</h3>
+          <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
         </div>
-        <% if @proximos_eventos.any? %>
-          <% @proximos_eventos.each do |ev| %>
-            <%= link_to event_path(ev), class: "upcoming_event" do %>
-              <div class="event_time"><%= ev.hora_inicio.strftime("%I:%M %p") %></div>
-              <div class="event_body">
-                <div class="event_title"><%= ev.title %></div>
-                <div class="event_meta">
-                  <%= ev.customer&.razon&.titleize %>
-                  <% if ev.user %> · <%= ev.user.full_name&.titleize %><% end %>
-                </div>
-              </div>
-              <div style="margin-left:auto;">
-                <% case ev.status
-                   when "pendiente" %><span class="tag is-rounded is-warning">Pendiente</span>
-                <% when "completado" %><span class="tag is-rounded is-success">Completado</span>
-                <% when "cancelado" %><span class="tag is-rounded is-danger">Cancelado</span>
+        <% if @ordenes_recientes.any? %>
+          <div class="table-container">
+            <table class="table is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Folio</th>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @ordenes_recientes.each do |o| %>
+                  <tr class="is-clickable" onclick="window.location.href='<%= order_path(o) %>'">
+                    <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= o.folio %></span></td>
+                    <td><%= o.customer&.razon&.titleize || "—" %></td>
+                    <td><span class="tag is-rounded"><%= o.tipo&.titleize %></span></td>
+                    <td class="has-text-neon"><strong><%= number_to_currency(o.total, precision: 2, delimiter: ",", unit: "$") %></strong></td>
+                    <td>
+                      <% if o.pagado? %><span class="tag is-rounded is-success">Pagado</span>
+                      <% elsif o.credito? %><span class="tag is-rounded is-warning">Crédito</span>
+                      <% elsif o.cancelado? %><span class="tag is-rounded is-danger">Cancelado</span>
+                      <% end %>
+                    </td>
+                    <td><span class="labell"><%= o.created_at.strftime("%-d/%m/%Y") %></span></td>
+                  </tr>
                 <% end %>
-              </div>
-            <% end %>
-          <% end %>
+              </tbody>
+            </table>
+          </div>
         <% else %>
           <div class="empty_state">
-            <%= image_tag 'calendar-search-svgrepo-com.svg', class: 'invert empty_state_icon' %>
-            <p>Sin eventos hoy</p>
+            <p>Sin órdenes recientes</p>
           </div>
         <% end %>
       </div>
     </div>
-    <%# /agenda %>
-  <% end %>
-  <%# ══ INVENTARIO ════════════════════════════════════════════════ %>
-  <div id="panel-inventario" class="dash_panel" style="display:none;">
-    <div class="columns is-multiline is-mobile mb-2">
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card is-accent">
-          <div class="stat_icon"><%= image_tag 'database-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= number_to_currency(@valor_inventario, precision: 0, delimiter: ",", unit: "$") %></div>
-          <div class="stat_label">Valor total inventario</div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card <%= @alertas_inventario.any? ? 'is-danger' : '' %>">
-          <div class="stat_icon"><%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= @alertas_inventario.count %></div>
-          <div class="stat_label">Items con stock bajo</div>
-        </div>
-      </div>
-      <div class="column is-6-mobile is-3-tablet">
-        <div class="box stat_card">
-          <div class="stat_icon"><%= image_tag 'ghost-svgrepo-com.svg', class: 'invert' %></div>
-          <div class="stat_val"><%= @items_sin_movimiento %></div>
-          <div class="stat_label">Items sin movimiento</div>
-        </div>
-      </div>
-      <% if @item_estrella %>
+    <%# /hoy %>
+    <%# ══ VENTAS ═══════════════════════════════════════════════════ %>
+    <div id="panel-ventas" class="dash_panel" style="display:none;">
+      <div class="columns is-multiline is-mobile mb-2">
         <div class="column is-6-mobile is-3-tablet">
-          <%= link_to item_path(@item_estrella), class: "box stat_card" do %>
-            <div class="stat_icon" style="font-size:1.5rem;">⭐</div>
-            <div class="stat_val" style="font-size:1rem;word-break:break-word;"><%= @item_estrella.name %></div>
-            <div class="stat_label"><%= @item_estrella.orders_count %> ventas · Item estrella</div>
-          <% end %>
+          <div class="box stat_card is-accent">
+            <div class="stat_icon"><%= image_tag 'graph-up-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= number_to_currency(@venta_mes, precision: 0, delimiter: ",", unit: "$") %></div>
+            <div class="stat_label">
+              Venta este mes
+              <% if @venta_mes_pct %>
+                <br>
+                <span style="color:<%= @venta_mes_pct >= 0 ? 'var(--neon-green)' : 'var(--danger)' %>;font-size:0.9em;">
+                  <%= @venta_mes_pct >= 0 ? '▲' : '▼' %> <%= @venta_mes_pct.abs %>% vs mes ant.
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card">
+            <div class="stat_icon"><%= image_tag 'cup-star-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= number_to_currency(@margen_mes, precision: 0, delimiter: ",", unit: "$") %></div>
+            <div class="stat_label">Margen bruto este mes</div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card">
+            <div class="stat_icon"><%= image_tag 'bill-list-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= number_to_currency(@ticket_promedio, precision: 0, delimiter: ",", unit: "$") %></div>
+            <div class="stat_label">Ticket promedio hoy</div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card <%= @cuentas_por_cobrar > 0 ? 'is-danger' : '' %>">
+            <div class="stat_icon"><%= image_tag 'hand-money-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= number_to_currency(@cuentas_por_cobrar, precision: 0, delimiter: ",", unit: "$") %></div>
+            <div class="stat_label">Cuentas por cobrar</div>
+          </div>
+        </div>
+      </div>
+      <div class="columns mb-2">
+        <div class="column is-8-tablet">
+          <div class="box dashboard_box">
+            <div class="flexx space-b flex-end mb-4">
+              <h3 class="dashboard_section_title">Venta bruta — últimos 7 días</h3>
+              <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
+            </div>
+            <div data-controller="home-chart"
+               data-home-chart-chart-data-value="<%= @ventas_semana.to_json %>"
+               data-home-chart-type-value="bar"
+               style="position:relative;height:220px;">
+              <canvas data-home-chart-target="canvas"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="column is-4-tablet">
+          <div class="box dashboard_box">
+            <h3 class="dashboard_section_title mb-3">Por tipo de orden — mes</h3>
+            <% if @venta_por_tipo.any? %>
+              <div data-controller="home-chart"
+                 data-home-chart-chart-data-value="<%= @venta_por_tipo.to_json %>"
+                 data-home-chart-type-value="doughnut"
+                 style="position:relative;height:180px;">
+                <canvas data-home-chart-target="canvas"></canvas>
+              </div>
+            <% else %>
+              <div class="empty_state">
+                <p>Sin datos este mes</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="columns mb-2">
+        <div class="column is-6-tablet">
+          <div class="box dashboard_box">
+            <h3 class="dashboard_section_title mb-3">Por forma de pago — mes</h3>
+            <% if @venta_por_pago.any? %>
+              <div data-controller="home-chart"
+                 data-home-chart-chart-data-value="<%= @venta_por_pago.to_json %>"
+                 data-home-chart-type-value="doughnut"
+                 style="position:relative;height:180px;">
+                <canvas data-home-chart-target="canvas"></canvas>
+              </div>
+            <% else %>
+              <div class="empty_state">
+                <p>Sin datos este mes</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="column is-6-tablet">
+          <div class="box dashboard_box">
+            <div class="flexx space-b flex-end mb-3">
+              <h3 class="dashboard_section_title">Órdenes recientes</h3>
+              <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
+            </div>
+            <% @ordenes_recientes.first(5).each do |o| %>
+              <%= link_to order_path(o), class: "alerta_item" do %>
+                <div class="alerta_name">
+                  <%= o.customer&.razon&.titleize || "—" %>
+                  <span class="labell" style="margin-left:0.3rem;"><%= o.tipo&.titleize %></span>
+                </div>
+                <div style="text-align:right;">
+                  <div class="has-text-neon" style="font-size:0.9rem;font-weight:600;">
+                    <%= number_to_currency(o.total, precision: 0, delimiter: ",", unit: "$") %>
+                  </div>
+                  <span class="labell"><%= o.created_at.strftime("%-d/%m") %></span>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%# /ventas %>
+    <%# ══ CLIENTES ═════════════════════════════════════════════════ %>
+    <div id="panel-clientes" class="dash_panel" style="display:none;">
+      <div class="columns is-multiline is-mobile mb-2">
+        <div class="column is-6-mobile is-4-tablet">
+          <div class="box stat_card is-accent">
+            <div class="stat_icon"><%= image_tag 'user-plus-rounded-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= @nuevos_clientes_mes %></div>
+            <div class="stat_label">Clientes nuevos este mes</div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-4-tablet">
+          <div class="box stat_card <%= @clientes_con_deuda.any? ? 'is-danger' : '' %>">
+            <div class="stat_icon"><%= image_tag 'hand-money-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= @clientes_con_deuda.size %></div>
+            <div class="stat_label">Clientes con saldo vencido</div>
+          </div>
+        </div>
+        <% if @corp.calendar %>
+          <div class="column is-6-mobile is-4-tablet">
+            <div class="box stat_card">
+              <div class="stat_icon"><%= image_tag 'dislike-svgrepo-com.svg', class: 'invert' %></div>
+              <div class="stat_val"><%= @clientes_riesgo&.size || 0 %></div>
+              <div class="stat_label">Clientes con inasistencias</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="columns mb-2">
+        <div class="column is-6-tablet">
+          <div class="box dashboard_box">
+            <div class="flexx space-b flex-end mb-4">
+              <h3 class="dashboard_section_title">⭐ Top clientes por gasto</h3>
+              <%= link_to customers_path, class: "button is-rounded is-small" do %>Ver todos<% end %>
+            </div>
+            <% if @top_clientes.any? %>
+              <% max_spent = @top_clientes.first.total_spent.to_f %>
+              <% @top_clientes.each_with_index do |c, i| %>
+                <%= link_to customer_path(c), class: "rank_item" do %>
+                  <div class="rank_num">#<%= i + 1 %></div>
+                  <div class="rank_body">
+                    <div class="rank_name"><%= c.razon&.titleize || c.email %></div>
+                    <div class="rank_bar_wrap">
+                      <div class="rank_bar" style="width:<%= max_spent > 0 ? (c.total_spent.to_f / max_spent * 100).round : 0 %>%;"></div>
+                    </div>
+                  </div>
+                  <div class="rank_val"><%= number_to_currency(c.total_spent, precision: 0, delimiter: ",", unit: "$") %></div>
+                <% end %>
+              <% end %>
+            <% else %>
+              <div class="empty_state">
+                <p>Sin datos de gasto</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="column is-6-tablet">
+          <div class="box dashboard_box">
+            <div class="flexx space-b flex-end mb-4">
+              <h3 class="dashboard_section_title">Saldos vencidos</h3>
+              <%= link_to orders_path, class: "button is-rounded is-small" do %>Ver órdenes<% end %>
+            </div>
+            <% if @clientes_con_deuda.any? %>
+              <% @clientes_con_deuda.each do |o| %>
+                <%= link_to order_path(o), class: "alerta_item" do %>
+                  <div class="alerta_name"><%= o.customer&.razon&.titleize || "—" %></div>
+                  <div class="alerta_stock" style="color:var(--danger);">
+                    <%= number_to_currency(o.debe, precision: 0, delimiter: ",", unit: "$") %>
+                  </div>
+                <% end %>
+              <% end %>
+            <% else %>
+              <div class="empty_state">
+                <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+                <p>Sin saldos pendientes</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <% if @corp.calendar && @clientes_riesgo&.any? %>
+        <div class="box">
+          <h3 class="dashboard_section_title mb-3">Clientes con inasistencias recurrentes</h3>
+          <table class="table is-fullwidth">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Inasistencias</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @clientes_riesgo.each do |c| %>
+                <tr class="is-clickable" onclick="window.location.href='<%= customer_path(c) %>'">
+                  <td><%= c.razon&.titleize || c.email %></td>
+                  <td><span class="tag is-rounded is-danger"><%= c.failed_events %></span></td>
+                  <td class="labell"><%= c.email %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
         </div>
       <% end %>
     </div>
-    <div class="columns mb-2">
-      <div class="column is-7-tablet">
-        <div class="box dashboard_box">
-          <div class="flexx space-b flex-end mb-4">
-            <h3 class="dashboard_section_title">🏆 Top items más vendidos</h3>
-            <%= link_to items_path, class: "button is-rounded is-small" do %>Ver todos<% end %>
+    <%# /clientes %>
+    <%# ══ AGENDA ════════════════════════════════════════════════════ %>
+    <% if @corp.calendar %>
+      <div id="panel-agenda" class="dash_panel" style="display:none;">
+        <div class="columns is-multiline is-mobile mb-2">
+          <div class="column is-6-mobile is-4-tablet">
+            <div class="box stat_card is-accent">
+              <div class="stat_icon"><%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert' %></div>
+              <div class="stat_val"><%= @eventos_completados_mes %></div>
+              <div class="stat_label">Eventos completados este mes</div>
+            </div>
           </div>
-          <% if @top_items.any? %>
-            <% max_oc = @top_items.first.orders_count.to_f %>
-            <% @top_items.each_with_index do |item, i| %>
-              <%= link_to item_path(item), class: "rank_item" do %>
-                <div class="rank_num">#<%= i + 1 %></div>
-                <div class="rank_body">
-                  <div class="rank_name"><%= item.name %></div>
-                  <div class="rank_bar_wrap">
-                    <div class="rank_bar" style="width:<%= max_oc > 0 ? (item.orders_count / max_oc * 100).round : 0 %>%;"></div>
+          <div class="column is-6-mobile is-4-tablet">
+            <div class="box stat_card">
+              <div class="stat_icon"><%= image_tag 'verified-check-svgrepo-com.svg', class: 'invert' %></div>
+              <div class="stat_val"><%= @tasa_asistencia ? "#{@tasa_asistencia}%" : "—" %></div>
+              <div class="stat_label">Tasa de asistencia</div>
+            </div>
+          </div>
+          <% if @slots_info %>
+            <div class="column is-6-mobile is-4-tablet">
+              <div class="box stat_card">
+                <div class="stat_icon"><%= image_tag 'calendar-date-svgrepo-com.svg', class: 'invert' %></div>
+                <div class="stat_val"><%= @slots_info[:disponibles] %></div>
+                <div class="stat_label">Slots disponibles hoy</div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="columns mb-2">
+          <div class="column is-5-tablet">
+            <div class="box dashboard_box">
+              <h3 class="dashboard_section_title mb-3">Ocupación hoy</h3>
+              <% if @slots_info %>
+                <p class="labell mb-2"><%= @slots_info[:open] %> – <%= @slots_info[:close] %> · <%= @corp.slot_duration_label %> / cita</p>
+                <div class="flexx space-b flex-end mb-1">
+                  <span class="labell">Ocupados</span>
+                  <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>
+                </div>
+                <div class="slot_bar mb-4">
+                  <div class="slot_fill <%= @slots_info[:pct] >= 100 ? 'is-full' : (@slots_info[:pct] >= 70 ? 'is-busy' : '') %>"
+                     style="width:<%= @slots_info[:pct] %>%;"></div>
+                </div>
+              <% else %>
+                <p class="labell">Hoy no es día laborable</p>
+              <% end %>
+              <h3 class="dashboard_section_title mt-4 mb-2">Asistencia este mes</h3>
+              <% if @tasa_asistencia %>
+                <div class="flexx space-b flex-end mb-1">
+                  <span class="labell">Tasa</span><span class="labell"><%= @tasa_asistencia %>%</span>
+                </div>
+                <div class="slot_bar">
+                  <div class="slot_fill <%= @tasa_asistencia < 60 ? 'is-full' : (@tasa_asistencia < 80 ? 'is-busy' : '') %>"
+                     style="width:<%= @tasa_asistencia %>%;"></div>
+                </div>
+              <% else %>
+                <p class="labell mt-2">Sin eventos este mes</p>
+              <% end %>
+            </div>
+          </div>
+          <div class="column">
+            <div class="box dashboard_box">
+              <h3 class="dashboard_section_title mb-3">Eventos completados por agente — mes</h3>
+              <% if @eventos_por_agente&.any? %>
+                <% max_ev = @eventos_por_agente.first[:value].to_f %>
+                <% @eventos_por_agente.each_with_index do |ag, i| %>
+                  <div class="rank_item" style="cursor:default;">
+                    <div class="rank_num">#<%= i + 1 %></div>
+                    <div class="rank_body">
+                      <div class="rank_name"><%= ag[:label] %></div>
+                      <div class="rank_bar_wrap">
+                        <div class="rank_bar" style="width:<%= max_ev > 0 ? (ag[:value] / max_ev * 100).round : 0 %>%;"></div>
+                      </div>
+                    </div>
+                    <div class="rank_val"><%= ag[:value] %></div>
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="empty_state">
+                  <p>Sin datos de agentes este mes</p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <div class="box">
+          <div class="flexx space-b flex-end mb-4">
+            <h3 class="dashboard_section_title">Agenda de hoy</h3>
+            <%= link_to events_path, class: "button is-rounded is-small" do %>Ver agenda completa<% end %>
+          </div>
+          <% if @proximos_eventos.any? %>
+            <% @proximos_eventos.each do |ev| %>
+              <%= link_to event_path(ev), class: "upcoming_event" do %>
+                <div class="event_time"><%= ev.hora_inicio.strftime("%I:%M %p") %></div>
+                <div class="event_body">
+                  <div class="event_title"><%= ev.title %></div>
+                  <div class="event_meta">
+                    <%= ev.customer&.razon&.titleize %>
+                    <% if ev.user %> · <%= ev.user.full_name&.titleize %><% end %>
                   </div>
                 </div>
-                <div class="rank_val"><%= item.orders_count %> vtas</div>
+                <div style="margin-left:auto;">
+                  <% case ev.status
+                   when "pendiente" %><span class="tag is-rounded is-warning">Pendiente</span>
+                  <% when "completado" %><span class="tag is-rounded is-success">Completado</span>
+                  <% when "cancelado" %><span class="tag is-rounded is-danger">Cancelado</span>
+                  <% end %>
+                </div>
               <% end %>
             <% end %>
           <% else %>
             <div class="empty_state">
-              <p>Sin datos de ventas por item</p>
+              <%= image_tag 'calendar-search-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+              <p>Sin eventos hoy</p>
             </div>
           <% end %>
         </div>
       </div>
-      <div class="column is-5-tablet">
-        <div class="box dashboard_box">
-          <h3 class="dashboard_section_title mb-3">Por categoría</h3>
-          <% if @inv_por_cate.any? %>
-            <div data-controller="home-chart"
+      <%# /agenda %>
+    <% end %>
+    <%# ══ INVENTARIO ════════════════════════════════════════════════ %>
+    <div id="panel-inventario" class="dash_panel" style="display:none;">
+      <div class="columns is-multiline is-mobile mb-2">
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card is-accent">
+            <div class="stat_icon"><%= image_tag 'database-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= number_to_currency(@valor_inventario, precision: 0, delimiter: ",", unit: "$") %></div>
+            <div class="stat_label">Valor total inventario</div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card <%= @alertas_inventario.any? ? 'is-danger' : '' %>">
+            <div class="stat_icon"><%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= @alertas_inventario.count %></div>
+            <div class="stat_label">Items con stock bajo</div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-3-tablet">
+          <div class="box stat_card">
+            <div class="stat_icon"><%= image_tag 'ghost-svgrepo-com.svg', class: 'invert' %></div>
+            <div class="stat_val"><%= @items_sin_movimiento %></div>
+            <div class="stat_label">Items sin movimiento</div>
+          </div>
+        </div>
+        <% if @item_estrella %>
+          <div class="column is-6-mobile is-3-tablet">
+            <%= link_to item_path(@item_estrella), class: "box stat_card" do %>
+              <div class="stat_icon" style="font-size:1.5rem;">⭐</div>
+              <div class="stat_val" style="font-size:1rem;word-break:break-word;"><%= @item_estrella.name %></div>
+              <div class="stat_label"><%= @item_estrella.orders_count %> ventas · Item estrella</div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <div class="columns mb-2">
+        <div class="column is-7-tablet">
+          <div class="box dashboard_box">
+            <div class="flexx space-b flex-end mb-4">
+              <h3 class="dashboard_section_title">🏆 Top items más vendidos</h3>
+              <%= link_to items_path, class: "button is-rounded is-small" do %>Ver todos<% end %>
+            </div>
+            <% if @top_items.any? %>
+              <% max_oc = @top_items.first.orders_count.to_f %>
+              <% @top_items.each_with_index do |item, i| %>
+                <%= link_to item_path(item), class: "rank_item" do %>
+                  <div class="rank_num">#<%= i + 1 %></div>
+                  <div class="rank_body">
+                    <div class="rank_name"><%= item.name %></div>
+                    <div class="rank_bar_wrap">
+                      <div class="rank_bar" style="width:<%= max_oc > 0 ? (item.orders_count / max_oc * 100).round : 0 %>%;"></div>
+                    </div>
+                  </div>
+                  <div class="rank_val"><%= item.orders_count %> vtas</div>
+                <% end %>
+              <% end %>
+            <% else %>
+              <div class="empty_state">
+                <p>Sin datos de ventas por item</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="column is-5-tablet">
+          <div class="box dashboard_box">
+            <h3 class="dashboard_section_title mb-3">Por categoría</h3>
+            <% if @inv_por_cate.any? %>
+              <div data-controller="home-chart"
                  data-home-chart-chart-data-value="<%= @inv_por_cate.to_json %>"
                  data-home-chart-type-value="doughnut"
                  style="position:relative;height:160px;">
-              <canvas data-home-chart-target="canvas"></canvas>
-            </div>
-          <% else %>
-            <div class="empty_state">
-              <p>Sin items</p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-    <div class="box">
-      <div class="flexx space-b flex-end mb-4">
-        <h3 class="dashboard_section_title">
-          <%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert', style: 'width:1rem;vertical-align:middle;' %>
-          Alertas de inventario
-        </h3>
-        <%= link_to items_path, class: "button is-rounded is-small" do %>Ver todos<% end %>
-      </div>
-      <% if @alertas_inventario.any? %>
-        <table class="table is-fullwidth">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Stock actual</th>
-              <th>Mínimo</th>
-              <th>Unidad</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @alertas_inventario.each do |item| %>
-              <tr class="is-clickable" onclick="window.location.href='<%= item_path(item) %>'">
-                <td><%= item.name %></td>
-                <td><strong style="color:var(--danger);"><%= item.stock.to_f.round(2).to_s.sub(/\.?0+$/, '') %></strong></td>
-                <td class="labell"><%= item.alerta_stock.to_f.round(2).to_s.sub(/\.?0+$/, '') %></td>
-                <td class="labell"><%= item.unidad %></td>
-                <td><span class="tag is-rounded is-danger">Stock bajo</span></td>
-              </tr>
+                <canvas data-home-chart-target="canvas"></canvas>
+              </div>
+            <% else %>
+              <div class="empty_state">
+                <p>Sin items</p>
+              </div>
             <% end %>
-          </tbody>
-        </table>
-      <% else %>
-        <div class="empty_state">
-          <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
-          <p>Sin alertas de inventario</p>
+          </div>
         </div>
-      <% end %>
+      </div>
+      <div class="box">
+        <div class="flexx space-b flex-end mb-4">
+          <h3 class="dashboard_section_title">
+            <%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert', style: 'width:1rem;vertical-align:middle;' %>
+            Alertas de inventario
+          </h3>
+          <%= link_to items_path, class: "button is-rounded is-small" do %>Ver todos<% end %>
+        </div>
+        <% if @alertas_inventario.any? %>
+          <table class="table is-fullwidth">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Stock actual</th>
+                <th>Mínimo</th>
+                <th>Unidad</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @alertas_inventario.each do |item| %>
+                <tr class="is-clickable" onclick="window.location.href='<%= item_path(item) %>'">
+                  <td><%= item.name %></td>
+                  <td><strong style="color:var(--danger);"><%= item.stock.to_f.round(2).to_s.sub(/\.?0+$/, '') %></strong></td>
+                  <td class="labell"><%= item.alerta_stock.to_f.round(2).to_s.sub(/\.?0+$/, '') %></td>
+                  <td class="labell"><%= item.unidad %></td>
+                  <td><span class="tag is-rounded is-danger">Stock bajo</span></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="empty_state">
+            <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+            <p>Sin alertas de inventario</p>
+          </div>
+        <% end %>
+      </div>
     </div>
+    <%# /inventario %>
   </div>
-  <%# /inventario %>
-</div>
-<%# /dash_tabs %>
+  <%# /dash_tabs %>
+<% else %>
+  <div class="noti is-danger">
+    <h2>Sitio en estado beta</h2>
+    Contacta con soporte para que te habilitemos el acceso al sistema y podamos ayudarte a sacarle el máximo provecho a tu negocio.
+    <%= @corp.sku %>-<%= @corp.id %>
+  </div>
+<% end %>
