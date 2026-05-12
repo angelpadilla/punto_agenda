@@ -8,4 +8,5 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 pin "trix"
 pin "@rails/actiontext", to: "actiontext.esm.js"
 pin "slim-select" # @3.4.3
+pin "air-datepicker" # @3.5.3
 pin "@splidejs/splide", to: "@splidejs--splide.js" # @4.1.4

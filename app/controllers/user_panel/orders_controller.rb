@@ -6,6 +6,27 @@ class UserPanel::OrdersController < UserPanelController
 
     @q = orders.ransack(params[:q])
     @pagy, @orders = pagy(@q.result(distinct: true), limit: 20)
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: {
+          orders: @orders.as_json(
+            include: {
+              customer: {
+                only: [ :id, :name, :email, :tel ]
+              }
+            }
+          ),
+          pagination: {
+            page: @pagy.page,
+            items: @pagy.items,
+            pages: @pagy.pages,
+            count: @pagy.count
+          }
+        }
+      end
+    end
   end
 
   def show
@@ -28,7 +49,7 @@ class UserPanel::OrdersController < UserPanelController
       @corp.brands.default
     end
 
-    items = @corp.items.default.includes(
+    items = @corp.items.available.includes(
       :brand,
       img1_attachment: :blob,
       img2_attachment: :blob,
@@ -82,7 +103,7 @@ class UserPanel::OrdersController < UserPanelController
       stock_errors = false
       @order.line_items.each do |line|
         item = line.item
-        if item.stock < line.cantidad
+        if !item.stock.nil? and item.stock < line.cantidad
           line.error = "No hay suficiente inventario para este item. Actualiza la cantidad o elimina el item para continuar."
           line.save
           stock_errors = true
@@ -99,8 +120,10 @@ class UserPanel::OrdersController < UserPanelController
         # rebajamos inventario
         @order.line_items.each do |line|
           item = line.item
-          item.stock -= line.cantidad
-          item.save
+          if !item.stock.nil?
+            item.stock -= line.cantidad
+            item.save
+          end
         end
       end
 
@@ -110,8 +133,8 @@ class UserPanel::OrdersController < UserPanelController
         end
 
         if @order.factura?
-          if @order.alias.timbres > 0
-            response = Atools.timbra_order(@order, @order.uso_cfdi)
+          if @order.corp.timbres > 0
+            response = Ftools.timbra_order(@order, @order.uso_cfdi)
 
             if response
               if @order.customer.email.present?
@@ -174,7 +197,7 @@ class UserPanel::OrdersController < UserPanelController
     @order.deposits.destroy_all
 
     if @order.factura? and @order.sat_uuid.present?
-      Atools.cancela_order(@order)
+      Ftools.cancela_order(@order)
     elsif @order.factura? and !@order.sat_uuid.present?
       @order.tipo = "remision"
     end
@@ -184,8 +207,10 @@ class UserPanel::OrdersController < UserPanelController
       @order.line_items.each do |line|
         if line and line.item
           item = line.item
-          item.stock += line.cantidad
-          item.save
+          if !item.stock.nil?
+            item.stock += line.cantidad
+            item.save
+          end
         end
       end
       @order.error = "Venta cancelada por el usuario #{current_user.email} con fecha #{Time.current.in_time_zone("America/Mexico_City").strftime("%d/%m/%Y %I:%M %p")}."
@@ -195,14 +220,50 @@ class UserPanel::OrdersController < UserPanelController
     redirect_back(fallback_location: orders_path, alert: "Venta cancelada.")
   end
 
+  def timbra
+    @order = Order.find_by(folio: params[:folio])
+    return redirect_back(fallback_location: user_panel_home_path, alert: "Venta no encontrada") if !@order
+
+    if !params[:uso_cfdi].present? or !params[:customer_id].present?
+      return redirect_back(fallback_location: user_panel_home_path, alert: "Todos los campos son obligatorios")
+    end
+
+    if @order.timbre?
+      return redirect_back(fallback_location: user_panel_home_path, alert: "La venta ya está timbrada")
+    end
+
+    uso_cfdi = params[:uso_cfdi]
+    @order.uso_cfdi = uso_cfdi
+    @order.customer_id = params[:customer_id]
+
+    if @order.corp.timbres > 0
+      response = Ftools.timbra_order(@order, uso_cfdi)
+
+      if response
+        if @order.customer.email.present?
+          OrderMailer.with(order: @order, email: @order.customer.email).send_order.deliver_later
+        else
+          @order.error = "Comprobante timbrado, pero el comprobante no pudo ser enviado al cliente, no tiene email asignado."
+          @order.save
+        end
+        redirect_back(fallback_location: @order, notice: "Venta timbrada exitosamente")
+      else
+        redirect_back(fallback_location: @order, alert: "Error al timbrar la venta")
+      end
+    else
+      @order.update(error: "No tienes timbres disponibles para timbrar")
+      redirect_back(fallback_location: @order, alert: "No tienes timbres disponibles para timbrar")
+    end
+  end
+
   def send_sms
     @order = Order.find_by(folio: params[:folio])
 
-    redirect_to user_panel_home_path, alert: "Objeto no encontrado" if !@order
+    redirect_back(fallback_location: user_panel_home_path, alert: "Objeto no encontrado") if !@order
 
     tel = params[:tel]
 
-    redirect_to order_path(@order), alert: "Número de teléfono no proporcionado" if !tel.present?
+    redirect_back(fallback_location: order_path(@order), alert: "Número de teléfono no proporcionado") if !tel.present?
 
     ## Altiria SMS
     ## clean tel, remove '+' and strip spaces
@@ -223,18 +284,22 @@ class UserPanel::OrdersController < UserPanelController
     #   redirect_to order_path(@order), alert: "El número de teléfono es requerido para enviar el SMS."
     # end
     #
+    #
+    ## prueba de consulta json de ventas
+    puts " --- Probando consulta JSON de ventas --- "
+    puts HTTP.get(orders_url(format: :json))
 
     ## Twilio SMS
-    response = Services.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
+    # response = SmsService.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
 
-    puts " --- Enviando SMS a #{tel}"
-    puts response
+    # puts " --- Enviando SMS a #{tel}"
+    # puts response
 
-    if response[:success]
-      redirect_to order_path(@order), notice: "SMS enviado exitosamente."
-    else
-      redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
-    end
+    # if response[:success]
+    #   redirect_to order_path(@order), notice: "SMS enviado exitosamente."
+    # else
+    #   redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
+    # end
   end
 
   def send_email

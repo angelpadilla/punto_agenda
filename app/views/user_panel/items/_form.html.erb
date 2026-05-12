@@ -76,8 +76,8 @@
           <%= n_field(form, :price, label: "Precio", clas: "field column is-6") %>
           <%= n_field(form, :offer, label: "Precio oferta", clas: "field column is-6") %>
           <%= n_field(form, :cost, label: "Costo", clas: "field column is-12") %>
-          <%= s_field(form, :status, options: Item.statuses.keys.map { |k| [k.humanize, k] }, label: "Status") %>
-          <%= n_field(form, :stock, label: "Inventario") %>
+          <%= s_field(form, :status, options: Item::Statuses, label: "Status") %>
+          <%= n_field(form, :stock, label: "Inventario (deja en blanco si es ilimitado)") %>
           <%= n_field(form, :alerta_stock, label: "Alerta inventario", placeholder: "Ej. 10") %>
         </div>
       </div>
@@ -90,7 +90,7 @@
       <%= link_to "Cancelar", items_path, class: "button is-rounded" %>
     </div>
     <div class="control">
-      <%= form.submit "Guardar item", class: "button is-rounded is-primary" %>
+      <%= form.submit "Guardar", class: "button is-rounded is-primary" %>
     </div>
   </div>
 <% end %>

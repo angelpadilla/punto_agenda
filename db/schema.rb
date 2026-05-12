@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_103538) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_11_120000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -105,6 +105,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_103538) do
     t.string "regimen"
     t.string "rfc", default: "XAXX010101000"
     t.string "sku"
+    t.integer "slot_duration", default: 15, null: false
     t.string "text_cotizacion"
     t.string "text_factura"
     t.string "text_remision"
@@ -342,7 +343,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_103538) do
     t.string "reset_password_token"
     t.integer "sign_in_count", default: 0, null: false
     t.string "tel"
-    t.string "tipo", default: "usuario"
+    t.string "tel_prefix"
+    t.string "tipo", default: "colaborador"
     t.string "unconfirmed_email"
     t.string "unlock_token"
     t.datetime "updated_at", null: false

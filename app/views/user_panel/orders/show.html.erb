@@ -56,6 +56,14 @@
             </span>
             PDF
           <% end %>
+          <% if @order.factura? and @order.xml.present? %>
+            <%= link_to ticket_xml_path(@order.folio), data: { turbo_method: :post }, class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
+              </span>
+              XML
+            <% end %>
+          <% end %>
           <%= link_to ticket80_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
             <span class="icon">
               <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
@@ -417,8 +425,7 @@
     <div class="modal-background"></div>
     <div class="modal-content">
       <div class="box">
-        <%= form_with url: "#", method: :post do |form| %>
-          <%= form.hidden_field :id, value: @order.id %>
+        <%= form_with url: timbra_orders_path(folio: @order.folio), method: :post do |form| %>
           <div class="columns is-multiline">
             <div class="field column is-12">
               <label class="label">Uso de CFDI</label>

@@ -1,0 +1,80 @@
+:root {
+    /* --fc-border-color: black; */
+    /* --fc-daygrid-event-dot-width: 5px; */
+    --fc-small-font-size: .85em;
+    --fc-page-bg-color: var(--black);
+    --fc-neutral-bg-color: var(--white);
+    --fc-neutral-text-color: var(--dark);
+    --fc-border-color: var(--black);
+
+    --fc-button-text-color: var(--white);
+    --fc-button-bg-color: var(--gray);
+    --fc-button-border-color: var(--dark);
+    --fc-button-hover-bg-color: var(--dark);
+    --fc-button-hover-border-color: var(--dark);
+    --fc-button-active-bg-color: var(--dark);
+    --fc-button-active-border-color: var(--dark);
+
+    --fc-event-bg-color: var(--green2);
+    --fc-event-border-color: var(--green3);
+    --fc-event-text-color: var(--light-gray);
+    --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+
+    --fc-more-link-bg-color: #d0d0d0;
+    --fc-more-link-text-color: inherit;
+
+    --fc-event-resizer-thickness: 8px;
+    --fc-event-resizer-dot-total-width: 8px;
+    --fc-event-resizer-dot-border-width: 1px;
+
+    --fc-non-business-color: rgba(216, 135, 85, 0.3);
+    --fc-bg-event-color: rgb(143, 223, 130);
+    --fc-bg-event-opacity: 0.3;
+    --fc-highlight-color: rgba(188, 232, 241, 0.3);
+    --fc-today-bg-color: rgba(143, 223, 130, 0.25);
+    --fc-now-indicator-color: #e53935;
+
+    --fc-daygrid-event-dot-width: 0px;
+
+    /* --fc-list-event-dot-width: 10px;
+    --fc-list-event-hover-bg-color: #881515; */
+}
+
+.fc-day {
+    background: var(--dark);
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border: 3px solid var(--fc-border-color);
+}
+
+.fc-col-header {
+
+    th {
+        /* padding: 1rem; */
+        background: transparent;
+
+        &:second-child {
+            border-top-left-radius: var(--radius);
+        }
+
+        a {
+            color: var(--light-gray);
+            font-weight: bold;
+        }
+    }
+}
+
+.fc-button-group {
+    .fc-button {
+        /* background: var(--fc-button-bg-color); */
+        /* border: 1px solid var(--fc-button-border-color); */
+        /* color: var(--fc-button-text-color); */
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        transition: background-color 0.3s, border-color 0.3s;
+
+    }
+}

@@ -10,11 +10,30 @@
     </div>
     <div class="item_info flexx-3">
       <div>
-        <% unless item.activo? %>
-          <span class="tag is-danger is-light is-rounded"><%= item.status.titleize %></span>
+        <% if item.inactivo? %>
+          <span class="tag is-danger is-rounded">
+            <span class="material-icons-round mr-1" loading="lazy">
+              dangerous
+            </span>
+            <%= item.status.titleize %>
+          </span>
+        <% elsif item.activo_interno? %>
+          <span class="tag is-info is-rounded">
+            <span class="material-icons-round mr-1" loading="lazy">
+              inventory_2
+            </span>
+            <%= item.status.titleize %>
+          </span>
+        <% else %>
+          <span class="tag is-success is-rounded">
+            <span class="material-icons-round mr-1" loading="lazy">
+              public
+            </span>
+            <%= item.status.titleize %>
+          </span>
         <% end %>
         <% if item.offer.present? %>
-          <span class="tag is-warning is-light is-rounded">Oferta</span>
+          <span class="tag is-warning is-rounded">Oferta</span>
         <% end %>
       </div>
       <h3 class="item_info_name">
@@ -23,31 +42,39 @@
       <!-- info -->
       <div class="columns is-mobile is-multiline mt-2">
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
-          <div class="has-text-grey is-size-7">Marca</div>
-          <p class="title is-6"><%= item.brand&.name&.titleize %></p>
+          <div class="labell">Marca</div>
+          <p class="contentt"><%= item.brand&.name&.titleize %></p>
         </div>
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
-          <div class="has-text-grey is-size-7">SKU</div>
-          <p class="title is-6"><%= item.sku %></p>
+          <div class="labell">SKU</div>
+          <p class="contentt"><%= item.sku %></p>
         </div>
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
-          <div class="has-text-grey is-size-7">Categoria</div>
-          <p class="title is-6"><%= item.cate&.titleize %></p>
+          <div class="labell">Categoria</div>
+          <p class="contentt"><%= item.cate&.titleize %></p>
         </div>
       </div>
       <!-- Precios -->
       <div class="columns is-mobile is-multiline">
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
-          <div class="has-text-grey is-size-7">Precio</div>
-          <p class="title is-6 <%= item.offer.present? ? 'tacha' : 'has-text-primary' %>"><%= number_to_currency(item.price) %></p>
+          <div class="labell">Precio</div>
+          <p class="contentt <%= item.offer.present? ? 'tacha' : 'has-text-primary' %>"><%= number_to_currency(item.price) %></p>
         </div>
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
-          <div class="has-text-grey is-size-7">Oferta</div>
-          <p class="title is-6 <%= item.offer.present? ? 'has-text-primary' : '' %>"><%= item.offer.present? && item.offer > 0 ? number_to_currency(item.offer) : '-' %></p>
+          <div class="labell">Oferta</div>
+          <p class="contentt <%= item.offer.present? ? 'has-text-primary' : '' %>"><%= item.offer.present? && item.offer > 0 ? number_to_currency(item.offer) : '-' %></p>
         </div>
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
-          <div class="has-text-grey is-size-7">Inventario</div>
-          <p class="title is-6"><%= item.stock %></p>
+          <div class="labell">Inventario</div>
+          <p class="contentt">
+            <% if item.stock %>
+              <%= item.stock %>
+            <% else %>
+              <span class="material-icons-round icon" loading="lazy">
+                all_inclusive
+              </span>
+            <% end %>
+          </p>
         </div>
       </div>
     </div>
@@ -62,7 +89,7 @@
         </div>
         <div class="dropdown-menu" role="menu">
           <div class="dropdown-content">
-            <% if current_user.editor? %>
+            <% if current_user.admin? %>
               <%= link_to edit_item_path(item), class: "dropdown-item" do  %>
                 <span class="icon mr-2">
                   <%= image_tag 'edit.svg', alt: 'edit', class: 'invert' %>

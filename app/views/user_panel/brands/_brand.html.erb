@@ -2,8 +2,10 @@
   <td><%= brand.name.titleize %></td>
   <td><%= brand.items.count %></td>
   <td class="has-text-right">
-    <%= link_to brand_path(brand), class: "button is-rounded is-small mr-2" do %>
-      Ver
+    <%= link_to brand_path(brand), class: "mr-2" do %>
+      <span class="icon">
+        <%= image_tag 'eye.svg', alt: 'edit', class: 'invert' %>
+      </span>
     <% end %>
     <div class="dropdown is-right is-hoverable has-text-left">
       <div class="dropdown-trigger">

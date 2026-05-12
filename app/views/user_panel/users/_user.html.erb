@@ -1,0 +1,71 @@
+<tr>
+  <td class="flexx vertical-center gap-2">
+    <div class="image is-48x48 avatar">
+      <%= image_tag "https://robohash.org/#{user.id}.png", alt: "avatar" %>
+    </div>
+    <div>
+      <p class="contentt">
+        <%= user.full_name %>
+      </p>
+      <p class="labell">
+        <%= user.email %>
+      </p>
+    </div>
+  </td>
+  <% if @corp.calendar %>
+    <td><%= user.events.count %></td>
+  <% end %>
+  <td><%= user.sales.count %></td>
+  <td>
+    <span class="tag is-rounded"><%= user.tipo %></span>
+  </td>
+  <td>
+    <% if user.active %>
+      <span class="tag is-rounded is-success">Activo</span>
+    <% else %>
+      <span class="tag is-rounded is-danger">Inactivo</span>
+    <% end %>
+  </td>
+  <td class="has-text-right">
+    <%= link_to user_path(user), class: "mr-2" do %>
+      <span class="icon">
+        <%= image_tag 'eye.svg', alt: 'view', class: 'invert' %>
+      </span>
+    <% end %>
+    <div class="dropdown is-right is-hoverable has-text-left">
+      <div class="dropdown-trigger">
+        <button aria-haspopup="true">
+          <span class="icon r90">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <% if current_user.admin? %>
+            <%= link_to edit_user_path(user), class: "dropdown-item" do %>
+              <span class="icon mr-2">
+                <%= image_tag 'edit.svg', alt: 'edit', class: 'invert' %>
+              </span>
+              Editar
+            <% end %>
+            <%= link_to edit_password_user_path(user), class: "dropdown-item" do %>
+              <span class="icon mr-2">
+                <%= image_tag 'key-svgrepo-com.svg', alt: 'edit password', class: 'invert' %>
+              </span>
+              Editar contraseña
+            <% end %>
+          <% end %>
+          <% if current_user.prop? %>
+            <%= link_to user_path(user), data: { turbo_confirm: "¿Estás seguro?", turbo_method: :delete }, class: "dropdown-item" do %>
+              <span class="icon mr-2">
+                <%= image_tag 'trash.svg', alt: 'delete', class: 'invert' %>
+              </span>
+              Eliminar
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </td>
+</tr>

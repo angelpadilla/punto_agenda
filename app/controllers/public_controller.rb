@@ -23,6 +23,12 @@ class PublicController < ApplicationController
     send_data pdf.render, filename: "venta_#{@order.folio}.pdf", type: "application/pdf", disposition: "inline"
   end
 
+  def ticket_xml
+    @order = Order.find_by(folio: params[:folio])
+    redirect_to root_path, alert: "Order not found" if !@order
+    send_data @order.xml, filename: "venta_#{@order.folio}.xml", disposition: "attachment"
+  end
+
   def pdf_abono
     @deposit = Deposit.includes(:depositable).find_by(folio: params[:folio])
     redirect_to root_path, alert: "Abono no encontrado" if !@deposit

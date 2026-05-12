@@ -143,6 +143,17 @@
       </span>
     </div>
     <div class="box_content">
+      <div class="field mb-4">
+        <label class="label">Duración promedio de cita/evento</label>
+        <div class="control">
+          <div class="select">
+            <%= form.select :slot_duration,
+                  options_for_select(Corp::SLOT_DURATION_OPTIONS, corp.slot_duration || 15),
+                  {},
+                  { class: "select-time" } %>
+          </div>
+        </div>
+      </div>
       <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
       <table class="table is-fullwidth">
         <thead>

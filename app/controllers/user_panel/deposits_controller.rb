@@ -82,7 +82,7 @@ class UserPanel::DepositsController < UserPanelController
           order.save
           return redirect_back(fallback_location: user_panel_home_path, alert: order.error)
         elsif order.alias.timbres > 0
-          response = Atools.timbra_deposito(order, @deposit)
+          response = Ftools.timbra_deposito(order, @deposit)
 
           if response
             if order.customer.email2.present?
@@ -113,7 +113,7 @@ class UserPanel::DepositsController < UserPanelController
     if @deposit.depositable_type == "Order"
       order = @deposit.depositable
       if order.tipo == "factura" and @deposit.sat_uuid.present?
-        response = Atools.cancela_deposito(order, @deposit)
+        response = Ftools.cancela_deposito(order, @deposit)
         unless response
           redirect_back(fallback_location: user_panel_home_path, alert: "Error al eliminar deposito")
         end

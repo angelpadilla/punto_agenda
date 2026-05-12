@@ -1,4 +1,8 @@
-<%= form_with(model: event, data: {controller: ''}) do |form| %>
+<%= form_with(model: event, data: {
+  controller: "form-event",
+  form_event_business_hours_value: @corp.business_hours.to_json,
+  form_event_slot_duration_value: @corp.slot_duration || 15
+}) do |form| %>
   <% if event.errors.any? %>
     <div class="notification is-warning mt-4">
       <h2 class="subtitle"><%= pluralize(event.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
@@ -23,25 +27,43 @@
       <%= t_field(form, :title, label: "Título", placeholder: "Ej.evento con Juan Pérez") %>
     </div>
     <div class="columns is-multiline">
-      <%# Arreglo de horas: 00:00 AM hasta 11:45 PM en saltos de 15 min %>
-      <% horas_opciones = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| Time.new(2000, 1, 1, h, m).strftime("%I:%M %p") } } %>
+      <%# Arreglo de horas: saltos de slot_duration configurado %>
+      <% step = @corp.slot_duration || 15 %>
+      <% horas_opciones = (0...1440).step(step).map { |total_min| Time.new(2000, 1, 1, total_min / 60, total_min % 60).strftime("%I:%M %p") } %>
       <div class="field column is-4">
         <label class="label">Día del evento</label>
         <div class="control">
-          <%= form.date_field :dia, 
-                value: event.hora_inicio&.to_date, 
-                required: true, 
-                class: "input #{event.errors.include?(:dia) ? 'is-danger' : ''}" %>
+          <% if params[:dia] %>
+            <%= form.hidden_field :dia, value: params[:dia], data: { form_event_target: "diaHidden" } %>
+            <input type="text"
+                 readonly
+                 placeholder="Selecciona un día"
+                 value="<%= l(Date.parse(params[:dia]), format: :default) %>"
+                 class="input"
+                 data-form-event-target="diaDisplay">
+          <% else %>
+            <%# Hidden field that holds the YYYY-MM-DD value sent to the controller %>
+            <%= form.hidden_field :dia,
+                value: event.hora_inicio&.to_date,
+                data: { form_event_target: "diaHidden" } %>
+            <%# Visible display input that AirDatepicker attaches to %>
+            <input type="text"
+                 readonly
+                 placeholder="Selecciona un día"
+                 value="<%= event.hora_inicio ? l(event.hora_inicio.to_date, format: :default) : '' %>"
+                 class="input <%= event.errors.include?(:dia) ? 'is-danger' : '' %>"
+                 data-form-event-target="diaDisplay">
+          <% end %>
         </div>
       </div>
       <div class="field column is-4">
         <label class="label">Hora de inicio</label>
         <div class="control">
           <div class="select is-fullwidth <%= event.errors.include?(:inicio_hora) ? 'is-danger' : '' %>">
-            <%= form.select :inicio_hora, 
-                  options_for_select(horas_opciones, event.hora_inicio&.strftime('%I:%M %p')), 
-                  { prompt: "Selecciona hora" }, 
-                  { required: true } %>
+            <%= form.select :inicio_hora,
+                  options_for_select(horas_opciones, event.hora_inicio&.strftime('%I:%M %p')),
+                  { prompt: "Selecciona hora" },
+                  { required: true, data: { form_event_target: "inicioHora", action: "change->form-event#inicioChanged" } } %>
           </div>
         </div>
       </div>
@@ -49,10 +71,10 @@
         <label class="label">Hora final</label>
         <div class="control">
           <div class="select is-fullwidth <%= event.errors.include?(:final_hora) ? 'is-danger' : '' %>">
-            <%= form.select :final_hora, 
-                  options_for_select(horas_opciones, event.hora_final&.strftime('%I:%M %p')), 
-                  { prompt: "Selecciona hora" }, 
-                  { required: true } %>
+            <%= form.select :final_hora,
+                  options_for_select(horas_opciones, event.hora_final&.strftime('%I:%M %p')),
+                  { prompt: "Selecciona hora" },
+                  { required: true, data: { form_event_target: "finalHora" } } %>
           </div>
         </div>
       </div>

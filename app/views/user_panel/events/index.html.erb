@@ -16,5 +16,6 @@
   data-calendar-events-url-value="<%= events_path(format: :json) %>"
   data-calendar-business-hours-value="<%= @corp.to_fullcalendar_business_hours.to_json %>"
   data-calendar-new-event-url-value="<%= new_event_path %>"
+  data-calendar-slot-duration-value="<%= @corp.slot_duration || 15 %>"
   style="min-height: 600px;"
 ></div>

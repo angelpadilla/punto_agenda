@@ -1,13 +1,13 @@
 .notice {
-    background: #b7b7b7;
-    color: white;
+    background-color: var(--neon-green);
+    color: var(--dark);
     padding: 1.5rem;
     position: fixed;
     z-index: 35;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 6pt;
-    bottom: 30px;
+    border-radius: var(--radius);
+    top: 6rem;
     max-width: 80%;
     -webkit-transition: all 0.4s ease-in-out;
     -moz-transition: all 0.4s ease-in-out;
@@ -15,15 +15,15 @@
 }
 
 .alert {
-    background: #f33c3c;
-    color: white;
+    background-color: var(--warning);
+    color: var(--dark);
     padding: 1.5rem;
     position: fixed;
     z-index: 35;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 6pt;
-    bottom: 30px;
+    border-radius: var(--radius);
+    top: 6rem;
     max-width: 80%;
     -webkit-transition: all 0.4s ease-in-out;
     -moz-transition: all 0.4s ease-in-out;

@@ -26,19 +26,19 @@
       </div>
       <%= t_field(form, :razon, label: "Nombre/Razon social", placeholder: "Ej. Juan Pérez") %>
       <%= e_field(form, :email, label: "Email", placeholder: "Ej. juan.perez@example.com", clas: "field column is-6") %>
-      <div class="field column is-2">
-        <%= form.label :tel_prefix, "Prefijo internacional", class: "label" %>
+      <div class="field has-addons column is-6">
         <div class="control <%= customer.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
+          <label class="label">* Teléfono</label>
           <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, customer.tel_prefix),
-                {prompt: "Selecciona", required: field_required?(Customer, :tel_prefix)},
-                { "data-controller": "slimselect", class: "ss2"}
-                %>
+                    {prompt: "Selecciona", required: field_required?(Customer, :tel_prefix)},
+                    { "data-controller": "slimselect", class: "ss2"}
+                    %>
         </div>
+        <%= t_field(form, :tel, label: "Teléfono", placeholder: "Ej. 1234567890", clas: "control is-expanded", label_ghost: true) %>
       </div>
-      <%= t_field(form, :tel, label: "Telefono", placeholder: "Ej. +52 555-123-4567", clas: "field column is-4") %>
       <%= a_field(form, :notas, label: "Notas", placeholder: "Ej. Información adicional sobre el cliente") %>
     </div>
-    <% if true %>
+    <% if false %>
       <%# vista de customer :docs %>
       <div class="docs_grid">
         <% if customer.docs.attached? %>

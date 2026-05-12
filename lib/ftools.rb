@@ -1,4 +1,4 @@
-module Atools
+module Ftools
   def self.get_models
     Rails.application.eager_load!
     ApplicationRecord.descendants.map { |model| model.name }.sort
@@ -43,24 +43,24 @@ module Atools
         unidad: line.item.unidad,
         sku: line.item.sku,
         cantidad: line.cantidad,
-        descripcion: order.facturado_especial_madre ? "Factura conjunta de folios: #{order.ids_facturados_especial.split(',').join(', ')}" : "#{line.item.brand.name} - #{line.item.name}",
+        descripcion: "#{line.item.brand.name} - #{line.item.name}",
         valor_unitario: line.precio_descuento,
         descuento: 0.0,
-        tax: line.iva_valor,
+        tax: line.iva,
         retencion_iva: 0
       }
     end
     params = {
       moneda: "MXN",
       series: "FA",
-      folio: order.sku || order.id,
+      folio: order.folio || order.id,
       forma_pago: forma_pago,
       metodo_pago: metodo,
       cp: @alias.cp,
       receptor_cp: (order.customer and order.customer.cp) ? (order.customer.rfc == "XAXX010101000" ? @alias.cp : order.customer.cp) : @alias.cp,
       receptor_razon: order.customer.razon,
       receptor_rfc: order.customer.rfc,
-      receptor_regimen: order.customer.regimen_fiscal,
+      receptor_regimen: order.customer.regimen,
       uso_cfdi: (order.customer and order.customer.rfc == "XAXX010101000") ? "S01" : uso_cfdi,
       time: fecha_timbre,
       line_items: items
@@ -239,7 +239,7 @@ module Atools
 
   def self.set_factura(order)
     Factura.new(
-      Vars::Factura_id,
+      Rails.application.credentials.dig(:factura_key),
       order.corp.rfc,
       order.corp.razon,
       order.corp.regimen,

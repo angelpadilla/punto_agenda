@@ -345,7 +345,7 @@ html {
     &.is-info {
         background-color: var(--black) !important;
         color: var(--white) !important;
-        border: 1px solid var(--gray) !important;
+        border: 1px solid var(--black) !important;
     }
 
     &.is-warning {
@@ -490,6 +490,20 @@ a.link {
     align-items: flex-end;
 }
 
+.vertical-center {
+    align-items: center;
+}
+
+
+.gap-1 {
+    gap: 0.5rem;
+}
+
+.gap-2 {
+    gap: 1rem;
+}
+
+
 .flexx-1 {
     flex: 1;
 }
@@ -509,6 +523,8 @@ a.link {
 .flexx-15 {
     flex: 15;
 }
+
+
 
 .titlee {
     font-family: "Space Grotesk", sans-serif;
@@ -717,7 +733,13 @@ div.navbar-dropdown {
         background-color: var(--black);
         border-radius: var(--radius);
         display: flex;
+        align-items: center;
         gap: 0.5rem;
+
+        &.transparent {
+            background-color: transparent;
+            border: 1px dashed var(--gray);
+        }
 
         img {
             width: 2rem;
@@ -725,8 +747,14 @@ div.navbar-dropdown {
         }
 
         .actionn {
-            align-self: center !important;
+            /* align-self: center !important; */
             font-size: 0.8rem !important;
+
+            &.neon {
+                background-color: var(--neon-green) !important;
+                border-color: var(--neon-green) !important;
+                color: var(--dark) !important;
+            }
         }
 
         .contentt {
@@ -1002,6 +1030,10 @@ div.navbar-dropdown {
     font-weight: 500;
 }
 
+.is-ghost {
+    color: transparent !important;
+}
+
 .rounded {
     border-radius: 36px;
 }
@@ -1231,6 +1263,12 @@ div.navbar-dropdown {
     }
 }
 
+.avatar {
+    background: var(--gray);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+}
+
 .events_actions {
     margin-bottom: 0 !important;
 
@@ -1413,5 +1451,310 @@ div.navbar-dropdown {
         border-bottom: 1px solid var(--gray);
         color: var(--white);
         font-weight: 600;
+    }
+}
+
+.tag .material-icons-round {
+    font-size: 18px;
+}
+
+
+/* ──── Dashboard ──────────────────────────────────────────────── */
+
+.dashboard_section_title {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.dashboard_box {
+    height: 100%;
+}
+
+/* Stat cards */
+.stat_card {
+    text-align: center;
+    padding: 1.5rem !important;
+
+    .stat_icon {
+        margin-bottom: 0.5rem;
+
+        img {
+            width: 2rem;
+            height: 2rem;
+            opacity: 0.45;
+        }
+    }
+
+    .stat_val {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--white);
+        line-height: 1;
+        font-family: "Space Grotesk", sans-serif;
+    }
+
+    .stat_label {
+        font-size: 0.7rem;
+        color: var(--gray-text);
+        margin-top: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        line-height: 1.4;
+    }
+
+    &.is-accent .stat_val {
+        color: var(--neon-green);
+    }
+}
+
+/* Upcoming events list */
+.upcoming_event {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--gray);
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    &:first-of-type {
+        padding-top: 0;
+    }
+
+    &:hover {
+        opacity: 0.75;
+    }
+
+    .event_time {
+        font-size: 0.78rem;
+        color: var(--neon-green);
+        font-weight: 700;
+        min-width: 4.8rem;
+        padding-top: 0.1rem;
+        font-family: "Space Grotesk", sans-serif;
+    }
+
+    .event_body {
+        flex: 1;
+        min-width: 0;
+
+        .event_title {
+            font-size: 0.9rem;
+            color: var(--white);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event_meta {
+            font-size: 0.75rem;
+            color: var(--gray-text);
+            margin-top: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+/* Slots progress bar */
+.slot_bar {
+    height: 10px;
+    background: var(--gray);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 0.4rem 0;
+
+    .slot_fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--neon-green);
+        transition: width 0.6s ease;
+
+        &.is-full {
+            background: var(--danger);
+        }
+
+        &.is-busy {
+            background: var(--warning);
+        }
+    }
+}
+
+/* Inventory alert rows */
+.alerta_item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--gray);
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    &:first-of-type {
+        padding-top: 0;
+    }
+
+    &:hover {
+        opacity: 0.75;
+    }
+
+    .alerta_name {
+        flex: 1;
+        font-size: 0.9rem;
+        color: var(--white);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .alerta_stock {
+        font-size: 0.82rem;
+        color: var(--danger);
+        font-weight: 600;
+        white-space: nowrap;
+        text-align: right;
+    }
+}
+
+/* Empty state placeholder */
+.empty_state {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--gray-text);
+
+    .empty_state_icon {
+        width: 2rem;
+        opacity: 0.35;
+        display: block;
+        margin: 0 auto 0.5rem;
+    }
+
+    p {
+        font-size: 0.85rem;
+    }
+}
+
+/* Clickable table rows */
+tr.is-clickable {
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover td {
+        background: rgba(255, 255, 255, 0.03) !important;
+    }
+}
+
+/* ── Dashboard tabs ─────────────────────────────────────────── */
+.dash_tabs_nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.dash_tab_btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid var(--gray);
+    background: var(--dark);
+    color: var(--light-gray, #d1d5da);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    img {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    &.is_active {
+        background: var(--neon-green);
+        color: var(--dark);
+        border-color: var(--neon-green);
+        font-weight: 600;
+    }
+
+    &:hover:not(.is_active) {
+        background: var(--gray);
+    }
+}
+
+/* ── Rank list ──────────────────────────────────────────────── */
+.rank_item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--gray);
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.15s ease;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        opacity: 0.75;
+    }
+
+    .rank_num {
+        font-size: 0.75rem;
+        color: var(--gray-text, #69748c);
+        font-weight: 700;
+        min-width: 1.75rem;
+        text-align: right;
+    }
+
+    .rank_body {
+        flex: 1;
+        min-width: 0;
+
+        .rank_name {
+            font-size: 0.9rem;
+            color: var(--white, #fff);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .rank_bar_wrap {
+            height: 4px;
+            background: var(--gray);
+            border-radius: 999px;
+            margin-top: 0.3rem;
+            overflow: hidden;
+        }
+
+        .rank_bar {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--neon-green);
+        }
+    }
+
+    .rank_val {
+        font-size: 0.82rem;
+        color: var(--neon-green);
+        font-weight: 600;
+        white-space: nowrap;
+        text-align: right;
     }
 }

@@ -1,5 +1,4 @@
 class UserPanel::LineItemsController < UserPanelController
-
   def add_item
     @order = Order.find(params[:order_id])
     item = Item.find(params[:item_id])
@@ -8,26 +7,35 @@ class UserPanel::LineItemsController < UserPanelController
 
     line = @order.line_items.where(item_id: item.id).first
 
-    if item.stock <= 0
-      return redirect_back(fallback_location: new_order_path, alert: "Item sin inventario disponible")
-    end
+    # si el stock es nil, se considera que es ilimitado, por lo tanto no se hace la validación de stock
+    if !item.stock.nil?
+      if item.stock <= 0
+        return redirect_back(fallback_location: new_order_path, alert: "Item sin inventario disponible")
+      end
 
-    if line
-      disponible = item.stock - line.cantidad - cantidad
+      if line
+        disponible = item.stock - line.cantidad - cantidad
+      else
+        disponible = item.stock - cantidad
+      end
+
+      respond_to do |format|
+        if disponible >= 0
+          @order.add_item(item, cantidad, precio)
+          @order.save(validate: false)
+          format.turbo_stream
+        else
+          @error_message = "No hay suficiente inventario disponible para agregar #{cantidad} unidades de #{item.name}. Solo quedan #{disponible} disponibles."
+          # format.turbo_stream {
+          #   render turbo_stream: turbo_stream.update("line_item_errors", partial: "user_panel/orders/line_item_errors", locals: { error_message: @error_message })
+          # }
+          format.turbo_stream
+        end
+      end
     else
-      disponible = item.stock - cantidad
-    end
-
-    respond_to do |format|
-      if disponible >= 0
+      respond_to do |format|
         @order.add_item(item, cantidad, precio)
         @order.save(validate: false)
-        format.turbo_stream
-      else
-        @error_message = "No hay suficiente inventario disponible para agregar #{cantidad} unidades de #{item.name}. Solo quedan #{disponible} disponibles."
-        # format.turbo_stream {
-        #   render turbo_stream: turbo_stream.update("line_item_errors", partial: "user_panel/orders/line_item_errors", locals: { error_message: @error_message })
-        # }
         format.turbo_stream
       end
     end

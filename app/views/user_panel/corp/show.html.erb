@@ -124,7 +124,7 @@
     </div>
   </div>
 </div>
-<div class="box expandable is_active">
+<div class="box expandable">
   <div class="box_header">
     <h2>
       <span class="icon mr-2">
@@ -195,6 +195,57 @@
     </label>
   </div>
 </div>
+<%# show horarios de atencion %>
+<% if @corp.calendar %>
+  <div class="box expandable">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'calendar.svg', alt: "Horarios de atención", class: "invert" %>
+        </span>
+        Horarios de atención
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Abierto</th>
+            <th>Apertura</th>
+            <th>Cierre</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% Corp::DAYS_OF_WEEK.each do |wday, day_name| %>
+            <% day_config = @corp.business_hours&.dig(wday) || { "active" => false, "open" => "09:00", "close" => "18:00" } %>
+            <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
+            <tr>
+              <td><strong><%= day_name %></strong></td>
+              <td>
+                <% if is_active %>
+                  <span class="tag is-rounded is-success is-light">Abierto</span>
+                <% else %>
+                  <span class="tag is-rounded is-light">Cerrado</span>
+                <% end %>
+              </td>
+              <td><%= is_active ? "#{day_config["open"]} Hrs" : "-" %></td>
+              <td><%= is_active ? "#{day_config["close"]} Hrs" : "-" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="mt-3">
+        <div class="labell">Duración promedio de cita/evento</div>
+        <p class="contentt"><%= @corp.slot_duration_label %></p>
+      </div>
+    </div>
+  </div>
+<% end %>
 <div class="box expandable">
   <div class="box_header">
     <h2>
@@ -237,6 +288,19 @@
     </span>
   </div>
   <div class="box_content">
+    <div class="docs_grid">
+      <% if @corp.facturacion? %>
+        <div class="doc_tile transparent mb-4">
+          <%= image_tag 'bolt.svg', alt: 'bolt', class: 'invert' %>
+          <div class="contentt">
+            <div class="file_name" >Tienes <%= @corp.timbres %> timbres disponibles</div>
+          </div>
+          <%= link_to "#", class: "button is-rounded actionn neon" do %>
+            Comprar timbres
+          <% end %>
+        </div>
+      <% end %>
+    </div>
     <div class="columns is-multiline is-mobile">
       <div class="column is-12">
         <div class="labell">Razon fiscal</div>

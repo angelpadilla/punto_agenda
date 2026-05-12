@@ -99,7 +99,15 @@
           </div>
           <div class="column is-6">
             <div class="has-text-grey is-size-6">Inventario</div>
-            <p class="title is-5"><%= @item.stock %></p>
+            <p class="title is-5">
+              <% if @item.stock %>
+                <%= @item.stock %>
+              <% else %>
+                <span class="material-icons-round icon" loading="lazy">
+                  all_inclusive
+                </span>
+              <% end %>
+            </p>
           </div>
           <div class="column is-6">
             <div class="has-text-grey is-size-6">Alerta inventario</div>

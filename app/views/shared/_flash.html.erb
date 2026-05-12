@@ -1,10 +1,17 @@
 <% unless notice.blank? %>
   <div class="notice">
+    <%# icon %>
+    <span class="icon mr-2">
+      <%= image_tag 'check-circle-svgrepo-com.svg', alt: 'editar' %>
+    </span>
     <%= notice %>
   </div>
 <% end %>
 <% unless alert.blank? %>
   <div class="alert">
+    <span class="icon mr-2">
+      <%= image_tag 'confounded-square-svgrepo-com.svg', alt: 'editar' %>
+    </span>
     <%= alert %>
   </div>
 <% end %>

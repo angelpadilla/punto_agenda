@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   devise_for :customers
-  devise_for :users, controllers: { registrations: "users/registrations" }
+  devise_for :users, controllers: { 
+    registrations: "users/registrations" 
+  }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -22,6 +24,7 @@ Rails.application.routes.draw do
     get ":folio/abono_pdf", to: "public#pdf_abono", as: :pdf_abono
     get ":folio/abono_ticket", to: "public#ticket_abono", as: :ticket_abono
     get ":folio/abono_xml", to: "public#abono_xml", as: :abono_xml
+    post ":folio/ticket_xml", to: "public#ticket_xml", as: :ticket_xml
   end
 
   scope "panel" do
@@ -59,6 +62,7 @@ Rails.application.routes.draw do
       collection do
         post ":folio/send_sms", to: "user_panel/orders#send_sms", as: :send_sms
         post :send_email, as: :send_email
+        post :timbra, as: :timbra
         post :cancel
       end
     end
@@ -74,6 +78,14 @@ Rails.application.routes.draw do
       collection do
         post :modificar_forma_pago, as: :modificar_forma_pago
         post :send_abono_email, as: :send_abono_email
+      end
+    end
+
+    resources :users, controller: "user_panel/users" do
+      member do
+        get :edit_password
+        post :update_password
+        # post :activate
       end
     end
   end

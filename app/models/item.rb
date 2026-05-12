@@ -11,8 +11,14 @@ class Item < ApplicationRecord
   has_one_attached :img4, dependent: :destroy
   has_one_attached :img5, dependent: :destroy
 
-  enum :status, activo: 0, borrador: 1
+  enum :status, activo: 0, activo_interno: 1, inactivo: 2
   enum :cate, producto: 0, servicio: 1, consumible: 2
+
+  Statuses = [
+    [ "Activo (internamente y tienda online)", :activo ],
+    [ "Activo interno (solo internamente)", :activo_interno ],
+    [ "Inactivo", :inactivo ]
+  ].freeze
 
   ## validaciones
   # validates :brand_id, presence: { message: "La marca es obligatoria" }
@@ -49,7 +55,7 @@ class Item < ApplicationRecord
   normalizes :name, with: ->(item) { item.strip.downcase.titleize }
 
   scope :default, -> { order("id asc") }
-  scope :available, -> { activo.where("stock > 0") }
+  scope :available, -> { where(status: [ :activo, :activo_interno ]).where("stock > 0 OR stock IS NULL") }
 
   ## broadcasting
   # after_create_commit { broadcast_prepend_to "items", partial: "user_panel/items/item", locals: { item: self }, target: "items" }

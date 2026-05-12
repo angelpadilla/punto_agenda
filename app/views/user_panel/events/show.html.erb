@@ -49,13 +49,6 @@
         <%= image_tag 'calendar2.svg', class: "invert", alt: "Totales" %>
       </span>
       Detalles 
-    </h2>
-  </div>
-  <div class="box_content">
-    <p>
-      <span class="icon material-icons-round mr-2">
-        check_circle
-      </span>
       <% if @event.pendiente? %>
         <span class="tag is-rounded is-warning"><%= @event.status&.titleize %></span>
       <% elsif @event.completado? %>
@@ -63,38 +56,78 @@
       <% else %>
         <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
       <% end %>
-    </p>
-    <p class="mt-2">
-      <span class="icon material-icons-round mr-2">
-        assignment_ind
-      </span>
-      <%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel %>)
-    </p>
-    <p class="mt-2">
-      <span class="icon material-icons-round mr-2">
-        fingerprint
-      </span>
-      <%= @event.folio ? @event.folio : "?" %>
-    </p>
-    <p class="mt-2">
-      <span class="icon material-icons-round mr-2">
-        access_time_filled
-      </span>
-      <%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %>
-    </p>
-    <p class="mt-2">
-      <span class="icon material-icons-round mr-2">
-        event
-      </span>
-      <%= @event.hora_inicio.strftime("%d/%m/%Y") %>
-    </p>
-    <% if @event.body.present? %>
-      <p class="mt-2">
-        <span class="icon material-icons-round mr-2">
-          description
-        </span>
-        <%= @event.body %>
-      </p>
-    <% end %>
+    </h2>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline">
+      <div class="column is-6">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            assignment_ind
+          </span>
+          <div>
+            <p class="labell">Cliente: </p>
+            <p><%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel %>)</p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            fingerprint
+          </span>
+          <div>
+            <p class="labell">Folio: </p>
+            <p><%= @event.folio ? @event.folio : "?" %></p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            event
+          </span>
+          <div>
+            <p class="labell">Fecha: </p>
+            <p><%= @event.hora_inicio.strftime("%d/%m/%Y") %></p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            access_time_filled
+          </span>
+          <div>
+            <p class="labell">Hora: </p>
+            <p><%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %></p>
+          </div>
+        </div>
+      </div>
+      <% if @event.body.present? %>
+        <div class="column is-12">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              description
+            </span>
+            <div>
+              <p class="labell">Notas: </p>
+              <p><%= @event.body %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <div class="column is-12">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            assignment_ind
+          </span>
+          <div>
+            <p class="labell">Agente/colaborador: </p>
+            <p><%= @event.user.full_name %></p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

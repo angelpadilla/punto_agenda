@@ -37,7 +37,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       body = JSON.parse(response.to_s)
       puts body
       build_resource(sign_up_params)
-      resource.tipo = "admin"
+      resource.tipo = "propietario"
+      resource.tel_prefix = params[:user][:tel_prefix] || "+52"
 
       if resource.save
         if corp.save # Guardar el Corp solo si el usuario se guarda correctamente
@@ -96,7 +97,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # If you have extra params to permit, append them to the sanitizer.
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :full_name, :tel ])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :full_name, :tel, :tel_prefix ])
   end
 
   # If you have extra params to permit, append them to the sanitizer.

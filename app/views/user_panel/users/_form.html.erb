@@ -1,0 +1,101 @@
+<%= form_with(model: user) do |form| %>
+  <% if user.errors.any? %>
+    <div class="notification is-warning mt-4">
+      <h2 class="subtitle"><%= pluralize(user.errors.count, "error", "errores") %> impidieron que este usuario se guardara:</h2>
+      <ul>
+        <% user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="columns is-mobile is-multiline mt-4">
+    <div class="column is-9-desktop is-12-tablet is-12-mobile">
+      <div class="box expandable is_active">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'user_data.svg', alt: "Datos principales", class: 'invert' %>
+            </span>
+            Datos principales
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :full_name, label: "Nombre completo", placeholder: "Ej. Juan Pérez", clas: "field column is-12") %>
+            <%= t_field(form, :email, label: "Correo electrónico", placeholder: "Ej. correo@dominio.com", clas: "field column is-6-desktop is-12-tablet is-12-mobile") %>
+            <div class="field has-addons column is-6-desktop is-12-tablet is-12-mobile">
+              <div class="control <%= user.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
+                <label class="label">* Teléfono</label>
+                <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, user.tel_prefix),
+                    {prompt: "Selecciona", required: field_required?(User, :tel_prefix)},
+                    { "data-controller": "slimselect", class: "ss2"}
+                    %>
+              </div>
+              <%= t_field(form, :tel, label: "Teléfono", placeholder: "Ej. 1234567890", clas: "control is-expanded", label_ghost: true) %>
+            </div>
+            <% if ["new", "create"].include?(action_name) %>
+              <%= p_field(form, :password, label: "Contraseña", placeholder: "********", clas: "field column is-6", required: true) %>
+              <%= p_field(form, :password_confirmation, label: "Confirmar contraseña", placeholder: "********", clas: "field column is-6", required: true ) %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped is-justify-content-space-between mt-5">
+        <div class="control">
+          <%= link_to "Cancelar", users_path, class: "button is-rounded" %>
+        </div>
+        <div class="control">
+          <%= form.submit "Guardar", class: "button is-rounded is-primary" %>
+        </div>
+      </div>
+    </div>
+    <div class="column is-3-desktop is-12-tablet is-12-mobile">
+      <div class="box">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'shield-star-svgrepo-com.svg', alt: "Permisos", class: 'invert' %>
+            </span>
+            Permisos
+          </h2>
+        </div>
+        <div class="box_content">
+          <% if user.id == current_user.id or current_user.prop? or current_user.colaborador? %>
+            <div>
+              <div class="labell">Status</div>
+              <p class="">
+                <% if @user.active %>
+                  <span class="tag is-success">Activo</span>
+                <% else %>
+                  <span class="tag is-danger">Inactivo</span>
+                <% end %>
+              </p>
+            </div>
+            <div class="mt-4">
+              <div class="labell">Rol</div>
+              <p class="">
+                <span class="tag"><%= @user.tipo.titleize %></span>
+              </p>
+            </div>
+          <% else %>
+            <label class="toggle_field">
+              <div class="toggle_info">
+                <span class="toggle_label">Status</span>
+                <span class="toggle_desc">Habilita o deshabilita el acceso del usuario al sistema</span>
+              </div>
+              <%= form.check_box :active, class: "toggle_input" %>
+              <span class="toggle_track">
+                <span class="toggle_thumb"></span>
+              </span>
+            </label>
+            <%= s_field(form, :tipo, options: User::Tipos2, label: "Rol", clas: "mt-4") %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

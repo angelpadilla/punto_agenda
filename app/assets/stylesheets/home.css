@@ -1,0 +1,10 @@
+#drawing_canvas {
+    position: absolute;
+    margin: auto;
+    width: 50dvh;
+    height: 50dvh;
+    top: 40dvh;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

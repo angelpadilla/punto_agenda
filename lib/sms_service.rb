@@ -1,5 +1,4 @@
-require "http"
-module Services
+class SmsService
   BaseUrl = "https://api.twilio.com/2010-04-01/Accounts/"
   EventsServiceID = "MG8351d82a20db3128f7beb3c3f4f72d2d"
   Account_sid = Rails.application.credentials.dig(:twilio, :account_sid)

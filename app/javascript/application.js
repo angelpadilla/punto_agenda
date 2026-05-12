@@ -86,21 +86,21 @@ document.addEventListener("turbo:load", (e) => {
     if (notice) {
         setTimeout(function () {
             notice.style.opacity = 0;
-            notice.style.bottom = "-100px";
-        }, 3500);
+            notice.style.top = "-100px";
+        }, 2500);
 
         setTimeout(function () {
             notice.style.display = "none";
-        }, 4500);
+        }, 3500);
     }
     if (alert) {
         setTimeout(function () {
             alert.style.opacity = 0;
-            alert.style.bottom = "-100px";
-        }, 3500);
+            alert.style.top = "-100px";
+        }, 2500);
 
         setTimeout(function () {
             alert.style.display = "none";
-        }, 4500);
+        }, 3500);
     }
 });

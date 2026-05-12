@@ -9,90 +9,103 @@ class User < ApplicationRecord
   belongs_to :corp, optional: true
 
   has_many :events, dependent: :nullify
+  has_many :orders, dependent: :nullify
+
+  ## has many orders as seller, through :seller_id
+  has_many :sales, class_name: "Order", foreign_key: "seller_id", dependent: :nullify
 
   ## Validations
   normalizes :email, with: ->(e) { e.strip.downcase }
-  validates :tipo, inclusion: { in: %w[admin usuario] }
+  validates :tipo, inclusion: { in: %w[propietario administrador colaborador] }
   # validates :tipo, presence: { message: "El tipo de usuario es requerido" }
-  validates :full_name, presence: { message: "El Nombre es requerido" }
-  validates :email, presence: { message: "El Email es requerido" }
-  validates :email, uniqueness: { message: "El Email ya ha sido tomado por alguien más" }
-  validates :tel, presence: { message: "Teléfono es requerido" }
-  validates :tel, numericality: { only_integer: true, message: "Teléfono debe ser un número" }
-  validates :tel, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
-  validates :tel, uniqueness: { message: "Teléfono ya ha sido tomado por alguien más" }
+  
+  validates :full_name, presence: { message: "es requerido" }
+  validates :email, presence: { message: "es requerido" }
+  validates :email, uniqueness: { message: "ya ha sido tomado por alguien más" }
+  validates :tel, format: { with: /\A\d+\z/, message: "debe ser un número" }
+  
+  validates :tel, :tel_prefix, presence: true
+  validates :tel_prefix, inclusion: { in: Customer::TelPrefixes.keys, message: "Prefijo no válido" }
+  validates :tel, length: { maximum: 10, message: "debe tener máximo 10 dígitos" }
+  validates :tel, uniqueness: { scope: :corp_id, message: "ya ha sido tomado por alguien más" }
 
   ## Scopes
   scope :default, -> { order(full_name: :asc) }
+  scope :props, -> { where(tipo: "prop") }
   scope :admins, -> { where(tipo: "admin") }
-  scope :users, -> { where(tipo: "usuario") }
+  scope :colaboradores, -> { where(tipo: "colaborador") }
 
   scope :actives, -> { default.where(active: true) }
   scope :inactives, -> { where(active: false) }
 
   Tipos = [
-    [ "Administrador (acceso a todas la herramientas)", "admin" ],
-    [ "Usuario editor (no puede eliminar objetos)", "editor" ],
-    [ "Usuario básico (solo puede ver)", "usuario" ]
+    [ "Propietario", "propietario" ],
+    [ "Administrador", "administrador" ],
+    [ "Usuario editor", "colaborador" ],
+  ]
+
+  Tipos2 = [
+    [ "Administrador", "administrador" ],
+    [ "Colaborador", "colaborador" ],
   ]
 
 
+  def prop?
+    tipo == "propietario"
+  end
+
   def admin?
-    tipo == "admin"
+    tipo == "administrador" or tipo == "propietario"
   end
 
-  def editor?
-    tipo == "editor" or tipo == "admin"
+  def colaborador?
+    tipo == "colaborador"
   end
 
-  def basic?
-    tipo == "usuario"
-  end
+  # def can_view?(model)
+  #   ## model lo introducen como simbolo, convertir a string y capitalizar
+  #   model = model.to_s.strip.downcase.capitalize
+  #   if self.prop?
+  #     true
+  #   elsif self.cargo.roles.where(model: model, action: "ver").exists?
+  #     true
+  #   else
+  #     false
+  #   end
+  # end
 
-  def can_view?(model)
-    ## model lo introducen como simbolo, convertir a string y capitalizar
-    model = model.to_s.strip.downcase.capitalize
-    if self.admin?
-      true
-    elsif self.cargo.roles.where(model: model, action: "ver").exists?
-      true
-    else
-      false
-    end
-  end
+  # def can_create?(model)
+  #   model = model.to_s.strip.downcase.capitalize
+  #   if self.prop?
+  #     true
+  #   elsif self.cargo.roles.where(model: model, action: "crear").exists?
+  #     true
+  #   else
+  #     false
+  #   end
+  # end
 
-  def can_create?(model)
-    model = model.to_s.strip.downcase.capitalize
-    if self.admin?
-      true
-    elsif self.cargo.roles.where(model: model, action: "crear").exists?
-      true
-    else
-      false
-    end
-  end
+  # def can_edit?(model)
+  #   model = model.to_s.strip.downcase.capitalize
+  #   if self.prop?
+  #     true
+  #   elsif self.cargo.roles.where(model: model, action: "editar").exists?
+  #     true
+  #   else
+  #     false
+  #   end
+  # end
 
-  def can_edit?(model)
-    model = model.to_s.strip.downcase.capitalize
-    if self.admin?
-      true
-    elsif self.cargo.roles.where(model: model, action: "editar").exists?
-      true
-    else
-      false
-    end
-  end
-
-  def can_delete?(model)
-    model = model.to_s.strip.downcase.capitalize
-    if self.admin?
-      true
-    elsif self.cargo.roles.where(model: model, action: "destruir").exists?
-      true
-    else
-      false
-    end
-  end
+  # def can_delete?(model)
+  #   model = model.to_s.strip.downcase.capitalize
+  #   if self.prop?
+  #     true
+  #   elsif self.cargo.roles.where(model: model, action: "destruir").exists?
+  #     true
+  #   else
+  #     false
+  #   end
+  # end
 
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)

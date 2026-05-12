@@ -17,24 +17,42 @@ module ApplicationHelper
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
-            concat "#{mss}. "
+            concat "#{mss.humanize}. "
           end
         end)
       end
     end
   end
 
-  def t_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, pattern: nil, title: nil)
+  def t_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, pattern: nil, title: nil, label_ghost: false)
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
       if label
-        concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
+        concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label #{'is-ghost' if label_ghost}"
       end
       concat form.text_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder, pattern: pattern, title: title)
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
-            concat "#{mss}. "
+            concat "#{mss.humanize}. "
+          end
+        end)
+      end
+    end
+  end
+
+  ## password field
+  def p_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, required: nil)
+    requiredd =  field_required?(form.object.class, field) || required
+    content_tag :div, class: clas do
+      if label
+        concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
+      end
+      concat form.password_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder)
+      if form.object.errors[field].any?
+        concat(content_tag(:p, class: "help is-danger") do
+          form.object.errors.messages_for(field).each do |mss|
+            concat "#{mss.humanize}. "
           end
         end)
       end
@@ -51,7 +69,7 @@ module ApplicationHelper
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
-            concat "#{mss}. "
+            concat "#{mss.humanize}. "
           end
         end)
       end
@@ -68,7 +86,7 @@ module ApplicationHelper
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
-            concat "#{mss}. "
+            concat "#{mss.humanize}. "
           end
         end)
       end
@@ -99,7 +117,7 @@ module ApplicationHelper
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
-            concat "#{mss}. "
+            concat "#{mss.humanize}. "
           end
         end)
       end

@@ -20,6 +20,7 @@ class UserPanel::CorpController < UserPanelController
   def corp_params
     permitted = params.require(:corp).permit(
       :calendar,
+      :slot_duration,
       :calle,
       :ciudad,
       :colonia,
