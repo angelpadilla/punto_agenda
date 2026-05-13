@@ -22,10 +22,10 @@ class User < ApplicationRecord
   validates :full_name, presence: { message: "es requerido" }
   validates :email, presence: { message: "es requerido" }
   validates :email, uniqueness: { message: "ya ha sido tomado por alguien más" }
-  validates :tel, format: { with: /\A\d+\z/, message: "debe ser un número" }
   
   validates :tel, :tel_prefix, presence: true
   validates :tel_prefix, inclusion: { in: Customer::TelPrefixes.keys, message: "Prefijo no válido" }
+  validates :tel, format: { with: /\A\d+\z/, message: "debe ser un número" }
   validates :tel, length: { maximum: 10, message: "debe tener máximo 10 dígitos" }
   validates :tel, uniqueness: { scope: :corp_id, message: "ya ha sido tomado por alguien más" }
 

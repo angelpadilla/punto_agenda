@@ -25,7 +25,16 @@
       <div class="columns is-multiline">
         <%= t_field(form, :name, label: "Nombre comercial", placeholder: "Ej. Mi Empresa", clas: "field column is-6") %>
         <%= t_field(form, :email, label: "Email contacto", placeholder: "Ej. contacto@empresa.com", clas: "field column is-6") %>
-        <%= t_field(form, :phone, label: "Teléfono de contacto", placeholder: "Ej. +34 123 456 789", clas: "field column is-6") %>
+        <div class="field has-addons column is-6">
+          <div class="control <%= corp.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
+            <label class="label">* Teléfono</label>
+            <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, corp.tel_prefix),
+                    {prompt: "Selecciona", required: field_required?(Corp, :tel_prefix)},
+                    { "data-controller": "slimselect", class: "ss2"}
+                    %>
+          </div>
+          <%= t_field(form, :phone, label: "Teléfono", placeholder: "Ej. 1234567890", clas: "control is-expanded", label_ghost: true) %>
+        </div>
         <%= t_field(form, :whatsapp, label: "Whatsapp", placeholder: "Ej. +34 123 456 789", clas: "field column is-6") %>
         <%= s_field(form, :tipo_negocio, options: Corp::TipoNegocios, label: "Tipo de negocio", clas: "field column is-12") %>
         <div class="column is-12-mobile">

@@ -52,18 +52,21 @@ class Corp < ApplicationRecord
   # has_many :items, dependent: :destroy
 
   TipoNegocios = [
-    [ "Barberia", "barberia" ],
-    [ "Salon de belleza", "salon_belleza" ],
-    [ "Cafetería", "cafeteria" ],
-    [ "Tienda", "tienda" ],
-    [ "Servicios", "servicios" ],
-    [ "Otro", "otro" ]
+    [ "💈 Barberia", "barberia" ],
+    [ "💇‍♀️ Salon de belleza", "salon_belleza" ],
+    [ "☕ Cafetería", "cafeteria" ],
+    [ "🛒 Tienda", "tienda" ],
+    [ "🛠️ Servicios", "servicios" ],
+    [ "❓ Otro", "otro" ]
   ]
 
   validates :tipo_negocio, presence: { message: "El tipo de negocio es requerido" }, inclusion: { in: TipoNegocios.map(&:last), message: "Tipo de negocio no válido" }
-  validates :name, :phone, presence: true, on: :update
+
+  validates :name, :phone, :tel_prefix, presence: true, on: :update
+
+  validates :tel_prefix, inclusion: { in: Customer::TelPrefixes.keys, message: "Prefijo no válido" }
   validates :phone, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }
-  validates :phone, length: { maximum: 15, message: "Teléfono debe tener máximo 15 dígitos" }
+  validates :phone, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
 
   validates :whatsapp, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }, allow_blank: true
   validates :whatsapp, length: { maximum: 15, message: "Teléfono debe tener máximo 15 dígitos" }, allow_blank: true

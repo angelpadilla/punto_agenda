@@ -8,7 +8,9 @@ class UserPanel::CorpController < UserPanelController
   end
 
   def update
-    if @corp.update(corp_params)
+    @corp.assign_attributes(corp_params)
+    @corp.visto = true
+    if @corp.save
       redirect_to user_corp_path, notice: "Información de empresa actualizada exitosamente."
     else
       render :edit, status: :unprocessable_entity
@@ -35,6 +37,7 @@ class UserPanel::CorpController < UserPanelController
       :num_int,
       :online_payments,
       :phone,
+      :tel_prefix,
       :public_site,
       :razon,
       :regimen,

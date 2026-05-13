@@ -30,7 +30,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
     corp = Corp.new(
       tipo_negocio: params[:user][:tipo_negocio] || "otro",
       calendar: calendar,
-      regimen: "616"
+      regimen: "616",
+      phone: params[:user][:tel].to_s,
+      tel_prefix: params[:user][:tel_prefix].to_s
     )
 
     if response.status.success?

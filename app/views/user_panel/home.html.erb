@@ -1,4 +1,17 @@
 <% content_for :title, "Dashboard" %>
+<% if !@corp.visto and @corp.active %>
+  <div class="noti is-danger mb-5">
+    <div class="columns">
+      <div class="column is-9">
+        <h2>¡Bienvenido a Posagenda!</h2>
+        <p>Antes de comenzar, necesitamos que completes la configuración de tu negocio para adaptar la plataforma a tus necesidades.</p>
+      </div>
+      <div class="column">
+        <%= link_to "Configurar ahora", edit_user_corp_path, class: "button is-rounded is-fullwidth is-danger" %>
+      </div>
+    </div>
+  </div>
+<% end %>
 <% if @corp.active %>
   <% content_for :body_extra do %>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
