@@ -89,7 +89,7 @@ gem "faker"
 # https://github.com/httprb/http
 gem "http"
 
-gem "devise", "~> 4.9"
+gem "devise", "~> 5.0"
 
 ## https://github.com/igorkasyanchuk/active_storage_validations
 gem "active_storage_validations"
