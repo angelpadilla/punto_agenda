@@ -2,7 +2,7 @@ class Corp < ApplicationRecord
   audited max_audits: 100
 
   has_many :users, dependent: :nullify
-  has_many :items, dependent: :nullify
+  has_many :items, dependent: :destroy
   has_many :customers, dependent: :nullify
   has_many :events, dependent: :nullify
   has_many :providers, dependent: :nullify
@@ -47,9 +47,6 @@ class Corp < ApplicationRecord
 
   enum :tipo_plan, basico: 0, plus: 1, premium: 2
 
-
-  # has_many :orders, dependent: :destroy
-  # has_many :items, dependent: :destroy
 
   TipoNegocios = [
     [ "💈 Barberia", "barberia" ],

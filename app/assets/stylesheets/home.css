@@ -5,12 +5,57 @@
 .s1 {
     .inner {
         margin-top: calc(var(--spacing) * 48);
+        margin-bottom: calc(var(--spacing) * 48);
         align-items: center;
         text-align: center;
-        max-width: 50dvw;
+        max-width: 60dvw;
+        /* object-fit: contain; */
 
         @media (max-width: 1023px) {
             max-width: 80dvw;
+        }
+    }
+}
+
+.s3 {
+    .box {
+        padding: 5rem 3rem;
+        background: var(--dark);
+        border-radius: var(--radius);
+    }
+}
+
+.price_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+
+    @media (max-width: 1023px) {
+        grid-template-columns: 1fr;
+    }
+
+    .price_card {
+        background: var(--black);
+        border-radius: var(--radius);
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        /* align-items: center; */
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+
+            li {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+        }
+
+        .button {
+            margin-top: auto !important;
         }
     }
 }

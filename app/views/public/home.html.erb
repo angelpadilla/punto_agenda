@@ -9,7 +9,7 @@
       <br>
       Vende
       <span class="has-text-neon">online</span>
-      desde un mismo lugar
+      a tus clientes desde un mismo lugar
     </h1>
     <h2 class="subtitle text-gray mt-5">
       Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas desde un mismo lugar.
@@ -35,5 +35,196 @@
         Registrarse
       <% end %>
     <% end %>
+  </div>
+</section>
+<section class="s2 flexx justify-center vertical-center mt-6">
+  <div class="container">
+    <p class="has-text-neon has-text-centered">Mira como funciona</p>
+    <h2 class="title is-2 has-text-centered">
+      ¿Por qué elegir miinegocio?
+    </h2>
+    <div class="columns is-multiline mt-5">
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <%= image_tag 'items.svg', alt: 'catalogo', class: 'mb-4' %>
+          <h3 class="title is-4">Catálogo digital</h3>
+          <p>Crea tu catálogo digital con fotos, descripciones y precios. Comparte tu tienda en redes sociales y llega a más clientes.</p>
+        </div>
+      </div>
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <%= image_tag 'items.svg', alt: 'ventas', class: 'mb-4' %>
+          <h3 class="title is-4">Gestión de ventas</h3>
+          <p>Administra tus ventas, citas y eventos desde un mismo lugar. Lleva un control de tus ingresos y gastos, y toma decisiones informadas para hacer crecer tu negocio.</p>
+        </div>
+      </div>
+      <div class="column is-4">
+        <div class="box has-text-centered">
+          <%= image_tag 'items.svg', alt: 'soporte', class: 'mb-4' %>
+          <h3 class="title is-4">Soporte dedicado</h3>
+          <p>Nuestro equipo de soporte está siempre disponible para ayudarte. Ya sea que tengas una pregunta sobre cómo usar la plataforma o necesites ayuda con un problema técnico, estamos aquí para ayudarte.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%# planes y precios %>
+<section class="s3 mt-6">
+  <div class="container">
+    <div class="box">
+      <p class="has-text-neon has-text-centered mt-4">Elige tu plan</p>
+      <h2 class="title is-2 has-text-centered">
+        Planes y precios
+      </h2>
+      <div class="price_grid mt-5">
+        <div class="price_card">
+          <h3 class="title is-4 mb-2">Básico</h3>
+          <p class="subtitle is-5">$490/mes MXN</p>
+          <ul>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Catálogo digital con hasta 20 productos
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                1 usuario para gestionar
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Gestión de ventas y citas
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Soporte por correo electrónico
+              </p>
+            </li>
+          </ul>
+          <%= link_to new_user_registration_path, class: "button is-primary is-rounded mt-4" do %>
+            Comenzar
+          <% end %>
+        </div>
+        <div class="price_card">
+          <h3 class="title is-4 mb-2">Plus</h3>
+          <p class="subtitle is-5">$790/mes MXN</p>
+          <ul>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Catálogo digital con hasta 100 productos
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Hasta 3 usuarios para gestionar tu negocio
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Gestión avanzada de ventas y citas
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Soporte prioritario por correo electrónico
+              </p>
+            </li>
+          </ul>
+          <%= link_to new_user_registration_path, class: "button is-primary is-rounded mt-4" do %>
+            Comenzar
+          <% end %>
+        </div>
+        <div class="price_card">
+          <h3 class="title is-4 mb-2">Pro</h3>
+          <p class="subtitle is-5">$990/mes MXN</p>
+          <ul>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Catálogo digital con productos ilimitados
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Usuarios ilimitados para gestionar tu negocio
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Gestión avanzada de ventas y citas
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Gestión avanzada de compras, gastos y proveedores 
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Soporte dedicado 24/7
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Soporte dedicado 24/7
+              </p>
+            </li>
+            <li>
+              <span class="icon mr-2">
+                <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              </span>
+              <p>
+                Soporte dedicado 24/7
+              </p>
+            </li>
+          </ul>
+          <%= link_to new_user_registration_path, class: "button is-primary is-rounded mt-4" do %>
+            Comenzar
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

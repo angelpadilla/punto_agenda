@@ -32,7 +32,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       calendar: calendar,
       regimen: "616",
       phone: params[:user][:tel].to_s,
-      tel_prefix: params[:user][:tel_prefix].to_s
+      tel_prefix: params[:user][:tel_prefix].to_s,
+      name: "Compañía de #{params[:user][:full_name]}"
     )
 
     if response.status.success?
