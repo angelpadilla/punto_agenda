@@ -65,6 +65,7 @@ class UserPanelController < ApplicationController
       @venta_por_pago = @corp.orders.not_carritos
                             .where(created_at: month_start..end_of_today)
                             .where.not(status_pago: :cancelado)
+                            .reorder(nil)
                             .group(:forma_pago)
                             .sum(:total)
                             .filter_map do |fp, total|

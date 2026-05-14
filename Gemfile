@@ -69,8 +69,8 @@ group :production do
   # Use a backend for Active Job (and separate queues per environment)
   # gem "sidekiq"
   # Use PostgreSQL as the database for Active Record
-  gem "pg", "~> 1.1"
 end
+gem "pg", "~> 1.1"
 
 
 # Logs https://github.com/collectiveidea/audited
