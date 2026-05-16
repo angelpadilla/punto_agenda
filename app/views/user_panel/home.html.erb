@@ -13,14 +13,14 @@
   </div>
 <% end %>
 <% if @corp.active %>
-  <% content_for :body_extra do %>
+  <% content_for :body do %>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <% end %>
   <%# ── Header ──────────────────────────────────────────────────────── %>
-  <div class="flexx space-b flex-end mt-4 mb-5">
+  <div class="flexx space-b flex-end mb-5">
     <div>
       <p class="labell">Bienvenido de vuelta,</p>
-      <h2 class="titlee"><%= @user.full_name&.titleize || @user.email %></h2>
+      <h2 class="titlee"><%= @userr.full_name&.titleize || @userr.email %></h2>
       <p class="labell"><%= Date.today.strftime("%-d de %B de %Y") %></p>
     </div>
     <div class="actions">
@@ -96,7 +96,7 @@
           <div class="column is-5-tablet">
             <div class="box dashboard_box">
               <div class="flexx space-b flex-end mb-4">
-                <h3 class="dashboard_section_title">Próximos eventos hoy</h3>
+                <h3 class="dashboard_section_title">Agenda de hoy</h3>
                 <%= link_to events_path, class: "button is-rounded is-small" do %>Ver agenda<% end %>
               </div>
               <% if @proximos_eventos.any? %>
@@ -115,7 +115,7 @@
               <% else %>
                 <div class="empty_state">
                   <%= image_tag 'calendar-search-svgrepo-com.svg', class: 'invert empty_state_icon' %>
-                  <p>Sin eventos pendientes hoy</p>
+                  <p>Sin eventos hoy</p>
                 </div>
               <% end %>
             </div>

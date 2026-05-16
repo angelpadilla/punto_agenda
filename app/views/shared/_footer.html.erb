@@ -1,0 +1,46 @@
+<%# footer %>
+<footer class="footerr mt-6">
+  <div class="container">
+    <div class="has-text-centered">
+      <p> © <%= Time.current.year %> MiiNegocio todos los derechos reservados</p>
+    </div>
+    <div class="columns mt-6">
+      <div class="column is-3 is-offset-2">
+        <h2><strong>Links</strong></h2>
+        <ul>
+          <li>
+            <%= link_to "Inicio", root_path %>
+          </li>
+          <li>
+            <%= link_to "Blog", "#" %>
+          </li>
+          <li>
+            <%= link_to "Documentación", "#" %>
+          </li>
+        </ul>
+      </div>
+      <div class="column is-3">
+        <h2><strong>Legal</strong></h2>
+        <ul>
+          <li>
+            <%= link_to "Privacidad", "#" %>
+          </li>
+          <li>
+            <%= link_to "Términos y condiciones", "#" %>
+          </li>
+          <li>
+            <%= link_to "Política de cookies", "#" %>
+          </li>
+        </ul>
+      </div>
+      <div class="column is-4">
+        <h2><strong>Ayuda</strong></h2>
+        <ul>
+          <li><%= link_to "Preguntas frecuentes", "#" %></li>
+          <li><%= link_to "Documentación", "#" %></li>
+          <li><%= link_to "Contacto y soporte técnico", "#" %></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>

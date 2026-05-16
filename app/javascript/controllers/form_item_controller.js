@@ -5,6 +5,8 @@ export default class extends Controller {
         this.token = document.head.querySelector("meta[name=csrf-token]")?.content;
     }
 
+    // ── Image preview ──────────────────────────────────────────────────────
+
     previewImage(event) {
         const input = event.target;
         const file = input.files[0];

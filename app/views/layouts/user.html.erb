@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="theme-dark">
+<html class="theme-dark darkk">
   <head>
     <title><%= content_for(:title) || "Posagenda" %></title>
     <meta name="turbo-prefetch" content="false">
@@ -11,7 +11,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
-    <%# <%= stylesheet_link_tag "vendor/air-datepicker", "data-turbo-track": "reload" %> %>
+    <%# stylesheet_link_tag "vendor/air-datepicker", "data-turbo-track": "reload" %>
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
     <link rel="icon" href="/icon.png" type="image/png">
@@ -23,15 +23,13 @@
     <%= javascript_importmap_tags %>
     <%= Sentry.get_trace_propagation_meta.html_safe %>
   </head>
-  <body>
+  <body class="user_panel">
     <%= render 'shared/flash' %>
     <%= render 'shared/nav_user' %>
-    <div class="container padding_top_nav pb-6 userr">
+    <div class="container pb-6">
       <%= yield %>
     </div>
-    <%= render 'shared/footer' %>
     <%= yield :body %>
-    <%= yield :body_extra %>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales-all.global.min.js"></script>
   </body>

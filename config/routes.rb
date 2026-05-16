@@ -40,7 +40,11 @@ Rails.application.routes.draw do
     end
 
     ## user_panel/items_controller.rb
-    resources :items, controller: "user_panel/items"
+    resources :items, controller: "user_panel/items" do
+      collection do
+        get :search_sat_products
+      end
+    end
     resources :customers, controller: "user_panel/customers"
     resources :providers, controller: "user_panel/providers"
     resources :events, controller: "user_panel/events" do

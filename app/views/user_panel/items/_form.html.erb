@@ -1,4 +1,4 @@
-  <%= form_with(model: item, data: {controller: 'form-item'}) do |form| %>
+  <%= form_with(model: item, data: { controller: 'form-item' }) do |form| %>
   <% if item.errors.any? %>
     <div class="notification is-warning">
       <h2 class="subtitle"><%= pluralize(item.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
@@ -11,18 +11,12 @@
   <% end %>
   <div class="box mt-4">
     <div class="image-grid">
-      <% image_fields = [
-        [:img1, "Imagen 1"],
-        [:img2, "Imagen 2"],
-        [:img3, "Imagen 3"],
-        [:img4, "Imagen 4"],
-        [:img5, "Imagen 5"]
-      ] %>
-      <% image_fields.each_with_index do |(field, label), index| %>
+      <% image_fields = @corp.basico? ? Item::ImageFields1 : Item::ImageFields2 %>
+      <% image_fields.each_with_index do |(label, field), index| %>
         <div class="image-tile">
-          <label class="image-tile__drop">
+          <label class="image-tile__drop has-text-centered" for="<%= form.send(:field_id, field) %>">
             <span class="image-tile__title">
-              <% if item.send(field).attached? %>
+              <% if item.send(field).attached? && item.persisted? %>
                 <%= image_tag item.send(field).variant(resize_to_limit: [400, 400]), alt: "Imagen #{index + 1}", class: 'image-tile__preview' %>
               <% else %>
                 <%= label %>
@@ -30,7 +24,7 @@
             </span>
             <span class="image-tile__subtitle"></span>
             <span class="image-tile__meta">JPG o PNG · max 5MB</span>
-            <%= form.file_field field, class: "image-tile__input", accept: ".jpg,.jpeg,.png", data: { action: "change->form-item#previewImage" } %>
+            <%= form.file_field field, class: "image-tile__input", accept: ".jpg,.jpeg,.png, .webp", data: { action: "change->form-item#previewImage" } %>
             <span class="image-tile__action">Seleccionar archivo</span>
           </label>
         </div>
@@ -44,10 +38,11 @@
           <div class="field column is-6">
             <%= form.label :sat_product_id, "Clave producto SAT", class: "label" %>
             <div class="control <%= item.errors.include?(:sat_product_id) ? 'select-is-danger' : '' %>">
-              <%= form.select :sat_product_id, options_for_select(SatProduct.order(:name).map { |k| ["#{k.sku} #{k.name}", k.id] }, item.sat_product_id),
-                {prompt: "Selecciona", required: field_required?(Item, :sat_product_id)},
-                { "data-controller": "slimselect", class: "ss2"}
-                %>
+              <%= form.select :sat_product_id,
+                options_for_select(item.sat_product ? [["#{item.sat_product.sku} – #{item.sat_product.name}", item.sat_product_id]] : []),
+                { prompt: "Buscar clave SAT...", required: field_required?(Item, :sat_product_id) },
+                { "data-controller": "slimselect", class: "ss2", "data-ajax-url": search_sat_products_items_path(format: :json) }
+              %>
             </div>
           </div>
           <div class="field has-addons column is-12">

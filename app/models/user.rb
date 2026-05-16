@@ -16,6 +16,7 @@ class User < ApplicationRecord
 
   ## Validations
   normalizes :email, with: ->(e) { e.strip.downcase }
+  normalizes :full_name, with: ->(n) { n.strip.downcase.titleize }
   validates :tipo, inclusion: { in: %w[propietario administrador colaborador] }
   # validates :tipo, presence: { message: "El tipo de usuario es requerido" }
   

@@ -22,7 +22,7 @@ class Item < ApplicationRecord
 
   ## validaciones
   # validates :brand_id, presence: { message: "La marca es obligatoria" }
-  validates :sat_product_id, presence: { message: "La clave de producto SAT es obligatorio" }
+  validates :sat_product_id, presence: { message: "La clave de producto SAT es obligatoria" }
   validates :corp_id, presence: { message: "La empresa es obligatoria" }
   validates :name, presence: { message: "El nombre es obligatorio" }
   validates :unidad, presence: { message: "La unidad es obligatoria" }
@@ -41,15 +41,15 @@ class Item < ApplicationRecord
           allow_blank: true,
           if: :price
 
-  validates :img1, content_type: %w[image/png image/jpeg]
+  validates :img1, content_type: %w[image/png image/jpeg image/webp]
   validates :img1, size: { less_than_or_equal_to: 5.megabytes, message: "La imagen 1 debe ser menor a 5MB" }
-  validates :img2, content_type: %w[image/png image/jpeg]
+  validates :img2, content_type: %w[image/png image/jpeg image/webp]
   validates :img2, size: { less_than_or_equal_to: 5.megabytes, message: "La imagen 2 debe ser menor a 5MB" }
-  validates :img3, content_type: %w[image/png image/jpeg]
+  validates :img3, content_type: %w[image/png image/jpeg image/webp]
   validates :img3, size: { less_than_or_equal_to: 5.megabytes, message: "La imagen 3 debe ser menor a 5MB" }
-  validates :img4, content_type: %w[image/png image/jpeg]
+  validates :img4, content_type: %w[image/png image/jpeg image/webp]
   validates :img4, size: { less_than_or_equal_to: 5.megabytes, message: "La imagen 4 debe ser menor a 5MB" }
-  validates :img5, content_type: %w[image/png image/jpeg]
+  validates :img5, content_type: %w[image/png image/jpeg image/webp]
   validates :img5, size: { less_than_or_equal_to: 5.megabytes, message: "La imagen 5 debe ser menor a 5MB" }
 
   normalizes :name, with: ->(item) { item.strip.downcase.titleize }
@@ -92,6 +92,20 @@ class Item < ApplicationRecord
     [ "Lote", "XPK" ],
     [ "Mililitro", "MLT" ],
     [ "Viaje", "E54" ]
+  ].freeze
+
+  ImageFields1 = [
+    [ "Imagen 1", :img1 ],
+    [ "Imagen 2", :img2 ],
+    [ "Imagen 3", :img3 ]
+  ].freeze
+
+  ImageFields2 = [
+    [ "Imagen 1", :img1 ],
+    [ "Imagen 2", :img2 ],
+    [ "Imagen 3", :img3 ],
+    [ "Imagen 4", :img4 ],
+    [ "Imagen 5", :img5 ]
   ].freeze
 
   def self.ransackable_attributes(auth_object = nil)

@@ -86,11 +86,7 @@
           <span class="toggle_label">Facturacion?</span>
           <span class="toggle_desc">Activa si tu negocio realiza facturación</span>
         </div>
-        <% if corp.facturacion %>
-          <input name="corp[facturacion]" type="checkbox" class="toggle_input" checked>
-        <% else %>
-          <input name="corp[facturacion]" type="checkbox" class="toggle_input">
-        <% end %>
+        <%= form.check_box :facturacion, class: "toggle_input" %>
         <span class="toggle_track">
           <span class="toggle_thumb"></span>
         </span>
@@ -100,11 +96,7 @@
           <span class="toggle_label">Activar calendario</span>
           <span class="toggle_desc">Activa si tu negocio utiliza un calendario para gestionar citas o eventos</span>
         </div>
-        <% if corp.calendar %>
-          <input name="corp[calendar]" type="checkbox" data-action="form-corp#setBussinessHours" data-form-corp-target="calendarcheck" class="toggle_input" checked>
-        <% else %>
-          <input name="corp[calendar]" type="checkbox" data-action="form-corp#setBussinessHours" data-form-corp-target="calendarcheck" class="toggle_input">
-        <% end %>
+        <%= form.check_box :calendar, class: "toggle_input", data: { action: "form-corp#setBussinessHours", form_corp_target: "calendarcheck" } %>
         <span class="toggle_track">
           <span class="toggle_thumb"></span>
         </span>
@@ -114,11 +106,7 @@
           <span class="toggle_label">Sitio publico?</span>
           <span class="toggle_desc">Habilita tu sitio público, para que tus clientes puedan hacerte pedidos o citas</span>
         </div>
-        <% if corp.public_site %>
-          <input name="corp[public_site]" type="checkbox" class="toggle_input" checked>
-        <% else %>
-          <input name="corp[public_site]" type="checkbox" class="toggle_input">
-        <% end %>
+        <%= form.check_box :public_site, class: "toggle_input" %>
         <span class="toggle_track">
           <span class="toggle_thumb"></span>
         </span>
@@ -128,11 +116,7 @@
           <span class="toggle_label">Acepta pagos en línea</span>
           <span class="toggle_desc">Habilita Stripe como método de pago</span>
         </div>
-        <% if corp.online_payments %>
-          <input name="corp[online_payments]" type="checkbox" class="toggle_input" checked>
-        <% else %>
-          <input name="corp[online_payments]" type="checkbox" class="toggle_input">
-        <% end %>
+        <%= form.check_box :online_payments, class: "toggle_input" %>
         <span class="toggle_track">
           <span class="toggle_thumb"></span>
         </span>

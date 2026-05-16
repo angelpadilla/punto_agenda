@@ -149,8 +149,8 @@ class UserPanelController < ApplicationController
   private
 
   def set_globals
-    @user = current_user
-    @corp = @user.corp
+    @userr = current_user
+    @corp = @userr.corp
 
     if session[:carrito_id]
       @carrito = Order.find_by(id: session[:carrito_id])

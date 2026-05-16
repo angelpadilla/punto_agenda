@@ -73,6 +73,15 @@ class UserPanel::ItemsController < UserPanelController
     end
   end
 
+  def search_sat_products
+    q = params[:q].to_s.strip
+    results = SatProduct.where("sku ILIKE :q OR name ILIKE :q", q: "%#{q}%")
+                        .order(:sku)
+                        .limit(15)
+                        .map { |p| { id: p.id, label: "#{p.sku} – #{p.name}" } }
+    render json: results
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_item

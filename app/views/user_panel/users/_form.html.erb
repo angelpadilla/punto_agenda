@@ -64,7 +64,7 @@
           </h2>
         </div>
         <div class="box_content">
-          <% if user.id == current_user.id or current_user.prop? or current_user.colaborador? %>
+          <% if user.id == current_user.id or !current_user.prop? %>
             <div>
               <div class="labell">Status</div>
               <p class="">

@@ -9,6 +9,7 @@ class Corp < ApplicationRecord
   has_many :brands, dependent: :destroy
   has_many :orders, dependent: :nullify
   has_many :deposits, through: :orders
+  has_many :sat_products, dependent: :destroy
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy

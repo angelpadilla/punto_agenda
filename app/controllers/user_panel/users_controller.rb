@@ -1,7 +1,10 @@
 class UserPanel::UsersController < UserPanelController
+  include CorpCan
   before_action :set_user, only: %i[show edit update destroy edit_password update_password]
+  before_action :stop_corp_basico, only: %i[index new create destroy]
 
   def index
+    # stop_corp_basico
     users = @corp.users.default
 
     @q = users.ransack(params[:q])
@@ -16,12 +19,15 @@ class UserPanel::UsersController < UserPanelController
   end
 
   def edit
+    stop_corp_basico if @user.id != current_user.id
   end
 
   def edit_password
+    stop_corp_basico if @user.id != current_user.id
   end
 
   def update_password
+    stop_corp_basico if @user.id != current_user.id
     if @user.update(password_params)
       redirect_to @user, notice: "Contraseña actualizada exitosamente."
     else
@@ -40,6 +46,7 @@ class UserPanel::UsersController < UserPanelController
   end
 
   def update
+    stop_corp_basico if @user.id != current_user.id
     if @user.update(user_params)
       redirect_to @user, notice: "Usuario actualizado exitosamente."
     else
