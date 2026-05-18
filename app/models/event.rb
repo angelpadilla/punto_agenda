@@ -39,12 +39,17 @@ class Event < ApplicationRecord
     self.hora_final
   end
 
+  def self.due_today
+    where(hora_inicio: DateTime.now.beginning_of_day..DateTime.now.end_of_day, status: :pendiente)
+  end
+
   before_create :set_folio
+  after_create :add_customer_to_corp_portfolio
 
   private
   def set_folio
     token = SecureRandom.alphanumeric(10).downcase
-    while Order.where(folio: token).exists?
+    while Event.where(folio: token).exists?
       token = SecureRandom.alphanumeric(10).downcase
     end
     self.folio = token
@@ -55,6 +60,13 @@ class Event < ApplicationRecord
 
     if hora_final < hora_inicio
       errors.add(:hora_final, "La hora final debe ser después de la hora de inicio")
+    end
+  end
+
+  def add_customer_to_corp_portfolio
+    return unless customer_id && corp_id
+    CorpCustomer.find_or_create_by(corp_id: corp_id, customer_id: customer_id) do |cc|
+      cc.source = "event"
     end
   end
 end

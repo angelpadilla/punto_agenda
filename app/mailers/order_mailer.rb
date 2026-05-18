@@ -1,6 +1,7 @@
 class OrderMailer < ApplicationMailer
   def send_order
     @order = params[:order]
+    @corp = @order.corp
     email = params[:email]
 
     pdf = OrderPdf.new(order: @order)
@@ -10,11 +11,12 @@ class OrderMailer < ApplicationMailer
       attachments["venta_#{@order.folio}.xml"] = @order.xml
     end
 
-    mail(to: email, subject: "POSS Venta #{@order.folio}")
+    mail(to: email, subject: "#{@corp.name} venta #{@order.folio}")
   end
 
   def send_abono
     @deposit = params[:deposit]
+    @corp = @deposit.corp
     email = params[:email]
 
     pdf = AbonoPdf.new(deposit: @deposit)
@@ -24,6 +26,6 @@ class OrderMailer < ApplicationMailer
       attachments["abono_#{@deposit.folio}.xml"] = @deposit.xml
     end
 
-    mail(to: email, subject: "POSS Abono #{@deposit.folio}")
+    mail(to: email, subject: "#{@corp.name} abono #{@deposit.folio}")
   end
 end

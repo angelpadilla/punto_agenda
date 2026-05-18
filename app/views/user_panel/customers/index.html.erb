@@ -46,7 +46,7 @@
     </div>
     <div class="column is-2">
       <div class="select is-rounded">
-        <%= f.select :canal_eq, options_for_select(Customer::Canales, (params[:q] and !params[:q][:canal_eq].blank?) ? params[:q][:canal_eq] : nil), {prompt: "Canal"}, {class: ""} %>
+        <%= f.select :canal_eq, options_for_select(Customer.canals.keys.map { |k| [k.humanize, k] }, (params[:q] and !params[:q][:canal_eq].blank?) ? params[:q][:canal_eq] : nil), {prompt: "Canal"}, {class: ""} %>
       </div>
     </div>
     <div class="column is-3">

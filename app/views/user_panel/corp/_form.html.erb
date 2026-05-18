@@ -23,11 +23,11 @@
     </div>
     <div class="box_content">
       <div class="columns is-multiline">
-        <%= t_field(form, :name, label: "Nombre comercial", placeholder: "Ej. Mi Empresa", clas: "field column is-6") %>
+        <%= t_field(form, :name, label: "Nombre comercial", placeholder: "Ej. Mi Empresa", clas: "field column is-12") %>
         <%= t_field(form, :email, label: "Email contacto", placeholder: "Ej. contacto@empresa.com", clas: "field column is-6") %>
         <div class="field has-addons column is-6">
           <div class="control <%= corp.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
-            <label class="label">* Teléfono</label>
+            <label class="label">* Teléfono o whatsapp contacto</label>
             <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, corp.tel_prefix),
                     {prompt: "Selecciona", required: field_required?(Corp, :tel_prefix)},
                     { "data-controller": "slimselect", class: "ss2"}
@@ -35,12 +35,11 @@
           </div>
           <%= t_field(form, :phone, label: "Teléfono", placeholder: "Ej. 1234567890", clas: "control is-expanded", label_ghost: true) %>
         </div>
-        <%= t_field(form, :whatsapp, label: "Whatsapp", placeholder: "Ej. +34 123 456 789", clas: "field column is-6") %>
         <%= s_field(form, :tipo_negocio, options: Corp::TipoNegocios, label: "Tipo de negocio", clas: "field column is-12") %>
         <div class="column is-12-mobile">
           <div class="doc_input">
             <div class="doc_file_name"></div>
-            <div class="doc_file_size"></div>
+            <div class="doc_file_size">JPG o PNG · max 5MB</div>
             <%= form.file_field :logo, class: "doc_file_field", accept: ".png, .jpg, .jpeg", data: { action: "change->form-corp#previewDoc" } %>
             <span class="doc_action">Selecciona logo</span>
           </div>

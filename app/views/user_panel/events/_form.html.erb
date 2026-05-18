@@ -31,6 +31,14 @@
       <%# Arreglo de horas: saltos de slot_duration configurado %>
       <% step = @corp.slot_duration || 15 %>
       <% horas_opciones = (0...1440).step(step).map { |total_min| Time.new(2000, 1, 1, total_min / 60, total_min % 60).strftime("%I:%M %p") } %>
+      <%# Pre-selección de hora_inicio desde params (calendario) o desde el evento existente %>
+      <% inicio_preselect = if params[:hora_inicio].present?
+           h, m = params[:hora_inicio].split(":").map(&:to_i)
+           Time.new(2000, 1, 1, h, m).strftime("%I:%M %p")
+         else
+           event.hora_inicio&.strftime("%I:%M %p")
+         end
+      %>
       <div class="field column is-4">
         <label class="label">Día del evento</label>
         <div class="control">
@@ -62,7 +70,7 @@
         <div class="control">
           <div class="select is-fullwidth <%= event.errors.include?(:inicio_hora) ? 'is-danger' : '' %>">
             <%= form.select :inicio_hora,
-                  options_for_select(horas_opciones, event.hora_inicio&.strftime('%I:%M %p')),
+                  options_for_select(horas_opciones, inicio_preselect),
                   { prompt: "Selecciona hora" },
                   { required: true, data: { form_event_target: "inicioHora", action: "change->form-event#inicioChanged" } } %>
           </div>

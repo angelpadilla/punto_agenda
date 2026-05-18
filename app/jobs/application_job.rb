@@ -1,4 +1,6 @@
 class ApplicationJob < ActiveJob::Base
+  # https://guides.rubyonrails.org/active_job_basics.html#recurring-tasks
+  
   # Automatically retry jobs that encountered a deadlock
   # retry_on ActiveRecord::Deadlocked
 

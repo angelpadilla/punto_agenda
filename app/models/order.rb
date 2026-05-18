@@ -189,6 +189,7 @@ class Order < ApplicationRecord
 
   before_save :set_1
   before_create :set_2
+  after_create :add_customer_to_corp_portfolio
 
   private
 
@@ -221,6 +222,13 @@ class Order < ApplicationRecord
         self.status_pago = "pagado"
         self.debe = 0.0
       end
+    end
+  end
+
+  def add_customer_to_corp_portfolio
+    return unless customer_id && corp_id
+    CorpCustomer.find_or_create_by(corp_id: corp_id, customer_id: customer_id) do |cc|
+      cc.source = "compra"
     end
   end
 

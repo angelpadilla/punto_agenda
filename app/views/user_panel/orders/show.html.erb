@@ -70,21 +70,30 @@
             </span>
             Ticket 80mm
           <% end %>
-          <div class="mtrigger dropdown-item" data-target="send_order_email">
+          <a class="mtrigger dropdown-item" data-target="send_order_email">
             <span class="icon">
               <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
             </span>
             Enviar por email
-          </div>
-          <div class="mtrigger dropdown-item" data-target="send_order_sms">
+          </a>
+          <% if @corp.premium? %>
+            <a class="mtrigger dropdown-item" data-target="send_order_sms">
+              <span class="icon">
+                <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+              </span>
+              Enviar por SMS
+            </a>
+          <% end %>
+          <%# enviar por whatsapp %>
+          <a class="mtrigger dropdown-item" data-target="send_order_whatsapp">
             <span class="icon">
               <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
             </span>
-            Enviar por SMS
-          </div>
+            WhatsApp
+          </a>
           <%= link_to cancel_orders_path(id: @order.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar esta orden?"}, class: "dropdown-item" do %>
             <span class="icon">
-              <%= image_tag 'folder-error-svgrepo-com.svg', alt: 'cancel', class: 'invert' %>
+              <%= image_tag 'trash.svg', alt: 'cancel', class: 'invert' %>
             </span>
             Cancelar
           <% end %>
@@ -468,27 +477,38 @@
   </div>
   <button class="modal-close is-large" aria-label="close"></button>
 </div>
-<%# modal for send_order_sms %>
-<div id="send_order_sms" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-content">
-    <div class="box">
-      <%= form_with url: send_sms_orders_path(@order.folio), method: :post do |form| %>
-        <div class="columns is-multiline">
-          <% if Rails.env.development? %>
-            <%= "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!" %>
-          <% end %>
-          <div class="field column is-12">
-            <label class="label">Tel</label>
-            <%= form.telephone_field :tel, value: @order.customer&.tel.present? && @order.customer.tel_prefix.present? ? "#{@order.customer.tel_prefix}#{@order.customer.tel}" : '', class: 'input is-rounded', required: true %>
+<% if @corp.premium? %>
+  <%# modal for send_order_sms %>
+  <div id="send_order_sms" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <%= form_with url: send_sms_orders_path(@order.folio), method: :post do |form| %>
+          <div class="columns is-multiline">
+            <% if Rails.env.development? %>
+              <%= "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!" %>
+            <% end %>
+            <div class="field has-addons column is-12">
+              <div class="control">
+                <label class="label">* Teléfono</label>
+                <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, @order.customer.tel_prefix),
+                    {prompt: "Selecciona", required: true},
+                    { "data-controller": "slimselect", class: "ss2"}
+                    %>
+              </div>
+              <div class="control is-expanded">
+                <label class="label is-ghost">Telefono</label>
+                <%= form.text_field :tel, value: @order.customer&.tel, class: 'input is-rounded', required: true, pattern: '\d+' %>
+              </div>
+            </div>
           </div>
-        </div>
-        <%= form.submit "Enviar", class: "button is-primary is-fullwidth is-rounded" %>
-      <% end %>
+          <%= form.submit "Enviar", class: "button is-primary is-fullwidth is-rounded" %>
+        <% end %>
+      </div>
     </div>
+    <button class="modal-close is-large" aria-label="close"></button>
   </div>
-  <button class="modal-close is-large" aria-label="close"></button>
-</div>
+<% end %>
 <%# modal anadir abono %>
 <div id="anadir_abono" class="modal">
   <div class="modal-background"></div>
@@ -527,4 +547,49 @@
     </div>
   </div>
   <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<div id="send_order_whatsapp" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <%
+      wa_tel = "#{@order.customer&.tel_prefix&.delete('+')}#{@order.customer&.tel}"
+      wa_msg = "Tu detalles de tu pedido: #{@order.folio}\n" \
+               "Total: $#{@order.total}\n" \
+               "Lo puedes consultar en: #{ticket_url(@order.folio)}\n" \
+               "Gracias por tu preferencia en #{@corp.name}!"
+      wa_url = "https://wa.me/#{wa_tel}?text=#{CGI.escape(wa_msg)}"
+    %>
+    <header class="modal-card-head">
+      <p class="modal-card-title">Enviar por WhatsApp</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="mt-4 flexx">
+        <span class="icon mr-2">
+          <%= image_tag 'call-chat-rounded-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+        </span>
+        <div>
+          <p class="labell">Telefono</p>
+          <p><%= @order.customer&.tel_prefix %> <%= @order.customer&.tel %></p>
+        </div>
+      </div>
+      <div class="mt-4 flexx">
+        <span class="icon mr-2">
+          <%= image_tag 'chat-round-call-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+        </span>
+        <div class="flexx-1">
+          <p class="labell">Mensaje a enviar</p>
+          <pre style="white-space: pre-wrap; font-size: 0.9rem;"><%= wa_msg %></pre>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <%= link_to wa_url, target: "_blank", rel: "noopener", class: "button is-success is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'send.svg', alt: 'whatsapp' %>
+        </span>
+        Abrir WhatsApp
+      <% end %>
+    </footer>
+  </div>
 </div>

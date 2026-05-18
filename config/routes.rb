@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # mount MissionControl::Jobs::Engine, at: "/jobstatus"
+
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "KlQnEMoLkkAWfl8j2" => "public#html_elements", as: :html_elements
@@ -54,6 +56,10 @@ Rails.application.routes.draw do
         get :daily
         post :marcar_asistencia
         post :marcar_ausencia
+
+        post :send_email, as: :send_email
+        post :send_sms, as: :send_sms
+        post :send_whatsapp, as: :send_whatsapp
       end
     end
     resources :brands, controller: "user_panel/brands" do

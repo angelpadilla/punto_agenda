@@ -8,12 +8,34 @@
       </span>
       Volver a listado 
     <% end %>
-    <%= link_to edit_customer_path(@customer), class: "button is-rounded" do %>
-      <span class="icon mr-2">
-        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
-      </span>
-      Editar
+    <% if @customer.interno? %>
+      <%= link_to edit_customer_path(@customer), class: "button is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+        </span>
+        Editar
+      <% end %>
     <% end %>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to "#", data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas enviar la contraseña por correo?"}, class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'key-svgrepo-com.svg', alt: 'cancel', class: 'invert' %>
+            </span>
+            Enviar contraseña a correo
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <div class='box mt-4'>
@@ -34,7 +56,7 @@
           <span class="tag is-danger is-rounded">Inactivo</span>
         <% end %>
       </div>
-      <h3 class="titlee2 is-3 mb-4"><%= @customer.razon %></h3>
+      <h3 class="titlee2 mb-4"><%= @customer.razon %></h3>
       <div class="columns is-multiline is-mobile">
         <div class="column is-12-mobile is-6-tablet is-6-desktop">
           <div class="labell">Email</div>
@@ -44,13 +66,13 @@
           <div class="labell">Teléfono</div>
           <p class="contentt"><%= @customer.tel_prefix %> <%= @customer.tel %></p>
         </div>
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Canal</div>
+          <p class="contentt"><%= @customer.canal&.humanize %></p>
+        </div>
         <div class="column is-12">
           <div class="labell">Notas</div>
           <p class=""><%= @customer.notas %></p>
-        </div>
-        <div class="column is-12">
-          <div class="labell">Limite de crédito</div>
-          <p class=""><%= number_to_currency(@customer.limite_credito) %></p>
         </div>
       </div>
       <div class="columns is-multiline is-mobile">

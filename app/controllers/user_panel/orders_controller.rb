@@ -221,7 +221,7 @@ class UserPanel::OrdersController < UserPanelController
   end
 
   def timbra
-    @order = Order.find_by(folio: params[:folio])
+    @order = @corp.orders.find_by(folio: params[:folio])
     return redirect_back(fallback_location: user_panel_home_path, alert: "Venta no encontrada") if !@order
 
     if !params[:uso_cfdi].present? or !params[:customer_id].present?
@@ -257,53 +257,32 @@ class UserPanel::OrdersController < UserPanelController
   end
 
   def send_sms
-    @order = Order.find_by(folio: params[:folio])
+    ## validations
+    return redirect_back(fallback_location: user_panel_home_path, alert: "Folio no proporcionado") if !params[:folio].present?
+    return redirect_back(fallback_location: user_panel_home_path, alert: "Número de teléfono no proporcionado") if !params[:tel].present? and params[:tel_prefix].present?
+
+    @order = @corp.orders.find_by(folio: params[:folio])
 
     redirect_back(fallback_location: user_panel_home_path, alert: "Objeto no encontrado") if !@order
 
-    tel = params[:tel]
 
-    redirect_back(fallback_location: order_path(@order), alert: "Número de teléfono no proporcionado") if !tel.present?
-
-    ## Altiria SMS
-    ## clean tel, remove '+' and strip spaces
-    # tel = tel.gsub("+", "").strip
-
-    # if tel.present?
-    #   response = Services.send_sms_b(to: [ tel ], from: "Venta", body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
-
-    #   puts " --- Enviando SMS a #{tel}"
-    #   puts response
-
-    #   if response[:success]
-    #     redirect_to order_path(@order), notice: "SMS enviado exitosamente."
-    #   else
-    #     redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
-    #   end
-    # else
-    #   redirect_to order_path(@order), alert: "El número de teléfono es requerido para enviar el SMS."
-    # end
-    #
-    #
-    ## prueba de consulta json de ventas
-    puts " --- Probando consulta JSON de ventas --- "
-    puts HTTP.get(orders_url(format: :json))
+    full_tel = params[:tel_prefix].strip + params[:tel].strip
 
     ## Twilio SMS
-    # response = SmsService.send_sms(to: tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
+    response = SmsService.send_sms(to: full_tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
 
-    # puts " --- Enviando SMS a #{tel}"
-    # puts response
+    puts " --- Enviando SMS a #{full_tel}"
+    puts response
 
-    # if response[:success]
-    #   redirect_to order_path(@order), notice: "SMS enviado exitosamente."
-    # else
-    #   redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
-    # end
+    if response[:success]
+      redirect_to order_path(@order), notice: "SMS enviado exitosamente."
+    else
+      redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
+    end
   end
 
   def send_email
-    ## validate id and email present
+    ## validations
     if !params[:folio].present? or !params[:email].present?
       return redirect_back(fallback_location: user_panel_home_path, alert: "Folio de venta o email no proporcionado")
     end
@@ -324,7 +303,7 @@ class UserPanel::OrdersController < UserPanelController
     end
 
     def order_params
-      params.require(:order).permit(
+      params.expect(order: [
         :customer_id,
         :fecha,
         :tipo,
@@ -335,6 +314,6 @@ class UserPanel::OrdersController < UserPanelController
         :seller_id,
         :nota_customer,
         :nota_interna
-      )
+      ])
     end
 end

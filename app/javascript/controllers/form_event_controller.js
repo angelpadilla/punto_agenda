@@ -101,6 +101,8 @@ export default class extends Controller {
             return t >= cfg.open && t <= cfg.close
         })
 
+        this._availableHoras = filtered
+
         const prevInicio = this.inicioHoraTarget.value
         const prevFinal = this.finalHoraTarget.value
         this._rebuildSelect(this.inicioHoraTarget, filtered, prevInicio)
@@ -109,15 +111,14 @@ export default class extends Controller {
 
     _restrictFinalHora(inicioVal) {
         const inicio24 = this._to24h(inicioVal)
-        const currentOptions = [...this.finalHoraTarget.options]
-            .filter(o => o.value !== "")
-            .map(o => o.value)
-        const filtered = currentOptions.filter(h => this._to24h(h) > inicio24)
+        const source = this._availableHoras || this._generateHoras()
+        const filtered = source.filter(h => this._to24h(h) > inicio24)
         this._rebuildSelect(this.finalHoraTarget, filtered, this.finalHoraTarget.value)
     }
 
     _resetHours() {
         const allHoras = this._generateHoras()
+        this._availableHoras = null
         this._rebuildSelect(this.inicioHoraTarget, allHoras, "")
         this._rebuildSelect(this.finalHoraTarget, allHoras, "")
     }

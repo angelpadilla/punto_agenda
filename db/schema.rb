@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_16_132958) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_18_104246) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -83,6 +83,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_132958) do
     t.index ["corp_id"], name: "index_brands_on_corp_id"
   end
 
+  create_table "corp_customers", force: :cascade do |t|
+    t.bigint "corp_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.string "source", default: "manual"
+    t.datetime "updated_at", null: false
+    t.index ["corp_id", "customer_id"], name: "index_corp_customers_on_corp_id_and_customer_id", unique: true
+    t.index ["corp_id"], name: "index_corp_customers_on_corp_id"
+    t.index ["customer_id"], name: "index_corp_customers_on_customer_id"
+  end
+
   create_table "corps", force: :cascade do |t|
     t.boolean "active", default: false, null: false
     t.text "business_hours"
@@ -129,7 +140,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_132958) do
     t.string "canal", default: "interno"
     t.string "ciudad"
     t.string "colonia"
-    t.integer "corp_id", null: false
     t.string "cp"
     t.datetime "created_at", null: false
     t.decimal "credit", precision: 17, scale: 4, default: "0.0"
@@ -143,7 +153,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_132958) do
     t.integer "failed_events", default: 0
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
-    t.decimal "limite_credito", precision: 17, scale: 2, default: "0.0"
     t.string "localidad"
     t.datetime "locked_at"
     t.text "notas"
@@ -161,12 +170,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_132958) do
     t.integer "success_events", default: 0
     t.string "tel"
     t.string "tel_prefix"
-    t.integer "tipo", default: 0
     t.integer "total_events", default: 0
     t.decimal "total_spent", precision: 17, scale: 2, default: "0.0"
     t.string "unlock_token"
     t.datetime "updated_at", null: false
-    t.index ["corp_id"], name: "index_customers_on_corp_id"
     t.index ["email"], name: "index_customers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_customers_on_unlock_token", unique: true
@@ -363,7 +370,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_16_132958) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "brands", "corps"
-  add_foreign_key "customers", "corps"
+  add_foreign_key "corp_customers", "corps"
+  add_foreign_key "corp_customers", "customers"
   add_foreign_key "events", "corps"
   add_foreign_key "events", "customers"
   add_foreign_key "events", "users"

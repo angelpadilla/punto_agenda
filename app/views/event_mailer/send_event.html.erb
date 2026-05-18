@@ -4,7 +4,6 @@
     <td class="container">
       <div class="content">
         <!-- START CENTERED WHITE CONTAINER -->
-        <span class="preheader">facturacion</span>
         <table class="main">
           <!-- START MAIN CONTENT AREA -->
           <tr>
@@ -13,7 +12,23 @@
                 <tr>
                   <td>
                     <p>Saludos.</p>
-                    <p>Te adjuntamos los documentos del folio <%= @order.folio %>.</p>
+                    <p>Te adjuntamos los detalles de tu cita/evento con <b><%= @corp.name&.titleize %></b>.</p>
+                    <br>
+                    <p>
+                      <b>Folio:</b> <%= @event.folio %>
+                    </p>
+                    <p>
+                      <b>Cliente:</b> <%= @event.customer&.razon&.titleize %>
+                    </p>
+                    <p>
+                      <b>Día:</b> <%= @event.hora_inicio.strftime("%d/%m/%Y") %>
+                    </p>
+                    <p>
+                      <b>Hora:</b> <%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %>
+                    </p>
+                    <p>
+                      <b>Agente:</b> <%= @event.user&.full_name&.titleize %>
+                    </p>
                     <br>
                     <p>Gracias por tu preferencia, que tengas un excelente día.</p>
                   </td>

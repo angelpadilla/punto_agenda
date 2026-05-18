@@ -1,4 +1,4 @@
-<% content_for :title, "Detalle de la venta" %>
+<% content_for :title, "Detalle evento" %>
 <div class="flexx space-b flex-end">
   <h2 class="titlee">Detalle del evento</h2>
   <div class="actions">
@@ -25,18 +25,27 @@
       </div>
       <div class="dropdown-menu" role="menu">
         <div class="dropdown-content">
-          <div class="mtrigger dropdown-item" data-target="send_order_email">
+          <a class="mtrigger dropdown-item" data-target="send_event_email">
             <span class="icon">
               <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
             </span>
-            Enviar por email
-          </div>
-          <div class="mtrigger dropdown-item" data-target="send_order_sms">
+            Email
+          </a>
+          <% if @corp.premium? %>
+            <a class="mtrigger dropdown-item" data-target="send_event_sms">
+              <span class="icon">
+                <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+              </span>
+              SMS
+            </a>
+          <% end %>
+          <%# enviar por whatsapp %>
+          <a class="mtrigger dropdown-item" data-target="send_event_whatsapp">
             <span class="icon">
               <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
             </span>
-            Enviar por SMS
-          </div>
+            WhatsApp
+          </a>
         </div>
       </div>
     </div>
@@ -48,7 +57,7 @@
       <span class="icon mr-2">
         <%= image_tag 'calendar2.svg', class: "invert", alt: "Totales" %>
       </span>
-      Detalles 
+      <span class="titlee"><%= @event.title %></span>
       <% if @event.pendiente? %>
         <span class="tag is-rounded is-warning"><%= @event.status&.titleize %></span>
       <% elsif @event.completado? %>
@@ -67,7 +76,7 @@
           </span>
           <div>
             <p class="labell">Cliente: </p>
-            <p><%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel %>)</p>
+            <p><%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %>)</p>
           </div>
         </div>
       </div>
@@ -88,7 +97,7 @@
             event
           </span>
           <div>
-            <p class="labell">Fecha: </p>
+            <p class="labell">Dia: </p>
             <p><%= @event.hora_inicio.strftime("%d/%m/%Y") %></p>
           </div>
         </div>
@@ -129,5 +138,107 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+<%# modals %>
+<div id="send_event_email" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <%= form_with(url: send_email_events_path(folio: @event.folio), method: :post) do |form| %>
+      <header class="modal-card-head">
+        <p class="modal-card-title">Enviar detalles del evento por email</p>
+        <button class="delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="columns is-multiline">
+          <div class="field column is-12">
+            <label class="label">Email</label>
+            <%= form.email_field :email, value: @event.customer&.email.present? ? @event.customer.email : '', class: 'input is-rounded', required: true %>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <%= form.submit "Enviar", class: "button is-primary is-rounded" %>
+      </footer>
+    <% end %>
+  </div>
+</div>
+<% if @corp.premium? %>
+  <div id="send_event_sms" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <%= form_with(url: send_sms_events_path(folio: @event.folio), method: :post) do |form| %>
+        <header class="modal-card-head">
+          <p class="modal-card-title">Enviar detalles del evento por SMS</p>
+          <button class="delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+          <div class="columns is-multiline">
+            <div class="field has-addons column is-12">
+              <div class="control">
+                <label class="label">* Teléfono</label>
+                <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, @event.customer.tel_prefix),
+                    {prompt: "Selecciona", required: true},
+                    { "data-controller": "slimselect", class: "ss2"}
+                    %>
+              </div>
+              <div class="control is-expanded">
+                <label class="label is-ghost">Telefono</label>
+                <%= form.text_field :tel, value: @event.customer&.tel, class: 'input is-rounded', required: true, pattern: '\d+' %>
+              </div>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <%= form.submit "Enviar", class: "button is-primary is-rounded" %>
+        </footer>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+<div id="send_event_whatsapp" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <%
+      wa_tel = "#{@event.customer&.tel_prefix&.delete('+')}#{@event.customer&.tel}"
+      wa_msg = "Tu evento programado: #{@event.title}\n" \
+               "Dia: #{@event.hora_inicio.strftime('%d/%m/%Y')}\n" \
+               "Hora: #{@event.hora_inicio.strftime('%I:%M %p')} - #{@event.hora_final.strftime('%I:%M %p')}\n" \
+               "#{"Notas: #{@event.body}\n" if @event.body.present?}" \
+               "Gracias por tu preferencia en #{@corp.name}!"
+      wa_url = "https://wa.me/#{wa_tel}?text=#{CGI.escape(wa_msg)}"
+    %>
+    <header class="modal-card-head">
+      <p class="modal-card-title">Enviar por WhatsApp</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="mt-4 flexx">
+        <span class="icon mr-2">
+          <%= image_tag 'call-chat-rounded-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+        </span>
+        <div>
+          <p class="labell">Telefono</p>
+          <p><%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %></p>
+        </div>
+      </div>
+      <div class="mt-4 flexx">
+        <span class="icon mr-2">
+          <%= image_tag 'chat-round-call-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+        </span>
+        <div class="flexx-1">
+          <p class="labell">Mensaje a enviar</p>
+          <pre style="white-space: pre-wrap; font-size: 0.9rem;"><%= wa_msg %></pre>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <%= link_to wa_url, target: "_blank", rel: "noopener", class: "button is-success is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'send.svg', alt: 'whatsapp' %>
+        </span>
+        Abrir WhatsApp
+      <% end %>
+    </footer>
   </div>
 </div>

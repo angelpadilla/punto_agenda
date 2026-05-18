@@ -58,7 +58,6 @@ export default class extends Controller {
             slotDuration: slotDurationStr,
             now: new Date(), // Ensure "now" is correct even if user's clock is off
             nowIndicator: true,
-            nowIndicatorSnap: false, // Snap to slot intervals
             allDaySlot: false,
             businessHours,
             slotLabelFormat: { hour: "numeric", minute: "2-digit", omitZeroMinute: true, hour12: true },
@@ -100,12 +99,54 @@ export default class extends Controller {
                     .catch(failureCallback)
             },
 
-            // Clicking an event navigates to its show URL
+            // Clicking an event opens the detail modal
             eventClick: (info) => {
-                if (info.event.url) {
-                    info.jsEvent.preventDefault()
-                    window.location.href = info.event.url
-                }
+                info.jsEvent.preventDefault()
+                console.log("Clicked event:", info.event)
+                const ev = info.event
+                const p = ev.extendedProps
+                const modal = document.getElementById("calendar-event-modal")
+
+                modal.querySelector("#cem-title").textContent = ev.title
+
+                const statusTag = modal.querySelector("#cem-status")
+                const statusClass = p.status === "pendiente" ? "is-warning" :
+                    p.status === "completado" ? "is-success" : "is-danger"
+                statusTag.className = `tag is-rounded ${statusClass}`
+                statusTag.textContent = p.status
+
+                const customerParts = [p.customer, p.customer_tel ? `(${p.customer_tel})` : null].filter(Boolean)
+                modal.querySelector("#cem-customer").textContent = customerParts.join(" ")
+                modal.querySelector("#cem-agente").textContent = p.agente
+
+                const fmt = { hour: "numeric", minute: "2-digit", hour12: true }
+                const dayFmt = { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+                const dayStr = ev.start.toLocaleDateString("es-MX", dayFmt)
+                const startStr = ev.start.toLocaleTimeString("es-MX", fmt)
+                const endStr = ev.end ? ev.end.toLocaleTimeString("es-MX", fmt) : ""
+                modal.querySelector("#cem-day").textContent = dayStr
+                modal.querySelector("#cem-time").textContent =
+                    `${startStr}${endStr ? ` - ${endStr}` : ""}`
+
+                const bodyWrap = modal.querySelector("#cem-body-wrap")
+                bodyWrap.hidden = !p.body
+                if (p.body) modal.querySelector("#cem-body").textContent = p.body
+
+                const isPending = p.status === "pendiente"
+                const asistenciaBtn = modal.querySelector("#cem-asistencia")
+                const ausenciaBtn = modal.querySelector("#cem-ausencia")
+                // const editBtn = modal.querySelector("#cem-edit")
+                const showBtn = modal.querySelector("#cem-show")
+                showBtn.href = p.show_url
+                asistenciaBtn.href = p.marcar_asistencia_url
+                asistenciaBtn.style.display = isPending ? "flex" : "none"
+                ausenciaBtn.href = p.marcar_ausencia_url
+                ausenciaBtn.style.display = isPending ? "flex" : "none"
+                // editBtn.href = p.edit_url
+                // editBtn.style.display = isPending ? "flex" : "none"
+
+
+                modal.classList.add("is-active")
             },
 
             // Color coding by status class
@@ -117,11 +158,19 @@ export default class extends Controller {
             },
 
             dateClick: (info) => {
-                // Extract DD/MM/YYYY
-                const dateStr = info.dateStr.slice(0, 10).split("-").reverse().join("/")
+                console.log("Clicked date:", info.dateStr)
+                // Extract YYYY-MM-DD (ISO format; keeps JS Date parsing valid)
+                const dateStr = info.dateStr.slice(0, 10)
+                const hour = info.date.getHours()
+                const minute = info.date.getMinutes()
+                const timeStr = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
                 const url = new URL(this.newEventUrlValue, window.location.origin)
                 url.searchParams.set("dia", dateStr)
+                url.searchParams.set("hora_inicio", timeStr)
                 window.location.href = url.toString()
+                // const url = new URL(this.newEventUrlValue, window.location.origin)
+                // url.searchParams.set("dia", dateStr)
+                // window.location.href = url.toString()
             }
         })
 

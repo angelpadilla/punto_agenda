@@ -49,6 +49,10 @@
     border: 3px solid var(--fc-border-color);
 }
 
+.fc-timegrid-slot-lane {
+    cursor: pointer;
+}
+
 .fc-col-header {
 
     th {

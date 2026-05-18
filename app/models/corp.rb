@@ -3,13 +3,15 @@ class Corp < ApplicationRecord
 
   has_many :users, dependent: :nullify
   has_many :items, dependent: :destroy
-  has_many :customers, dependent: :nullify
   has_many :events, dependent: :nullify
   has_many :providers, dependent: :nullify
   has_many :brands, dependent: :destroy
   has_many :orders, dependent: :nullify
   has_many :deposits, through: :orders
   has_many :sat_products, dependent: :destroy
+  
+  has_many :corp_customers, dependent: :destroy
+  has_many :customers, through: :corp_customers
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy
@@ -56,7 +58,7 @@ class Corp < ApplicationRecord
     [ "🛒 Tienda", "tienda" ],
     [ "🛠️ Servicios", "servicios" ],
     [ "❓ Otro", "otro" ]
-  ]
+  ].freeze
 
   validates :tipo_negocio, presence: { message: "El tipo de negocio es requerido" }, inclusion: { in: TipoNegocios.map(&:last), message: "Tipo de negocio no válido" }
 
@@ -66,8 +68,8 @@ class Corp < ApplicationRecord
   validates :phone, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }
   validates :phone, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
 
-  validates :whatsapp, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }, allow_blank: true
-  validates :whatsapp, length: { maximum: 15, message: "Teléfono debe tener máximo 15 dígitos" }, allow_blank: true
+  # validates :whatsapp, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }, allow_blank: true
+  # validates :whatsapp, length: { maximum: 15, message: "Teléfono debe tener máximo 15 dígitos" }, allow_blank: true
 
   # validates :razon, :rfc, :regimen, :estado, :cp, :ciudad, :colonia, :calle, :num_ext, presence: true, if: :facturacion?, on: :update
   ## custom validator
@@ -93,6 +95,10 @@ class Corp < ApplicationRecord
 
   def full_name
     "#{razon} #{rfc}"
+  end
+
+  def full_tel
+    "#{tel_prefix} #{phone}"
   end
 
   def facturacion?

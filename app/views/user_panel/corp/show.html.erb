@@ -55,20 +55,12 @@
     <h3 class="titlee2 is-3 mb-4"><%= @corp.name %></h3>
     <div class="columns is-multiline is-mobile">
       <div class="column is-12-mobile is-6-tablet is-6-desktop">
-        <div class="labell">Nombre comercial</div>
-        <p class="contentt"><%= @corp.name %></p>
-      </div>
-      <div class="column is-12-mobile is-6-tablet is-6-desktop">
         <div class="labell">Email contacto</div>
         <p class="contentt"><%= @corp.email %></p>
       </div>
       <div class="column is-12-mobile is-6-tablet is-6-desktop">
         <div class="labell">Teléfono de contacto</div>
-        <p class="contentt"> <%= @corp.tel_prefix %> <%= @corp.phone %></p>
-      </div>
-      <div class="column is-12-mobile is-6-tablet is-6-desktop">
-        <div class="labell">WhatsApp</div>
-        <p class="contentt"><%= @corp.whatsapp %></p>
+        <p class="contentt"><%= @corp.full_tel %></p>
       </div>
       <div class="column is-12-mobile is-6-tablet is-6-desktop">
         <div class="labell">Tipo de negocio</div>

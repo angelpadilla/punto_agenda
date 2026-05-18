@@ -20,13 +20,14 @@ class UserPanel::CustomersController < UserPanelController
 
   def create
     token = Generatepass.gen(exclude_ambiguous: true, include_symbols: false, length: 8)
-    @customer = @corp.customers.new(customer_params)
+    @customer = Customer.new(customer_params)
     @customer.password = token
     @customer.password_confirmation = token
     @customer.passs = token
 
     respond_to do |format|
       if @customer.save
+        @corp.corp_customers.create(customer: @customer, source: :manual)
         format.html { redirect_to customers_path, notice: "Cliente creado." }
         format.json { render :show, status: :created, location: @customer }
       else
@@ -77,7 +78,6 @@ class UserPanel::CustomersController < UserPanelController
       :calle,
       :ciudad,
       :colonia,
-      :corp_id,
       :cp,
       :curp,
       :email,
@@ -89,8 +89,6 @@ class UserPanel::CustomersController < UserPanelController
       :rfc,
       :tel,
       :tel_prefix,
-      :tipo,
-      :limite_credito,
       :notas,
       docs: []
     ])

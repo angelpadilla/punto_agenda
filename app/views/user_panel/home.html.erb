@@ -21,7 +21,7 @@
     <div>
       <p class="labell">Bienvenido de vuelta,</p>
       <h2 class="titlee"><%= @userr.full_name&.titleize || @userr.email %></h2>
-      <p class="labell"><%= Date.today.strftime("%-d de %B de %Y") %></p>
+      <p class="labell"><%= l(DateTime.current, format: :long) %></p>
     </div>
     <div class="actions">
       <%= link_to new_order_path, class: "button is-primary is-rounded" do %>

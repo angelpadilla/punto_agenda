@@ -37,9 +37,10 @@ class OrderPdf < Prawn::Document
 
     text_box(
       %(<strong>Emisor</strong> \n
-        <strong>RFC</strong>: #{@corp.rfc}
-        <strong>Razon</strong>: #{@corp.razon}
-        <strong>Direccion</strong>: #{@corp.calle.titleize} #{@corp.num_ext} #{@corp.num_int}, #{@corp.colonia}, #{@corp.ciudad}, #{@corp.estado.titleize}
+        <strong>#{@corp.name}</strong>
+        #{@corp.rfc.present? ? "<strong>RFC</strong>: #{@corp.rfc}" : nil }
+        #{@corp.razon.present? ? "<strong>Razon</strong>: #{@corp.razon}" : nil }
+        #{(@corp.calle.present? and @corp.num_ext.present?) ? "<strong>Direccion</strong>: #{@corp.calle.titleize} #{@corp.num_ext} #{@corp.num_int}, #{@corp.colonia}, #{@corp.ciudad}, #{@corp.estado.titleize}" : nil }
         <strong>Tel</strong>: #{@corp.phone}
       ),
       at: [ 0, y_pos ],
@@ -92,9 +93,9 @@ class OrderPdf < Prawn::Document
       text "<strong>Razon</strong>: #{@customer.razon}", inline_format: true
       text "<strong>RFC</strong>: #{@customer.rfc}", inline_format: true
       unless @order.cotizacion?
-        text "<strong>Estado</strong>: #{@customer.estado}", inline_format: true
-        text "<strong>C.P.</strong>: #{@customer.cp}, #{@customer.estado}", inline_format: true
-        text "<strong>Ciudad</strong>: #{@customer.ciudad}", inline_format: true
+        text "<strong>Estado</strong>: #{@customer.estado}", inline_format: true if @customer.estado.present?
+        text "<strong>C.P.</strong>: #{@customer.cp}, #{@customer.estado}", inline_format: true if @customer.cp.present?
+        text "<strong>Ciudad</strong>: #{@customer.ciudad}", inline_format: true if @customer.ciudad.present?
       end
     else
       text "Cliente eliminado de sistema", bold: true
@@ -118,10 +119,12 @@ class OrderPdf < Prawn::Document
     if @order.tipo == "factura"
       text "<strong>Subtotal</strong>: #{number_to_currency(@order.subtotal.round(4))} #{@order.moneda}", inline_format: true
       text "<strong>IVA (16%)</strong>: #{number_to_currency(@order.impuestos.round(4))} #{@order.moneda}", inline_format: true
+      text "------------------------------------------------"
       text "<strong>Total</strong>: #{number_to_currency(@order.total.round(4))} #{@order.moneda}", inline_format: true
     else
       text "<strong>Subtotal</strong>: #{number_to_currency(@order.subtotal.round(2))} #{@order.moneda}", inline_format: true
       text "<strong>IVA (16%)</strong>: #{number_to_currency(@order.impuestos.round(2))} #{@order.moneda}", inline_format: true
+      text "------------------------------------------------"
       text "<strong>Total</strong>: #{number_to_currency(@order.total.round(2))} #{@order.moneda}", inline_format: true
     end
 

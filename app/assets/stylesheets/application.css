@@ -70,20 +70,6 @@ html {
     vertical-align: top;
 }
 
-.user_panel {
-    padding-top: 4.5rem;
-    padding-bottom: 1rem;
-}
-
-/* en mobil .container tiene padding a los lados */
-@media (max-width: 1023px) {
-    .user_panel {
-        padding-top: 1rem;
-        padding-bottom: 5rem;
-    }
-
-}
-
 
 /* para escritorio */
 /* @media (min-width: 1023px) {
@@ -267,6 +253,10 @@ div.box {
         margin-bottom: 2rem;
         padding-bottom: 1rem;
         border-bottom: 1px solid var(--gray);
+
+        .icon {
+            vertical-align: sub;
+        }
 
     }
 
@@ -1731,6 +1721,10 @@ tr.is-clickable {
         color: var(--dark);
         border-color: var(--neon-green);
         font-weight: 600;
+
+        img {
+            filter: invert(0);
+        }
     }
 
     &:hover:not(.is_active) {

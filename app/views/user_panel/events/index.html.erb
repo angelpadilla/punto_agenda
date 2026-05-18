@@ -11,6 +11,70 @@
     <% end %>
   </div>
 </div>
+<%# Modal para detalle de evento del calendario %>
+<div id="calendar-event-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title" id="cem-title"></p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        <span class="icon material-icons-round mr-2">check_circle</span>
+        <span id="cem-status" class="tag is-rounded"></span>
+      </p>
+      <div class="mt-4 flexx">
+        <span class="icon material-icons-round mr-2">assignment_ind</span>
+        <div>
+          <p class="labell">Cliente</p>
+          <p id="cem-customer"></p>
+        </div>
+      </div>
+      <div class="mt-2 flexx">
+        <span class="icon material-icons-round mr-2">event</span>
+        <div>
+          <p class="labell">Dia</p>
+          <p id="cem-day"></p>
+        </div>
+      </div>
+      <div class="mt-2 flexx">
+        <span class="icon material-icons-round mr-2">access_time_filled</span>
+        <div>
+          <p class="labell">Hora</p>
+          <p id="cem-time"></p>
+        </div>
+      </div>
+      <div class="mt-2 flexx">
+        <span class="icon material-icons-round mr-2">assignment_ind</span>
+        <div>
+          <p class="labell">Agente</p>
+          <p id="cem-agente"></p>
+        </div>
+      </div>
+      <div class="mt-2" id="cem-body-wrap" hidden>
+        <span class="icon material-icons-round mr-2">description</span>
+        <p class="labell">Descripción</p>
+        <p id="cem-body"></p>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+      <div class="buttons">
+        <a id="cem-asistencia" href="#" data-turbo-method="post" class="button is-primary is-rounded">
+          <span class="material-icons-round has-text-dark mr-2">check</span>
+          Marcar asistencia
+        </a>
+        <a id="cem-ausencia" href="#" data-turbo-method="post" class="button is-info is-rounded">
+          <span class="material-icons-round has-text-white mr-2">clear</span>
+          Marcar ausencia
+        </a>
+        <a id="cem-show" href="#" class="button is-rounded">
+          <span class="material-icons-round has-text-white">remove_red_eye</span>
+        </a>
+      </div>
+    </footer>
+  </div>
+</div>
 <div
   id="fullcalendar"
   data-controller="calendar"

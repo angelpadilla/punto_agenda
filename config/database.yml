@@ -32,8 +32,17 @@ postgres: &postgres
   password: <%= ENV["POSTGRES_PASSWORD"] %>
 
 development:
-  <<: *postgres
-  database: pos_agenda_development
+  primary:
+    <<: *postgres
+    database: pos_agenda_development
+  queue:
+    <<: *postgres
+    database: pos_agenda_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *postgres
+    database: pos_agenda_cable
+    migrations_paths: db/cable_migrate
 
 test:
   <<: *postgres

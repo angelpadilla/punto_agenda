@@ -8,14 +8,11 @@ class Customer < ApplicationRecord
   has_many :orders, dependent: :nullify
   has_many :events, dependent: :nullify
 
-  belongs_to :corp, optional: true
+  has_many :corp_customers, dependent: :destroy
+  has_many :corps, through: :corp_customers
 
-  enum :tipo, publico: 0, mayorista: 1
 
-  Canales = [
-    [ "Web", :web ],
-    [ "Interno", :interno ]
-  ]
+  enum :canal, web: "web", interno: "interno" 
 
   TelPrefixes = {
     # América del Norte
@@ -115,15 +112,12 @@ class Customer < ApplicationRecord
   }.freeze
 
   validates :razon, :tel, :tel_prefix, presence: true
-  validates :tipo, presence: { message: "El tipo de cliente es requerido" }
   validates :tel, format: { with: /\A\d+\z/, message: "Teléfono debe ser un número" }
   validates :tel_prefix, inclusion: { in: TelPrefixes.keys, message: "Prefijo internacional no válido" }
   validates :tel, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
-  validates :tel, uniqueness: { scope: :corp_id, message: "Teléfono ya ha sido tomado" }
-  validates :email, uniqueness: { scope: :corp_id, case_sensitive: false, message: "Email ya ha sido tomado" }
+  validates :tel, uniqueness: { scope: :tel_prefix, message: "Ya existe un cliente con ese teléfono y prefijo" }
   validates :cp, length: { maximum: 5, message: "C.P. debe tener máximo 5 dígitos" }
   validates :cp, numericality: { only_integer: true, message: "C.P. debe ser numérico" }, allow_blank: true
-  validates :corp_id, presence: { message: "La empresa es obligatoria" }
 
   normalizes :razon, with: ->(item) { item.strip.downcase.titleize }
   normalizes :rfc, with: ->(item) { item.strip.upcase }
@@ -165,7 +159,7 @@ class Customer < ApplicationRecord
   end
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)
-    %w[id tipo tel razon rfc estado deuda_total canal]
+    %w[id tel razon rfc estado deuda_total canal]
   end
 
   # Add this method to whitelist explicit associations for Ransack
@@ -174,6 +168,7 @@ class Customer < ApplicationRecord
   end
 
   before_validation :check_sat
+  before_save :set_counters
 
   def deuda_total
     self.orders.where(status: :credito, tipo: [ :remision, :factura ]).sum(:debe)
@@ -203,7 +198,10 @@ class Customer < ApplicationRecord
     self.events.order(created_at: :desc).last&.created_at
   end
 
-  
+  def set_counters
+    self.total_events = self.events.count
+    self.total_spent = self.orders.where(status_pago: :credito, tipo: [ :remision, :factura ]).sum(:abonado) + self.orders.where(status_pago: :pagado, tipo: [ :remision, :factura ]).sum(:total)
+  end
 
   private
 
