@@ -166,7 +166,7 @@ export default class extends Controller {
             },
 
             dateClick: (info) => {
-                console.log("Clicked date:", info.dateStr)
+                // console.log("Clicked date:", info.dateStr)
                 // Extract YYYY-MM-DD (ISO format; keeps JS Date parsing valid)
                 const dateStr = info.dateStr.slice(0, 10)
                 const hour = info.date.getHours()
@@ -176,9 +176,6 @@ export default class extends Controller {
                 url.searchParams.set("dia", dateStr)
                 url.searchParams.set("hora_inicio", timeStr)
                 window.location.href = url.toString()
-                // const url = new URL(this.newEventUrlValue, window.location.origin)
-                // url.searchParams.set("dia", dateStr)
-                // window.location.href = url.toString()
             }
         })
 
