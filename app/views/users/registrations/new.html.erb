@@ -19,7 +19,7 @@
   <div class="login_box flexx-1" style="height: auto;">
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'login_form' }) do |f| %>
       <%= render "users/shared/error_messages", resource: resource %>
-      <div class="cf-turnstile" data-size='flexible' data-sitekey="<%= Rails.env.production? ? Rails.application.credentials.turnstile.prod_site_key : Rails.application.credentials.turnstile.dev_site_key %>"></div>
+      <div class="cf-turnstile" data-size='flexible' data-sitekey="<%= Rails.application.credentials.dig(Rails.env.to_sym, :turnstile, :secret_key) %>"></div>
       <div class="login_box_textt">
         <div class="login_box_logo">
           <%= image_tag 'logo2.svg', alt: 'Posagenda', class: 'logo' %>

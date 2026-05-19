@@ -126,3 +126,6 @@ gem "generatepass", "~> 0.3.0"
 gem "simple_calendar"
 gem "rails-i18n", "~> 8.1.0"
 gem "mission_control-jobs"
+
+# https://github.com/stripe/stripe-ruby
+gem "stripe", "~> 19.0"

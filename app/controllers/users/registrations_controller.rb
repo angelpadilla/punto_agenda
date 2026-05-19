@@ -14,7 +14,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     puts "Verificando turnstile..."
     puts "--- ip request: #{request.remote_ip} ---"
     token = params["cf-turnstile-response"]
-    secret_key =  Rails.env.production? ? Rails.application.credentials.turnstile.prod_secret_key : Rails.application.credentials.turnstile.dev_secret_key
+    secret_key =  Rails.application.credentials.dig(Rails.env.to_sym, :turnstile, :secret_key)
     response = HTTP.post("https://challenges.cloudflare.com/turnstile/v0/siteverify", form: {
       secret: secret_key,
       response: token,
