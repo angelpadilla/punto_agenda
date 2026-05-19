@@ -128,4 +128,4 @@ gem "rails-i18n", "~> 8.1.0"
 gem "mission_control-jobs"
 
 # https://github.com/stripe/stripe-ruby
-gem "stripe", "~> 19.0"
+gem "stripe", "~> 19.1.0"
