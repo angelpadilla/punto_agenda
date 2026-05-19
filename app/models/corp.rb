@@ -63,7 +63,7 @@ class Corp < ApplicationRecord
   validates :tipo_negocio, presence: { message: "El tipo de negocio es requerido" }, inclusion: { in: TipoNegocios.map(&:last), message: "Tipo de negocio no válido" }
 
   validates :name, :phone, :tel_prefix, presence: true, on: :update
-  validates :email, presence: true, on: :update, format: { with: URI::MailTo::EMAIL_REGEXP, message: "Formato de email no válido" }
+  validates :email, presence: true, on: :update
 
   validates :tel_prefix, inclusion: { in: Customer::TelPrefixes.keys, message: "Prefijo no válido" }
   validates :phone, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }
@@ -229,6 +229,10 @@ class Corp < ApplicationRecord
         endTime: config["close"]
       }
     end
+  end
+
+  def prop
+    users.find_by(tipo: "propietario")
   end
 
   private

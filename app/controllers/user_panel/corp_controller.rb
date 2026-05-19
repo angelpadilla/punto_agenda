@@ -52,7 +52,8 @@ class UserPanel::CorpController < UserPanelController
       :facturacion,
       :key,
       :cer,
-      :logo
+      :logo,
+      :email
     ).to_h
     bh = params.dig(:corp, :business_hours)
     permitted["business_hours"] = bh.to_unsafe_h if bh.present?

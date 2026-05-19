@@ -24,7 +24,7 @@
     <div class="box_content">
       <div class="columns is-multiline">
         <%= t_field(form, :name, label: "Nombre comercial", placeholder: "Ej. Mi Empresa", clas: "field column is-12") %>
-        <%= t_field(form, :email, label: "Email contacto", placeholder: "Ej. contacto@empresa.com", clas: "field column is-6") %>
+        <%= e_field(form, :email, label: "Email contacto", placeholder: "Ej. contacto@empresa.com", clas: "field column is-6") %>
         <div class="field has-addons column is-6">
           <div class="control <%= corp.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
             <label class="label">* Teléfono o whatsapp contacto</label>
