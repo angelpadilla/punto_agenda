@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  before_action :set_vars
+
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   private
@@ -16,6 +18,10 @@ class ApplicationController < ActionController::Base
 
   def after_sign_out_path_for(model)
     root_path
+  end
+
+  def set_vars
+    @settings = Setting.first || nil
   end
 
   def after_sign_in_path_for(model)

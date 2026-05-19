@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_104246) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_19_210743) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,50 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_104246) do
     t.index ["user_id", "user_type"], name: "user_index"
   end
 
+  create_table "bill_items", force: :cascade do |t|
+    t.bigint "bill_id", null: false
+    t.decimal "cantidad", precision: 17, scale: 4
+    t.string "comentario"
+    t.decimal "costo", precision: 17, scale: 4, default: "0.0"
+    t.datetime "created_at", null: false
+    t.decimal "descuento", precision: 17, scale: 4, default: "0.0"
+    t.string "error"
+    t.decimal "iva", precision: 17, scale: 4, default: "16.0"
+    t.string "nombre"
+    t.decimal "precio", precision: 17, scale: 4
+    t.datetime "updated_at", null: false
+    t.index ["bill_id"], name: "index_bill_items_on_bill_id"
+  end
+
+  create_table "bills", force: :cascade do |t|
+    t.bigint "corp_id", null: false
+    t.decimal "costo", precision: 17, scale: 4
+    t.datetime "created_at", null: false
+    t.decimal "descuento", precision: 17, scale: 4, default: "0.0"
+    t.string "error"
+    t.string "folio"
+    t.string "forma_pago"
+    t.decimal "ganancia", precision: 17, scale: 4
+    t.decimal "impuestos", precision: 17, scale: 4
+    t.string "moneda"
+    t.text "nota_for_corp"
+    t.text "nota_interna"
+    t.text "sat_cfdi"
+    t.text "sat_sello"
+    t.string "sat_sello_emisor"
+    t.string "sat_serial"
+    t.string "sat_timbre_fecha"
+    t.string "sat_uuid"
+    t.string "status_pago", default: "pendiente"
+    t.decimal "subtotal", precision: 17, scale: 4
+    t.string "tipo", default: "remision"
+    t.decimal "total", precision: 17, scale: 4
+    t.datetime "updated_at", null: false
+    t.string "uso_cfdi"
+    t.text "xml"
+    t.index ["corp_id"], name: "index_bills_on_corp_id"
+  end
+
   create_table "brands", force: :cascade do |t|
     t.string "body"
     t.integer "corp_id"
@@ -99,21 +143,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_104246) do
     t.text "business_hours"
     t.boolean "calendar", default: false
     t.string "calle"
+    t.string "card_brand"
+    t.string "card_country"
+    t.integer "card_exp_month"
+    t.integer "card_exp_year"
+    t.string "card_last4"
+    t.string "card_name"
     t.string "ciudad"
     t.string "colonia"
     t.string "cp"
     t.datetime "created_at", null: false
+    t.decimal "discount", precision: 15, scale: 2, default: "0.0"
     t.string "email"
     t.string "estado"
     t.string "facebook_url"
     t.boolean "facturacion", default: false
     t.string "instagram_url"
     t.string "key_pass"
+    t.datetime "last_payment_at"
     t.string "localidad"
     t.string "name"
     t.string "num_ext"
     t.string "num_int"
     t.boolean "online_payments", default: false
+    t.integer "payment_attempts", default: 0
     t.string "phone"
     t.boolean "public_site", default: false
     t.string "razon"
@@ -121,6 +174,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_104246) do
     t.string "rfc", default: "XAXX010101000"
     t.string "sku"
     t.integer "slot_duration", default: 15, null: false
+    t.string "status", default: "probando"
+    t.string "status_message"
+    t.string "stripe_customer_id"
+    t.string "stripe_payment_method_id"
+    t.string "stripe_subscription_id"
+    t.datetime "subscription_cancelled_at"
+    t.datetime "subscription_started_at"
+    t.datetime "subscription_trial_end"
+    t.datetime "subscription_trial_start"
+    t.datetime "subscription_updated_at"
     t.string "tel_prefix"
     t.string "text_cotizacion"
     t.string "text_factura"
@@ -332,6 +395,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_104246) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "settings", force: :cascade do |t|
+    t.text "body_extra"
+    t.string "calle"
+    t.string "ciudad"
+    t.string "colonia"
+    t.text "cotizacion_extra"
+    t.string "cp"
+    t.datetime "created_at", null: false
+    t.string "domain"
+    t.string "email"
+    t.string "estado"
+    t.string "facebook_url"
+    t.text "factura_extra"
+    t.text "head_extra"
+    t.string "instagram_url"
+    t.string "key_pass"
+    t.string "localidad"
+    t.string "name"
+    t.string "num_ext"
+    t.string "num_int"
+    t.string "phone"
+    t.string "razon"
+    t.string "regimen"
+    t.text "remision_extra"
+    t.string "rfc"
+    t.string "tel_prefix"
+    t.string "tiktok_url"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "active", default: true
     t.integer "average_rating", default: 0
@@ -369,6 +462,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_104246) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bill_items", "bills"
+  add_foreign_key "bills", "corps"
   add_foreign_key "brands", "corps"
   add_foreign_key "corp_customers", "corps"
   add_foreign_key "corp_customers", "customers"

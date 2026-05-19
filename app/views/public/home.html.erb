@@ -14,12 +14,12 @@
     <h2 class="psubtitle text-gray mt-5 mb-6">
       Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas desde un mismo lugar.
     </h2>
-    <% if user_signed_in? %>
+    <% if current_user %>
       <%= link_to user_panel_home_path, class: "button is-primary is-rounded mr-4" do %>
         <span class="icon mr-2">
           <%= image_tag 'shop.svg', alt: 'login' %>
         </span>
-        Acceder
+        Panel de control
       <% end %>
     <% else %>
       <%= link_to new_user_session_path, class: "button is-primary is-rounded mr-4" do %>

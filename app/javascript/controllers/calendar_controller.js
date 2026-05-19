@@ -34,8 +34,16 @@ export default class extends Controller {
         if (businessHours && businessHours.length > 0) {
             const opens = businessHours.map(bh => bh.startTime).filter(Boolean)
             const closes = businessHours.map(bh => bh.endTime).filter(Boolean)
-            if (opens.length) slotMinTime = opens.sort()[0]
-            if (closes.length) slotMaxTime = closes.sort().reverse()[0]
+            if (opens.length) {
+                const [oh, om] = opens.sort()[0].split(":").map(Number)
+                const snapped = Math.floor((oh * 60 + om) / slotMins) * slotMins
+                slotMinTime = `${String(Math.floor(snapped / 60)).padStart(2, "0")}:${String(snapped % 60).padStart(2, "0")}:00`
+            }
+            if (closes.length) {
+                const [ch, cm] = closes.sort().reverse()[0].split(":").map(Number)
+                const snapped = Math.ceil((ch * 60 + cm) / slotMins) * slotMins
+                slotMaxTime = `${String(Math.floor(snapped / 60)).padStart(2, "0")}:${String(snapped % 60).padStart(2, "0")}:00`
+            }
         }
 
         this.calendar = new FC.Calendar(this.element, {

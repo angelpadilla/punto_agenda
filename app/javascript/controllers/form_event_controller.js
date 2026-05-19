@@ -95,30 +95,48 @@ export default class extends Controller {
         const cfg = this.businessHoursValue[wday]
         if (!cfg || !cfg.active) return
 
-        const allHoras = this._generateHoras()
-        const filtered = allHoras.filter(h => {
-            const t = this._to24h(h)
-            return t >= cfg.open && t <= cfg.close
-        })
+        const slotMins = this.slotDurationValue || 15
+        const openMins = this._toMinutes(cfg.open)
+        const closeMins = this._toMinutes(cfg.close)
 
-        this._availableHoras = filtered
+        // Generate slots anchored at the business open time (not midnight).
+        // e.g. open=9:30, slot=3hr → inicio slots: [9:30], final slots: [12:30]
+        const inicioSlots = []
+        for (let t = openMins; t < closeMins; t += slotMins) {
+            inicioSlots.push(this._minutesToTimeStr(t))
+        }
+
+        const finalSlots = []
+        for (let t = openMins + slotMins; t <= closeMins; t += slotMins) {
+            finalSlots.push(this._minutesToTimeStr(t))
+        }
+        // Always include the close time in final options
+        const closeStr = this._minutesToTimeStr(closeMins)
+        if (!finalSlots.includes(closeStr)) {
+            finalSlots.push(closeStr)
+            finalSlots.sort((a, b) => this._toMinutes(this._to24h(a)) - this._toMinutes(this._to24h(b)))
+        }
+
+        this._availableHoras = inicioSlots
+        this._availableHorasFinal = finalSlots
 
         const prevInicio = this.inicioHoraTarget.value
         const prevFinal = this.finalHoraTarget.value
-        this._rebuildSelect(this.inicioHoraTarget, filtered, prevInicio)
-        this._rebuildSelect(this.finalHoraTarget, filtered, prevFinal)
+        this._rebuildSelect(this.inicioHoraTarget, inicioSlots, prevInicio)
+        this._rebuildSelect(this.finalHoraTarget, finalSlots, prevFinal)
     }
 
     _restrictFinalHora(inicioVal) {
-        const inicio24 = this._to24h(inicioVal)
-        const source = this._availableHoras || this._generateHoras()
-        const filtered = source.filter(h => this._to24h(h) > inicio24)
+        const inicioMins = this._toMinutes(this._to24h(inicioVal))
+        const source = this._availableHorasFinal || this._generateHoras()
+        const filtered = source.filter(h => this._toMinutes(this._to24h(h)) > inicioMins)
         this._rebuildSelect(this.finalHoraTarget, filtered, this.finalHoraTarget.value)
     }
 
     _resetHours() {
         const allHoras = this._generateHoras()
         this._availableHoras = null
+        this._availableHorasFinal = null
         this._rebuildSelect(this.inicioHoraTarget, allHoras, "")
         this._rebuildSelect(this.finalHoraTarget, allHoras, "")
     }
@@ -145,6 +163,21 @@ export default class extends Controller {
         if (period === "PM" && h !== 12) h += 12
         if (period === "AM" && h === 12) h = 0
         return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
+    }
+
+    // "09:30" → 570
+    _toMinutes(hhmm) {
+        const [h, m] = hhmm.split(":").map(Number)
+        return h * 60 + m
+    }
+
+    // 750 → "12:30 PM"
+    _minutesToTimeStr(totalMins) {
+        const h = Math.floor(totalMins / 60)
+        const m = totalMins % 60
+        const period = h < 12 ? "AM" : "PM"
+        const h12 = h % 12 === 0 ? 12 : h % 12
+        return `${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${period}`
     }
 
     _rebuildSelect(select, options, selected) {

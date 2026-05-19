@@ -188,7 +188,7 @@ class Order < ApplicationRecord
   end
 
   before_save :set_1
-  before_create :set_2
+  before_create :gen_folio
   after_create :add_customer_to_corp_portfolio
 
   private
@@ -232,11 +232,11 @@ class Order < ApplicationRecord
     end
   end
 
-  def set_2
-    token = SecureRandom.alphanumeric(10).downcase
+  def gen_folio
+    token = SecureRandom.alphanumeric(5)
     while Order.where(folio: token).exists?
-      token = SecureRandom.alphanumeric(10).downcase
+      token = SecureRandom.alphanumeric(5)
     end
-    self.folio = token
+    self.folio = "#{self.id}-#{token}"
   end
 end

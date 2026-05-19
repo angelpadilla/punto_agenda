@@ -1,10 +1,10 @@
 class User < ApplicationRecord
-  audited max_audits: 100
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :trackable
-
+  :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :trackable
+  
+  audited max_audits: 1000
 
   belongs_to :corp, optional: true
 

@@ -41,6 +41,9 @@ Rails.application.routes.draw do
       patch "edit", to: "user_panel/corp#update", as: :update_user_corp
     end
 
+    resources :bills, controller: "user_panel/bills", only: %i[index show] do
+    end
+
     ## user_panel/items_controller.rb
     resources :items, controller: "user_panel/items" do
       collection do

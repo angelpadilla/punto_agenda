@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  corp: one
+  costo_stripe: 9.99
+  descuento: 9.99
+  error: MyString
+  folio: MyString
+  forma_pago: MyString
+  ganancia: 9.99
+  impuestos: 9.99
+  moneda: MyString
+  nota_interna: MyString
+  nota_for_corp: MyString
+
+two:
+  corp: two
+  costo_stripe: 9.99
+  descuento: 9.99
+  error: MyString
+  folio: MyString
+  forma_pago: MyString
+  ganancia: 9.99
+  impuestos: 9.99
+  moneda: MyString
+  nota_interna: MyString
+  nota_for_corp: MyString
