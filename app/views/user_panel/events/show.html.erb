@@ -147,7 +147,7 @@
     <%= form_with(url: send_email_events_path(folio: @event.folio), method: :post) do |form| %>
       <header class="modal-card-head">
         <p class="modal-card-title">Enviar detalles del evento por email</p>
-        <button class="delete" aria-label="close"></button>
+        <div class="delete" aria-label="close"></div>
       </header>
       <section class="modal-card-body">
         <div class="columns is-multiline">
@@ -170,7 +170,7 @@
       <%= form_with(url: send_sms_events_path(folio: @event.folio), method: :post) do |form| %>
         <header class="modal-card-head">
           <p class="modal-card-title">Enviar detalles del evento por SMS</p>
-          <button class="delete" aria-label="close"></button>
+          <div class="delete" aria-label="close"></div>
         </header>
         <section class="modal-card-body">
           <div class="columns is-multiline">
@@ -210,7 +210,7 @@
     %>
     <header class="modal-card-head">
       <p class="modal-card-title">Enviar por WhatsApp</p>
-      <button class="delete" aria-label="close"></button>
+      <div class="delete" aria-label="close"></div>
     </header>
     <section class="modal-card-body">
       <div class="mt-4 flexx">
