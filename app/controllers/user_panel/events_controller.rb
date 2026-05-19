@@ -173,8 +173,51 @@ class UserPanel::EventsController < UserPanelController
   end
 
   def update
+    @event.assign_attributes(event_params)
+    ## validaciones extras
+    unless params[:event][:dia].present?
+      @event.errors.add(:dia, "Duracion del evento es requerida")
+      return render :new, status: :unprocessable_entity
+    end
+
+    unless params[:event][:inicio_hora].present?
+      @event.errors.add(:inicio_hora, "Hora de inicio del evento es requerida")
+      return render :new, status: :unprocessable_entity
+    end
+
+    unless params[:event][:final_hora].present?
+      @event.errors.add(:final_hora, "Hora final del evento es requerida")
+      return render :new, status: :unprocessable_entity
+    end
+
+
+    unless params[:event][:user_id].present?
+      @event.user_id = current_user.id
+    end
+
+    ## parse hours and minutes in format HH:MM
+    fecha = params[:event][:dia]
+    inicio = params[:event][:inicio_hora]
+    fin = params[:event][:final_hora]
+
+    if fecha.present?
+      # Convierte la cadena "YYYY-MM-DD 08:30 AM" a DateTime de Rails
+      # @event.hora_inicio = Time.zone.parse("#{fecha} #{inicio}") if inicio.present?
+      # @event.hora_final = Time.zone.parse("#{fecha} #{fin}") if fin.present?
+
+      tz = ActiveSupport::TimeZone["America/Mexico_City"]
+      @event.hora_inicio = tz.parse("#{fecha} #{inicio}") if inicio.present?
+      @event.hora_final = tz.parse("#{fecha} #{fin}") if fin.present?
+
+      if @event.hora_inicio.present? && @event.hora_final.present? && @event.hora_final <= @event.hora_inicio
+        @event.errors.add(:final_hora, "Hora final debe ser posterior a la hora de inicio")
+        return render :new, status: :unprocessable_entity
+      end
+    end
+
+
     respond_to do |format|
-      if @event.update(event_params)
+      if @event.save
         format.html { redirect_to events_path, notice: "Evento actualizado.", status: :see_other }
         format.json { render :show, status: :ok, location: @event }
       else

@@ -239,7 +239,8 @@ class Corp < ApplicationRecord
 
   def create_stripe_customer
     return if stripe_customer_id.present?
-    customer = StripeClient.v1.customers.create({name: self.name, email: self.prop.email})
+    client = Stripe::StripeClient.new(Rails.application.credentials.dig(Rails.env.to_sym, :stripe, :secret_key))
+    customer = client.v1.customers.create({name: self.name, email: self.prop.email})
     if customer && customer.id
       update(stripe_customer_id: customer.id)
     else
