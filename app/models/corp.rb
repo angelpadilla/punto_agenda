@@ -9,7 +9,7 @@ class Corp < ApplicationRecord
   has_many :orders, dependent: :nullify
   has_many :deposits, through: :orders
   has_many :sat_products, dependent: :destroy
-  
+
   has_many :corp_customers, dependent: :destroy
   has_many :customers, through: :corp_customers
 
@@ -42,13 +42,14 @@ class Corp < ApplicationRecord
   SLOT_DURATION_OPTIONS = [
     [ "15 min", 15 ], [ "30 min", 30 ], [ "45 min", 45 ],
     [ "1 hora", 60 ], [ "1 hora 15 min", 75 ], [ "1 hora 30 min", 90 ], [ "1 hora 45 min", 105 ],
-    [ "2 horas", 120 ], ["2 horas 15 min", 135], [ "2 horas 30 min", 150 ], [ "2 horas 45 min", 165 ],
+    [ "2 horas", 120 ], [ "2 horas 15 min", 135 ], [ "2 horas 30 min", 150 ], [ "2 horas 45 min", 165 ],
     [ "3 horas", 180 ], [ "3 horas 15 min", 195 ], [ "3 horas 30 min", 210 ], [ "3 horas 45 min", 225 ],
     [ "4 horas", 240 ], [ "4 horas 15 min", 255 ], [ "4 horas 30 min", 270 ], [ "4 horas 45 min", 285 ],
     [ "5 horas", 300 ]
   ].freeze
 
   enum :tipo_plan, basico: 0, plus: 1, premium: 2
+  enum :status, inactivo: "inactivo", activo: "activo", probando: "probando", suspendido: "suspendido", moroso: "moroso"
 
 
   TipoNegocios = [
@@ -203,6 +204,7 @@ class Corp < ApplicationRecord
   before_save :normalize_business_hours
 
   before_create :set_defaults
+  after_create :create_stripe_customer
 
   def working_day?(date)
     return false if business_hours.blank?
@@ -233,6 +235,16 @@ class Corp < ApplicationRecord
 
   def prop
     users.find_by(tipo: "propietario")
+  end
+
+  def create_stripe_customer
+    return if stripe_customer_id.present?
+    customer = StripeClient.v1.customers.create({name: self.name, email: self.prop.email})
+    if customer && customer.id
+      update(stripe_customer_id: customer.id)
+    else
+      puts "-- Error creating Stripe customer for Corp #{id}: #{customer.inspect}"
+    end
   end
 
   private

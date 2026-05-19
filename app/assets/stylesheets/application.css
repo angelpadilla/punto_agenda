@@ -72,12 +72,11 @@ html {
 
 
 /* para escritorio */
-/* @media (min-width: 1023px) {
+@media (min-width: 1023px) {
     .padding_top_nav {
         padding-top: 4.5rem;
-        padding-bottom: 0;
     }
-} */
+}
 
 
 .navbar {
