@@ -203,7 +203,7 @@ class Corp < ApplicationRecord
   after_initialize :set_default_business_hours
   before_save :normalize_business_hours
 
-  before_create :set_defaults
+  before_create :gen_sku
   after_create :create_stripe_customer
 
   def working_day?(date)
@@ -262,14 +262,11 @@ class Corp < ApplicationRecord
     end
   end
 
-  def set_defaults
-    self.sku = generate_unique_sku
-  end
-
-  def generate_unique_sku
-    token = SecureRandom.alphanumeric(8)
-    return token unless self.class.exists?(sku: token)
-
-    generate_unique_sku
+  def gen_sku
+    token = SecureRandom.alphanumeric(9)
+    while Corp.where(folio: token).exists?
+      token = SecureRandom.alphanumeric(9)
+    end
+    self.sku = token
   end
 end

@@ -39,10 +39,10 @@ class Deposit < ApplicationRecord
     %W[depositable]
   end
 
-  before_create :set_1
+  before_create :gen_folio
 
   private
-  def set_1
+  def gen_folio
     token = SecureRandom.alphanumeric(10).downcase
     while Order.where(folio: token).exists?
       token = SecureRandom.alphanumeric(10).downcase

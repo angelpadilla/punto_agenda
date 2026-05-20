@@ -9,7 +9,7 @@ class LineItem < ApplicationRecord
   ]
 
   ## validations
-  validates :precio, presence: { message: "Precio es obligatorio" }, numericality: { greater_than: 0, message: "Precio debe ser mayor a 0" }
+  validates :precio, presence: { message: "Precio es obligatorio" }, numericality: { greater_than_or_equal_to: 0, message: "Precio debe ser igual o mayor a 0" }
   validates :cantidad, presence: { message: "Cantidad es obligatoria" }, numericality: { greater_than: 0, message: "Cantidad debe ser mayor a 0" }
   validates :iva, inclusion: { in: IVAS.map(&:last), message: "no es un valor válido" }
   validates :item_id, presence: { message: "Item es obligatorio" }

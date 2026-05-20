@@ -106,9 +106,9 @@
               <section class="modal-card-body">
                 <div class="columns is-multiline">
                   <div class="field column is-6">
-                    <label class="label">Precio</label>
+                    <label class="label">Precioss</label>
                     <div class="control">
-                      <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 1, step: 'any', class: "input is-rounded" %>
+                      <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 0, step: 'any', class: "input is-rounded" %>
                     </div>
                   </div>
                   <div class="field column is-6">

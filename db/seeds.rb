@@ -9,7 +9,7 @@
 #   end
 
 
-# SatProduct.create(
+# SatProduct.create!(
 #   [
 #     { sku: "01010101", name: "No existe en el catálogo" },
 #     { sku: "10101500", name: "Animales vivos de granja" },

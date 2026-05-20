@@ -110,9 +110,11 @@ class Bill < ApplicationRecord
   end
 
   def gen_folio
-    timestamp = DateTime.now.strftime("%Y%m%d%H%M%S")
-    # random_string = SecureRandom.alphanumeric(3)
-    self.folio = "#{self.corp_id}-#{self.id}-#{timestamp}"
+    token = SecureRandom.alphanumeric(9)
+    while Bill.where(folio: token).exists?
+      token = SecureRandom.alphanumeric(9)
+    end
+    self.folio = token
   end
 
 end

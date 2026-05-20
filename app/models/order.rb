@@ -125,7 +125,7 @@ class Order < ApplicationRecord
   validates :impuestos, numericality: { greater_than_or_equal_to: 0, message: "Los impuestos deben ser un número positivo" }, allow_nil: true
   validates :descuento, numericality: { greater_than_or_equal_to: 0, message: "El descuento debe ser un número positivo" }, allow_nil: true
   validates :costo, numericality: { greater_than_or_equal_to: 0, message: "El costo debe ser un número positivo" }, allow_nil: true
-  validates :ganancia, numericality: { greater_than_or_equal_to: 0, message: "La ganancia debe ser un número positivo" }, allow_nil: true
+  # validates :ganancia, numericality: { greater_than_or_equal_to: 0, message: "La ganancia debe ser un número positivo" }, allow_nil: true
   validates :debe, numericality: { greater_than_or_equal_to: 0, message: "El debe debe ser un número positivo" }, allow_nil: true
   validates :abonado, numericality: { greater_than_or_equal_to: 0, message: "El abonado debe ser un número positivo" }, allow_nil: true
 
@@ -204,6 +204,8 @@ class Order < ApplicationRecord
     self.costo_terminal = self.deposits.sum(:comision_terminal)
     self.ganancia = self.total - self.costo - self.costo_terminal
 
+    puts "Total: #{self.total}, Subtotal: #{self.subtotal}, Impuestos: #{self.impuestos}, Descuento: #{self.descuento}, Costo: #{self.costo}, Ganancia: #{self.ganancia}"
+
 
     ## asignar sku si no lo tiene, y si es remision, factura o pre_factura
     # if !self.sku.present? and [ "remision", "factura", "pre_factura" ].include?(self.tipo)
@@ -233,10 +235,10 @@ class Order < ApplicationRecord
   end
 
   def gen_folio
-    token = SecureRandom.alphanumeric(5)
+    token = SecureRandom.alphanumeric(9)
     while Order.where(folio: token).exists?
-      token = SecureRandom.alphanumeric(5)
+      token = SecureRandom.alphanumeric(9)
     end
-    self.folio = "#{self.id}-#{token}"
+    self.folio = token
   end
 end

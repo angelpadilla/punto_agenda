@@ -82,6 +82,9 @@ class UserPanel::OrdersController < UserPanelController
     # redirect_back fallback_location: user_panel_home_path, notice: "Orden creada #{@order.folio}"
     @order.assign_attributes(order_params)
 
+    puts "---- --- -- -order"
+    puts @order.inspect
+
     ## valicaciones extras
     if @order.line_items.empty?
       return redirect_back(fallback_location: user_panel_home_path, alert: "La venta no tiene productos")

@@ -36,11 +36,11 @@
           <%= t_field(form, :name, label: "Nombre", placeholder: "Ej. Laptop Lenovo ThinkPad") %>
           <%= t_field(form, :sku, label: "SKU (Identificador interno)", placeholder: "Ej. ABC12345", clas: "field column is-6") %>
           <div class="field column is-6">
-            <%= form.label :sat_product_id, "Clave producto SAT", class: "label" %>
+            <%= form.label :sat_product_id, "*Clave producto SAT", class: "label" %>
             <div class="control <%= item.errors.include?(:sat_product_id) ? 'select-is-danger' : '' %>">
               <%= form.select :sat_product_id,
                 options_for_select(item.sat_product ? [["#{item.sat_product.sku} – #{item.sat_product.name}", item.sat_product_id]] : []),
-                { prompt: "Buscar clave SAT...", required: field_required?(Item, :sat_product_id) },
+                { prompt: "Escribe para buscar en SAT...", required: field_required?(Item, :sat_product_id) },
                 { "data-controller": "slimselect", class: "ss2", "data-ajax-url": search_sat_products_items_path(format: :json) }
               %>
             </div>
@@ -73,7 +73,7 @@
           <%= n_field(form, :cost, label: "Costo", clas: "field column is-12") %>
           <%= s_field(form, :status, options: Item::Statuses, label: "Status") %>
           <%= n_field(form, :stock, label: "Inventario (deja en blanco si es ilimitado)") %>
-          <%= n_field(form, :alerta_stock, label: "Alerta inventario", placeholder: "Ej. 10") %>
+          <%= n_field(form, :alerta_stock, label: "Alerta inventario bajo", placeholder: "Ej. 10") %>
         </div>
       </div>
     </div>
