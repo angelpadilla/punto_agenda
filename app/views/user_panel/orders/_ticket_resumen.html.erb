@@ -24,7 +24,10 @@
             </div>
             <div class="column">
               <p class="is-size-7 has-text-weight-bold"><%= line_item.item.name %></p>
-              <p class="is-size-7 has-text-grey"><%= number_to_currency(line_item.precio) %></p>
+              <p class="is-size-7 has-text-grey">
+                <%= number_to_currency(line_item.total_antes_descuento) %>
+                <%= line_item.descuento > 0 ? "(-#{number_to_currency(line_item.descuento)} descuento)" : "" %>
+              </p>
             </div>
             <div class="column is-narrow has-text-centered">
               <div class="is-flex is-flex-direction-column">

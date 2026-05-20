@@ -4,6 +4,7 @@ class UserPanel::LineItemsController < UserPanelController
     item = Item.find(params[:item_id])
     precio = params[:precio].to_f
     cantidad = params[:cantidad].to_f
+    descuento = params[:descuento].to_f
 
     line = @order.line_items.where(item_id: item.id).first
 
@@ -21,7 +22,7 @@ class UserPanel::LineItemsController < UserPanelController
 
       respond_to do |format|
         if disponible >= 0
-          @order.add_item(item, cantidad, precio)
+          @order.add_item(item, cantidad, precio, descuento)
           @order.save(validate: false)
           format.turbo_stream
         else
@@ -34,7 +35,7 @@ class UserPanel::LineItemsController < UserPanelController
       end
     else
       respond_to do |format|
-        @order.add_item(item, cantidad, precio)
+        @order.add_item(item, cantidad, precio, descuento)
         @order.save(validate: false)
         format.turbo_stream
       end

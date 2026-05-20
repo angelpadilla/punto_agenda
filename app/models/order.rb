@@ -162,7 +162,7 @@ class Order < ApplicationRecord
       line.cantidad += quantity
       line.save
     else
-      self.line_items.create(item_id: item.id, precio: price, costo: costo, descuento: discount, cantidad: quantity)
+      self.line_items.create!(item_id: item.id, precio: price, costo: costo, descuento: discount, cantidad: quantity)
     end
   end
 
@@ -198,7 +198,8 @@ class Order < ApplicationRecord
     self.total = self.line_items.sum { |line| line.total }
     self.subtotal = self.line_items.sum { |line| line.subtotal }
     self.impuestos = self.line_items.sum { |line| line.iva_total }
-    self.descuento = self.line_items.sum { |line| line.descuento_total }
+    # self.descuento = self.line_items.sum { |line| line.descuento_total }
+    self.descuento = self.line_items.sum { |line| line.descuento }
     self.costo = self.line_items.sum { |line| line.costo_total }
     # self.ganancia = self.line_items.sum { |line| line.ganancia_total }
     self.costo_terminal = self.deposits.sum(:comision_terminal)

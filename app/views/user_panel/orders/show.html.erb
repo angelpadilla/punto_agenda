@@ -209,6 +209,7 @@
           <th>Producto</th>
           <th>Cantidad</th>
           <th>Precio unitario</th>
+          <th>Descuento</th>
           <th>Monto</th>
         </tr>
       </thead>
@@ -220,6 +221,11 @@
             </th>
             <td><%= line.cantidad %></td>
             <td><%= number_to_currency(line.precio) %></td>
+            <td>
+              <% if line.descuento.present? %>
+                - <%= number_to_currency(line.descuento) %>
+              <% end %>
+            </td>
             <td><%= number_to_currency(line.total) %></td>
           </tr>
         <% end %>
