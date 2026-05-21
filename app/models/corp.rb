@@ -12,6 +12,7 @@ class Corp < ApplicationRecord
 
   has_many :corp_customers, dependent: :destroy
   has_many :customers, through: :corp_customers
+  has_many :bills, dependent: :nullify
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy
@@ -69,6 +70,7 @@ class Corp < ApplicationRecord
   validates :tel_prefix, inclusion: { in: Customer::TelPrefixes.keys, message: "Prefijo no válido" }
   validates :phone, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }
   validates :phone, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
+  validates :min_book_amount, numericality: { greater_than_or_equal_to: 100, message: "El monto mínimo debe ser al menos $100.00 MXN" }, allow_blank: true
 
   # validates :whatsapp, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }, allow_blank: true
   # validates :whatsapp, length: { maximum: 15, message: "Teléfono debe tener máximo 15 dígitos" }, allow_blank: true
@@ -215,6 +217,17 @@ class Corp < ApplicationRecord
     day_config["active"] == true
   end
 
+  def slots_per_day(date)
+    return 0 unless working_day?(date)
+
+    day_config = business_hours[date.wday.to_s]
+    return 0 if day_config.nil?
+
+    open_time = DateTime.parse(day_config["open"])
+    close_time = DateTime.parse(day_config["close"])
+    ((close_time - open_time) / (slot_duration || 15).minutes).to_i
+  end
+
   def slot_duration_label
     SLOT_DURATION_OPTIONS.find { |_, v| v == (slot_duration || 15) }&.first || "#{slot_duration || 15} min"
   end
@@ -240,11 +253,21 @@ class Corp < ApplicationRecord
   def create_stripe_customer
     return if stripe_customer_id.present?
     client = Stripe::StripeClient.new(Rails.application.credentials.dig(Rails.env.to_sym, :stripe, :secret_key))
-    customer = client.v1.customers.create({name: self.name, email: self.prop.email})
+    customer = client.v1.customers.create({name: self.name, email: self.email})
     if customer && customer.id
       update(stripe_customer_id: customer.id)
     else
       puts "-- Error creating Stripe customer for Corp #{id}: #{customer.inspect}"
+    end
+  end
+
+  ## funcion para elimincar las corps que no tienen usuarios 'propietarios' asociados
+  def self.cleanup_orphaned_corps
+    self.all.each do |corp|
+      if corp.prop.nil?
+        puts "Eliminando Corp #{corp.id} - #{corp.name} por no tener propietario asociado"
+        corp.destroy
+      end
     end
   end
 
@@ -264,7 +287,7 @@ class Corp < ApplicationRecord
 
   def gen_sku
     token = SecureRandom.alphanumeric(9)
-    while Corp.where(folio: token).exists?
+    while Corp.where(sku: token).exists?
       token = SecureRandom.alphanumeric(9)
     end
     self.sku = token

@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_for :customers
-  devise_for :users, controllers: { 
-    registrations: "users/registrations" 
+  devise_for :users, controllers: {
+    registrations: "users/registrations"
   }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -39,6 +39,11 @@ Rails.application.routes.draw do
       get "show", to: "user_panel/corp#show", as: :user_corp
       get "edit", to: "user_panel/corp#edit", as: :edit_user_corp
       patch "edit", to: "user_panel/corp#update", as: :update_user_corp
+      get "initial-setup", to: "user_panel/corp#initial_corp_setup", as: :initial_corp_setup
+      patch "initial-setup", to: "user_panel/corp#save_initial_corp_setup", as: :save_initial_corp_setup
+      match "stripe_new_card", to: "user_panel/corp#stripe_new_card", as: :stripe_new_card, via: [ :get, :post ]
+      get "stripe_card_success", to: "user_panel/corp#stripe_card_success", as: :stripe_card_success
+      get "stripe_card_error", to: "user_panel/corp#stripe_card_error", as: :stripe_card_error
     end
 
     resources :bills, controller: "user_panel/bills", only: %i[index show] do
@@ -87,7 +92,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :deposits, controller: "user_panel/deposits", except: [ :new, :edit, :update ] do 
+    resources :deposits, controller: "user_panel/deposits", except: [ :new, :edit, :update ] do
       collection do
         post :modificar_forma_pago, as: :modificar_forma_pago
         post :send_abono_email, as: :send_abono_email

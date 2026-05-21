@@ -1,12 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["selects", "businessHoursContainer", "calendarcheck"]
+    static targets = ["selects", "businessHoursContainer", "calendarcheck", "slotDuration", "onlinePaymentsCheck", "publicCalendarCheck"]
 
     connect() {
         // Apply close-time filtering for all rows on page load
         this._wdays().forEach(wday => this._syncCloseOptions(wday))
         this.setBussinessHours()
+        this.toggleMinBookAmount()
     }
 
     // Toggled by the "Abierto" checkbox
@@ -22,6 +23,12 @@ export default class extends Controller {
             })
     }
 
+    toggleMinBookAmount() {
+        const show = this.onlinePaymentsCheckTarget.checked && this.publicCalendarCheckTarget.checked
+        const minBookContainer = document.querySelector(".minBookAmountContainer")
+        if (minBookContainer) minBookContainer.style.display = show ? "" : "none"
+    }
+
     setBussinessHours() {
         console.log("toggleBussinessHours", this.calendarcheckTarget.checked)
         if (this.calendarcheckTarget.checked) {
@@ -35,6 +42,11 @@ export default class extends Controller {
     updateClose(event) {
         const wday = event.target.closest("[data-wday]")?.dataset.wday
         if (wday) this._syncCloseOptions(wday)
+    }
+
+    // Fired when slot_duration changes — re-sync all days
+    updateAllCloses() {
+        this._wdays().forEach(wday => this._syncCloseOptions(wday))
     }
 
     previewDoc(event) {
@@ -67,6 +79,15 @@ export default class extends Controller {
         return [...new Set(this.selectsTargets.map(el => el.dataset.wday))]
     }
 
+    _getSlotDuration() {
+        return this.hasSlotDurationTarget ? (parseInt(this.slotDurationTarget.value) || 15) : 15
+    }
+
+    _timeToMinutes(timeStr) {
+        const [h, m] = timeStr.split(":").map(Number)
+        return h * 60 + m
+    }
+
     _syncCloseOptions(wday) {
         const divs = this.selectsTargets.filter(el => el.dataset.wday === wday)
         const openDiv = divs.find(el => el.dataset.type === "open")
@@ -77,16 +98,20 @@ export default class extends Controller {
         const closeSelect = closeDiv.querySelector("select")
         if (!openSelect || !closeSelect) return
 
-        const openTime = openSelect.value
+        const openMins = this._timeToMinutes(openSelect.value)
+        const slot = this._getSlotDuration()
 
-        // Disable options in close that are <= open time
+        // Show only options that are a positive multiple of slot_duration after open time
         Array.from(closeSelect.options).forEach(opt => {
-            opt.disabled = opt.value <= openTime
+            const diff = this._timeToMinutes(opt.value) - openMins
+            const isValid = diff > 0 && diff % slot === 0
+            opt.disabled = !isValid
+            opt.style.display = isValid ? "" : "none"
         })
 
-        // If current close value is now invalid, advance to first valid option
-        if (closeSelect.value <= openTime) {
-            const firstValid = Array.from(closeSelect.options).find(o => o.value > openTime)
+        // If current close value is now invalid, pick the first valid option
+        if (closeSelect.options[closeSelect.selectedIndex]?.disabled) {
+            const firstValid = Array.from(closeSelect.options).find(o => !o.disabled)
             if (firstValid) closeSelect.value = firstValid.value
         }
     }

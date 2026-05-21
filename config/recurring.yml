@@ -18,9 +18,6 @@ production:
     schedule: every 1 day at 8am
 
 development:
-  # test:
-  #   command: "puts 'This is a test job running every minute in development environment'"
-  #   schedule: every 5 seconds
   notify_events_today:
     class: EventsSetJob
     schedule: every 5 minutes

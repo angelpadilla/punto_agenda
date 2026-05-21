@@ -1,4 +1,4 @@
-class UserPanel::BillsController < ApplicationController
+class UserPanel::BillsController < UserPanelController
   before_action :set_bill, only: %i[ show  ]
   def index
     bills = @corp.bills

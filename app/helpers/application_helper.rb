@@ -7,42 +7,50 @@ module ApplicationHelper
     !field_required?(model_class, field)
   end
 
-  def n_field(form, field, clas: "field column is-12", label: nil, step: 0.10, placeholder: "$ 0.00", min: 0.10, max: nil)
+  def n_field(form, field, clas: "field column is-12", label: nil, step: 0.10, placeholder: "$ 0.00", min: 0.10, max: nil, help: nil, data: {})
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
       if label
         concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label"
       end
-      concat form.number_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", step: step, placeholder: placeholder, required: requiredd, min: min, max: max)
+      concat form.number_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", step: step, placeholder: placeholder, required: requiredd, min: min, max: max, data: data)
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
             concat "#{mss.humanize}. "
           end
         end)
+      elsif help
+        concat(content_tag(:p, class: "help") do
+          concat help
+        end)
       end
     end
   end
 
-  def t_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, pattern: nil, title: nil, label_ghost: false)
+  def t_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, pattern: nil, title: nil, label_ghost: false, help: nil, data: {})
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
       if label
         concat form.label field, "#{'* ' if requiredd}#{label}" || field.to_s.humanize, class: "label #{'is-ghost' if label_ghost}"
       end
-      concat form.text_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder, pattern: pattern, title: title)
+      concat form.text_field(field, class: "input is-rounded #{'is-danger' if form.object.errors[field].any?}", required: requiredd, placeholder: placeholder, pattern: pattern, title: title, data: data)
       if form.object.errors[field].any?
         concat(content_tag(:p, class: "help is-danger") do
           form.object.errors.messages_for(field).each do |mss|
             concat "#{mss.humanize}. "
           end
+        end)
+      elsif help
+        concat(content_tag(:p, class: "help") do
+          concat help
         end)
       end
     end
   end
 
   ## password field
-  def p_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, required: nil)
+  def p_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, required: nil, help: nil)
     requiredd =  field_required?(form.object.class, field) || required
     content_tag :div, class: clas do
       if label
@@ -55,11 +63,15 @@ module ApplicationHelper
             concat "#{mss.humanize}. "
           end
         end)
+      elsif help
+        concat(content_tag(:p, class: "help") do
+          concat help
+        end)
       end
     end
   end
 
-  def e_field(form, field, clas: "field column is-12", label: nil, placeholder: nil)
+  def e_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, help: nil)
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
       if label
@@ -72,11 +84,15 @@ module ApplicationHelper
             concat "#{mss.humanize}. "
           end
         end)
+      elsif help
+        concat(content_tag(:p, class: "help") do
+          concat help
+        end)
       end
     end
   end
 
-  def a_field(form, field, clas: "field column is-12", label: nil, placeholder: nil)
+  def a_field(form, field, clas: "field column is-12", label: nil, placeholder: nil, help: nil)
     requiredd =  field_required?(form.object.class, field)
     content_tag :div, class: clas do
       if label
@@ -89,11 +105,15 @@ module ApplicationHelper
             concat "#{mss.humanize}. "
           end
         end)
+      elsif help
+        concat(content_tag(:p, class: "help") do
+          concat help
+        end)
       end
     end
   end
 
-  def s_field(form, field, options:, key: nil, value: nil, clas: "field column is-12", label: nil)
+  def s_field(form, field, options:, key: nil, value: nil, clas: "field column is-12", label: nil, help: nil)
     unless options.is_a?(Array)
       ## en este caso validar que key y value no sean nulos
       raise ArgumentError, "Key and value must be provided for non-array options" if key.nil? || value.nil?
@@ -119,6 +139,10 @@ module ApplicationHelper
           form.object.errors.messages_for(field).each do |mss|
             concat "#{mss.humanize}. "
           end
+        end)
+      elsif help
+        concat(content_tag(:p, class: "help") do
+          concat help
         end)
       end
     end

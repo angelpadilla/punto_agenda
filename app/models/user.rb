@@ -63,6 +63,8 @@ class User < ApplicationRecord
     tipo == "colaborador"
   end
 
+
+
   # def can_view?(model)
   #   ## model lo introducen como simbolo, convertir a string y capitalizar
   #   model = model.to_s.strip.downcase.capitalize
@@ -115,5 +117,10 @@ class User < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     %w[]
+  end
+
+  ## funcion para eliminar usuarios que no tienen corp asociado
+  def self.cleanup_orphaned_users
+    where(corp_id: nil).destroy_all
   end
 end

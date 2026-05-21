@@ -174,7 +174,7 @@ export default class extends Controller {
                 const timeStr = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
                 const url = new URL(this.newEventUrlValue, window.location.origin)
                 url.searchParams.set("dia", dateStr)
-                url.searchParams.set("hora_inicio", timeStr)
+                // url.searchParams.set("hora_inicio", timeStr)
                 window.location.href = url.toString()
             }
         })

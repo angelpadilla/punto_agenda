@@ -3,6 +3,7 @@ class UserPanelController < ApplicationController
   before_action :authenticate_user!
   before_action :set_globals
   before_action :authorize_corp!, except: [ :home ]
+  before_action :check_corp_setup
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
@@ -189,5 +190,11 @@ class UserPanelController < ApplicationController
     unless current_user.corp.active
       redirect_to user_panel_home_path, alert: "Tu cuenta no está activa. Contacta al administrador."
     end
+  end
+
+  def check_corp_setup
+    return unless @corp&.active && !@corp.visto
+    return if controller_name == "corp" && action_name.in?(%w[initial_corp_setup save_initial_corp_setup])
+    redirect_to initial_corp_setup_path
   end
 end

@@ -1,0 +1,270 @@
+<% content_for :title, "Configura tu empresa" %>
+<div data-controller="corp-setup">
+  <%# ── Header ──────────────────────────────────────────────────────── %>
+  <div class="mb-5">
+    <h1 class="titlee">👋 Bienvenido<%= ", #{@corp.name}" if @corp.name.present? %></h1>
+    <p class="has-text-grey">Completa los siguientes pasos para dejar tu empresa lista.</p>
+  </div>
+  <%# ── Progress bar ───────────────────────────────────────────────── %>
+  <div class="mb-5">
+    <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+      <span class="tag is-rounded is-light" data-corp-setup-target="progressText">Paso 1 de 3</span>
+    </div>
+    <progress class="progress is-primary is-small"
+              data-corp-setup-target="progressBar"
+              value="33" max="100">33%</progress>
+  </div>
+  <%# ── Validation errors ───────────────────────────────────────────── %>
+  <% if @corp.errors.any? %>
+    <div class="notification is-warning mt-4">
+      <h2 class="subtitle"><%= pluralize(@corp.errors.count, "error", "errores") %> impidieron guardar:</h2>
+      <ul>
+        <% @corp.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= form_with(model: @corp, method: :patch, url: save_initial_corp_setup_path,
+                data: { corp_setup_target: "form", turbo: false }) do |form| %>
+    <%# ════════════════════════════════════════════════════════════════ %>
+    <%# PASO 1 — Datos básicos + Datos fiscales                         %>
+    <%# ════════════════════════════════════════════════════════════════ %>
+    <div data-corp-setup-target="step">
+      <div class="box expandable is_active mt-4">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'documento.svg', alt: "Datos básicos", class: "invert" %>
+            </span>
+            Datos básicos
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <div class="columns is-multiline">
+            <%= t_field(form, :name, label: "Nombre comercial", placeholder: "Ej. Mi Empresa", clas: "field column is-12") %>
+            <%= e_field(form, :email, label: "Email contacto", placeholder: "Ej. contacto@empresa.com", clas: "field column is-6") %>
+            <div class="field has-addons column is-6">
+              <div class="control <%= @corp.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
+                <label class="label">* Teléfono o WhatsApp contacto</label>
+                <%= form.select :tel_prefix,
+                        options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, @corp.tel_prefix),
+                        { prompt: "Selecciona", required: field_required?(Corp, :tel_prefix) },
+                        { "data-controller": "slimselect", class: "ss2" } %>
+              </div>
+              <%= t_field(form, :phone, label: "Teléfono", placeholder: "Ej. 1234567890", clas: "control is-expanded", label_ghost: true) %>
+            </div>
+            <%= s_field(form, :tipo_negocio, options: Corp::TipoNegocios, label: "Tipo de negocio", clas: "field column is-12") %>
+            <div class="column is-12">
+              <div class="doc_input">
+                <div class="doc_file_name"></div>
+                <div class="doc_file_size">JPG o PNG · max 5MB</div>
+                <%= form.file_field :logo, class: "doc_file_field", accept: ".png, .jpg, .jpeg",
+                      data: { action: "change->corp-setup#previewDoc" } %>
+                <span class="doc_action">Selecciona logo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box expandable mt-4">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'sat2.svg', alt: "Datos fiscales" %>
+            </span>
+            Datos fiscales
+            <span class="tag is-light ml-3" style="font-size:0.75rem;font-weight:400;">Opcional</span>
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :razon, label: "Razón fiscal", placeholder: "Ej. Mi Empresa S.A. de C.V.") %>
+            <%= s_field(form, :regimen, options: Corp::RegimenFiscales, label: "Régimen fiscal", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :rfc, label: "RFC", placeholder: "Ej. XAXX010101000", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= s_field(form, :estado, options: Corp::States, label: "Estado", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :ciudad, label: "Ciudad", placeholder: "Ej. Ciudad de México", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :cp, label: "Código Postal", placeholder: "Ej. 01234", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :colonia, label: "Colonia", placeholder: "Ej. Colonia Centro", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :localidad, label: "Localidad", placeholder: "Ej. Localidad Ejemplo", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+          </div>
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :calle, label: "Calle", placeholder: "Ej. Calle Falsa", clas: "field column is-12-mobile is-6-tablet is-8-desktop") %>
+            <%= t_field(form, :num_ext, label: "Número Exterior", placeholder: "Ej. 123", clas: "field column is-3-tablet is-2-desktop") %>
+            <%= t_field(form, :num_int, label: "Número Interior", placeholder: "Ej. 456", clas: "field column is-3-tablet is-2-desktop") %>
+          </div>
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :key_pass, label: "Contraseña de la llave", placeholder: "Ej. XAXX010101000", clas: "field column is-12") %>
+            <div class="column is-12-mobile is-6-tablet is-6-desktop">
+              <div class="doc_input">
+                <div class="doc_file_name"></div>
+                <div class="doc_file_size"></div>
+                <%= form.file_field :cer, class: "doc_file_field", accept: ".cer", data: { action: "change->corp-setup#previewDoc" } %>
+                <span class="doc_action">Seleccionar archivo .cer</span>
+              </div>
+            </div>
+            <div class="column is-12-mobile is-6-tablet is-6-desktop">
+              <div class="doc_input">
+                <div class="doc_file_name"></div>
+                <div class="doc_file_size"></div>
+                <%= form.file_field :key, class: "doc_file_field", accept: ".key", data: { action: "change->corp-setup#previewDoc" } %>
+                <span class="doc_action">Seleccionar archivo .key</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%# /step 1 %>
+    <%# ════════════════════════════════════════════════════════════════ %>
+    <%# PASO 2 — Configuración (togglers)                               %>
+    <%# ════════════════════════════════════════════════════════════════ %>
+    <div data-corp-setup-target="step" style="display:none">
+      <div class="box expandable is_active mt-4">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'lightbulb-bolt-svgrepo-com.svg', alt: "Configuración", class: "invert" %>
+            </span>
+            Configuración
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <label class="toggle_field">
+            <div class="toggle_info">
+              <span class="toggle_label">¿Facturación?</span>
+              <span class="toggle_desc">Activa si tu negocio realiza facturación electrónica</span>
+            </div>
+            <%= form.check_box :facturacion, class: "toggle_input" %>
+            <span class="toggle_track"><span class="toggle_thumb"></span></span>
+          </label>
+          <label class="toggle_field">
+            <div class="toggle_info">
+              <span class="toggle_label">Activar calendario</span>
+              <span class="toggle_desc">Activa si tu negocio gestiona citas o eventos con un calendario</span>
+            </div>
+            <%= form.check_box :calendar, class: "toggle_input",
+                  data: { corp_setup_target: "calendarCheck", action: "corp-setup#calendarChanged" } %>
+            <span class="toggle_track"><span class="toggle_thumb"></span></span>
+          </label>
+          <label class="toggle_field">
+            <div class="toggle_info">
+              <span class="toggle_label">¿Sitio público?</span>
+              <span class="toggle_desc">Habilita tu sitio para que tus clientes puedan hacerte pedidos o citas en línea</span>
+            </div>
+            <%= form.check_box :public_site, class: "toggle_input" %>
+            <span class="toggle_track"><span class="toggle_thumb"></span></span>
+          </label>
+          <label class="toggle_field">
+            <div class="toggle_info">
+              <span class="toggle_label">Acepta pagos en línea</span>
+              <span class="toggle_desc">Habilita Stripe como método de pago para tus clientes</span>
+            </div>
+            <%= form.check_box :online_payments, class: "toggle_input" %>
+            <span class="toggle_track"><span class="toggle_thumb"></span></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <%# /step 2 %>
+    <%# ════════════════════════════════════════════════════════════════ %>
+    <%# PASO 3 — Horario de atención (solo si activó calendario)        %>
+    <%# ════════════════════════════════════════════════════════════════ %>
+    <div data-corp-setup-target="step" style="display:none">
+      <div class="box expandable is_active mt-4">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'calendar.svg', alt: "Horario", class: "invert" %>
+            </span>
+            Horario de atención
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <div class="field mb-4">
+            <label class="label">Duración promedio de cita/evento</label>
+            <div class="control">
+              <div class="select">
+                <%= form.select :slot_duration,
+                      options_for_select(Corp::SLOT_DURATION_OPTIONS, @corp.slot_duration || 15),
+                      {},
+                      { class: "select-time",
+                        data: { corp_setup_target: "slotDuration", action: "change->corp-setup#updateAllCloses" } } %>
+              </div>
+            </div>
+          </div>
+          <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
+          <table class="table is-fullwidth">
+            <thead>
+              <tr>
+                <th>Día</th>
+                <th>Abierto</th>
+                <th>Apertura</th>
+                <th>Cierre</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% Corp::DAYS_OF_WEEK.each do |wday, day_name| %>
+                <% day_config = @corp.business_hours&.dig(wday) || Corp::DEFAULT_BUSINESS_HOURS[wday] %>
+                <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
+                <tr>
+                  <td><strong><%= day_name %></strong></td>
+                  <td>
+                    <%= hidden_field_tag "corp[business_hours][#{wday}][active]", "0" %>
+                    <%= check_box_tag "corp[business_hours][#{wday}][active]", "1", is_active,
+                          data: { action: "corp-setup#toggle", corp_setup_wday_param: wday },
+                          class: "checkbox" %>
+                  </td>
+                  <td>
+                    <div class="select" data-corp-setup-target="selects" data-wday="<%= wday %>" data-type="open">
+                      <%= select_tag "corp[business_hours][#{wday}][open]",
+                            options_for_select(horas, day_config["open"]),
+                            disabled: !is_active, class: "select-time",
+                            data: { action: "change->corp-setup#updateClose" } %>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="select" data-corp-setup-target="selects" data-wday="<%= wday %>" data-type="close">
+                      <%= select_tag "corp[business_hours][#{wday}][close]",
+                            options_for_select(horas, day_config["close"]),
+                            disabled: !is_active, class: "select-time" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <%# /step 3 %>
+    <%# ── Navigation buttons ───────────────────────────────────────── %>
+    <div class="field is-grouped is-justify-content-space-between mt-5">
+      <div class="control">
+        <button type="button" class="button is-rounded"
+                data-corp-setup-target="prevBtn"
+                data-action="corp-setup#prev"
+                style="display:none">← Anterior</button>
+      </div>
+      <div class="control">
+        <button type="button" class="button is-rounded is-primary"
+                data-corp-setup-target="nextBtn"
+                data-action="corp-setup#next">Siguiente →</button>
+      </div>
+    </div>
+  <% end %>
+</div>
+<br>
+<br>

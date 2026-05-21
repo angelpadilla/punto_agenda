@@ -1,0 +1,66 @@
+<% content_for :title, "Facturación" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Facturación</h2>
+  <div class="actions">
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to new_user_path, class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Exportar CSV
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: bills_path do |f| %>
+  <div class="columns is-multiline">
+    <div class="column is-4">
+      <%= f.search_field :full_name_or_email_cont, class: 'is-rounded search_input', placeholder: 'Nombre, email' %>
+    </div>
+    <div class="column is-3">
+      <div class="buttons">
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
+        <%= link_to bills_path, class: "button is-rounded has_tooltip" do %>
+          <span class="icon reset">
+            <%= image_tag 'trash.svg', alt: 'clear', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Limpiar busqueda</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<table class="table is-fullwidth is-hoverable mt-4">
+  <thead>
+    <tr>
+      <th><%= sort_link(@q, :folio, 'Folio') %></th>
+      <th><%= sort_link(@q, :status_pago, 'Status Pago') %></th>
+      <th><%= sort_link(@q, :tipo, 'Tipo') %></th>
+      <th>Total</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render @bills %>
+  </tbody>
+</table>
+<% if @pagy.pages > 1 %>
+  <br>
+  <%== @pagy.series_nav(:bulma) %>
+  <br>
+<% end %>
+<br>
+<br>

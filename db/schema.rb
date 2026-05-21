@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_19_232806) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_21_170142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -162,12 +162,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_232806) do
     t.string "key_pass"
     t.datetime "last_payment_at"
     t.string "localidad"
+    t.decimal "min_book_amount", precision: 10, scale: 2
     t.string "name"
     t.string "num_ext"
     t.string "num_int"
     t.boolean "online_payments", default: false
     t.integer "payment_attempts", default: 0
     t.string "phone"
+    t.boolean "public_calendar", default: false
     t.boolean "public_site", default: false
     t.string "razon"
     t.string "regimen"

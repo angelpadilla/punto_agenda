@@ -27,24 +27,26 @@ class Users::RegistrationsController < Devise::RegistrationsController
       calendar = false
     end
 
-    corp = Corp.new(
-      tipo_negocio: params[:tipo_negocio] || "otro",
-      calendar: calendar,
-      regimen: "616",
-      phone: params[:user][:tel].to_s,
-      tel_prefix: params[:user][:tel_prefix].to_s,
-      name: "Compañía de #{params[:user][:full_name]}",
-      email: params[:user][:email]
-    )
-
+    
     if response.status.success?
       body = JSON.parse(response.to_s)
       puts body
       build_resource(sign_up_params)
       resource.tipo = "propietario"
       resource.tel_prefix = params[:user][:tel_prefix] || "+52"
-
+      
       if resource.save
+        corp = Corp.new(
+          tipo_negocio: params[:tipo_negocio] || "otro",
+          calendar: calendar,
+          regimen: "616",
+          phone: params[:user][:tel].to_s,
+          tel_prefix: params[:user][:tel_prefix].to_s,
+          name: "Compañía de #{params[:user][:full_name]}",
+          email: params[:user][:email],
+          subscription_trial_start: DateTime.current,
+          subscription_trial_end: 14.days.from_now
+        )
         if corp.save # Guardar el Corp solo si el usuario se guarda correctamente
           resource.update(corp_id: corp.id)
           yield resource if block_given?

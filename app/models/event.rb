@@ -15,17 +15,18 @@ class Event < ApplicationRecord
   validates :customer_id, presence: { message: "El cliente es requerido" }
   validates :user_id, presence: { message: "El agente/vendedor es requerido" }
 
-  ## validar que un evento no se repita en el mismo rango de tiempo en la misma Corp
+  ## validar que un evento no se repita en el mismo rango de tiempo en la misma Corp, solo busca eventos pendientes o completados, no considera cancelados
   validate :no_overlap_events, on: :create
 
   def no_overlap_events
     return if hora_inicio.blank? || hora_final.blank? || corp.blank?
 
-    overlapping_events = Event.where(corp_id: corp_id, user_id: user_id)
+    overlapping_events = Event.where(corp_id: corp_id, user_id: user_id, status: [:pendiente, :completado])
                               .where.not(id: id)
                               .where("hora_inicio < ? AND hora_final > ?", hora_final, hora_inicio)
 
     if overlapping_events.exists?
+      puts "Evento solapado encontrado: #{overlapping_events.pluck(:id).join(', ')}"
       errors.add(:base, "Ya existe un evento en ese rango de tiempo con ese agente vendedor")
     end
   end

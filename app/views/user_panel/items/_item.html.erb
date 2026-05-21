@@ -68,7 +68,11 @@
           <div class="labell">Inventario</div>
           <p class="contentt">
             <% if item.stock %>
-              <%= item.stock %>
+              <% if item.stock < item.alerta_stock %>
+                <span class="has-text-danger"><%= item.stock %></span>
+              <% else %>
+                <%= item.stock %>
+              <% end %>
             <% else %>
               <span class="material-icons-round icon" loading="lazy">
                 all_inclusive
