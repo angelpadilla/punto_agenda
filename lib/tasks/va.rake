@@ -1,3 +1,9 @@
+## Gen task
+# bin/rails generate task my_namespace my_task_name
+
+# Example usage:
+# bin/rails va:gen_events
+
 namespace :va do
   desc "Genera unos 100 eventos con faker en este mes para probar el calendario"
   task gen_events: :environment do
@@ -17,5 +23,16 @@ namespace :va do
       end
     end
     puts "Eventos generados exitosamente."
+  end
+
+  desc "Crea un bill dummy con pago simulado en Stripe para probar facturación"
+  task dummy_bill: :environment do
+    puts "Generando bill dummy..."
+    Gtools.do_dummy_bill(corp_id: 1) # Reemplaza 1 con el ID del corp que desees
+  end
+
+  desc "Manda notificación de prueba por Telegram"
+  task telegram_noti: :environment do
+    Gtools.telegram_noti(message: "Mensaje de prueba desde Rake task")
   end
 end

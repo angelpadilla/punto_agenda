@@ -14,7 +14,7 @@ es:
   time:
     formats:
       long: "%d de %B de %Y, %I:%M %p"
-      short: "%d %b %H:%M"
+      short: "%d %b %I:%M %p"
       date: "%d/%m/%Y"
   simple_calendar:
     month_names: [~, "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]

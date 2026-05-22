@@ -141,6 +141,14 @@
         <div class="box_content">
           <label class="toggle_field">
             <div class="toggle_info">
+              <span class="toggle_label">Acepta pagos en línea</span>
+              <span class="toggle_desc">Habilita pagos para citas y pedidos en línea</span>
+            </div>
+            <%= form.check_box :online_payments, class: "toggle_input", data: { action: "corp-setup#toggleMinBookAmount", corp_setup_target: "onlinePaymentsCheck" } %>
+            <span class="toggle_track"><span class="toggle_thumb"></span></span>
+          </label>
+          <label class="toggle_field">
+            <div class="toggle_info">
               <span class="toggle_label">¿Facturación?</span>
               <span class="toggle_desc">Activa si tu negocio realiza facturación electrónica</span>
             </div>
@@ -158,18 +166,20 @@
           </label>
           <label class="toggle_field">
             <div class="toggle_info">
-              <span class="toggle_label">¿Sitio público?</span>
-              <span class="toggle_desc">Habilita tu sitio para que tus clientes puedan hacerte pedidos o citas en línea</span>
+              <span class="toggle_label">Calendario público?</span>
+              <span class="toggle_desc">Habilita tu calendario público, para que tus clientes puedan ver tus horarios y hacer citas</span>
             </div>
-            <%= form.check_box :public_site, class: "toggle_input" %>
-            <span class="toggle_track"><span class="toggle_thumb"></span></span>
+            <%= form.check_box :public_calendar, class: "toggle_input", data: { action: "corp-setup#toggleMinBookAmount", corp_setup_target: "publicCalendarCheck" } %>
+            <span class="toggle_track">
+              <span class="toggle_thumb"></span>
+            </span>
           </label>
           <label class="toggle_field">
             <div class="toggle_info">
-              <span class="toggle_label">Acepta pagos en línea</span>
-              <span class="toggle_desc">Habilita Stripe como método de pago para tus clientes</span>
+              <span class="toggle_label">Catálogo de productos público?</span>
+              <span class="toggle_desc">Habilita tu catálogo de productos público, para que tus clientes puedan ver tus productos y hacer pedidos</span>
             </div>
-            <%= form.check_box :online_payments, class: "toggle_input" %>
+            <%= form.check_box :public_site, class: "toggle_input" %>
             <span class="toggle_track"><span class="toggle_thumb"></span></span>
           </label>
         </div>
@@ -193,17 +203,20 @@
           </span>
         </div>
         <div class="box_content">
-          <div class="field mb-4">
-            <label class="label">Duración promedio de cita/evento</label>
-            <div class="control">
-              <div class="select">
-                <%= form.select :slot_duration,
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <label class="label">Duración promedio de cita/evento</label>
+              <div class="control">
+                <div class="select">
+                  <%= form.select :slot_duration,
                       options_for_select(Corp::SLOT_DURATION_OPTIONS, @corp.slot_duration || 15),
                       {},
                       { class: "select-time",
                         data: { corp_setup_target: "slotDuration", action: "change->corp-setup#updateAllCloses" } } %>
+                </div>
               </div>
             </div>
+            <%= n_field(form, :min_book_amount, label: "Monto minimo para agendar", placeholder: "Ej. $100.00", min: 100.0, help: "Este es el monto mínimo que un cliente debe pagar para agendar una cita, el monto minimo es de $100.00 MXN, si lo dejas en blanco será gratis.", clas: "field column is-12 minBookAmountContainer") %>
           </div>
           <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
           <table class="table is-fullwidth">

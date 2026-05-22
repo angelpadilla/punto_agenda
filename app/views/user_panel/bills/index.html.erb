@@ -28,7 +28,17 @@
 <%= search_form_for @q, url: bills_path do |f| %>
   <div class="columns is-multiline">
     <div class="column is-4">
-      <%= f.search_field :full_name_or_email_cont, class: 'is-rounded search_input', placeholder: 'Nombre, email' %>
+      <%= f.search_field :folio_or_id_eq, class: 'is-rounded search_input', placeholder: 'Folio' %>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :tipo_eq, options_for_select(Bill.tipos.keys.map { |k| [k.humanize, k] }, (params[:q] and !params[:q][:tipo_eq].blank?) ? params[:q][:tipo_eq] : nil), {prompt: "Tipo"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :status_pago_eq, options_for_select(Bill.status_pagos.keys.map { |k| [k.humanize, k] }, (params[:q] and !params[:q][:status_pago_eq].blank?) ? params[:q][:status_pago_eq] : nil), {prompt: "Estatus pago"}, {class: ""} %>
+      </div>
     </div>
     <div class="column is-3">
       <div class="buttons">
@@ -46,6 +56,7 @@
 <table class="table is-fullwidth is-hoverable mt-4">
   <thead>
     <tr>
+      <th><%= sort_link(@q, :created_at, 'Fecha') %></th>
       <th><%= sort_link(@q, :folio, 'Folio') %></th>
       <th><%= sort_link(@q, :status_pago, 'Status Pago') %></th>
       <th><%= sort_link(@q, :tipo, 'Tipo') %></th>

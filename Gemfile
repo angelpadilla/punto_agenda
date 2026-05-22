@@ -129,3 +129,4 @@ gem "mission_control-jobs"
 
 # https://github.com/stripe/stripe-ruby
 gem "stripe", "~> 19.1.0"
+gem "telegram-bot"

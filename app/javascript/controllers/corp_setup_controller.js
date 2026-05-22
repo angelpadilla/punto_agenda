@@ -4,7 +4,8 @@ export default class extends Controller {
     static targets = [
         "step", "progressBar", "progressText",
         "nextBtn", "prevBtn",
-        "calendarCheck", "slotDuration", "selects", "form"
+        "calendarCheck", "slotDuration", "selects", "form",
+        "onlinePaymentsCheck", "publicCalendarCheck"
     ]
 
     connect() {
@@ -18,6 +19,8 @@ export default class extends Controller {
 
         // Sync business hours close selects on load
         this._wdays().forEach(wday => this._syncCloseOptions(wday))
+
+        this.toggleMinBookAmount()
     }
 
     // ── Wizard navigation ────────────────────────────────────────────
@@ -56,6 +59,12 @@ export default class extends Controller {
                 const select = el.querySelector("select")
                 if (select) select.disabled = !active
             })
+    }
+
+    toggleMinBookAmount() {
+        const show = this.onlinePaymentsCheckTarget.checked && this.publicCalendarCheckTarget.checked
+        const minBookContainer = document.querySelector(".minBookAmountContainer")
+        if (minBookContainer) minBookContainer.style.display = show ? "" : "none"
     }
 
     updateClose(event) {

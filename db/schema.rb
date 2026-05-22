@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_21_170142) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_010557) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_21_170142) do
     t.decimal "iva", precision: 17, scale: 4, default: "16.0"
     t.string "nombre"
     t.decimal "precio", precision: 17, scale: 4
+    t.string "stripe_payment_intent_id"
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_bill_items_on_bill_id"
   end

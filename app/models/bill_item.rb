@@ -18,7 +18,7 @@ class BillItem < ApplicationRecord
   end
 
   def total
-   (self.precio * self.cantidad) - self.descuento_total
+    (self.precio * self.cantidad) - self.descuento_total
   end
 
   def subtotal

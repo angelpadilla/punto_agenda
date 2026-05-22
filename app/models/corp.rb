@@ -253,7 +253,7 @@ class Corp < ApplicationRecord
   def create_stripe_customer
     return if stripe_customer_id.present?
     client = Stripe::StripeClient.new(Rails.application.credentials.dig(Rails.env.to_sym, :stripe, :secret_key))
-    customer = client.v1.customers.create({name: self.name, email: self.email})
+    customer = client.v1.customers.create({name: "#{self.name}, corpId: #{self.id}", email: self.email})
     if customer && customer.id
       update(stripe_customer_id: customer.id)
     else
@@ -261,7 +261,7 @@ class Corp < ApplicationRecord
     end
   end
 
-  ## funcion para elimincar las corps que no tienen usuarios 'propietarios' asociados
+  ## funcion para eliminar las corps que no tienen usuarios 'propietarios' asociados
   def self.cleanup_orphaned_corps
     self.all.each do |corp|
       if corp.prop.nil?
