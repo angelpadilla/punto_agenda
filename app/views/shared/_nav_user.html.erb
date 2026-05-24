@@ -2,7 +2,7 @@
   <div class="container">
     <div class="navbar-brand">
       <%= link_to user_panel_home_path, class: 'navbar-item' do %>
-        <%= image_tag 'logo2.svg', height: '200px', class: 'logo', alt: 'fresh club logo' %>
+        <%= image_tag 'logo3.svg', height: '200px', class: 'logo', alt: 'fresh club logo' %>
       <% end %>
     </div>
     <div id="navbarBasicExample" class="navbar-menu">
@@ -22,6 +22,12 @@
           <% end %>
           <% if @corp.calendar %>
             <%= link_to events_path, class: 'navbar-item has_tooltip' do %>
+              <span class="icon">
+                <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
+              </span>
+              <div class="tooltip down">Eventos</div>
+            <% end %>
+            <%= link_to weekly_events_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
                 <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
               </span>
@@ -89,6 +95,9 @@
                 </span>
                 Salir
               <% end %>
+              <p class="navbar-item">
+                <%= Version %>
+              </p>
             </div>
           </div>
         <% else %>

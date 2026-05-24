@@ -12,7 +12,7 @@ class Customer < ApplicationRecord
   has_many :corps, through: :corp_customers
 
 
-  enum :canal, web: "web", interno: "interno" 
+  enum :canal, web: "web", interno: "interno"
 
   TelPrefixes = {
     # América del Norte

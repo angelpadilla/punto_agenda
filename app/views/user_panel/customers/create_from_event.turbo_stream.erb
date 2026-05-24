@@ -1,0 +1,23 @@
+<%# 1. Agregar la nueva opción al final de nuestro select %>
+<%= turbo_stream.append "event_customer_id" do %>
+  <option value="<%= @customer.id %>"><%= @customer.razon&.titleize %></option>
+<% end %>
+<%# 2. Cerrar el modal y refrescar el select con Javascript %>
+<%= turbo_stream.append "event_customer_id" do %>
+  <script>
+    // Seleccionar automáticamente el nuevo cliente
+    var select = document.getElementById("event_customer_id");
+    select.value = "<%= @customer.id %>";
+
+    // Cerrar el modal (removiendo clase is-active)
+    document.getElementById("new_customer").classList.remove("is-active");
+
+    // Limpiar formulario modal
+    document.querySelector("#new_customer form").reset();
+
+    // `slimselect`, necesitas actualizar su instancia
+    // Usualmente disparando un evento "change" o invocando su API
+    var event = new Event('change', { bubbles: true });
+    select.dispatchEvent(event);
+  </script>
+<% end %>

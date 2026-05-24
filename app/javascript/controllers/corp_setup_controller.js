@@ -4,7 +4,7 @@ export default class extends Controller {
     static targets = [
         "step", "progressBar", "progressText",
         "nextBtn", "prevBtn",
-        "calendarCheck", "slotDuration", "selects", "form",
+        "calendarCheck", "slotDuration", "hoursContainer", "form",
         "onlinePaymentsCheck", "publicCalendarCheck"
     ]
 
@@ -17,9 +17,6 @@ export default class extends Controller {
         )
         this._showStep(errorStep >= 0 ? errorStep : 0)
 
-        // Sync business hours close selects on load
-        this._wdays().forEach(wday => this._syncCloseOptions(wday))
-
         this.toggleMinBookAmount()
     }
 
@@ -30,6 +27,10 @@ export default class extends Controller {
         const isLast = this._current === 2 || (this._current === 1 && !hasCalendar)
 
         if (isLast) {
+            if (!this._validateAllHourRanges()) {
+                alert("Hay rangos de horario inválidos o solapados. Revisa los campos marcados en rojo/naranja antes de guardar.")
+                return
+            }
             this.formTarget.requestSubmit()
             return
         }
@@ -53,12 +54,14 @@ export default class extends Controller {
     toggle(event) {
         const wday = String(event.params.wday)
         const active = event.target.checked
-        this.selectsTargets
-            .filter(el => el.dataset.wday === wday)
-            .forEach(el => {
-                const select = el.querySelector("select")
-                if (select) select.disabled = !active
-            })
+
+        const container = this._containerFor(wday)
+        if (container) {
+            container.querySelectorAll("select, button").forEach(el => el.disabled = !active)
+        }
+
+        this.element.querySelectorAll(`[data-action*="addHour"][data-corp-setup-wday-param="${wday}"]`)
+            .forEach(btn => btn.disabled = !active)
     }
 
     toggleMinBookAmount() {
@@ -67,13 +70,81 @@ export default class extends Controller {
         if (minBookContainer) minBookContainer.style.display = show ? "" : "none"
     }
 
-    updateClose(event) {
-        const wday = event.target.closest("[data-wday]")?.dataset.wday
-        if (wday) this._syncCloseOptions(wday)
+    addHour(event) {
+        const wday = String(event.params.wday)
+        const container = this._containerFor(wday)
+        if (!container) return
+
+        const ranges = container.querySelectorAll(".hour-range")
+        const newIdx = ranges.length
+
+        const lastCloseSel = ranges[ranges.length - 1]?.querySelector(`select[name*="[close]"]`)
+        const openVal = lastCloseSel?.value || "09:00"
+        const closeVal = this._addMinutes(openVal, 60)
+        const isActive = !(lastCloseSel?.disabled ?? false)
+
+        container.appendChild(this._buildRangeDiv(wday, newIdx, openVal, closeVal, isActive))
     }
 
-    updateAllCloses() {
-        this._wdays().forEach(wday => this._syncCloseOptions(wday))
+    removeHour(event) {
+        const wday = String(event.params.wday)
+        const container = this._containerFor(wday)
+        if (!container) return
+
+        const rangeDiv = event.currentTarget.closest(".hour-range")
+        if (!rangeDiv) return
+        rangeDiv.remove()
+
+        container.querySelectorAll(".hour-range").forEach((div, newIdx) => {
+            div.dataset.index = newIdx
+            div.querySelectorAll("select").forEach(sel => {
+                sel.name = sel.name.replace(/\[hours\]\[\d+\]/, `[hours][${newIdx}]`)
+            })
+            const removeBtn = div.querySelector("[data-corp-setup-index-param]")
+            if (removeBtn) removeBtn.dataset.corpSetupIndexParam = newIdx
+        })
+    }
+
+    validateHourRange(event) {
+        const wday = String(event.params.wday)
+        const container = this._containerFor(wday)
+        if (!container) return
+        this._validateContainer(container)
+    }
+
+    _validateAllHourRanges() {
+        let valid = true
+        this.hoursContainerTargets.forEach(container => {
+            if (!this._validateContainer(container)) valid = false
+        })
+        return valid
+    }
+
+    _validateContainer(container) {
+        let valid = true
+        let prevCloseMins = null
+        container.querySelectorAll(".hour-range").forEach(rangeDiv => {
+            const openSel = rangeDiv.querySelector(`select[name*="[open]"]`)
+            const closeSel = rangeDiv.querySelector(`select[name*="[close]"]`)
+            if (!openSel || !closeSel) return
+
+            const openMins = this._timeToMinutes(openSel.value)
+            const closeMins = this._timeToMinutes(closeSel.value)
+
+            const closeOk = closeMins > openMins
+            closeSel.style.outline = closeOk ? "" : "2px solid red"
+            if (!closeOk) valid = false
+
+            if (prevCloseMins !== null) {
+                const gapOk = openMins >= prevCloseMins
+                openSel.style.outline = gapOk ? "" : "2px solid orange"
+                if (!gapOk) valid = false
+            } else {
+                openSel.style.outline = ""
+            }
+            prevCloseMins = closeMins
+        })
+        return valid
     }
 
     // ── Doc upload preview ────────────────────────────────────────────
@@ -130,42 +201,60 @@ export default class extends Controller {
         }
     }
 
-    _wdays() {
-        return [...new Set(this.selectsTargets.map(el => el.dataset.wday))]
-    }
-
-    _getSlotDuration() {
-        return this.hasSlotDurationTarget ? (parseInt(this.slotDurationTarget.value) || 15) : 15
+    _containerFor(wday) {
+        return this.hoursContainerTargets.find(el => el.dataset.wday === wday)
     }
 
     _timeToMinutes(timeStr) {
-        const [h, m] = timeStr.split(":").map(Number)
+        const [h, m] = (timeStr || "00:00").split(":").map(Number)
         return h * 60 + m
     }
 
-    _syncCloseOptions(wday) {
-        const divs = this.selectsTargets.filter(el => el.dataset.wday === wday)
-        const openDiv = divs.find(el => el.dataset.type === "open")
-        const closeDiv = divs.find(el => el.dataset.type === "close")
-        if (!openDiv || !closeDiv) return
+    _addMinutes(timeStr, minutes) {
+        const total = this._timeToMinutes(timeStr) + minutes
+        const capped = Math.min(total, 23 * 60 + 45)
+        return `${String(Math.floor(capped / 60)).padStart(2, "0")}:${String(capped % 60).padStart(2, "0")}`
+    }
 
-        const openSelect = openDiv.querySelector("select")
-        const closeSelect = closeDiv.querySelector("select")
-        if (!openSelect || !closeSelect) return
-
-        const openMins = this._timeToMinutes(openSelect.value)
-        const slot = this._getSlotDuration()
-
-        Array.from(closeSelect.options).forEach(opt => {
-            const diff = this._timeToMinutes(opt.value) - openMins
-            const isValid = diff > 0 && diff % slot === 0
-            opt.disabled = !isValid
-            opt.style.display = isValid ? "" : "none"
-        })
-
-        if (closeSelect.options[closeSelect.selectedIndex]?.disabled) {
-            const firstValid = Array.from(closeSelect.options).find(o => !o.disabled)
-            if (firstValid) closeSelect.value = firstValid.value
+    _generateTimeOptions() {
+        const opts = []
+        for (let h = 0; h < 24; h++) {
+            for (const m of [0, 15, 30, 45]) {
+                opts.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`)
+            }
         }
+        return opts
+    }
+
+    _buildRangeDiv(wday, idx, openVal, closeVal, isActive) {
+        const times = this._generateTimeOptions()
+        const openOpts = times.map(t => `<option value="${t}"${t === openVal ? " selected" : ""}>${t}</option>`).join("")
+        const closeOpts = times.map(t => `<option value="${t}"${t === closeVal ? " selected" : ""}>${t}</option>`).join("")
+        const disAttr = isActive ? "" : " disabled"
+        const actionAttr = `data-action="change->corp-setup#validateHourRange" data-corp-setup-wday-param="${wday}"`
+
+        const removeBtn = idx > 0
+            ? `<button type="button" class="button is-small is-danger is-light ml-1"
+                       data-action="corp-setup#removeHour"
+                       data-corp-setup-wday-param="${wday}"
+                       data-corp-setup-index-param="${idx}"${disAttr}>✕</button>`
+            : ""
+
+        const div = document.createElement("div")
+        div.className = "hour-range is-flex is-align-items-center mb-1"
+        div.dataset.wday = wday
+        div.dataset.index = idx
+        div.innerHTML = `
+            <div class="select is-small mr-1">
+              <select name="corp[business_hours][${wday}][hours][${idx}][open]" class="select-time" ${actionAttr}${disAttr}>${openOpts}</select>
+            </div>
+            <span class="mx-1">–</span>
+            <div class="select is-small mr-1">
+              <select name="corp[business_hours][${wday}][hours][${idx}][close]" class="select-time" ${actionAttr}${disAttr}>${closeOpts}</select>
+            </div>
+            ${removeBtn}
+        `
+        return div
     }
 }
+

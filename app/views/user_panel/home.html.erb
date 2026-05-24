@@ -20,7 +20,7 @@
   <div class="flexx space-b flex-end mb-5">
     <div>
       <p class="labell">Bienvenido de vuelta,</p>
-      <h2 class="titlee"><%= @userr.full_name&.titleize || @userr.email %></h2>
+      <h2 class="titlee"><%= @userr.full_name&.titleize || @userr.email %> <%= @userr.id %></h2>
       <p class="labell"><%= l(DateTime.current, format: :long) %></p>
     </div>
     <div class="actions">
@@ -96,6 +96,7 @@
         </div>
       </div>
       <div class="columns is-multiline mb-2">
+        <%# agenda hoy %>
         <% if @corp.calendar %>
           <div class="column is-12-mobile is-6-tablet is-4-desktop">
             <div class="box dashboard_box">
@@ -128,7 +129,7 @@
             <div class="column is-12-mobile is-6-tablet is-4-desktop">
               <div class="box dashboard_box">
                 <h3 class="dashboard_section_title mb-3">Slots hoy</h3>
-                <p class="labell mb-3"><%= @slots_info[:open] %> – <%= @slots_info[:close] %> · <%= @corp.slot_duration_label %> / cita</p>
+                <p class="labell mb-3"><%= @slots_info[:ranges] %> <%= 'slot'.pluralize(@slots_info[:ranges]) %> · <%= @slots_info[:open] %> – <%= @slots_info[:close] %></p>
                 <div class="flexx space-b flex-end mb-1">
                   <span class="labell">Ocupados</span>
                   <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>
@@ -466,7 +467,7 @@
             <div class="box dashboard_box">
               <h3 class="dashboard_section_title mb-3">Ocupación hoy</h3>
               <% if @slots_info %>
-                <p class="labell mb-2"><%= @slots_info[:open] %> – <%= @slots_info[:close] %> · <%= @corp.slot_duration_label %> / cita</p>
+                <p class="labell mb-2"><%= @slots_info[:ranges] %> <%= 'slot'.pluralize(@slots_info[:ranges]) %> · <%= @slots_info[:open] %> – <%= @slots_info[:close] %></p>
                 <div class="flexx space-b flex-end mb-1">
                   <span class="labell">Ocupados</span>
                   <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>

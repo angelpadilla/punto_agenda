@@ -74,32 +74,32 @@
         <div class="columns is-multiline is-mobile mb-4">
           <!-- Precios -->
           <div class="column is-4">
-            <div class="has-text-grey is-size-6">Precio</div>
-            <p class="title is-5 <%= @item.offer.present? ? 'tacha' : 'has-text-primary' %>"><%= number_to_currency(@item.price) %></p>
+            <div class="labell">Precio</div>
+            <p class="contentt <%= @item.offer.present? ? 'tacha' : 'has-text-primary' %>"><%= number_to_currency(@item.price) %></p>
           </div>
           <div class="column is-4">
-            <div class="has-text-grey is-size-6">Oferta</div>
-            <p class="title is-5 <%= @item.offer.present? ? 'has-text-primary' : '' %>"><%= @item.offer.present? && @item.offer > 0 ? number_to_currency(@item.offer) : '-' %></p>
+            <div class="labell">Oferta</div>
+            <p class="contentt <%= @item.offer.present? ? 'has-text-primary' : '' %>"><%= @item.offer.present? && @item.offer > 0 ? number_to_currency(@item.offer) : '-' %></p>
           </div>
           <div class="column is-4">
-            <div class="has-text-grey is-size-6">Costo</div>
-            <p class="title is-5"><%= @item.cost.present? && @item.cost > 0 ? number_to_currency(@item.cost) : '-' %></p>
+            <div class="labell">Costo</div>
+            <p class="contentt"><%= @item.cost.present? && @item.cost > 0 ? number_to_currency(@item.cost) : '-' %></p>
           </div>
           <div class="column is-6">
-            <div class="has-text-grey is-size-6">Marca</div>
-            <p class="title is-5"><%= @item.brand&.name %></p>
+            <div class="labell">Marca</div>
+            <p class="contentt"><%= @item.brand&.name %></p>
           </div>
           <div class="column is-6">
-            <div class="has-text-grey is-size-6">SKU</div>
-            <p class="title is-5"><%= @item.sku %></p>
+            <div class="labell">SKU</div>
+            <p class="contentt"><%= @item.sku %></p>
           </div>
           <div class="column is-6">
-            <div class="has-text-grey is-size-6">Categoria</div>
-            <p class="title is-5"><%= @item.cate&.titleize %></p>
+            <div class="labell">Categoria</div>
+            <p class="contentt"><%= @item.cate&.titleize %></p>
           </div>
           <div class="column is-6">
-            <div class="has-text-grey is-size-6">Inventario</div>
-            <p class="title is-5">
+            <div class="labell">Inventario</div>
+            <p class="contentt">
               <% if @item.stock %>
                 <% if @item.stock < @item.alerta_stock %>
                   <span class="has-text-danger"><%= @item.stock %></span>
@@ -114,14 +114,23 @@
             </p>
           </div>
           <div class="column is-6">
-            <div class="has-text-grey is-size-6">Alerta inventario</div>
-            <p class="title is-5"><%= @item.alerta_stock || 'N/A' %></p>
+            <div class="labell">Alerta inventario</div>
+            <p class="contentt"><%= @item.alerta_stock || 'N/A' %></p>
           </div>
           <!-- Producto SAT -->
           <div class="column is-6">
-            <p class="has-text-grey is-size-6">Clave producto SAT</p>
-            <p class="title is-5">(<%= @item.sat_product.sku %>) <%= @item.sat_product&.name %></p>
+            <p class="labell">Clave producto SAT</p>
+            <p class="contentt">(<%= @item.sat_product.sku %>) <%= @item.sat_product&.name %></p>
           </div>
+        </div>
+        <div class="columns is-multiline is-mobile mb-4">
+          <!-- orders count -->
+          <div class="column is-6">
+            <p class="labell">Ventas</p>
+            <p class="contentt"><%= @item.orders_count %></p>
+          </div>
+        </div>
+        <div class="columns is-multiline is-mobile mb-4">
           <!-- Notas o descripción adicional -->
           <div class="column is-12 mt-2">
             <p class="has-text-grey is-size-5">Descripción de item</p>
@@ -136,11 +145,11 @@
             </div>
           </div>
           <div class="column is-6">
-            <div class="has-text-grey is-size-6">Fecha de creación</div>
+            <div class="labell">Fecha de creación</div>
             <p class="title is-6"><%= @item.created_at.strftime("%d/%m/%Y %H:%M") %></p>
           </div>
           <div class="column is-6">
-            <div class="has-text-grey is-size-6">Fecha ultima actualización</div>
+            <div class="labell">Fecha ultima actualización</div>
             <p class="title is-6"><%= @item.updated_at.strftime("%d/%m/%Y %H:%M") %></p>
           </div>
         </div>

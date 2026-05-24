@@ -95,6 +95,7 @@
   <div class="modal-content">
     <div class="box">
       <h3 class="title is-4">Crear nueva marca</h3>
+      <div id="brand-form-errors"></div>
       <%= form_with(model: Brand.new, url: create_from_item_brands_path, format: :turbo_stream) do |f| %>
         <div class="columns is-multiline">
           <%= t_field(f, :name, placeholder: "Nombre de la marca") %>

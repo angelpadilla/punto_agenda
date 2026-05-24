@@ -2,9 +2,6 @@
 <div class="flexx space-b flex-end">
   <h2 class="titlee">
     Ajustes 
-    <% if Rails.env.development? %>
-      (<%= @corp.id %>)
-    <% end %>
   </h2>
   <div class="actions">
     <%= link_to user_corp_landing_path, class: "button is-rounded mr-2" do %>
@@ -68,7 +65,7 @@
       </div>
       <div class="column is-12-mobile is-6-tablet is-6-desktop">
         <div class="labell">ID tienda</div>
-        <p class="contentt"><%= @corp.sku %></p>
+        <p class="contentt"><%= @corp.sku %>-<%= @corp.id %></p>
       </div>
     </div>
     <div class="docs_grid">
@@ -216,20 +213,19 @@
       </span>
     </div>
     <div class="box_content">
-      <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
       <table class="table is-fullwidth">
         <thead>
           <tr>
             <th>Día</th>
             <th>Abierto</th>
-            <th>Apertura</th>
-            <th>Cierre</th>
+            <th>Slots / Horarios</th>
           </tr>
         </thead>
         <tbody>
           <% Corp::DAYS_OF_WEEK.each do |wday, day_name| %>
-            <% day_config = @corp.business_hours&.dig(wday) || { "active" => false, "open" => "09:00", "close" => "18:00" } %>
+            <% day_config = @corp.business_hours&.dig(wday) || { "active" => false, "hours" => [ { "open" => "09:00", "close" => "18:00" } ] } %>
             <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
+            <% hours_list = day_config["hours"].presence || [] %>
             <tr>
               <td><strong><%= day_name %></strong></td>
               <td>
@@ -239,8 +235,15 @@
                   <span class="tag is-rounded is-light">Cerrado</span>
                 <% end %>
               </td>
-              <td><%= is_active ? "#{day_config["open"]} Hrs" : "-" %></td>
-              <td><%= is_active ? "#{day_config["close"]} Hrs" : "-" %></td>
+              <td>
+                <% if is_active && hours_list.any? %>
+                  <% hours_list.each do |h| %>
+                    <span class="tag is-info is-light mr-1"><%= h["open"] %> – <%= h["close"] %></span>
+                  <% end %>
+                <% else %>
+                  <span class="has-text-grey">-</span>
+                <% end %>
+              </td>
             </tr>
           <% end %>
         </tbody>

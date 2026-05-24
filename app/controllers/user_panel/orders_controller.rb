@@ -30,6 +30,7 @@ class UserPanel::OrdersController < UserPanelController
   end
 
   def show
+    return redirect_back(fallback_location: user_panel_home_path, alert: "Venta no encontrada") if @order.carrito?
   end
 
   def new
@@ -187,6 +188,16 @@ class UserPanel::OrdersController < UserPanelController
   end
 
   def destroy
+    if !@order.cotizacion?
+      ## regresamos inventario
+      @order.line_items.each do |line|
+        item = line.item
+        if !item.stock.nil?
+          item.stock += line.cantidad
+          item.save
+        end
+      end
+    end
     @order.destroy
 
     redirect_to user_panel_orders_url, notice: "Venta eliminada exitosamente."

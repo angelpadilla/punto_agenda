@@ -212,7 +212,7 @@
                       options_for_select(Corp::SLOT_DURATION_OPTIONS, @corp.slot_duration || 15),
                       {},
                       { class: "select-time",
-                        data: { corp_setup_target: "slotDuration", action: "change->corp-setup#updateAllCloses" } } %>
+                        data: { corp_setup_target: "slotDuration" } } %>
                 </div>
               </div>
             </div>
@@ -224,14 +224,14 @@
               <tr>
                 <th>Día</th>
                 <th>Abierto</th>
-                <th>Apertura</th>
-                <th>Cierre</th>
+                <th>Slots / Rangos de horario</th>
               </tr>
             </thead>
             <tbody>
               <% Corp::DAYS_OF_WEEK.each do |wday, day_name| %>
                 <% day_config = @corp.business_hours&.dig(wday) || Corp::DEFAULT_BUSINESS_HOURS[wday] %>
                 <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
+                <% hours_list = day_config["hours"].presence || [ { "open" => "09:00", "close" => "18:00" } ] %>
                 <tr>
                   <td><strong><%= day_name %></strong></td>
                   <td>
@@ -241,43 +241,62 @@
                           class: "checkbox" %>
                   </td>
                   <td>
-                    <div class="select" data-corp-setup-target="selects" data-wday="<%= wday %>" data-type="open">
-                      <%= select_tag "corp[business_hours][#{wday}][open]",
-                            options_for_select(horas, day_config["open"]),
-                            disabled: !is_active, class: "select-time",
-                            data: { action: "change->corp-setup#updateClose" } %>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="select" data-corp-setup-target="selects" data-wday="<%= wday %>" data-type="close">
-                      <%= select_tag "corp[business_hours][#{wday}][close]",
-                            options_for_select(horas, day_config["close"]),
-                            disabled: !is_active, class: "select-time" %>
-                    </div>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+                    <div data-corp-setup-target="hoursContainer" data-wday="<%= wday %>">
+                      <button type="button" class="button is-small mb-1"
+                        data-action="corp-setup#addHour"
+                        data-corp-setup-wday-param="<%= wday %>"
+                        <%= is_active ? "" : "disabled" %>>
+                        + Agregar slot
+                      </button>
+                      <% hours_list.each_with_index do |hour, idx| %>
+                        <div class="hour-range is-flex is-align-items-center mb-1" data-wday="<%= wday %>" data-index="<%= idx %>">
+                        <div class="select is-small mr-1">
+                          <%= select_tag "corp[business_hours][#{wday}][hours][#{idx}][open]",
+                                  options_for_select(horas, hour["open"]),
+                                  disabled: !is_active, class: "select-time",
+                                  data: { action: "change->corp-setup#validateHourRange", corp_setup_wday_param: wday } %>
+                        </div>
+                        <span class="mx-1">–</span>
+                        <div class="select is-small mr-1">
+                          <%= select_tag "corp[business_hours][#{wday}][hours][#{idx}][close]",
+                                  options_for_select(horas, hour["close"]),
+                                  disabled: !is_active, class: "select-time",
+                                  data: { action: "change->corp-setup#validateHourRange", corp_setup_wday_param: wday } %>
+                        </div>
+                        <% if idx > 0 %>
+                          <button type="button" class="button is-small is-danger is-light ml-1"
+                                    data-action="corp-setup#removeHour"
+                                    data-corp-setup-wday-param="<%= wday %>"
+                                    data-corp-setup-index-param="<%= idx %>"
+                                    <%= is_active ? "" : "disabled" %>>✕</button>
+                          <% end %>
+                        </div>
+                          <% end %>
+                        </div>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <%# /step 3 %>
-    <%# ── Navigation buttons ───────────────────────────────────────── %>
-    <div class="field is-grouped is-justify-content-space-between mt-5">
-      <div class="control">
-        <button type="button" class="button is-rounded"
+        <%# /step 3 %>
+        <%# ── Navigation buttons ───────────────────────────────────────── %>
+        <div class="field is-grouped is-justify-content-space-between mt-5">
+          <div class="control">
+            <button type="button" class="button is-rounded"
                 data-corp-setup-target="prevBtn"
                 data-action="corp-setup#prev"
                 style="display:none">← Anterior</button>
-      </div>
-      <div class="control">
-        <button type="button" class="button is-rounded is-primary"
+          </div>
+          <div class="control">
+            <button type="button" class="button is-rounded is-primary"
                 data-corp-setup-target="nextBtn"
                 data-action="corp-setup#next">Siguiente →</button>
-      </div>
+          </div>
+        </div>
+      <% end %>
     </div>
-  <% end %>
-</div>
-<br>
-<br>
+    <br>
+    <br>

@@ -31,13 +31,13 @@ class Corp < ApplicationRecord
   }.freeze
 
   DEFAULT_BUSINESS_HOURS = {
-    "0" => { "active" => false, "open" => "09:00", "close" => "18:00" },
-    "1" => { "active" => true,  "open" => "09:00", "close" => "18:00" },
-    "2" => { "active" => true,  "open" => "09:00", "close" => "18:00" },
-    "3" => { "active" => true,  "open" => "09:00", "close" => "18:00" },
-    "4" => { "active" => true,  "open" => "09:00", "close" => "18:00" },
-    "5" => { "active" => true,  "open" => "09:00", "close" => "18:00" },
-    "6" => { "active" => false, "open" => "09:00", "close" => "18:00" }
+    "0" => { "active" => false, "hours" => [ { "open" => "09:00", "close" => "18:00" } ] },
+    "1" => { "active" => true,  "hours" => [ { "open" => "09:00", "close" => "18:00" } ] },
+    "2" => { "active" => true,  "hours" => [ { "open" => "09:00", "close" => "18:00" } ] },
+    "3" => { "active" => true,  "hours" => [ { "open" => "09:00", "close" => "18:00" } ] },
+    "4" => { "active" => true,  "hours" => [ { "open" => "09:00", "close" => "18:00" } ] },
+    "5" => { "active" => true,  "hours" => [ { "open" => "09:00", "close" => "18:00" } ] },
+    "6" => { "active" => false, "hours" => [ { "open" => "09:00", "close" => "18:00" } ] }
   }.freeze
 
   SLOT_DURATION_OPTIONS = [
@@ -79,6 +79,7 @@ class Corp < ApplicationRecord
   ## custom validator
   validate :facturacion_datos
   validate :key_pass_if_key_cer
+  validate :business_hours_no_overlap
   validates :cp, numericality: true, length: { is: 5 }, on: :update, if: :facturacion?
   validates :rfc, length: { in: 10..13 }, on: :update, if: :facturacion?
 
@@ -118,6 +119,42 @@ class Corp < ApplicationRecord
       true
     else
       false
+    end
+  end
+
+  def me_pueden_facturar?
+    if self.rfc.present? and self.razon.present? and self.regimen.present? and self.estado.present? and self.cp.present?
+      true
+    else
+      false
+    end
+  end
+
+  def business_hours_no_overlap
+    return if business_hours.blank?
+
+    business_hours.each do |wday, cfg|
+      next unless cfg.is_a?(Hash) && cfg["active"] == true
+      hours = cfg["hours"].presence || []
+      next if hours.size < 2
+
+      day_name = Corp::DAYS_OF_WEEK[wday] || "día #{wday}"
+      prev_close = nil
+
+      hours.each_with_index do |h, i|
+        open_mins  = h["open"].split(":").then  { |hr, m| hr.to_i * 60 + m.to_i }
+        close_mins = h["close"].split(":").then { |hr, m| hr.to_i * 60 + m.to_i }
+
+        if close_mins <= open_mins
+          errors.add(:business_hours, "#{day_name} slot #{i + 1}: la hora de cierre debe ser posterior a la de apertura")
+        end
+
+        if prev_close && open_mins < prev_close
+          errors.add(:business_hours, "#{day_name} slot #{i + 1}: la apertura (#{h['open']}) se solapa con el slot anterior")
+        end
+
+        prev_close = close_mins
+      end
     end
   end
 
@@ -211,21 +248,97 @@ class Corp < ApplicationRecord
   def working_day?(date)
     return false if business_hours.blank?
 
-    day_config = business_hours[date.wday.to_s]
+    day_config = business_hours[date.in_time_zone.to_date.wday.to_s]
     return false if day_config.nil?
 
     day_config["active"] == true
   end
 
+  ## Devuelve los slots configurados para un día específico, sin considerar reservas
+  # @param date [Date] fecha a evaluar
+  # @return [Array<Hash>] array de slots con formato { index: Integer, start: "HH:MM", end: "HH:MM" }
+  def slots_for_day(date)
+    return [] unless working_day?(date)
+
+    day_config = business_hours[date.in_time_zone.to_date.wday.to_s]
+    return [] if day_config.nil?
+
+    (day_config["hours"] || []).each_with_index.map do |h, i|
+      { index: i, start: h["open"], end: h["close"] }
+    end
+  end
+
+  ## Devuelve el numero total de slots disponibles para un día, sin considerar reservas
+  # @param date [Date] fecha a evaluar
+  # @return [Integer] número total de slots disponibles para ese día
   def slots_per_day(date)
-    return 0 unless working_day?(date)
+    slots_for_day(date).size
+  end
 
-    day_config = business_hours[date.wday.to_s]
-    return 0 if day_config.nil?
+  # Devuelve información de ocupación de slots para un día específico para toda la corp o un usuario (opcional, para mostrar disponibilidad personalizada)
+  # @param date [Date] fecha a evaluar
+  # @param user_id [Integer, nil] ID del usuario para filtrar disponibilidad personalizada
+  # @return [Hash, nil] hash con formato
+  #   { total: Integer, disponibles: Integer, ocupados: Integer, pct: Float, first_open: "HH:MM", last_close: "HH:MM",
+  #     # total = slots_del_día × num_agentes (capacidad real de citas)
+  #     slots: [
+  #       { index: Integer, start: "HH:MM", end: "HH:MM", fully_booked: Boolean, available_for_user: Boolean, agentes_libres: Integer, agentes_ocupados: Integer, booked_agent_ids: Array<Integer>, events: Array<Event> },
+  #     ]
+  #   },
+  # o nil si no es día laborable
+  def available_slots_for_day(date, user_id: nil)
+    all_slots = slots_for_day(date)
+    return nil if all_slots.empty?
 
-    open_time = DateTime.parse(day_config["open"])
-    close_time = DateTime.parse(day_config["close"])
-    ((close_time - open_time) / (slot_duration || 15).minutes).to_i
+    date = date.in_time_zone.to_date
+
+    booked_events = events.where(
+      hora_inicio: date.beginning_of_day..date.end_of_day,
+      status: [ :en_proceso, :completado ]
+    ).to_a
+
+    all_agent_ids    = users.pluck(:id)
+    filter_agent_ids = user_id.present? ? [ user_id ] : all_agent_ids
+    return nil if all_agent_ids.empty?
+
+    free_for = ->(uid, slot_start, slot_end) {
+      booked_events
+        .select { |ev| ev.user_id == uid }
+        .none?  { |ev| ev.hora_inicio < slot_end && ev.hora_final > slot_start }
+    }
+
+    enriched_slots = all_slots.map do |slot|
+      slot_start = Time.zone.parse("#{date} #{slot[:start]}")
+      slot_end   = Time.zone.parse("#{date} #{slot[:end]}")
+
+      # calcular estado por agente una sola vez para evitar llamadas repetidas a free_for
+      agent_free        = all_agent_ids.index_with { |uid| free_for.call(uid, slot_start, slot_end) }
+      fully_booked      = agent_free.values.none?
+      agentes_libres    = agent_free.count { |_, free| free }
+      agentes_ocupados  = all_agent_ids.size - agentes_libres
+      booked_agent_ids  = agent_free.filter_map { |uid, free| uid unless free }
+      available_for_user = filter_agent_ids.any? { |uid| agent_free[uid] }
+      slot_events       = booked_events.select { |ev| ev.hora_inicio < slot_end && ev.hora_final > slot_start }
+
+      slot.merge(fully_booked: fully_booked, available_for_user: available_for_user, agentes_libres: agentes_libres, agentes_ocupados: agentes_ocupados, booked_agent_ids: booked_agent_ids, events: slot_events)
+    end
+
+    total       = all_slots.size * all_agent_ids.size
+    disponibles = enriched_slots.sum { |s| s[:agentes_libres] }
+    ocupados    = enriched_slots.sum { |s| s[:agentes_ocupados] }
+
+    # porcentaje de ocupación del dia, redondeado a 1 decimal, evita división por cero
+    pct         = total > 0 ? (ocupados * 100.0 / total).round(1) : 0.0
+
+    {
+      total:       total,
+      disponibles: disponibles,
+      ocupados:    ocupados,
+      pct:         pct,
+      first_open:  all_slots.first[:start],
+      last_close:  all_slots.last[:end],
+      slots:       enriched_slots,
+    }
   end
 
   def slot_duration_label
@@ -235,14 +348,12 @@ class Corp < ApplicationRecord
   def to_fullcalendar_business_hours
     return [] if business_hours.blank?
 
-    business_hours.filter_map do |wday, config|
-      next unless config["active"] == true
+    business_hours.flat_map do |wday, config|
+      next [] unless config["active"] == true
 
-      {
-        daysOfWeek: [ wday.to_i ],
-        startTime: config["open"],
-        endTime: config["close"]
-      }
+      (config["hours"] || []).map do |h|
+        { daysOfWeek: [ wday.to_i ], startTime: h["open"], endTime: h["close"] }
+      end
     end
   end
 
@@ -282,6 +393,13 @@ class Corp < ApplicationRecord
 
     business_hours.each do |_wday, config|
       config["active"] = ActiveModel::Type::Boolean.new.cast(config["active"])
+
+      # hours may arrive as indexed hash from form params → convert to array
+      hours = config["hours"]
+      if hours.is_a?(Hash)
+        config["hours"] = hours.sort_by { |k, _| k.to_i }.map { |_, h| { "open" => h["open"].to_s, "close" => h["close"].to_s } }
+      end
+      config["hours"] = [ { "open" => "09:00", "close" => "18:00" } ] if config["hours"].blank?
     end
   end
 

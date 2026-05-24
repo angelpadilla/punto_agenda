@@ -16,18 +16,15 @@ const localeEs = {
 }
 
 export default class extends Controller {
-    static targets = ["diaHidden", "diaDisplay", "inicioHora", "finalHora"]
-    static values = { businessHours: Object, slotDuration: Number }
+    static targets = ["diaHidden", "diaDisplay", "slotSelect"]
+    static values = { businessHours: Object, currentSlot: String }
 
     connect() {
         this._initDatepicker()
 
-        // If editing an existing event, pre-filter the time selects
+        // If editing an existing event, populate slot options for the pre-selected day
         if (this.diaHiddenTarget.value) {
             this._applyBusinessHoursForDate(this.diaHiddenTarget.value)
-            if (this.inicioHoraTarget.value) {
-                this._restrictFinalHora(this.inicioHoraTarget.value)
-            }
         }
     }
 
@@ -36,12 +33,6 @@ export default class extends Controller {
             this._dp.destroy()
             this._dp = null
         }
-    }
-
-    inicioChanged() {
-        const selected = this.inicioHoraTarget.value
-        if (!selected) return
-        this._restrictFinalHora(selected)
     }
 
     // ── private ──────────────────────────────────────────────────────────────
@@ -75,7 +66,7 @@ export default class extends Controller {
             onSelect: ({ date }) => {
                 if (!date) {
                     this.diaHiddenTarget.value = ""
-                    this._resetHours()
+                    this._clearSlotSelect()
                     return
                 }
                 const yyyy = date.getFullYear()
@@ -84,8 +75,6 @@ export default class extends Controller {
                 const iso = `${yyyy}-${mm}-${dd}`
                 this.diaHiddenTarget.value = iso
                 this._applyBusinessHoursForDate(iso)
-                // Reset final when date changes
-                this.finalHoraTarget.value = ""
             }
         })
     }
@@ -93,103 +82,36 @@ export default class extends Controller {
     _applyBusinessHoursForDate(isoDate) {
         const wday = new Date(isoDate + "T00:00:00").getDay().toString()
         const cfg = this.businessHoursValue[wday]
-        if (!cfg || !cfg.active) return
 
-        const slotMins = this.slotDurationValue || 15
-        const openMins = this._toMinutes(cfg.open)
-        const closeMins = this._toMinutes(cfg.close)
-
-        // Generate slots anchored at the business open time (not midnight).
-        // e.g. open=9:30, slot=3hr → inicio slots: [9:30], final slots: [12:30]
-        const inicioSlots = []
-        for (let t = openMins; t < closeMins; t += slotMins) {
-            inicioSlots.push(this._minutesToTimeStr(t))
+        if (!cfg || !cfg.active || !cfg.hours || cfg.hours.length === 0) {
+            this._clearSlotSelect()
+            return
         }
 
-        const finalSlots = []
-        for (let t = openMins + slotMins; t <= closeMins; t += slotMins) {
-            finalSlots.push(this._minutesToTimeStr(t))
-        }
-        // Always include the close time in final options
-        const closeStr = this._minutesToTimeStr(closeMins)
-        if (!finalSlots.includes(closeStr)) {
-            finalSlots.push(closeStr)
-            finalSlots.sort((a, b) => this._toMinutes(this._to24h(a)) - this._toMinutes(this._to24h(b)))
-        }
+        // Each entry in hours is a slot: { open: "09:00", close: "11:00" }
+        const slots = cfg.hours.map(h => ({
+            label: `${h.open} – ${h.close}`,
+            value: `${h.open}|${h.close}`
+        }))
 
-        this._availableHoras = inicioSlots
-        this._availableHorasFinal = finalSlots
-
-        const prevInicio = this.inicioHoraTarget.value
-        const prevFinal = this.finalHoraTarget.value
-        this._rebuildSelect(this.inicioHoraTarget, inicioSlots, prevInicio)
-        this._rebuildSelect(this.finalHoraTarget, finalSlots, prevFinal)
+        // Determine pre-selection: currentSlot value (from editing) or empty
+        const preselect = this.currentSlotValue || ""
+        this._rebuildSlotSelect(slots, preselect)
     }
 
-    _restrictFinalHora(inicioVal) {
-        const inicioMins = this._toMinutes(this._to24h(inicioVal))
-        const source = this._availableHorasFinal || this._generateHoras()
-        const filtered = source.filter(h => this._toMinutes(this._to24h(h)) > inicioMins)
-        this._rebuildSelect(this.finalHoraTarget, filtered, this.finalHoraTarget.value)
+    _clearSlotSelect() {
+        this.slotSelectTarget.innerHTML = '<option value="">Selecciona primero el día</option>'
     }
 
-    _resetHours() {
-        const allHoras = this._generateHoras()
-        this._availableHoras = null
-        this._availableHorasFinal = null
-        this._rebuildSelect(this.inicioHoraTarget, allHoras, "")
-        this._rebuildSelect(this.finalHoraTarget, allHoras, "")
-    }
-
-    // Generates hours matching Ruby Time#strftime("%I:%M %p"): "12:00 AM" … "11:45 PM"
-    // Step is determined by corp.slot_duration (minutes).
-    _generateHoras() {
-        const step = this.slotDurationValue || 15
-        const horas = []
-        for (let totalMin = 0; totalMin < 24 * 60; totalMin += step) {
-            const h = Math.floor(totalMin / 60)
-            const m = totalMin % 60
-            const period = h < 12 ? "AM" : "PM"
-            const h12 = h % 12 === 0 ? 12 : h % 12
-            horas.push(`${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${period}`)
-        }
-        return horas
-    }
-
-    // "09:00 AM" → "09:00",  "01:00 PM" → "13:00"
-    _to24h(timeStr) {
-        const [time, period] = timeStr.split(" ")
-        let [h, m] = time.split(":").map(Number)
-        if (period === "PM" && h !== 12) h += 12
-        if (period === "AM" && h === 12) h = 0
-        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
-    }
-
-    // "09:30" → 570
-    _toMinutes(hhmm) {
-        const [h, m] = hhmm.split(":").map(Number)
-        return h * 60 + m
-    }
-
-    // 750 → "12:30 PM"
-    _minutesToTimeStr(totalMins) {
-        const h = Math.floor(totalMins / 60)
-        const m = totalMins % 60
-        const period = h < 12 ? "AM" : "PM"
-        const h12 = h % 12 === 0 ? 12 : h % 12
-        return `${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${period}`
-    }
-
-    _rebuildSelect(select, options, selected) {
-        const prompt = select.querySelector('option[value=""]')
-        const promptText = prompt ? prompt.textContent : "Selecciona hora"
-        select.innerHTML = `<option value="">${promptText}</option>`
-        options.forEach(h => {
+    _rebuildSlotSelect(slots, selectedValue) {
+        this.slotSelectTarget.innerHTML = '<option value="">Selecciona horario</option>'
+        slots.forEach(slot => {
             const opt = document.createElement("option")
-            opt.value = h
-            opt.textContent = h
-            if (h === selected) opt.selected = true
-            select.appendChild(opt)
+            opt.value = slot.value
+            opt.textContent = slot.label
+            if (slot.value === selectedValue) opt.selected = true
+            this.slotSelectTarget.appendChild(opt)
         })
     }
 }
+

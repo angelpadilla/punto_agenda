@@ -37,6 +37,23 @@ class UserPanel::CustomersController < UserPanelController
     end
   end
 
+  def create_from_event
+    token = Generatepass.gen(exclude_ambiguous: true, include_symbols: false, length: 8)
+    @customer = Customer.new(customer_params)
+    @customer.password = token
+    @customer.password_confirmation = token
+    @customer.passs = token
+
+    respond_to do |format|
+      if @customer.save
+        @corp.corp_customers.create(customer: @customer, source: :manual)
+        format.turbo_stream
+      else
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("customer-form-errors", partial: "user_panel/customers/form_errors", locals: { customer: @customer }) }
+      end
+    end
+  end
+
   def update
     respond_to do |format|
       if @customer.update(customer_params)

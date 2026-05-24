@@ -54,7 +54,7 @@ html {
     --gray: #313131;
     --light-gray: #d1d5da;
     --gray-text: #a1a1a1;
-    --neon-green: #a8fb22;
+    --neon-green: #64ED92;
     --green2: #222b15;
     --green3: #4b6c17;
     --warning: #ffdd91;
@@ -375,7 +375,9 @@ html {
     /* color: white !important; */
 }
 
-.progress.is-success {
+.progress.is-success,
+.progress.is-neon,
+.progress.is-primary {
     --bulma-progress-value-background-color: var(--neon-green) !important;
 }
 
@@ -496,7 +498,7 @@ a.link {
     justify-content: space-between;
 }
 
-.justify-center {
+.horizontal-center {
     justify-content: center;
 }
 
@@ -1324,7 +1326,7 @@ div.navbar-dropdown {
     table {
         width: 100%;
         height: 70dvh;
-        background: var(--dark) !important;
+        /* background: var(--dark) !important; */
         border-radius: 1.7rem;
         color: var(--light-gray) !important;
         box-shadow: none;
@@ -1338,14 +1340,66 @@ div.navbar-dropdown {
     .day {
         width: 15rem;
         text-align: center;
-        border-bottom: 1px solid #333;
-        border-right: 1px solid #333;
-        padding: 0;
+        border-bottom: 1px solid #222;
+        border-right: 1px solid #222;
+        padding: 0 5px;
         vertical-align: top !important;
 
         &:nth-child(7n) {
             border-right: none;
             /* border-bottom: none; */
+        }
+
+        &.today {
+            background: rgba(60, 229, 18, 0.03);
+
+            &.not-working-day {
+                background: repeating-linear-gradient(-45deg,
+                        transparent,
+                        transparent 8px,
+                        rgba(60, 229, 18, 0.33) 8px,
+                        rgba(60, 229, 18, 0.03) 10px);
+            }
+
+            .day_number {
+                /* background-color: var(--neon-green) !important;
+                color: var(--dark) !important;
+                border-radius: 999px; */
+                border: none;
+                margin-top: 2px;
+
+                img {
+                    /* filter: invert(0); */
+                }
+            }
+        }
+
+        &.not-working-day {
+            background: repeating-linear-gradient(-45deg,
+                    transparent,
+                    transparent 8px,
+                    rgba(255, 119, 0, 0.15) 8px,
+                    rgba(255, 119, 0, 0.15) 10px);
+        }
+
+
+        .day_number {
+            /* margin-top: 10px; */
+            font-size: 1.5rem;
+            border: 1px solid var(--black);
+            padding: 0 10px 10px 10px;
+            gap: 5px;
+
+            &:hover {
+                color: var(--neon-green);
+                border: 1px solid var(--gray);
+                border-radius: var(--radius);
+            }
+
+            progress {
+                width: 70%;
+                height: 0.3rem;
+            }
         }
     }
 
@@ -1366,20 +1420,6 @@ div.navbar-dropdown {
         border-bottom: none;
     }
 
-    .day.today {
-        .today_number {
-            background-color: var(--neon-green) !important;
-            color: var(--dark) !important;
-            padding: 0.25rem 0.5rem;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 999px;
-            display: inline-block;
-        }
-
-        /* background-color: var(--neon-green) !important;
-        color: var(--dark) !important; */
-    }
 
     .day.event {
         background-color: var(--warning) !important;
@@ -1388,22 +1428,22 @@ div.navbar-dropdown {
 }
 
 .event_snippet {
-    /* background-color: var(--warning); */
-    /* border: 1px solid var(--gray); */
+    background-color: var(--black);
+    border: 1px solid var(--gray);
     border-radius: var(--radius);
     text-align: left;
-    padding: 5px 15px;
+    padding: 20px 15px;
     color: var(--light-gray);
     font-size: small;
     color: var(--white);
     display: block;
     width: 100%;
     cursor: pointer;
-    /* margin-top: 5px; */
+    margin: 10px 0;
 
     &:hover {
-        background-color: var(--neon-green) !important;
-        color: var(--dark) !important;
+        background-color: var(--dark) !important;
+        color: var(--white) !important;
     }
 
     .circle {
@@ -1427,6 +1467,7 @@ div.navbar-dropdown {
     .snippet_body {
         display: inline-block;
         vertical-align: middle;
+        margin-top: 5px;
     }
 
 

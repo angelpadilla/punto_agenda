@@ -13,12 +13,16 @@ class BillItem < ApplicationRecord
   validates :iva, inclusion: { in: IVAS.map(&:last), message: "no es un valor válido" }
 
   ## totales de linea
-  def descuento_total
-    self.descuento * self.cantidad
+  # def descuento_total
+  #   self.descuento * self.cantidad
+  # end
+
+  def total_antes_descuento
+    self.precio * self.cantidad
   end
 
   def total
-    (self.precio * self.cantidad) - self.descuento_total
+    (self.precio * self.cantidad) - self.descuento
   end
 
   def subtotal

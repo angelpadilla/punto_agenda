@@ -22,6 +22,21 @@ class Setting < ApplicationRecord
 
   normalizes :rfc, with: ->(e) { e.strip.upcase }
 
+  PlanPrices = {
+    basico: {
+      name: "Plan Básico - $590/mes",
+      price: 590.0,
+    },
+    plus: {
+      name: "Plan Plus - $790/mes",
+      price: 790.0,
+    },
+    premium: {
+      name: "Plan Premium - $990/mes",
+      price: 990.0,
+    }
+  }.freeze
+
   def full_name
     "#{razon} #{rfc}"
   end

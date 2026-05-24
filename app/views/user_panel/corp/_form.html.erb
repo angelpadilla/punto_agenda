@@ -153,7 +153,7 @@
               <%= form.select :slot_duration,
                   options_for_select(Corp::SLOT_DURATION_OPTIONS, corp.slot_duration || 15),
                   {},
-                  { class: "select-time", data: { form_corp_target: "slotDuration", action: "change->form-corp#updateAllCloses" } } %>
+                  { class: "select-time", data: { form_corp_target: "slotDuration" } } %>
             </div>
           </div>
         </div>
@@ -165,14 +165,14 @@
           <tr>
             <th>Día</th>
             <th>Abierto</th>
-            <th>Apertura</th>
-            <th>Cierre</th>
+            <th>Slots / Rangos de horario</th>
           </tr>
         </thead>
         <tbody>
           <% Corp::DAYS_OF_WEEK.each do |wday, day_name| %>
-            <% day_config = corp.business_hours&.dig(wday) || { "active" => false, "open" => "09:00", "close" => "18:00" } %>
+            <% day_config = corp.business_hours&.dig(wday) || { "active" => false, "hours" => [ { "open" => "09:00", "close" => "18:00" } ] } %>
             <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
+            <% hours_list = day_config["hours"].presence || [ { "open" => "09:00", "close" => "18:00" } ] %>
             <tr>
               <td><strong><%= day_name %></strong></td>
               <td>
@@ -182,103 +182,123 @@
                       class: "checkbox" %>
               </td>
               <td>
-                <div class="select" data-form-corp-target="selects" data-wday="<%= wday %>" data-type="open">
-                  <%= select_tag "corp[business_hours][#{wday}][open]",
-                        options_for_select(horas, day_config["open"]),
-                        disabled: !is_active, class: "select-time",
-                        data: { action: "change->form-corp#updateClose" } %>
-                </div>
-              </td>
-              <td>
-                <div class="select" data-form-corp-target="selects" data-wday="<%= wday %>" data-type="close">
-                  <%= select_tag "corp[business_hours][#{wday}][close]",
-                        options_for_select(horas, day_config["close"]),
-                        disabled: !is_active, class: "select-time" %>
-                </div>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="box expandable is_active mt-4">
-    <div class="box_header">
-      <h2>
-        <span class="icon mr-2">
-          <%= image_tag 'direcciones.svg', alt: "Social", class: "invert" %>
-        </span>
-        Social
-      </h2>
-      <span class="icon toggle_icon">
-        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
-      </span>
-    </div>
-    <div class="box_content">
-      <div class="columns is-multiline is-mobile">
-        <%= t_field(form, :facebook_url, label: "Facebook URL", placeholder: "Ej. https://facebook.com/miempresa", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= t_field(form, :instagram_url, label: "Instagram URL", placeholder: "Ej. https://instagram.com/miempresa", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= t_field(form, :tiktok_url, label: "TikTok URL", placeholder: "Ej. https://tiktok.com/@miempresa", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-      </div>
-    </div>
-  </div>
-  <div class="box expandable is_active mt-4">
-    <div class="box_header">
-      <h2>
-        <span class="icon mr-2">
-          <%= image_tag 'sat2.svg', alt: "Datos fiscales" %>
-        </span>
-        Datos fiscales
-      </h2>
-      <span class="icon toggle_icon">
-        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
-      </span>
-    </div>
-    <div class="box_content">
-      <div class="columns is-multiline is-mobile">
-        <%= t_field(form, :razon, label: "Razon fiscal", placeholder: "Ej. Mi Empresa S.A. de C.V.") %>
-        <%= s_field(form, :regimen, options: Corp::RegimenFiscales, label: "Regimen fiscal", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= t_field(form, :rfc, label: "RFC", placeholder: "Ej. XAXX010101000", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= s_field(form, :estado, options: Corp::States, label: "Estado", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= t_field(form, :ciudad, label: "Ciudad", placeholder: "Ej. Ciudad de México", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= t_field(form, :cp, label: "Código Postal", placeholder: "Ej. 01234", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= t_field(form, :colonia, label: "Colonia", placeholder: "Ej. Colonia Centro", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-        <%= t_field(form, :localidad, label: "Localidad", placeholder: "Ej. Localidad Ejemplo", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
-      </div>
-      <div class="columns is-multiline is-mobile">
-        <%= t_field(form, :calle, label: "Calle", placeholder: "Ej. Calle Falsa", clas: "field column is-12-mobile is-6-tablet is-8-desktop") %>
-        <%= t_field(form, :num_ext, label: "Número Exterior", placeholder: "Ej. 123", clas: "field column is-3-tablet is-2-desktop") %>
-        <%= t_field(form, :num_int, label: "Número Interior", placeholder: "Ej. 456", clas: "field column is-3-tablet is-2-desktop") %>
-      </div>
-      <div class="columns is-multiline is-mobile">
-        <%= t_field(form, :key_pass, label: "Contraseña de la llave", placeholder: "Ej. XAXX010101000", clas: "field column is-12") %>
-        <div class="column is-12-mobile is-6-tablet is-6-desktop">
-          <div class="doc_input">
-            <div class="doc_file_name"></div>
-            <div class="doc_file_size"></div>
-            <%= form.file_field :cer, class: "doc_file_field", accept: ".cer", data: { action: "change->form-corp#previewDoc" } %>
-            <span class="doc_action">Seleccionar archivo .cer</span>
-          </div>
+                <div data-form-corp-target="hoursContainer" data-wday="<%= wday %>">
+                  <button type="button" class="button is-small mb-1"
+                    data-action="form-corp#addHour"
+                    data-form-corp-wday-param="<%= wday %>"
+                    <%= is_active ? "" : "disabled" %>>
+                    + Agregar slot
+                  </button>
+                  <% hours_list.each_with_index do |hour, idx| %>
+                    <div class="hour-range is-flex is-align-items-center mb-1" data-wday="<%= wday %>" data-index="<%= idx %>">
+                    <div class="select is-small mr-1">
+                      <%= select_tag "corp[business_hours][#{wday}][hours][#{idx}][open]",
+                              options_for_select(horas, hour["open"]),
+                              disabled: !is_active, class: "select-time",
+                              data: { action: "change->form-corp#validateHourRange", form_corp_wday_param: wday } %>
+                    </div>
+                    <span class="mx-1">–</span>
+                    <div class="select is-small mr-1">
+                      <%= select_tag "corp[business_hours][#{wday}][hours][#{idx}][close]",
+                              options_for_select(horas, hour["close"]),
+                              disabled: !is_active, class: "select-time",
+                              data: { action: "change->form-corp#validateHourRange", form_corp_wday_param: wday } %>
+                    </div>
+                    <% if idx > 0 %>
+                      <button type="button" class="button is-small is-danger is-light ml-1"
+                                data-action="form-corp#removeHour"
+                                data-form-corp-wday-param="<%= wday %>"
+                                data-form-corp-index-param="<%= idx %>"
+                                <%= is_active ? "" : "disabled" %>>✕
+                        </button>
+                      <% end %>
+                    </div>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
         </div>
-        <div class="column is-12-mobile is-6-tablet is-6-desktop">
-          <div class="doc_input">
-            <div class="doc_file_name"></div>
-            <div class="doc_file_size"></div>
-            <%= form.file_field :key, class: "doc_file_field", accept: ".key", data: { action: "change->form-corp#previewDoc" } %>
-            <span class="doc_action">Seleccionar archivo .key</span>
+      </div>
+      <div class="box expandable is_active mt-4">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'direcciones.svg', alt: "Social", class: "invert" %>
+            </span>
+            Social
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :facebook_url, label: "Facebook URL", placeholder: "Ej. https://facebook.com/miempresa", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :instagram_url, label: "Instagram URL", placeholder: "Ej. https://instagram.com/miempresa", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :tiktok_url, label: "TikTok URL", placeholder: "Ej. https://tiktok.com/@miempresa", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="field is-grouped is-justify-content-space-between mt-5">
-    <div class="control">
-      <%= link_to "Cancelar", user_corp_path, class: "button is-rounded" %>
-    </div>
-    <div class="control">
-      <%= form.submit "Guardar", class: "button is-rounded is-primary" %>
-    </div>
-  </div>
-<% end %>
-<br>
-<br>
+      <div class="box expandable is_active mt-4">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'sat2.svg', alt: "Datos fiscales" %>
+            </span>
+            Datos fiscales
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :razon, label: "Razon fiscal", placeholder: "Ej. Mi Empresa S.A. de C.V.") %>
+            <%= s_field(form, :regimen, options: Corp::RegimenFiscales, label: "Regimen fiscal", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :rfc, label: "RFC", placeholder: "Ej. XAXX010101000", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= s_field(form, :estado, options: Corp::States, label: "Estado", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :ciudad, label: "Ciudad", placeholder: "Ej. Ciudad de México", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :cp, label: "Código Postal", placeholder: "Ej. 01234", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :colonia, label: "Colonia", placeholder: "Ej. Colonia Centro", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+            <%= t_field(form, :localidad, label: "Localidad", placeholder: "Ej. Localidad Ejemplo", clas: "field column is-12-mobile is-6-tablet is-4-desktop") %>
+          </div>
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :calle, label: "Calle", placeholder: "Ej. Calle Falsa", clas: "field column is-12-mobile is-6-tablet is-8-desktop") %>
+            <%= t_field(form, :num_ext, label: "Número Exterior", placeholder: "Ej. 123", clas: "field column is-3-tablet is-2-desktop") %>
+            <%= t_field(form, :num_int, label: "Número Interior", placeholder: "Ej. 456", clas: "field column is-3-tablet is-2-desktop") %>
+          </div>
+          <div class="columns is-multiline is-mobile">
+            <%= t_field(form, :key_pass, label: "Contraseña de la llave", placeholder: "Ej. XAXX010101000", clas: "field column is-12") %>
+            <div class="column is-12-mobile is-6-tablet is-6-desktop">
+              <div class="doc_input">
+                <div class="doc_file_name"></div>
+                <div class="doc_file_size"></div>
+                <%= form.file_field :cer, class: "doc_file_field", accept: ".cer", data: { action: "change->form-corp#previewDoc" } %>
+                <span class="doc_action">Seleccionar archivo .cer</span>
+              </div>
+            </div>
+            <div class="column is-12-mobile is-6-tablet is-6-desktop">
+              <div class="doc_input">
+                <div class="doc_file_name"></div>
+                <div class="doc_file_size"></div>
+                <%= form.file_field :key, class: "doc_file_field", accept: ".key", data: { action: "change->form-corp#previewDoc" } %>
+                <span class="doc_action">Seleccionar archivo .key</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped is-justify-content-space-between mt-5">
+        <div class="control">
+          <%= link_to "Cancelar", user_corp_path, class: "button is-rounded" %>
+        </div>
+        <div class="control">
+          <%= form.submit "Guardar", class: "button is-rounded is-primary" %>
+        </div>
+      </div>
+    <% end %>
+    <br>
+    <br>

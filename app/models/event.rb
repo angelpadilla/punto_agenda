@@ -3,9 +3,13 @@ class Event < ApplicationRecord
   belongs_to :corp
   belongs_to :user, optional: true
 
-  enum :status, pendiente: 0, completado: 1, cancelado: 2
+  enum :status, en_proceso: 0, completado: 1, cancelado: 2, por_confirmar: 3, ausencia: 4
+  enum :canal, interno: 0, web: 1
 
   scope :default, -> { order(hora_inicio: :desc) }
+  scope :upcoming, -> { where("hora_inicio >= ?", DateTime.now) }
+  scope :past, -> { where("hora_inicio < ?", DateTime.now) }
+  scope :indexx, -> { default.where.not(status: :cancelado) }
   scope :today, -> { where(hora_inicio: DateTime.now.beginning_of_day..DateTime.now.end_of_day) }
 
   validates :title, presence: { message: "El título es requerido" }
@@ -21,7 +25,7 @@ class Event < ApplicationRecord
   def no_overlap_events
     return if hora_inicio.blank? || hora_final.blank? || corp.blank?
 
-    overlapping_events = Event.where(corp_id: corp_id, user_id: user_id, status: [:pendiente, :completado])
+    overlapping_events = Event.where(corp_id: corp_id, user_id: user_id, status: [:en_proceso, :completado])
                               .where.not(id: id)
                               .where("hora_inicio < ? AND hora_final > ?", hora_final, hora_inicio)
 
@@ -41,7 +45,7 @@ class Event < ApplicationRecord
   end
 
   def self.due_today
-    where(hora_inicio: DateTime.now.beginning_of_day..DateTime.now.end_of_day, status: :pendiente)
+    where(hora_inicio: DateTime.now.beginning_of_day..DateTime.now.end_of_day, status: :en_proceso)
   end
 
   before_create :set_folio

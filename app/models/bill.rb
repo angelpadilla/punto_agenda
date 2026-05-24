@@ -104,7 +104,7 @@ class Bill < ApplicationRecord
     self.total = self.bill_items.sum { |item| item.total }
     self.subtotal = self.bill_items.sum { |item| item.subtotal }
     self.impuestos = self.bill_items.sum { |item| item.iva_total }
-    self.descuento = self.bill_items.sum { |item| item.descuento_total }
+    self.descuento = self.bill_items.sum { |item| item.descuento }
     self.costo = self.bill_items.sum { |item| item.costo_total }
     self.ganancia = self.total - self.costo
   end

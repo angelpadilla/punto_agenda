@@ -58,10 +58,16 @@
         <%= image_tag 'calendar2.svg', class: "invert", alt: "Totales" %>
       </span>
       <span class="titlee"><%= @event.title %></span>
-      <% if @event.pendiente? %>
-        <span class="tag is-rounded is-warning"><%= @event.status&.titleize %></span>
+      <% if @event.en_proceso? %>
+        <span class="tag is-rounded"><%= @event.status&.titleize %></span>
       <% elsif @event.completado? %>
         <span class="tag is-rounded is-success"><%= @event.status&.titleize %></span>
+      <% elsif @event.cancelado? %>
+        <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
+      <% elsif @event.ausencia? %>
+        <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
+      <% elsif @event.por_confirmar? %>
+        <span class="tag is-rounded is-warning"><%= @event.status&.titleize %></span>
       <% else %>
         <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
       <% end %>

@@ -1,0 +1,55 @@
+<% content_for :title, "Detalle de factura" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle</h2>
+  <div class="actions">
+    <%= link_to bills_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <% if !@bill.timbre? and @corp.me_pueden_facturar? %>
+      <button class="mtrigger button is-rounded" data-target="timbraa">
+        <span class="icon mr-2">
+          <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
+        </span>
+        Timbra
+      </button>
+    <% end %>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to bill_path(@bill, format: :pdf), target: '_blank', class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+            </span>
+            PDF
+          <% end %>
+          <% if @bill.factura? and @bill.xml.present? %>
+            <%= link_to bill_path(@bill, format: :xml), class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
+              </span>
+              XML
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<% if @bill.nota_for_corp.present? %>
+  <div class="noti is-danger mt-4">
+    <p>
+      <%= @bill.nota_for_corp %>
+    </p>
+  </div>
+<% end %>

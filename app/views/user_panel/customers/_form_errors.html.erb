@@ -1,0 +1,10 @@
+<% if @customer.errors.any? %>
+  <div class="notification is-danger">
+    <h2 class="subtitle"><%= pluralize(@customer.errors.count, "error", "errores") %> impidieron que este cliente se guardara:</h2>
+    <ul>
+      <% @customer.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

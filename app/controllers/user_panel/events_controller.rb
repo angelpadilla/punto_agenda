@@ -43,12 +43,12 @@ class UserPanel::EventsController < UserPanelController
   end
 
   def monthly
-    @events = @corp.events
+    @events = @corp.events.indexx
 
     @q = @events.ransack(params[:q])
   end
   def weekly
-    @events = @corp.events
+    @events = @corp.events.indexx
 
     @q = @events.ransack(params[:q])
   end
@@ -80,43 +80,27 @@ class UserPanel::EventsController < UserPanelController
 
     ## validaciones extras
     unless params[:event][:dia].present?
-      @event.errors.add(:dia, "Duracion del evento es requerida")
+      @event.errors.add(:dia, "Día del evento es requerido")
       return render :new, status: :unprocessable_entity
     end
 
-    unless params[:event][:inicio_hora].present?
-      @event.errors.add(:inicio_hora, "Hora de inicio del evento es requerida")
+    unless params[:event][:slot].present?
+      @event.errors.add(:slot, "El horario (slot) es requerido")
       return render :new, status: :unprocessable_entity
     end
-
-    unless params[:event][:final_hora].present?
-      @event.errors.add(:final_hora, "Hora final del evento es requerida")
-      return render :new, status: :unprocessable_entity
-    end
-
 
     unless params[:event][:user_id].present?
       @event.user_id = current_user.id
     end
 
-    ## parse hours and minutes in format HH:MM
     fecha = params[:event][:dia]
-    inicio = params[:event][:inicio_hora]
-    fin = params[:event][:final_hora]
+    slot  = params[:event][:slot]  # "09:00|11:00"
 
-    if fecha.present?
-      # Convierte la cadena "YYYY-MM-DD 08:30 AM" a DateTime de Rails
-      # @event.hora_inicio = Time.zone.parse("#{fecha} #{inicio}") if inicio.present?
-      # @event.hora_final = Time.zone.parse("#{fecha} #{fin}") if fin.present?
-
+    if fecha.present? && slot.present?
+      inicio, fin = slot.split("|")
       tz = ActiveSupport::TimeZone["America/Mexico_City"]
       @event.hora_inicio = tz.parse("#{fecha} #{inicio}") if inicio.present?
-      @event.hora_final = tz.parse("#{fecha} #{fin}") if fin.present?
-
-      if @event.hora_inicio.present? && @event.hora_final.present? && @event.hora_final <= @event.hora_inicio
-        @event.errors.add(:final_hora, "Hora final debe ser posterior a la hora de inicio")
-        return render :new, status: :unprocessable_entity
-      end
+      @event.hora_final  = tz.parse("#{fecha} #{fin}")   if fin.present?
     end
 
     ## validar que un evento no se repita en el mismo rango de tiempo en la misma Corp
@@ -141,33 +125,33 @@ class UserPanel::EventsController < UserPanelController
     @event = @corp.events.find(params[:id])
     customer = @event.customer
     respond_to do |format|
-      if @event.pendiente?
+      if @event.en_proceso?
         @event.update(status: :completado)
         customer.update(success_events: customer.success_events + 1) if customer
 
         format.html { redirect_back fallback_location: events_path, notice: "Evento marcado como asistida.", status: :see_other }
         format.json { render :show, status: :ok, location: @event }
       else
-        format.html { redirect_back fallback_location: events_path, alert: "Solo se pueden marcar como asistida los eventos pendientes.", status: :see_other }
-        format.json { render json: { error: "Solo se pueden marcar como asistida los eventos pendientes." }, status: :unprocessable_entity }
+        format.html { redirect_back fallback_location: events_path, alert: "Solo se pueden marcar como asistida los eventos en proceso.", status: :see_other }
+        format.json { render json: { error: "Solo se pueden marcar como asistida los eventos en proceso." }, status: :unprocessable_entity }
       end
     end
   end
 
   def marcar_ausencia
-    ## cambiar el estado del evento a cancelado
+    ## cambiar el estado del evento a ausencia
     @event = @corp.events.find(params[:id])
     customer = @event.customer
     respond_to do |format|
-      if  @event.pendiente?
-        @event.update(status: :cancelado)
+      if  @event.en_proceso?
+        @event.update(status: :ausencia)
         customer.update(failed_events: customer.failed_events + 1) if customer
 
         format.html { redirect_back fallback_location: events_path, notice: "Evento marcado como ausente.", status: :see_other }
         format.json { render :show, status: :ok, location: @event }
       else
-        format.html { redirect_back fallback_location: events_path, alert: "Solo se pueden marcar como ausente los eventos pendientes.", status: :see_other }
-        format.json { render json: { error: "Solo se pueden marcar como ausente los eventos pendientes." }, status: :unprocessable_entity }
+        format.html { redirect_back fallback_location: events_path, alert: "Solo se pueden marcar como ausente los eventos en proceso.", status: :see_other }
+        format.json { render json: { error: "Solo se pueden marcar como ausente los eventos en proceso." }, status: :unprocessable_entity }
       end
     end
   end
@@ -176,43 +160,27 @@ class UserPanel::EventsController < UserPanelController
     @event.assign_attributes(event_params)
     ## validaciones extras
     unless params[:event][:dia].present?
-      @event.errors.add(:dia, "Duracion del evento es requerida")
-      return render :new, status: :unprocessable_entity
+      @event.errors.add(:dia, "Día del evento es requerido")
+      return render :edit, status: :unprocessable_entity
     end
 
-    unless params[:event][:inicio_hora].present?
-      @event.errors.add(:inicio_hora, "Hora de inicio del evento es requerida")
-      return render :new, status: :unprocessable_entity
+    unless params[:event][:slot].present?
+      @event.errors.add(:slot, "El horario (slot) es requerido")
+      return render :edit, status: :unprocessable_entity
     end
-
-    unless params[:event][:final_hora].present?
-      @event.errors.add(:final_hora, "Hora final del evento es requerida")
-      return render :new, status: :unprocessable_entity
-    end
-
 
     unless params[:event][:user_id].present?
       @event.user_id = current_user.id
     end
 
-    ## parse hours and minutes in format HH:MM
     fecha = params[:event][:dia]
-    inicio = params[:event][:inicio_hora]
-    fin = params[:event][:final_hora]
+    slot  = params[:event][:slot]
 
-    if fecha.present?
-      # Convierte la cadena "YYYY-MM-DD 08:30 AM" a DateTime de Rails
-      # @event.hora_inicio = Time.zone.parse("#{fecha} #{inicio}") if inicio.present?
-      # @event.hora_final = Time.zone.parse("#{fecha} #{fin}") if fin.present?
-
+    if fecha.present? && slot.present?
+      inicio, fin = slot.split("|")
       tz = ActiveSupport::TimeZone["America/Mexico_City"]
       @event.hora_inicio = tz.parse("#{fecha} #{inicio}") if inicio.present?
-      @event.hora_final = tz.parse("#{fecha} #{fin}") if fin.present?
-
-      if @event.hora_inicio.present? && @event.hora_final.present? && @event.hora_final <= @event.hora_inicio
-        @event.errors.add(:final_hora, "Hora final debe ser posterior a la hora de inicio")
-        return render :new, status: :unprocessable_entity
-      end
+      @event.hora_final  = tz.parse("#{fecha} #{fin}")   if fin.present?
     end
 
 
@@ -291,8 +259,6 @@ class UserPanel::EventsController < UserPanelController
     params.expect(event: [
       :title,
       :body,
-      :hora_inicio,
-      :hora_final,
       :customer_id,
       :user_id
     ])

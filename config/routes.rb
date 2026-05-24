@@ -25,7 +25,7 @@ Rails.application.routes.draw do
     get ":folio/ticket", to: "public#ticket", as: :ticket
     get ":folio/abono_pdf", to: "public#pdf_abono", as: :pdf_abono
     get ":folio/abono_ticket", to: "public#ticket_abono", as: :ticket_abono
-    get ":folio/abono_xml", to: "public#abono_xml", as: :abono_xml
+    post ":folio/abono_xml", to: "public#abono_xml", as: :abono_xml
     post ":folio/ticket_xml", to: "public#ticket_xml", as: :ticket_xml
   end
 
@@ -47,6 +47,10 @@ Rails.application.routes.draw do
     end
 
     resources :bills, controller: "user_panel/bills", only: %i[index show] do
+      member do
+        # get :bill_pdf, as: :pdf
+        # post :bill_xml, as: :xml
+      end
     end
 
     ## user_panel/items_controller.rb
@@ -55,7 +59,11 @@ Rails.application.routes.draw do
         get :search_sat_products
       end
     end
-    resources :customers, controller: "user_panel/customers"
+    resources :customers, controller: "user_panel/customers" do 
+      collection do 
+        post :create_from_event
+      end
+    end
     resources :providers, controller: "user_panel/providers"
     resources :events, controller: "user_panel/events" do
       collection do

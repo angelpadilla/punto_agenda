@@ -165,25 +165,23 @@ class UserPanelController < ApplicationController
     cfg = bh[date.wday.to_s]
     return nil unless cfg && ActiveModel::Type::Boolean.new.cast(cfg["active"])
 
-    open_h,  open_m  = cfg["open"].split(":").map(&:to_i)
-    close_h, close_m = cfg["close"].split(":").map(&:to_i)
-    step = @corp.slot_duration || 15
+    hours = cfg["hours"].presence || []
+    return nil if hours.empty?
 
-    total_min = close_h * 60 + close_m - (open_h * 60 + open_m)
-    total     = (total_min.to_f / step).floor
-    return nil if total <= 0
-
-    booked = @corp.events
-                  .where(hora_inicio: date.beginning_of_day..date.end_of_day)
-                  .where.not(status: :cancelado)
-                  .count
-
+    total     = hours.size
+    booked    = @corp.events
+                     .where(hora_inicio: date.beginning_of_day..date.end_of_day)
+                     .where.not(status: :cancelado)
+                     .count
     occupied  = [ booked, total ].min
     available = [ total - occupied, 0 ].max
     pct       = (occupied * 100.0 / total).round
 
+    first_open  = hours.first["open"]
+    last_close  = hours.last["close"]
+
     { total: total, disponibles: available, ocupados: occupied, pct: pct,
-      open: cfg["open"], close: cfg["close"] }
+      open: first_open, close: last_close, ranges: hours.size }
   end
 
   def authorize_corp!

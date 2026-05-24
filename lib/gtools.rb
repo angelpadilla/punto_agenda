@@ -23,12 +23,12 @@ module Gtools
 
   def self.telegram_noti(message:)
     message = message.to_s
-    puts "---- Notificando al admin por Telegram"
+    puts "💬 Notificando al admin por Telegram"
 
     bot = Telegram::Bot::Client.new(Rails.application.credentials.dig(:telegram, :bot_token))
     bot.send_message(chat_id: Rails.application.credentials.dig(:telegram, :admin_id), text: message)
   rescue Telegram::Bot::Error => e
-    puts "--- Telegram error: #{e}"
+    puts "🚫 Telegram error: #{e}"
   end
 
   def self.stripe_fee(monto, internacional: false)
@@ -40,53 +40,56 @@ module Gtools
   def self.do_dummy_bill(corp_id:)
     corp = Corp.find(corp_id)
     noww = DateTime.current.strftime("%d %b %I:%M %p")
-    monto = 100.0
+    monto = Setting::PlanPrices[corp.tipo_plan.to_sym][:price]
+    descuento = corp.discount
     bill = nil
     line = nil
     internacional = corp.card_country.present? && corp.card_country != "MX"
     ActiveRecord::Base.transaction do
-      bill = Bill.create(
+      bill = Bill.new(
         corp_id: corp_id,
         tipo: "remision",
         forma_pago: :tarjeta_de_debito,
         moneda: "mxn",
         status_pago: "pendiente",
       )
-      line = bill.bill_items.create(
-        bill: bill,
+      line =  BillItem.new(
         cantidad: 1,
         nombre: "Servicio de prueba",
         precio: monto,
+        descuento: descuento,
         iva: 16.0,
         costo: self.stripe_fee(monto, internacional: internacional)
       )
+      bill.bill_items << line
       bill.save
     end
-    
-    puts "--- Bill total para factura dummy: #{bill.total}"
-    
+
+    puts "🧾 Bill total: #{bill.total}"
+    puts "🧾 Bill line_items: #{bill.bill_items.count}"
+
     response = self.stripe_payment(amount: bill.total, corp: corp, desc: "Pago de prueba para factura dummy fecha: #{noww}, folio: #{bill.folio}")
     if response[:success]
       bill.update(status_pago: "pagado")
       line.update(stripe_payment_intent_id: response[:body].id)
       self.telegram_noti(message: "Creando factura de prueba para Corp #{corp_id}, folio: #{bill.folio}, fecha: #{noww}")
-      puts "--- Factura dummy creada para Corp #{corp_id} con pago Stripe exitoso"
+      puts "🧾 Factura dummy creada para Corp #{corp_id} con pago Stripe exitoso"
     else
       bill.update(status_pago: "error_pago", error: response[:error_message], nota_for_corp: "Error al procesar pago Stripe: #{response[:error_message]}")
       line.update(error: response[:error_message])
-      puts "--- No se pudo crear factura dummy para Corp #{corp_id} debido a error en pago Stripe: #{response[:error_message]}"
+      puts "🚫 No se pudo crear factura dummy para Corp #{corp_id} debido a error en pago Stripe: #{response[:error_message]}"
     end
   rescue ActiveRecord::RecordInvalid => e
-    puts "--- Error al crear Bill/BillItem: #{e.record.errors.full_messages.join(', ')}"
+    puts "🚫 Error al crear Bill/BillItem: #{e.record.errors.full_messages.join(', ')}"
   rescue ActiveRecord::RecordNotFound => e
-    puts "--- Corp no encontrado para factura dummy: #{e}"
+    puts "🚫 Corp no encontrado para factura dummy: #{e}"
   rescue => e
-    puts "--- Error inesperado al crear factura dummy: #{e}"
+    puts "🚫 Error inesperado al crear factura dummy: #{e}"
   end
 
   def self.stripe_payment(amount:, corp:, desc: nil)
     unless corp && corp.stripe_customer_id && corp.stripe_payment_method_id
-      puts "--- Corp sin métodos de pago para pago Stripe: #{corp.id}"
+      puts "🚫 Corp sin métodos de pago para pago Stripe: #{corp.id}"
       return
     end
 
@@ -102,7 +105,7 @@ module Gtools
     })
 
     if payment_intent.status == "succeeded"
-      puts "--- Pago Stripe exitoso para Corp #{corp.id}, Monto: #{amount}"
+      puts "✅ Pago Stripe exitoso para Corp #{corp.id}, Monto: #{amount}"
       {
         success: true,
         status: payment_intent.status,
@@ -111,7 +114,7 @@ module Gtools
         body: payment_intent
       }
     else
-      puts "--- Pago Stripe no exitoso para Corp #{corp.id}, Status: #{payment_intent.status}"
+      puts "❌ Pago Stripe no exitoso para Corp #{corp.id}, Status: #{payment_intent.status}"
       {
         success: false,
         status: payment_intent.status,
@@ -121,10 +124,10 @@ module Gtools
       }
     end
   rescue Stripe::CardError => e
-    puts "--- Error de tarjeta al procesar pago Stripe: #{e}"
+    puts "🚫 Error de tarjeta al procesar pago Stripe: #{e}"
   rescue Stripe::StripeError => e
-    puts "--- Error de Stripe al procesar pago: #{e}"
+    puts "🚫 Error de Stripe al procesar pago: #{e}"
   rescue => e
-    puts "--- Error inesperado al procesar pago Stripe: #{e}"
+    puts "🚫 Error inesperado al procesar pago Stripe: #{e}"
   end
 end

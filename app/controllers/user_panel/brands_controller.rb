@@ -44,7 +44,7 @@ class UserPanel::BrandsController < UserPanelController
       if @brand.save
         format.turbo_stream
       else
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("brand-form-errors", partial: "shared/errors", locals: { object: @brand }) }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("brand-form-errors", partial: "user_panel/brands/form_errors", locals: { object: @brand }) }
       end
     end
   end

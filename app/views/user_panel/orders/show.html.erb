@@ -137,7 +137,7 @@
     </div>
     <div class="column is-12-mobile is-6-tablet is-4-desktop">
       <div class="labell">Fecha venta</div>
-      <p class="contentt"><%= l(@order.fecha, format: :long) %></p>
+      <p class="contentt"><%= l(@order.fecha ? @order.fecha : @order.created_at, format: :long) %></p>
     </div>
     <div class="column is-12-mobile is-6-tablet is-4-desktop">
       <div class="labell">Forma de pago</div>
@@ -209,6 +209,7 @@
           <th>Producto</th>
           <th>Cantidad</th>
           <th>Precio unitario</th>
+          <th>Monto(antes de descuento)</th>
           <th>Descuento</th>
           <th>Monto</th>
         </tr>
@@ -221,10 +222,9 @@
             </th>
             <td><%= line.cantidad %></td>
             <td><%= number_to_currency(line.precio) %></td>
+            <td><%= number_to_currency(line.total_antes_descuento) %></td>
             <td>
-              <% if line.descuento.present? %>
-                - <%= number_to_currency(line.descuento) %>
-              <% end %>
+              - <%= number_to_currency(line.descuento) %>
             </td>
             <td><%= number_to_currency(line.total) %></td>
           </tr>
@@ -357,7 +357,7 @@
                       Ticket
                     <% end %>
                     <% if depo.xml.present? %>
-                      <%= link_to abono_xml_path(depo.folio), class: "button is-link is-small is-rounded", target: '_blank' do %>
+                      <%= link_to abono_xml_path(depo.folio), class: "button is-link is-small is-rounded", data: { turbo_method: :post } do %>
                         <span class="material-icons-round">
                           code
                         </span>
@@ -497,7 +497,7 @@
             <div class="field has-addons column is-12">
               <div class="control">
                 <label class="label">* Teléfono</label>
-                <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, @order.customer.tel_prefix),
+                <%= form.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, @order.customer&.tel_prefix),
                     {prompt: "Selecciona", required: true},
                     { "data-controller": "slimselect", class: "ss2"}
                     %>

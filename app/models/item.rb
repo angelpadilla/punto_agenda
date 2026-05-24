@@ -5,6 +5,9 @@ class Item < ApplicationRecord
   belongs_to :sat_product, optional: true
   belongs_to :corp, optional: true
 
+  has_many :line_items, dependent: :nullify
+  has_many :orders, through: :line_items
+
   has_one_attached :img1, dependent: :destroy
   has_one_attached :img2, dependent: :destroy
   has_one_attached :img3, dependent: :destroy
@@ -159,5 +162,19 @@ class Item < ApplicationRecord
 
   def last_event_at
     self.events.order(created_at: :desc).last&.created_at
+  end
+
+  before_save :update_orders_count
+
+  def update_orders_count
+    if self.stock_changed? && self.stock_was.present? && self.stock.present?
+      if self.stock < self.stock_was
+        # Stock disminuyó, aumentar orders_count
+        self.orders_count += 1
+      elsif self.stock > self.stock_was && self.orders_count > 0
+        # Stock aumentó, disminuir orders_count si es mayor a 0
+        self.orders_count -= 1
+      end
+    end
   end
 end
