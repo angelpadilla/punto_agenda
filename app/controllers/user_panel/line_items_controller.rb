@@ -24,6 +24,17 @@ class UserPanel::LineItemsController < UserPanelController
         if disponible >= 0
           @order.add_item(item, cantidad, precio, descuento)
           @order.save(validate: false)
+
+          if @order.pre_factura?
+            # rebajamos inventario
+            @order.line_items.each do |line|
+              item = line.item
+              if !item.stock.nil?
+                item.stock -= cantidad
+                item.save
+              end
+            end
+          end
           format.turbo_stream
         else
           @error_message = "No hay suficiente inventario disponible para agregar #{cantidad} unidades de #{item.name}. Solo quedan #{disponible} disponibles."
@@ -50,6 +61,16 @@ class UserPanel::LineItemsController < UserPanelController
     respond_to do |format|
       @order.down_item(line_id, cantidad)
       @order.save(validate: false)
+      if @order.pre_factura?
+        # devolvemos inventario
+        @order.line_items.each do |line|
+          item = line.item
+          if !item.stock.nil?
+            item.stock += cantidad
+            item.save
+          end
+        end
+      end
       format.turbo_stream
     end
   end

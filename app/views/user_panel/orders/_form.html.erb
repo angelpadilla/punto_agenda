@@ -12,7 +12,7 @@
     <% end %>
     <div class="columns is-multiline">
       <div class="field column is-12">
-        <label class="label">Cliente</label>
+        <label class="label">Cliente  <%= method %></label>
         <div class="control is-expanded <%= order.errors.include?(:customer_id) ? 'select-is-danger' : '' %>">
           <%= form.select :customer_id, options_for_select(Customer.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, order.customer_id),
               {prompt: "Selecciona", required: field_required?(Order, :customer_id)},
@@ -24,7 +24,11 @@
         <label class="label">Fecha venta</label>
         <%= form.date_field :fecha, class: 'control input is-rounded', max: Date.today, value: Date.today, required: true %>
       </div>
-      <%= s_field(form, :tipo, options: @corp.fac_and_timbres? ? Order::Tipo2 : Order::Tipo3, label: "Tipo", clas: "field column is-6") %>
+      <% if order.carrito? %>
+        <%= s_field(form, :tipo, options: @corp.fac_and_timbres? ? Order::Tipo2 : Order::Tipo3, label: "Tipo", clas: "field column is-6") %>
+      <% else %>
+        <%= s_field(form, :tipo, options: @corp.fac_and_timbres? ? Order::Tipo4 : Order::Tipo5, label: "Tipo", clas: "field column is-6") %>
+      <% end %>
       <div class="field column is-12">
         <label class="label">Forma pago</label>
         <div class="select is-rounded <%= order.errors.include?(:forma_pago) ? 'is-danger' : '' %>">

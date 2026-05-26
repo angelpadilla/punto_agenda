@@ -19,6 +19,8 @@ namespace :corps do
         next
       end
 
+      corp.business_hours_will_change!
+
       bh.each do |_wday, cfg|
         next unless cfg.is_a?(Hash) && !cfg.key?("hours")
 

@@ -1,3 +1,57 @@
-<div class="box">
-  event details
-</div>
+<tr>
+  <td>
+    <%= link_to event_path(event), class: "mr-2" do %>
+      <span class="icon">
+        <%= image_tag 'eye.svg', alt: 'view', class: 'invert' %>
+      </span>
+    <% end %>
+  </td>
+  <td>
+    <% if event.agendado? %>
+      <span class="tag is-rounded"><%= event.status&.titleize %></span>
+    <% elsif event.completado? %>
+      <span class="tag is-rounded is-success"><%= event.status&.titleize %></span>
+    <% elsif event.cancelado? %>
+      <span class="tag is-rounded is-danger"><%= event.status&.titleize %></span>
+    <% elsif event.ausencia? %>
+      <span class="tag is-rounded is-danger"><%= event.status&.titleize %></span>
+    <% elsif event.por_confirmar? %>
+      <span class="tag is-rounded is-warning"><%= event.status&.titleize %></span>
+    <% else %>
+      <span class="tag is-rounded is-danger"><%= event.status&.titleize %></span>
+    <% end %>
+    <span class="tag is-rounded"><%= event.canal.titleize %></span>
+    <p class="contentt">
+      <%= event.title %>
+    </p>
+  </td>
+  <td><%= event.folio %></td>
+  <td>
+    <% if event.customer %>
+      <p class="contentt">
+        <%= event.customer.razon %>
+      </p>
+      <p class="labell">
+        <%= event.customer.tel_prefix %> <%= event.customer.tel %>
+      </p>
+      <p class="labell">
+        <%= event.customer.email %>
+      </p>
+    <% else %>
+      nil
+    <% end %>
+  </td>
+  <td>
+    <% if event.user %>
+      <%= event.user.full_name %>
+    <% else %>
+      nil
+    <% end %>
+  </td>
+  <td>
+    <%= l(event.hora_inicio, format: :date) %>
+  </td>
+  <td>
+    <span class="tag"><%= l(event.hora_inicio, format: :time) %> - <%= l(event.hora_final, format: :time) %></span>
+  </td>
+</tr>

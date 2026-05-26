@@ -16,15 +16,16 @@ const localeEs = {
 }
 
 export default class extends Controller {
-    static targets = ["diaHidden", "diaDisplay", "slotSelect"]
-    static values = { businessHours: Object, currentSlot: String }
+    static targets = ["diaHidden", "diaDisplay", "slotSelect", "userSelect"]
+    static values = { businessHours: Object, currentSlot: String, availabilityUrl: String }
 
     connect() {
+        this._availability = {}
         this._initDatepicker()
 
-        // If editing an existing event, populate slot options for the pre-selected day
         if (this.diaHiddenTarget.value) {
             this._applyBusinessHoursForDate(this.diaHiddenTarget.value)
+            this._fetchAvailability(this.diaHiddenTarget.value, this.currentSlotValue || null)
         }
     }
 
@@ -35,17 +36,19 @@ export default class extends Controller {
         }
     }
 
+    slotChanged() {
+        this._applyAgentFilter(this.slotSelectTarget.value)
+    }
+
     // ── private ──────────────────────────────────────────────────────────────
 
     _initDatepicker() {
         const bh = this.businessHoursValue
 
-        // Collect disabled weekdays (0=Sun … 6=Sat)
         const disabledDays = Object.entries(bh)
             .filter(([, cfg]) => !cfg.active)
             .map(([wday]) => Number(wday))
 
-        // Pre-select existing date if editing
         const existingDate = this.diaHiddenTarget.value
             ? new Date(this.diaHiddenTarget.value + "T00:00:00")
             : null
@@ -53,6 +56,7 @@ export default class extends Controller {
         this._dp = new AirDatepicker(this.diaDisplayTarget, {
             locale: localeEs,
             dateFormat: "dd/MM/yyyy",
+            minDate: new Date(),
             selectedDates: existingDate ? [existingDate] : [],
             startDate: existingDate || new Date(),
             onRenderCell: ({ date, cellType }) => {
@@ -67,6 +71,8 @@ export default class extends Controller {
                 if (!date) {
                     this.diaHiddenTarget.value = ""
                     this._clearSlotSelect()
+                    this._availability = {}
+                    this._applyAgentFilter(null)
                     return
                 }
                 const yyyy = date.getFullYear()
@@ -75,6 +81,7 @@ export default class extends Controller {
                 const iso = `${yyyy}-${mm}-${dd}`
                 this.diaHiddenTarget.value = iso
                 this._applyBusinessHoursForDate(iso)
+                this._fetchAvailability(iso, null)
             }
         })
     }
@@ -88,15 +95,51 @@ export default class extends Controller {
             return
         }
 
-        // Each entry in hours is a slot: { open: "09:00", close: "11:00" }
         const slots = cfg.hours.map(h => ({
             label: `${h.open} – ${h.close}`,
             value: `${h.open}|${h.close}`
         }))
 
-        // Determine pre-selection: currentSlot value (from editing) or empty
         const preselect = this.currentSlotValue || ""
         this._rebuildSlotSelect(slots, preselect)
+    }
+
+    _fetchAvailability(isoDate, applySlot) {
+        if (!this.hasAvailabilityUrlValue) return
+        const url = `${this.availabilityUrlValue}?dia=${isoDate}`
+        fetch(url, { headers: { Accept: "application/json" } })
+            .then(r => r.json())
+            .then(data => {
+                this._availability = data  // { "09:00|11:00": [1, 3], ... }
+                if (applySlot) this._applyAgentFilter(applySlot)
+            })
+            .catch(() => { this._availability = {} })
+    }
+
+    _applyAgentFilter(slotRange) {
+        if (!this.hasUserSelectTarget) return
+        const bookedIds = (slotRange && this._availability[slotRange]) ? this._availability[slotRange] : []
+        const select = this.userSelectTarget
+        const slim = select._slimInstance
+
+        if (slim) {
+            const currentSelected = slim.getSelected()
+            const data = Array.from(select.options).map(opt => {
+                const item = { text: opt.text, value: opt.value }
+                if (!opt.value) item.placeholder = true
+                else item.disabled = bookedIds.includes(Number(opt.value))
+                return item
+            })
+            slim.setData(data)
+            if (currentSelected.length && !bookedIds.includes(Number(currentSelected[0]))) {
+                slim.setSelected(currentSelected)
+            }
+        } else {
+            Array.from(select.options).forEach(opt => {
+                if (!opt.value) return
+                opt.disabled = bookedIds.includes(Number(opt.value))
+            })
+        }
     }
 
     _clearSlotSelect() {

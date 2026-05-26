@@ -7,6 +7,13 @@
 </div>
 <%= render 'simple_calendar/actions', calendar: calendar %>
 <div class="simple-calendar week mt-4">
+  <nav class="simple-calendar-nav" aria-label="Days of the week">
+    <% date_range.slice(0, 7).each do |day| %>
+      <div>
+        <%= t('date.abbr_day_names')[day.wday].titleize %>
+      </div>
+    <% end %>
+  </nav>
   <table>
     <thead>
       <tr>

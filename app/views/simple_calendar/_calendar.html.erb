@@ -1,6 +1,6 @@
-<time datetime="<%= start_date.strftime('%Y-%m') %>" class="calendar-title has-text-neon bold">
+<div class="calendar-title has-text-neon bold">
   <%= t('date.month_names')[start_date.month].titleize %> <%= start_date.year %>
-</time>
+</div>
 <%= render 'simple_calendar/actions', calendar: calendar %>
 <div class="simple-calendar mt-4">
   <table>
@@ -15,7 +15,7 @@
       <% date_range.each_slice(7) do |week| %>
         <%= content_tag :tr, class: calendar.tr_classes_for(week) do %>
           <% week.each do |day| %>
-            <%= content_tag :td, class: calendar.td_classes_for(day) do %>
+            <%= content_tag :td, class: "#{calendar.td_classes_for(day).join(' ')} #{'not-working-day' unless @corp.working_day?(day)}" do %>
               <% instance_exec(day, calendar.sorted_events_for(day), &passed_block) %>
             <% end %>
           <% end %>

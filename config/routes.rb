@@ -14,9 +14,9 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "KlQnEMoLkkAWfl8j2" => "public#html_elements", as: :html_elements
-
+  
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
+  
   # Defines the root path route ("/")
   root "public#home"
 
@@ -27,6 +27,13 @@ Rails.application.routes.draw do
     get ":folio/abono_ticket", to: "public#ticket_abono", as: :ticket_abono
     post ":folio/abono_xml", to: "public#abono_xml", as: :abono_xml
     post ":folio/ticket_xml", to: "public#ticket_xml", as: :ticket_xml
+  end
+
+  scope "e" do
+    get ":sku", to: "public#show_corp", as: :corp_home
+    get ":sku/cat", to: "public#show_corp_menu", as: :corp_menu
+    get ":sku/cal", to: "public#show_corp_calendar", as: :corp_calendar
+    post ":sku/reservar", to: "public#book_event", as: :corp_book_event
   end
 
   scope "panel" do
@@ -70,8 +77,10 @@ Rails.application.routes.draw do
         get :monthly
         get :weekly
         get :daily
+        get :slot_agents
         post :marcar_asistencia
         post :marcar_ausencia
+        post :confirmar
 
         post :send_email, as: :send_email
         post :send_sms, as: :send_sms

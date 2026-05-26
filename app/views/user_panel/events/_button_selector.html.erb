@@ -1,17 +1,25 @@
-<div class="buttons has-addons events_actions">
-  <%= link_to daily_events_path, class: "button #{action_name == 'daily' ? 'is-primary' : '' }" do %>
+<div class="flexx gap-1 mt-4">
+  <%= link_to events_path, class: "button is-rounded" do %>
     <span class="icon mr-2">
-      <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'daily' ? '' : 'invert' %>
+      <%= image_tag 'layers.svg', alt: 'back', class: 'invert' %>
     </span>
-    Dia
+    Historial
   <% end %>
-  <%= link_to weekly_events_path, class: "button #{action_name == 'weekly' ? 'is-primary' : '' }" do %>
+  <% if false %>
+    <%= link_to daily_events_path, class: "button is-rounded #{action_name == 'daily' ? 'is-primary' : '' }", data: {turbo: false} do %>
+      <span class="icon mr-2">
+        <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'daily' ? '' : 'invert' %>
+      </span>
+      Dia
+    <% end %>
+  <% end %>
+  <%= link_to weekly_events_path, class: "button is-rounded #{action_name == 'weekly' ? 'is-primary' : '' }", data: {turbo: false} do %>
     <span class="icon mr-2">
       <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'weekly' ? '' : 'invert' %>
     </span>
     Semana
   <% end %>
-  <%= link_to monthly_events_path, class: "button #{action_name == 'monthly' ? 'is-primary' : '' }" do %>
+  <%= link_to monthly_events_path, class: "is-hidden-touch button is-rounded #{action_name == 'monthly' ? 'is-primary' : '' }", data: {turbo: false} do %>
     <span class="icon mr-2">
       <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'monthly' ? '' : 'invert' %>
     </span>

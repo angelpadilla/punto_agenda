@@ -33,11 +33,13 @@
         Añadir abono
       </button>
     <% end %>
-    <%= link_to edit_order_path(@order), class: "button is-rounded" do %>
-      <span class="icon mr-2">
-        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
-      </span>
-      Editar
+    <% if @order.pre_factura? or @order.cotizacion? %>
+      <%= link_to edit_order_path(@order), class: "button is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+        </span>
+        Editar
+      <% end %>
     <% end %>
     <div class="dropdown is-right is-hoverable">
       <div class="dropdown-trigger">

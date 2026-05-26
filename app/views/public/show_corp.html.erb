@@ -1,0 +1,138 @@
+<%# Hero %>
+<section class="corp_hero_section">
+  <div class="container px-4">
+    <div class="has-text-centered py-6">
+      <% if @corp.logo.attached? %>
+        <div class="corp_logo_wrap mx-auto mb-4">
+          <%= image_tag @corp.logo.variant(resize_to_limit: [160, 160]), alt: @corp.name, class: 'corp_logo_img' %>
+        </div>
+      <% else %>
+        <div class="corp_logo_wrap corp_logo_placeholder mx-auto mb-4">
+          <%= image_tag 'shop.svg', alt: @corp.name, class: 'invert' %>
+        </div>
+      <% end %>
+      <h1 class="title is-2 mb-2"><%= @corp.name %></h1>
+      <% tipo = Corp::TipoNegocios.find { |t| t[1] == @corp.tipo_negocio } %>
+      <% if tipo %>
+        <span class="tag is-rounded is-medium mb-4"><%= tipo.first %></span>
+      <% end %>
+    </div>
+  </div>
+</section>
+<div class="container px-4 pb-6 mt-4">
+  <div class="columns is-multiline">
+    <%# Información de contacto %>
+    <div class="column is-5-desktop is-12-tablet">
+      <div class="box">
+        <div class="box_header">
+          <h2 class="title is-5 mb-0">
+            <span class="icon mr-2">
+              <%= image_tag 'shop.svg', alt: '', class: 'invert', style: 'height:1.1em' %>
+            </span>
+            Información
+          </h2>
+        </div>
+        <% if @corp.phone.present? %>
+          <div class="corp_info_row">
+            <%= image_tag 'bolt.svg', alt: 'tel', class: 'invert corp_info_icon' %>
+            <div>
+              <div class="is-size-7 has-text-grey-light">Teléfono/Whatsapp</div>
+              <a href="tel:<%= @corp.tel_prefix %><%= @corp.phone %>" class="has-text-neon">
+                <%= @corp.tel_prefix %> <%= @corp.phone %>
+              </a>
+            </div>
+          </div>
+        <% end %>
+        <% if @corp.email.present? %>
+          <div class="corp_info_row">
+            <%= image_tag 'bolt.svg', alt: 'email', class: 'invert corp_info_icon' %>
+            <div>
+              <div class="is-size-7 has-text-grey-light">Email</div>
+              <a href="mailto:<%= @corp.email %>" class="has-text-neon"><%= @corp.email %></a>
+            </div>
+          </div>
+        <% end %>
+        <% if @corp.calle.present? %>
+          <div class="corp_info_row">
+            <%= image_tag 'layers.svg', alt: 'dir', class: 'invert corp_info_icon' %>
+            <div>
+              <div class="is-size-7 has-text-grey-light">Dirección</div>
+              <span class="has-text-light">
+                <%= [@corp.calle, @corp.num_ext, @corp.colonia, @corp.ciudad, @corp.estado].compact_blank.join(', ') %>
+              </span>
+            </div>
+          </div>
+        <% end %>
+        <div class="corp_info_row">
+          <%= image_tag 'calendar.svg', alt: 'horarios', class: 'invert corp_info_icon' %>
+          <div>
+            <div class="is-size-7 has-text-grey-light">Horarios</div>
+            <span class="has-text-light">
+              9:00 AM- 7:00 PM Lun-Sáb
+            </span>
+          </div>
+        </div>
+        <%# Redes sociales %>
+        <% if @corp.facebook_url.present? || @corp.instagram_url.present? || @corp.tiktok_url.present? %>
+          <div class="mt-4 corp_social_links">
+            <% if @corp.facebook_url.present? %>
+              <a href="<%= @corp.facebook_url %>" target="_blank" rel="noopener" class="button is-rounded">
+                Facebook
+              </a>
+            <% end %>
+            <% if @corp.instagram_url.present? %>
+              <a href="<%= @corp.instagram_url %>" target="_blank" rel="noopener" class="button is-rounded">
+                Instagram
+              </a>
+            <% end %>
+            <% if @corp.tiktok_url.present? %>
+              <a href="<%= @corp.tiktok_url %>" target="_blank" rel="noopener" class="button is-rounded">
+                TikTok
+              </a>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <%# Accesos rápidos %>
+    <div class="column is-7-desktop is-12-tablet">
+      <% if @corp.public_calendar? %>
+        <%= link_to corp_calendar_path(@corp.sku) do %>
+          <div class="box corp_feature_card mb-4">
+            <div class="corp_feature_inner">
+              <div class="corp_feature_icon">
+                <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
+              </div>
+              <div>
+                <h2 class="title is-4 mb-1 has-text-neon">Agenda una cita</h2>
+                <p class="has-text-grey-light">Elige fecha y hora. Te confirmamos en minutos.</p>
+              </div>
+              <div class="corp_feature_arrow">›</div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+      <% if @corp.public_site? %>
+        <%= link_to corp_menu_path(@corp.sku) do %>
+          <div class="box corp_feature_card">
+            <div class="corp_feature_inner">
+              <div class="corp_feature_icon">
+                <%= image_tag 'items.svg', alt: 'menu', class: 'invert' %>
+              </div>
+              <div>
+                <h2 class="title is-4 mb-1 has-text-neon">Ver catálogo</h2>
+                <p class="has-text-grey-light">Conoce nuestros productos y servicios disponibles.</p>
+              </div>
+              <div class="corp_feature_arrow">›</div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+      <% unless @corp.public_calendar? || @corp.public_site? %>
+        <div class="box has-text-centered py-6">
+          <p class="has-text-grey-light is-size-5">Próximamente más información</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

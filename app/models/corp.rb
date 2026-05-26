@@ -282,7 +282,7 @@ class Corp < ApplicationRecord
   #   { total: Integer, disponibles: Integer, ocupados: Integer, pct: Float, first_open: "HH:MM", last_close: "HH:MM",
   #     # total = slots_del_día × num_agentes (capacidad real de citas)
   #     slots: [
-  #       { index: Integer, start: "HH:MM", end: "HH:MM", fully_booked: Boolean, available_for_user: Boolean, agentes_libres: Integer, agentes_ocupados: Integer, booked_agent_ids: Array<Integer>, events: Array<Event> },
+  #       { index: Integer, start: "HH:MM", end: "HH:MM", fully_booked: Boolean, available_for_user: Boolean, agentes_libres: Integer, agentes_ocupados: Integer, booked_agents: Array<User>, free_agents: Array<User>, events: Array<Event> },
   #     ]
   #   },
   # o nil si no es día laborable
@@ -292,12 +292,15 @@ class Corp < ApplicationRecord
 
     date = date.in_time_zone.to_date
 
-    booked_events = events.where(
-      hora_inicio: date.beginning_of_day..date.end_of_day,
-      status: [ :en_proceso, :completado ]
-    ).to_a
+    eventss = events.where(
+      hora_inicio: date.beginning_of_day..date.end_of_day
+    )
 
-    all_agent_ids    = users.pluck(:id)
+    booked_events = eventss.where(status: [ :agendado, :completado ]).to_a
+    eventss = eventss.to_a
+
+    all_agents       = users.to_a
+    all_agent_ids    = all_agents.map(&:id)
     filter_agent_ids = user_id.present? ? [ user_id ] : all_agent_ids
     return nil if all_agent_ids.empty?
 
@@ -316,11 +319,24 @@ class Corp < ApplicationRecord
       fully_booked      = agent_free.values.none?
       agentes_libres    = agent_free.count { |_, free| free }
       agentes_ocupados  = all_agent_ids.size - agentes_libres
-      booked_agent_ids  = agent_free.filter_map { |uid, free| uid unless free }
+      booked_agents     = agent_free.filter_map { |uid, free| all_agents.find { |u| u.id == uid } unless free }
+      free_agents       = agent_free.filter_map { |uid, free| all_agents.find { |u| u.id == uid } if free }
       available_for_user = filter_agent_ids.any? { |uid| agent_free[uid] }
       slot_events       = booked_events.select { |ev| ev.hora_inicio < slot_end && ev.hora_final > slot_start }
+      slot_events_all    = eventss.select { |ev| ev.hora_inicio < slot_end && ev.hora_final > slot_start }
 
-      slot.merge(fully_booked: fully_booked, available_for_user: available_for_user, agentes_libres: agentes_libres, agentes_ocupados: agentes_ocupados, booked_agent_ids: booked_agent_ids, events: slot_events)
+      slot.merge(
+        start: slot_start.strftime("%I:%M %p"),
+        end: slot_end.strftime("%I:%M %p"),
+        range: "#{slot[:start]}|#{slot[:end]}",
+        fully_booked: fully_booked,
+        available_for_user: available_for_user,
+        agentes_libres: agentes_libres,
+        agentes_ocupados: agentes_ocupados,
+        booked_agents: booked_agents,
+        free_agents: free_agents,
+        events: slot_events_all
+      )
     end
 
     total       = all_slots.size * all_agent_ids.size
@@ -335,9 +351,9 @@ class Corp < ApplicationRecord
       disponibles: disponibles,
       ocupados:    ocupados,
       pct:         pct,
-      first_open:  all_slots.first[:start],
-      last_close:  all_slots.last[:end],
-      slots:       enriched_slots,
+      first_open:  Time.parse(all_slots.first[:start]).strftime("%I:%M %p"),
+      last_close:  Time.parse(all_slots.last[:end]).strftime("%I:%M %p"),
+      slots:       enriched_slots
     }
   end
 
@@ -382,6 +398,15 @@ class Corp < ApplicationRecord
     end
   end
 
+  def gen_sku
+    token = SecureRandom.alphanumeric(5).upcase
+    while Corp.where(sku: token).exists?
+      token = SecureRandom.alphanumeric(5).upcase
+    end
+    self.sku = token
+  end
+
+  
   private
 
   def set_default_business_hours
@@ -403,11 +428,4 @@ class Corp < ApplicationRecord
     end
   end
 
-  def gen_sku
-    token = SecureRandom.alphanumeric(9)
-    while Corp.where(sku: token).exists?
-      token = SecureRandom.alphanumeric(9)
-    end
-    self.sku = token
-  end
 end

@@ -2,11 +2,12 @@
 <%= form_with(model: event, data: {
   controller: "form-event",
   form_event_business_hours_value: @corp.business_hours.to_json,
-  form_event_current_slot_value: (event.hora_inicio && event.hora_final ? "#{event.hora_inicio.strftime('%H:%M')}|#{event.hora_final.strftime('%H:%M')}" : "")
+  form_event_current_slot_value: (params[:slot].presence || (event.hora_inicio && event.hora_final ? "#{event.hora_inicio.strftime('%H:%M')}|#{event.hora_final.strftime('%H:%M')}" : "")),
+  form_event_availability_url_value: slot_agents_events_path(format: :json)
 }) do |form| %>
   <% if event.errors.any? %>
     <div class="notification is-warning mt-4">
-      <h2 class="subtitle"><%= pluralize(event.errors.count, "error", "errores") %> impidieron que esta razon se guardara:</h2>
+      <h2 class="subtitle"><%= pluralize(event.errors.count, "error", "errores") %> impidieron que este evento se guardara:</h2>
       <ul>
         <% event.errors.each do |error| %>
           <li><%= error.message %></li>
@@ -16,45 +17,16 @@
   <% end %>
   <div class="box mt-4">
     <div class="columns is-multiline">
-      <div class="column is-12">
-        <label class="label">*Selecciona cliente</label>
-        <div class="field has-addons">
-          <div class="control is-expanded <%= event.errors.include?(:customer_id) ? 'select-is-danger' : '' %>">
-            <%= form.select :customer_id, options_for_select(Customer.default.map { |k| [k.razon&.titleize, k.id] }, event.customer_id),
-                  {prompt: "Selecciona", required: field_required?(Event, :customer_id)},
-                  { "data-controller": "slimselect", class: "ss2"}
-                  %>
-          </div>
-          <div class="control">
-            <div class="button mtrigger" data-target="new_customer">
-              <span class="icon">
-                <%= image_tag 'plus.svg', alt: 'new-customer', class: 'invert' %>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="field column is-12">
-        <label class="label">*Agente/Vendedor asignado al evento</label>
-        <div class="control is-expanded <%= event.errors.include?(:user_id) ? 'select-is-danger' : '' %>">
-          <%= form.select :user_id, options_for_select(@corp.users.default.map { |k| [k.full_name&.titleize, k.id] }, event.user_id),
-                {prompt: "Selecciona", required: field_required?(Event, :user_id)},
-                { "data-controller": "slimselect", class: "ss2"}
-                %>
-        </div>
-      </div>
-      <%= t_field(form, :title, label: "Título", placeholder: "Ej.evento con Juan Pérez") %>
-    </div>
-    <div class="columns is-multiline">
-      <div class="field column is-4">
+      <div class="field column is-6">
         <label class="label">*Día del evento</label>
         <div class="control">
           <% if params[:dia] %>
-            <%= form.hidden_field :dia, value: params[:dia], data: { form_event_target: "diaHidden" } %>
+            <% _dia = Date.parse(params[:dia]) %>
+            <%= form.hidden_field :dia, value: _dia.strftime("%Y-%m-%d"), data: { form_event_target: "diaHidden" } %>
             <input type="text"
                  readonly
                  placeholder="Selecciona un día"
-                 value="<%= l(Date.parse(params[:dia]), format: :default) %>"
+                 value="<%= l(_dia, format: :default) %>"
                  class="input"
                  data-form-event-target="diaDisplay">
           <% else %>
@@ -73,17 +45,55 @@
           <% end %>
         </div>
       </div>
-      <div class="field column is-4">
+      <div class="field column is-6">
         <label class="label">*Horario</label>
         <div class="control">
           <div class="select is-fullwidth <%= event.errors.include?(:slot) ? 'is-danger' : '' %>">
             <%= form.select :slot,
                   options_for_select([], nil),
                   { prompt: "Selecciona primero el día" },
-                  { required: true, data: { form_event_target: "slotSelect" } } %>
+                  { required: true, data: { form_event_target: "slotSelect", action: "change->form-event#slotChanged" } } %>
           </div>
           <% if event.errors.include?(:slot) %>
             <p class="help is-danger"><%= event.errors[:slot].first %></p>
+          <% end %>
+        </div>
+      </div>
+      <%= t_field(form, :title, label: "Título", placeholder: "Ej.evento con Juan Pérez") %>
+      <div class="column is-12">
+        <label class="label">*Selecciona cliente</label>
+        <div class="field has-addons">
+          <div class="control is-expanded <%= event.errors.include?(:customer_id) ? 'select-is-danger' : '' %>">
+            <%= form.select :customer_id, options_for_select(Customer.default.map { |k| [k.razon&.titleize, k.id] }, event.customer_id),
+                  {prompt: "Selecciona", required: field_required?(Event, :customer_id)},
+                  { "data-controller": "slimselect", class: "ss2"}
+                  %>
+          </div>
+          <div class="control">
+            <div class="button mtrigger" data-target="new_customer">
+              <span class="icon">
+                <%= image_tag 'plus.svg', alt: 'new-customer', class: 'invert' %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-multiline">
+      <div class="field column is-12">
+        <label class="label">*Agente/Vendedor asignado al evento</label>
+        <div class="control is-expanded <%= event.errors.include?(:user_id) ? 'select-is-danger' : '' %>">
+          <% if current_user.colaborador? %>
+            <%= form.select :user_id,
+                  options_for_select([[current_user.full_name&.titleize, current_user.id]], current_user.id),
+                  {},
+                  { disabled: true, class: "input" } %>
+            <%= form.hidden_field :user_id, value: current_user.id %>
+          <% else %>
+            <%= form.select :user_id, options_for_select(@corp.users.default.map { |k| [k.full_name&.titleize, k.id] }, event.user_id),
+                  {prompt: "Selecciona", required: field_required?(Event, :user_id)},
+                  { "data-controller": "slimselect", class: "ss2", data: { form_event_target: "userSelect" } }
+                  %>
           <% end %>
         </div>
       </div>

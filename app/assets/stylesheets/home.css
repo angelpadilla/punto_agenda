@@ -237,11 +237,21 @@
     }
 }
 
+.public_view {
+    padding-bottom: 0;
+    padding-top: 58px;
 
+    /* en mobil y tablet */
+    @media (max-width: 1023px) {
+        padding-bottom: 5rem;
+        padding-top: 0;
+    }
+}
 
 .darkk {
 
     .public_view {
+
 
         position: relative;
         z-index: 0;

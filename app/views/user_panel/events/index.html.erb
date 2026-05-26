@@ -1,8 +1,12 @@
-<% content_for :title, "Agenda" %>
-<%# https://fullcalendar.io/docs %>
-<div class="flexx space-b flex-end mt-4 mb-4">
-  <h2 class="titlee">Agenda</h2>
+<% content_for :title, "Historial eventos" %>
+<div class="flexx space-b flex-end mb-4">
+  <h2 class="titlee">Historial de eventos</h2>
   <div class="actions">
+    <div class="button is-rounded mtrigger" data-target="search_modal">
+      <span class="icon">
+        <%= image_tag 'search2.svg', alt: 'filter', class: 'invert' %>
+      </span>
+    </div>
     <%= link_to new_event_path, class: "button is-primary is-rounded" do %>
       <span class="icon mr-2">
         <%= image_tag 'calendar_plus.svg', alt: 'nuevo evento' %>
@@ -11,76 +15,100 @@
     <% end %>
   </div>
 </div>
-<%# Modal para detalle de evento del calendario %>
-<div id="calendar-event-modal" class="modal">
+<div class="flexx gap-1 mt-4">
+  <%= link_to events_path, class: "button is-rounded  #{action_name == 'index' ? 'is-primary' : '' }" do %>
+    <span class="icon mr-2">
+      <%= image_tag 'layers.svg', alt: 'back', class: action_name == 'index' ? '' : 'invert' %>
+    </span>
+    Listado
+  <% end %>
+  <% if false %>
+    <%= link_to daily_events_path, class: "button is-rounded #{action_name == 'daily' ? 'is-primary' : '' }", data: {turbo: false} do %>
+      <span class="icon mr-2">
+        <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'daily' ? '' : 'invert' %>
+      </span>
+      Dia
+    <% end %>
+  <% end %>
+  <%= link_to weekly_events_path, class: "button is-rounded #{action_name == 'weekly' ? 'is-primary' : '' }", data: {turbo: false} do %>
+    <span class="icon mr-2">
+      <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'weekly' ? '' : 'invert' %>
+    </span>
+    Semana
+  <% end %>
+  <%= link_to monthly_events_path, class: "is-hidden-touch button is-rounded #{action_name == 'monthly' ? 'is-primary' : '' }", data: {turbo: false} do %>
+    <span class="icon mr-2">
+      <%= image_tag 'calendar.svg', alt: 'filter', class: action_name == 'monthly' ? '' : 'invert' %>
+    </span>
+    Mes
+  <% end %>
+</div>
+<div class="table-container">
+  <table class="table is-fullwidth is-hoverable mt-4">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="table_cell"><%= sort_link(@q, :title, 'Título') %></th>
+        <th class="table_cell">Folio</th>
+        <th class="table_cell"><%= sort_link(@q, :customer_id, 'Cliente') %></th>
+        <th class="table_cell"><%= sort_link(@q, :user_id, 'Agente/Vendedor') %></th>
+        <th class="table_cell"><%= sort_link(@q, :hora_inicio, 'Fecha') %></th>
+        <th class="table_cell">Hora</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render @events %>
+    </tbody>
+  </table>
+</div>
+<% if @pagy.pages > 1 %>
+  <br>
+  <%== @pagy.series_nav(:bulma) %>
+  <br>
+<% end %>
+<br>
+<br>
+<%# modal %>
+<div id="search_modal" class="modal">
   <div class="modal-background"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title" id="cem-title"></p>
-      <button class="delete" aria-label="close"></button>
-    </header>
-    <section class="modal-card-body">
-      <p>
-        <span class="icon material-icons-round mr-2">check_circle</span>
-        <span id="cem-status" class="tag is-rounded"></span>
-      </p>
-      <div class="mt-4 flexx">
-        <span class="icon material-icons-round mr-2">assignment_ind</span>
-        <div>
-          <p class="labell">Cliente</p>
-          <p id="cem-customer"></p>
+  <div class="modal-content">
+    <div class="box">
+      <%= search_form_for @q, url: items_path do |f| %>
+        <div class="columns is-multiline">
+          <div class="column is-12">
+            <%= f.search_field :folio_eq, class: 'input is-rounded', placeholder: 'Folio' %>
+          </div>
+          <div class="column is-6">
+            <div class="control">
+              <%= f.select :customer_id_eq,
+                options_for_select(@customers.map {|c| ["#{c.razon} #{c.tel_prefix} #{c.tel}", c.id]}, @q.customer_id_eq),
+                { prompt: "Cliente" },
+                { "data-controller": "slimselect", class: "ss2",}
+              %>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="control">
+              <%= f.select :user_id_eq,
+                options_for_select(@users.map {|u| [u.full_name, u.id]}, @q.user_id_eq),
+                { prompt: "Agente/Vendedor" },
+                { "data-controller": "slimselect", class: "ss2",}
+              %>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="select is-rounded">
+              <%= f.select :status_eq, options_for_select(Event.statuses.keys.map {|k| [k.humanize, k]}, @q.status_eq), {prompt: "Status"}, {class: ""} %>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="select is-rounded">
+              <%= f.select :canal_eq, options_for_select(Event.canals.keys.map {|k| [k.humanize, k]}, @q.canal_eq), {prompt: "Canal"}, {class: ""} %>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="mt-2 flexx">
-        <span class="icon material-icons-round mr-2">event</span>
-        <div>
-          <p class="labell">Dia</p>
-          <p id="cem-day"></p>
-        </div>
-      </div>
-      <div class="mt-2 flexx">
-        <span class="icon material-icons-round mr-2">access_time_filled</span>
-        <div>
-          <p class="labell">Hora</p>
-          <p id="cem-time"></p>
-        </div>
-      </div>
-      <div class="mt-2 flexx">
-        <span class="icon material-icons-round mr-2">assignment_ind</span>
-        <div>
-          <p class="labell">Agente</p>
-          <p id="cem-agente"></p>
-        </div>
-      </div>
-      <div class="mt-2" id="cem-body-wrap" hidden>
-        <span class="icon material-icons-round mr-2">description</span>
-        <p class="labell">Descripción</p>
-        <p id="cem-body"></p>
-      </div>
-    </section>
-    <footer class="modal-card-foot">
-      <div class="buttons">
-        <a id="cem-asistencia" href="#" data-turbo-method="post" class="button is-primary is-rounded">
-          <span class="material-icons-round has-text-dark mr-2">check</span>
-          Marcar asistencia
-        </a>
-        <a id="cem-ausencia" href="#" data-turbo-method="post" class="button is-info is-rounded">
-          <span class="material-icons-round has-text-white mr-2">clear</span>
-          Marcar ausencia
-        </a>
-        <a id="cem-show" href="#" class="button is-rounded">
-          <span class="material-icons-round has-text-white">remove_red_eye</span>
-        </a>
-      </div>
-    </footer>
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary is-fullwidth" %>
+      <% end %>
+    </div>
   </div>
 </div>
-<div
-  id="fullcalendar"
-  data-controller="calendar"
-  data-calendar-events-url-value="<%= events_path(format: :json) %>"
-  data-calendar-business-hours-value="<%= @corp.to_fullcalendar_business_hours.to_json %>"
-  data-calendar-new-event-url-value="<%= new_event_path %>"
-  data-calendar-slot-duration-value="<%= @corp.slot_duration || 15 %>"
-  style="min-height: 600px;"
-></div>

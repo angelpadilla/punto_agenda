@@ -46,9 +46,7 @@ class UserPanel::OrdersController < UserPanelController
       session[:carrito_id] = @carrito.id
     end
 
-    @brands = Rails.cache.fetch("brands_for_items_index", expires_in: 1.month) do
-      @corp.brands.default
-    end
+    @brands = @corp.brands.default
 
     items = @corp.items.available.includes(
       :brand,
@@ -64,6 +62,18 @@ class UserPanel::OrdersController < UserPanelController
   end
 
   def edit
+    @brands = @corp.brands.default
+    items = @corp.items.available.includes(
+      :brand,
+      img1_attachment: :blob,
+      img2_attachment: :blob,
+      img3_attachment: :blob,
+      img4_attachment: :blob,
+      img5_attachment: :blob
+    )
+
+    @q = items.ransack(params[:q])
+    @pagy, @items = pagy(@q.result(distinct: true), limit: 12)
   end
 
   def create
@@ -176,8 +186,9 @@ class UserPanel::OrdersController < UserPanelController
   end
 
   def update
+    @order.assign_attributes(order_params)
     respond_to do |format|
-      if @order.update(order_params)
+      if @order.save
         format.html { redirect_to order_path(@order), notice: "Venta actualizada exitosamente." }
         format.json { render :show, status: :ok, location: @order }
       else

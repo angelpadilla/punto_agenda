@@ -1,0 +1,20 @@
+<% content_for :title, "Detalle de la venta" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Edicion de venta  <%= @order.folio %></h2>
+  <div class="actions">
+    <%= link_to order_path(@order), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver 
+    <% end %>
+  </div>
+</div>
+<div class="columns is-mobile mt-4">
+  <%= render 'items', order: @order %>
+  <div class="column is-3-desktop is-hidden-touch">
+    <div id="ticket_resumen">
+      <%= render 'ticket_resumen', order: @order %>
+    </div>
+  </div>
+</div>

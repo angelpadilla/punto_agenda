@@ -39,6 +39,15 @@ class Order < ApplicationRecord
     [ "Pre-factura", :pre_factura ]
   ]
 
+  Tipo4 = [
+    [ "Remisión", :remision ],
+    [ "Factura", :factura ],
+  ]
+
+  Tipo5 = [
+    [ "Remisión", :remision ]
+  ]
+
   enum :status_pago, {
     pagado: "pagado",
     credito: "credito",

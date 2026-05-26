@@ -19,8 +19,11 @@
   <%# ── Header ──────────────────────────────────────────────────────── %>
   <div class="flexx space-b flex-end mb-5">
     <div>
-      <p class="labell">Bienvenido de vuelta,</p>
-      <h2 class="titlee"><%= @userr.full_name&.titleize || @userr.email %> <%= @userr.id %></h2>
+      <p class="labell">Bienvenido de vuelta, <%= @userr.full_name&.titleize || @userr.email %> <%= @userr.id %></p>
+      <h2 class="titlee">
+        <%= @corp.name&.titleize %> (<%= @corp.sku %>)
+        <span class="tag"><%= @corp.tipo_plan %></span>
+      </h2>
       <p class="labell"><%= l(DateTime.current, format: :long) %></p>
     </div>
     <div class="actions">
@@ -56,6 +59,10 @@
       <button class="dash_tab_btn" data-action="click->dash-tabs#show" data-dash-tabs-panel-param="inventario">
         <%= image_tag 'layers.svg', class: 'invert' %> Inventario
       </button>
+      <%= link_to corp_home_path(@corp.sku), class: "dash_tab_btn" do %>
+        <%= image_tag 'layers.svg', class: 'invert' %>
+        Mi tienda
+      <% end %>
     </div>
     <%# ══ HOY ══════════════════════════════════════════════════════ %>
     <div id="panel-hoy" class="dash_panel">

@@ -2,55 +2,24 @@ class UserPanel::EventsController < UserPanelController
   before_action :set_event, only: %i[ show edit update destroy ]
 
   def index
+    @customers = @corp.customers.default
+    @users = @corp.users.default
     events = @corp.events.default
 
-    respond_to do |format|
-      format.html do
-        @q = events.ransack(params[:q])
-        @pagy, @events = pagy(@q.result(distinct: true), limit: 10)
-      end
-      format.json do
-        range_start = Time.zone.parse(params[:start]) if params[:start].present?
-        range_end   = Time.zone.parse(params[:end])   if params[:end].present?
-
-        scoped = events
-        scoped = scoped.where("hora_inicio >= ?", range_start) if range_start
-        scoped = scoped.where("hora_inicio <= ?", range_end)   if range_end
-
-        render json: scoped.map { |e|
-          {
-            id: e.id,
-            title: e.title,
-            start: e.hora_inicio&.iso8601,
-            end: e.hora_final&.iso8601,
-            url: event_path(e),
-            classNames: [ "fc-event-#{e.status}" ],
-            extendedProps: {
-              status: e.status,
-              customer: e.customer&.razon&.titleize,
-              customer_tel: e.customer&.tel_prefix.to_s + e.customer&.tel.to_s,
-              agente: e.user&.full_name,
-              body: e.body.presence,
-              edit_url: edit_event_path(e),
-              show_url: event_path(e),
-              marcar_asistencia_url: marcar_asistencia_events_path(id: e),
-              marcar_ausencia_url: marcar_ausencia_events_path(id: e)
-            }
-          }
-        }
-      end
-    end
+    @q = events.ransack(params[:q])
+    @pagy, @events = pagy(@q.result(distinct: true), limit: 10)
+    
   end
 
   def monthly
-    @events = @corp.events.indexx
+    # @events = @corp.events.indexx
 
-    @q = @events.ransack(params[:q])
+    # @q = @events.ransack(params[:q])
   end
   def weekly
-    @events = @corp.events.indexx
+    # @events = @corp.events.indexx
 
-    @q = @events.ransack(params[:q])
+    # @q = @events.ransack(params[:q])
   end
 
   def daily
@@ -60,19 +29,41 @@ class UserPanel::EventsController < UserPanelController
     @q = events.ransack(params[:q])
   end
 
+  def slot_agents
+    date = Date.parse(params[:dia])
+    info = @corp.available_slots_for_day(date)
+    if info
+      data = info[:slots].each_with_object({}) do |slot, h|
+        h[slot[:range]] = slot[:booked_agents].map(&:id)
+      end
+      render json: data
+    else
+      render json: {}
+    end
+  rescue ArgumentError, TypeError
+    render json: {}, status: :bad_request
+  end
+
   def show
   end
 
   def new
+    if params[:dia].present? && Date.parse(params[:dia]) < Date.today
+      redirect_to new_event_path(params.permit(:customer_id, :slot).except(:dia, :slot))
+      return
+    end
     if params[:customer_id].present?
       @customer = @corp.customers.find(params[:customer_id])
       @event = Event.new(customer: @customer)
     else
       @event = Event.new
     end
+  rescue ArgumentError
+    redirect_to new_event_path
   end
 
   def edit
+    return redirect_back(fallback_location: events_path, alert: "Solo se pueden editar los eventos status: agendados.") unless @event.agendado?
   end
 
   def create
@@ -111,7 +102,8 @@ class UserPanel::EventsController < UserPanelController
 
     respond_to do |format|
       if @event.save
-        format.html { redirect_to events_path, notice: "Evento creado." }
+        EventMailer.with(event: @event, email: @event.customer.email).send_event.deliver_later
+        format.html { redirect_to events_path, notice: "Evento creado y notificado al cliente por email." }
         format.json { render :show, status: :created, location: @event }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -125,15 +117,14 @@ class UserPanel::EventsController < UserPanelController
     @event = @corp.events.find(params[:id])
     customer = @event.customer
     respond_to do |format|
-      if @event.en_proceso?
+      if @event.agendado?
         @event.update(status: :completado)
         customer.update(success_events: customer.success_events + 1) if customer
-
         format.html { redirect_back fallback_location: events_path, notice: "Evento marcado como asistida.", status: :see_other }
         format.json { render :show, status: :ok, location: @event }
       else
-        format.html { redirect_back fallback_location: events_path, alert: "Solo se pueden marcar como asistida los eventos en proceso.", status: :see_other }
-        format.json { render json: { error: "Solo se pueden marcar como asistida los eventos en proceso." }, status: :unprocessable_entity }
+        format.html { redirect_back fallback_location: events_path, alert: "Solo se pueden marcar como asistida los eventos agendados.", status: :see_other }
+        format.json { render json: { error: "Solo se pueden marcar como asistida los eventos agendados." }, status: :unprocessable_entity }
       end
     end
   end
@@ -143,17 +134,27 @@ class UserPanel::EventsController < UserPanelController
     @event = @corp.events.find(params[:id])
     customer = @event.customer
     respond_to do |format|
-      if  @event.en_proceso?
+      if @event.agendado?
         @event.update(status: :ausencia)
         customer.update(failed_events: customer.failed_events + 1) if customer
-
-        format.html { redirect_back fallback_location: events_path, notice: "Evento marcado como ausente.", status: :see_other }
+        EventMailer.with(event: @event, email: @event.customer.email).sent_event_ausencia.deliver_later
+        format.html { redirect_back fallback_location: events_path, notice: "Evento marcado como ausente y notificado al cliente por email", status: :see_other }
         format.json { render :show, status: :ok, location: @event }
       else
         format.html { redirect_back fallback_location: events_path, alert: "Solo se pueden marcar como ausente los eventos en proceso.", status: :see_other }
         format.json { render json: { error: "Solo se pueden marcar como ausente los eventos en proceso." }, status: :unprocessable_entity }
       end
     end
+  end
+
+  def confirmar
+    @event = @corp.events.find(params[:id])
+    # validar que el evento esté en estado por_confirmar
+    return redirect_back(fallback_location: events_path, alert: "Solo se pueden confirmar los eventos por confirmar.") if !@event.por_confirmar?
+
+    @event.update(status: :agendado)
+    EventMailer.with(event: @event, email: @event.customer.email).sent_event_confirmation.deliver_later
+    redirect_back(fallback_location: events_path, notice: "Evento confirmado y notificado al cliente por email.", status: :see_other)
   end
 
   def update

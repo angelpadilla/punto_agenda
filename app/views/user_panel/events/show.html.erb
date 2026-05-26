@@ -2,17 +2,19 @@
 <div class="flexx space-b flex-end">
   <h2 class="titlee">Detalle del evento</h2>
   <div class="actions">
-    <%= link_to events_path, class: "button is-rounded" do %>
+    <%= link_to :back, class: "button is-rounded" do %>
       <span class="icon mr-2">
         <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
       </span>
-      Volver a listado 
+      Volver 
     <% end %>
-    <%= link_to edit_event_path(@event), class: "button is-rounded" do %>
-      <span class="icon mr-2">
-        <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
-      </span>
-      Editar
+    <% if @event.agendado? %>
+      <%= link_to edit_event_path(@event), class: "button is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+        </span>
+        Editar
+      <% end %>
     <% end %>
     <div class="dropdown is-right is-hoverable">
       <div class="dropdown-trigger">
@@ -39,13 +41,15 @@
               SMS
             </a>
           <% end %>
-          <%# enviar por whatsapp %>
-          <a class="mtrigger dropdown-item" data-target="send_event_whatsapp">
-            <span class="icon">
-              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
-            </span>
-            WhatsApp
-          </a>
+          <% if @corp.premium? or @corp.plus? %>
+            <%# enviar por whatsapp %>
+            <a class="mtrigger dropdown-item" data-target="send_event_whatsapp">
+              <span class="icon">
+                <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+              </span>
+              WhatsApp
+            </a>
+          <% end %>
         </div>
       </div>
     </div>
@@ -58,7 +62,7 @@
         <%= image_tag 'calendar2.svg', class: "invert", alt: "Totales" %>
       </span>
       <span class="titlee"><%= @event.title %></span>
-      <% if @event.en_proceso? %>
+      <% if @event.agendado? %>
         <span class="tag is-rounded"><%= @event.status&.titleize %></span>
       <% elsif @event.completado? %>
         <span class="tag is-rounded is-success"><%= @event.status&.titleize %></span>
@@ -78,17 +82,6 @@
       <div class="column is-6">
         <div class="flexx">
           <span class="icon material-icons-round mr-2">
-            assignment_ind
-          </span>
-          <div>
-            <p class="labell">Cliente: </p>
-            <p><%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %>)</p>
-          </div>
-        </div>
-      </div>
-      <div class="column is-6">
-        <div class="flexx">
-          <span class="icon material-icons-round mr-2">
             fingerprint
           </span>
           <div>
@@ -100,11 +93,36 @@
       <div class="column is-6">
         <div class="flexx">
           <span class="icon material-icons-round mr-2">
+            assignment_ind
+          </span>
+          <div>
+            <p class="labell">Cliente: </p>
+            <p><%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %>)</p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            assignment_ind
+          </span>
+          <div>
+            <p class="labell">Agente/colaborador: </p>
+            <p><%= @event.user.full_name %></p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
             event
           </span>
           <div>
-            <p class="labell">Dia: </p>
-            <p><%= @event.hora_inicio.strftime("%d/%m/%Y") %></p>
+            <p class="labell">Dia y hora: </p>
+            <p>
+              <%= @event.hora_inicio.strftime("%d/%m/%Y") %> |
+              <%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %>
+            </p>
           </div>
         </div>
       </div>
@@ -132,17 +150,6 @@
           </div>
         </div>
       <% end %>
-      <div class="column is-12">
-        <div class="flexx">
-          <span class="icon material-icons-round mr-2">
-            assignment_ind
-          </span>
-          <div>
-            <p class="labell">Agente/colaborador: </p>
-            <p><%= @event.user.full_name %></p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -202,10 +209,11 @@
     </div>
   </div>
 <% end %>
-<div id="send_event_whatsapp" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-    <%
+<% if @corp.premium? or @corp.plus? %>
+  <div id="send_event_whatsapp" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <%
       wa_tel = "#{@event.customer&.tel_prefix&.delete('+')}#{@event.customer&.tel}"
       wa_msg = "Tu evento programado: #{@event.title}\n" \
                "Dia: #{@event.hora_inicio.strftime('%d/%m/%Y')}\n" \
@@ -214,37 +222,38 @@
                "Gracias por tu preferencia en #{@corp.name}!"
       wa_url = "https://wa.me/#{wa_tel}?text=#{CGI.escape(wa_msg)}"
     %>
-    <header class="modal-card-head">
-      <p class="modal-card-title">Enviar por WhatsApp</p>
-      <div class="delete" aria-label="close"></div>
-    </header>
-    <section class="modal-card-body">
-      <div class="mt-4 flexx">
-        <span class="icon mr-2">
-          <%= image_tag 'call-chat-rounded-svgrepo-com.svg', alt: 'download', class: 'invert' %>
-        </span>
-        <div>
-          <p class="labell">Telefono</p>
-          <p><%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %></p>
+      <header class="modal-card-head">
+        <p class="modal-card-title">Enviar por WhatsApp</p>
+        <div class="delete" aria-label="close"></div>
+      </header>
+      <section class="modal-card-body">
+        <div class="mt-4 flexx">
+          <span class="icon mr-2">
+            <%= image_tag 'call-chat-rounded-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+          </span>
+          <div>
+            <p class="labell">Telefono</p>
+            <p><%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %></p>
+          </div>
         </div>
-      </div>
-      <div class="mt-4 flexx">
-        <span class="icon mr-2">
-          <%= image_tag 'chat-round-call-svgrepo-com.svg', alt: 'download', class: 'invert' %>
-        </span>
-        <div class="flexx-1">
-          <p class="labell">Mensaje a enviar</p>
-          <pre style="white-space: pre-wrap; font-size: 0.9rem;"><%= wa_msg %></pre>
+        <div class="mt-4 flexx">
+          <span class="icon mr-2">
+            <%= image_tag 'chat-round-call-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+          </span>
+          <div class="flexx-1">
+            <p class="labell">Mensaje a enviar</p>
+            <pre style="white-space: pre-wrap; font-size: 0.9rem;"><%= wa_msg %></pre>
+          </div>
         </div>
-      </div>
-    </section>
-    <footer class="modal-card-foot">
-      <%= link_to wa_url, target: "_blank", rel: "noopener", class: "button is-success is-rounded" do %>
-        <span class="icon mr-2">
-          <%= image_tag 'send.svg', alt: 'whatsapp' %>
-        </span>
-        Abrir WhatsApp
-      <% end %>
-    </footer>
+      </section>
+      <footer class="modal-card-foot">
+        <%= link_to wa_url, target: "_blank", rel: "noopener", class: "button is-success is-rounded" do %>
+          <span class="icon mr-2">
+            <%= image_tag 'send.svg', alt: 'whatsapp' %>
+          </span>
+          Abrir WhatsApp
+        <% end %>
+      </footer>
+    </div>
   </div>
-</div>
+<% end %>

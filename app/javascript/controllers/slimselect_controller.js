@@ -27,6 +27,7 @@ export default class extends Controller {
             };
         }
 
-        this.selectt = new SlimSelect(config);
+        this.selectt = new SlimSelect(config);        // Expose instance on element so other controllers can refresh it
+        this.element._slimInstance = this.selectt
     }
 }

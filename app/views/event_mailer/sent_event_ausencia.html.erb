@@ -11,9 +11,8 @@
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <h2>Cita agendada</h2>
-                    <p>Saludos, <%= @event.customer&.razon&.titleize %></p>
-                    <p>Te adjuntamos los detalles de tu cita/evento con <b><%= @corp.name&.titleize %></b>.</p>
+                    <h2>Cita no asistida</h2>
+                    <p>Lamentamos informarte que no pudiste asistir a tu cita/evento con <b><%= @corp.name&.titleize %></b>.</p>
                     <br>
                     <p>
                       <b>Cliente:</b> <%= @event.customer&.razon&.titleize %>
@@ -38,7 +37,7 @@
                     <p>Gracias por tu preferencia, que tengas un excelente día.</p>
                     <br>
                     <p>
-                      *Recuerda que puedes cancelar o reagendar tu cita con al menos 24 horas de anticipación para evitar perder tu depósito por cancelación tardía o no presentación. Si necesitas asistencia, contáctanos lo antes posible.
+                      *Recuerda que al no asistir a tu cita/evento pierdes tu depósito y puede afectar tu historial como cliente. Si necesitas asistencia, contáctanos lo antes posible.
                     </p>
                   </td>
                 </tr>

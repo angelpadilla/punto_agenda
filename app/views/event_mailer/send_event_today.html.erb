@@ -11,14 +11,15 @@
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <p>Saludos.</p>
+                    <h1>Recordatorio de cita</h1>
+                    <p>Saludos, <%= @event.customer&.razon&.titleize %></p>
                     <p>Recordatorio de tu cita/evento con <b><%= @corp.name&.titleize %></b>.</p>
                     <br>
                     <p>
-                      <b>Folio:</b> <%= @event.folio %>
+                      <b>Cliente:</b> <%= @event.customer&.razon&.titleize %>
                     </p>
                     <p>
-                      <b>Cliente:</b> <%= @event.customer&.razon&.titleize %>
+                      <b>Folio:</b> <%= @event.folio %>
                     </p>
                     <p>
                       <b>Día:</b> <%= @event.hora_inicio.strftime("%d/%m/%Y") %>
@@ -28,6 +29,10 @@
                     </p>
                     <p>
                       <b>Agente:</b> <%= @event.user&.full_name&.titleize %>
+                    </p>
+                    <p>Si tienes dudas o comentarios, no dudes en contactarnos.</p>
+                    <p>
+                      <b>Tel/whatsapp: </b><%= @event.corp&.tel_prefix %> <%= @event.corp.phone %>
                     </p>
                     <br>
                     <p>Gracias por tu preferencia, que tengas un excelente día.</p>

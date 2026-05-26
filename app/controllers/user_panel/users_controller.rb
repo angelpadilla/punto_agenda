@@ -12,6 +12,10 @@ class UserPanel::UsersController < UserPanelController
   end
 
   def show
+    # validations
+    if current_user.colaborador? and @user.id != current_user.id
+      redirect_to user_panel_home_path, alert: "No tienes permisos para ver este usuario."
+    end
   end
 
   def new

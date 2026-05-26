@@ -1,16 +1,21 @@
+<%= render 'user_panel/events/button_selector' %>
 <div class="flexx space-b flex-end mt-4">
-  <%= render 'user_panel/events/button_selector' %>
-  <div class="calendar-heading">
-    <nav>
-      <%= link_to t('simple_calendar.previous', default: 'Anterior'), calendar.url_for_previous_view %>
-      <%= link_to t('simple_calendar.today', default: 'Hoy'), calendar.url_for_today_view %>
-      <%= link_to t('simple_calendar.next', default: 'Siguiente'), calendar.url_for_next_view %>
-    </nav>
+  <div class="buttons has-addons events_actions">
+    <%= link_to calendar.url_for_previous_view, data: {turbo: false}, class: "button" do %>
+      <span class=" material-icons-round">arrow_left</span>
+      <%= t('simple_calendar.previous', default: 'Anterior') %>
+    <% end %>
+    <%= link_to calendar.url_for_today_view, data: {turbo: false}, class: "button" do %>
+      <%= t('simple_calendar.today', default: 'Hoy') %>
+    <% end %>
+    <%= link_to calendar.url_for_next_view, data: {turbo: false}, class: "button" do %>
+      <%= t('simple_calendar.next', default: 'Siguiente') %>
+      <span class=" material-icons-round">arrow_right</span>
+    <% end %>
   </div>
   <div class="actions">
     <div class="button is-rounded">
       <span class="icon">
-        <%# boton AI para generar reportes especiales %>
         <%= image_tag 'search2.svg', alt: 'filter', class: 'invert' %>
       </span>
     </div>

@@ -1,1 +1,1 @@
-Version = "0.7.0".freeze
+Version = "0.8.0".freeze
