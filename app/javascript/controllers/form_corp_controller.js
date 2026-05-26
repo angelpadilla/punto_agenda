@@ -28,7 +28,11 @@ export default class extends Controller {
     toggleMinBookAmount() {
         const show = this.onlinePaymentsCheckTarget.checked && this.publicCalendarCheckTarget.checked
         const minBookContainer = document.querySelector(".minBookAmountContainer")
-        if (minBookContainer) minBookContainer.style.display = show ? "" : "none"
+        if (minBookContainer) {
+            minBookContainer.style.display = show ? "" : "none"
+            const input = minBookContainer.querySelector("input")
+            if (input) input.disabled = !show
+        }
     }
 
     setBussinessHours() {
