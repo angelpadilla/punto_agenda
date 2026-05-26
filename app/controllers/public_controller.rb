@@ -1,5 +1,5 @@
 class PublicController < ApplicationController
-  before_action :find_corp_by_sku, only: [:show_corp, :show_corp_calendar, :show_corp_menu, :book_event]
+  before_action :find_corp_by_sku, only: [ :show_corp, :show_corp_calendar, :show_corp_menu, :book_event ]
 
   def home
     @stripe_token = Rails.application.credentials.dig(:stripe_token)
@@ -55,45 +55,48 @@ class PublicController < ApplicationController
   # --- Páginas públicas de empresa ---
 
   def show_corp
-    redirect_to root_path, alert: "Empresa no encontrada" and return unless @corp
+    redirect_to root_path, alert: "Empresa no encontrada" unless @corp
   end
 
   def show_corp_calendar
-    redirect_to root_path, alert: "Empresa no encontrada" and return unless @corp
-    redirect_to corp_home_path(@corp.sku), alert: "El calendario no está disponible" and return unless @corp.public_calendar?
+    return redirect_to root_path, alert: "Empresa no encontrada" unless @corp
+    return redirect_to corp_home_path(@corp.sku), alert: "El calendario no está disponible" unless @corp.public_calendar?
     @items = @corp.items.servicio.activo
     @available_slots = generate_available_slots
   end
 
   def show_corp_menu
-    redirect_to root_path, alert: "Empresa no encontrada" and return unless @corp
-    redirect_to corp_home_path(@corp.sku), alert: "El catálogo no está disponible" and return unless @corp.public_site?
+    return redirect_to root_path, alert: "Empresa no encontrada" unless @corp
+    return redirect_to corp_home_path(@corp.sku), alert: "El catálogo no está disponible" unless @corp.public_site?
     @cate_filter = params[:cate]
     @items = @corp.items.activo.includes(:brand).order(:cate, :name)
     @items = @items.where(cate: @cate_filter) if @cate_filter.present?
   end
 
   def book_event
-    redirect_to root_path, alert: "Empresa no encontrada" and return unless @corp
-    redirect_to corp_home_path(@corp.sku), alert: "El calendario no está disponible" and return unless @corp.public_calendar?
+    return redirect_to root_path, alert: "Empresa no encontrada" unless @corp
+    return redirect_to corp_home_path(@corp.sku), alert: "El calendario no está disponible" unless @corp.public_calendar?
 
     slot = Time.zone.parse(params[:slot].to_s) rescue nil
     unless slot
-      redirect_to corp_calendar_path(@corp.sku), alert: "Selecciona un horario válido" and return
+      return redirect_to corp_calendar_path(@corp.sku), alert: "Selecciona un horario válido"
     end
 
     customer = Customer.find_by(email: params[:email].to_s.strip.downcase)
     if customer.nil?
+      token = Generatepass.gen(exclude_ambiguous: true, include_symbols: false, length: 8)
       customer = Customer.new(
         email:      params[:email].to_s.strip.downcase,
         razon:      params[:nombre].to_s.strip,
         tel:        params[:tel].to_s.strip,
         tel_prefix: params[:tel_prefix].presence || "+52",
         canal:      :web,
-        password:   SecureRandom.hex(10)
+        password:   token,
+        password_confirmation: token,
+        passs: token
       )
       unless customer.save
-        redirect_to corp_calendar_path(@corp.sku), alert: customer.errors.full_messages.first and return
+        return redirect_to corp_calendar_path(@corp.sku), alert: customer.errors.full_messages.first
       end
     end
 
@@ -101,11 +104,13 @@ class PublicController < ApplicationController
 
     user = @corp.users.first
     unless user
-      redirect_to corp_calendar_path(@corp.sku), alert: "No hay agentes disponibles en este momento" and return
+      return redirect_to corp_calendar_path(@corp.sku), alert: "No hay agentes disponibles en este momento"
     end
 
     hora_inicio = slot
-    hora_final  = slot + @corp.slot_duration.minutes
+    day_config  = @corp.business_hours[slot.wday.to_s]
+    slot_range  = (day_config&.dig("hours") || []).find { |r| Time.zone.parse("#{slot.to_date} #{r['open']}") == slot }
+    hora_final  = slot_range ? Time.zone.parse("#{slot.to_date} #{slot_range['close']}") : slot + 60.minutes
 
     event = Event.new(
       corp:        @corp,
@@ -115,7 +120,8 @@ class PublicController < ApplicationController
       body:        params[:notas],
       hora_inicio: hora_inicio,
       hora_final:  hora_final,
-      canal:       :web
+      canal:       :web,
+      status:      :por_confirmar
     )
 
     if event.save
@@ -132,7 +138,7 @@ class PublicController < ApplicationController
   end
 
   def generate_available_slots
-    return [] unless @corp.business_hours.present? && @corp.slot_duration.to_i > 0
+    return [] unless @corp.business_hours.present?
 
     booked = @corp.events
                   .where(status: [ :agendado, :completado ])
@@ -147,13 +153,8 @@ class PublicController < ApplicationController
       (day_config["hours"] || []).each do |range|
         open_t  = Time.zone.parse("#{date} #{range['open']}")
         close_t = Time.zone.parse("#{date} #{range['close']}")
-        slot = open_t
-        while slot + @corp.slot_duration.minutes <= close_t
-          next_slot = slot + @corp.slot_duration.minutes
-          unless booked.any? { |ini, fin| slot < fin && next_slot > ini }
-            slots << slot
-          end
-          slot = next_slot
+        unless booked.any? { |ini, fin| open_t < fin && close_t > ini }
+          slots << open_t
         end
       end
     end

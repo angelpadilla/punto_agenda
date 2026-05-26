@@ -52,7 +52,7 @@
       </div>
       <div class="dropdown-menu" role="menu">
         <div class="dropdown-content">
-          <%= link_to ticket_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
+          <%= link_to ticket_path(@order.folio), class: "dropdown-item" do %>
             <span class="icon">
               <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
             </span>
@@ -66,7 +66,7 @@
               XML
             <% end %>
           <% end %>
-          <%= link_to ticket80_path(@order.folio), target: '_blank', class: "dropdown-item" do %>
+          <%= link_to ticket80_path(@order.folio), class: "dropdown-item" do %>
             <span class="icon">
               <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
             </span>
@@ -220,7 +220,7 @@
         <% @order.line_items.each do |line| %>
           <tr>
             <th>
-              <%= link_to line.item.name.titleize, line.item, target: '_blank' %>
+              <%= link_to line.item.name.titleize, line.item %>
             </th>
             <td><%= line.cantidad %></td>
             <td><%= number_to_currency(line.precio) %></td>
@@ -346,13 +346,13 @@
                         <button class="modal-close is-large" aria-label="close"></button>
                       </div>
                     <% end %>
-                    <%= link_to pdf_abono_path( depo.folio), class: "button is-link is-small is-rounded", target: '_blank' do %>
+                    <%= link_to pdf_abono_path( depo.folio), class: "button is-link is-small is-rounded" do %>
                       <span class="material-icons-round">
                         picture_as_pdf
                       </span>
                       PDF
                     <% end %>
-                    <%= link_to ticket_abono_path(depo.folio), class: "button is-link is-small is-rounded", target: '_blank' do %>
+                    <%= link_to ticket_abono_path(depo.folio), class: "button is-link is-small is-rounded" do %>
                       <span class="material-icons-round">
                         theaters
                       </span>

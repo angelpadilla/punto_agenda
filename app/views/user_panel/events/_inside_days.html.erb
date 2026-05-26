@@ -1,0 +1,165 @@
+<div class="day_number flexx flex-block vertical-center horizontal-center mtrigger" data-target="date_info_d<%= date.strftime('%Y%m%d') %>">
+  <%# date.day %>
+  <div class="flexx vertical-center horizontal-center">
+    <%= date.day %>
+    <span class="icon">
+      <%= image_tag 'info.svg', alt: 'info', class: 'invert', loading: 'lazy' %>
+    </span>
+  </div>
+  <%# icono info y modal para mas detalles del dia %>
+  <% if info_day %>
+    <progress class="progress is-neon" value="<%= info_day[:ocupados] %>" max="<%= info_day[:total] %>"></progress>
+  <% else %>
+    <progress class="progress is-danger" value="1" max="1"></progress>
+  <% end %>
+</div>
+<%# modal for date_info %>
+<div id="date_info_d<%= date.strftime('%Y%m%d') %>" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <% if info_day %>
+        <h3 class="title is-4">Info completa del <%= l(date, format: :long) %></h3>
+        <div class="columns is-multiline">
+          <div class="column is-6">
+            <span class="icon material-icons-round">bubble_chart</span>
+            <div>
+              <p class="labell">Total slots en el dia: </p>
+              <p><%= info_day[:total] %></p>
+            </div>
+          </div>
+          <div class="column is-6">
+            <span class="icon material-icons-round">event_seat</span>
+            <div>
+              <p class="labell">Total slots disponibles: </p>
+              <p><%= info_day[:disponibles] %></p>
+            </div>
+          </div>
+          <div class="column is-6">
+            <span class="icon material-icons-round">check_circle</span>
+            <div>
+              <p class="labell">Total slots agendados: </p>
+              <p><%= info_day[:ocupados] %></p>
+            </div>
+          </div>
+          <div class="column is-6">
+            <span class="icon material-icons-round">pie_chart</span>
+            <div>
+              <p class="labell">Porcentaje de ocupación dia: </p>
+              <p><%= info_day[:pct] %>%</p>
+            </div>
+          </div>
+          <div class="column is-6">
+            <span class="icon material-icons-round">access_time</span>
+            <div>
+              <p class="labell">Abre: </p>
+              <p><%= info_day[:first_open] %></p>
+            </div>
+          </div>
+          <div class="column is-6">
+            <span class="icon material-icons-round">access_time</span>
+            <div>
+              <p class="labell">Cierra: </p>
+              <p><%= info_day[:last_close] %></p>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <p class="has-text-grey">Día no laborable</p>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<% if info_day %>
+  <% info_day[:slots].each do |slot| %>
+    <div class="event_snippet mtrigger" data-target="slot_d<%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>">
+      <div>
+        <% if slot[:fully_booked] %>
+          <span class="tag is-rounded is-success">Lleno total</span>
+        <% else %>
+          <span class="tag is-rounded mr-1"><%= slot[:agentes_libres] %></span> Agentes libres
+        <% end %>
+      </div>
+      <div class="snippet_body">
+        <%= slot[:start] %> - <%= slot[:end] %>
+      </div>
+    </div>
+    <%# modal %>
+    <div id="slot_d<%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box">
+          <h3 class="title is-4"><%= slot[:start] %> - <%= slot[:end] %></h3>
+          <div class="columns is-multiline is-mobile">
+            <div class="column is-4-desktop is-6-tablet is-6-mobile">
+              <span class="icon material-icons-round">label</span>
+              <div>
+                <p class="labell">Estado: </p>
+                <% if slot[:fully_booked] %>
+                  <span class="tag is-rounded is-success">Lleno total</span>
+                <% else %>
+                  <span class="tag is-rounded">Disponible</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="column is-4-desktop is-6-tablet is-6-mobile">
+              <span class="icon material-icons-round">event_seat</span>
+              <div>
+                <p class="labell">Agentes libres: </p>
+                <p><%= slot[:agentes_libres] %></p>
+              </div>
+            </div>
+            <div class="column is-4-desktop is-6-tablet is-6-mobile">
+              <span class="icon material-icons-round">check_circle</span>
+              <div>
+                <p class="labell">Agentes ocupados: </p>
+                <p><%= slot[:agentes_ocupados] %></p>
+              </div>
+            </div>
+            <div class="column is-4-desktop is-6-tablet is-6-mobile">
+              <span class="icon material-icons-round">assignment_ind</span>
+              <div>
+                <p class="labell">Agentes libres: </p>
+                <% if slot[:free_agents].any? %>
+                  <ul>
+                    <% slot[:free_agents].each do |user| %>
+                      <li><%= user&.full_name || "Agente ##{user.id}" %></li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <p>Ninguno</p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <%# I'm in the slot free agents? %>
+          <% im_free = slot[:free_agents].any? { |user| user == current_user } %>
+          <% if !slot[:fully_booked] and date >= Date.current %>
+            <% if (current_user.colaborador? and im_free) or current_user.admin? %>
+              <%= link_to new_event_path(dia: date, slot: slot[:range]), class: "button is-rounded is-info is-fullwidth", target: "_blank" do %>
+                <span class="icon mr-2">
+                  <%= image_tag 'plus.svg', alt: 'agendar', loading: 'lazy', class: "invert" %>
+                </span>
+                Agendar nuevo
+              <% end %>
+            <% else %>
+              <div class="button is-rounded is-info is-fullwidth is-disabled" disabled="true">
+                <span class="icon mr-2">
+                  <%= image_tag 'plus.svg', alt: 'agendar', loading: 'lazy', class: "invert" %>
+                </span>
+                No estas libre en este horario
+              </div>
+            <% end %>
+          <% end %>
+          <% if slot[:events] and slot[:events].any? %>
+            <% slot[:events].each do |event| %>
+              <%= render 'snippet', event: event %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+  <% end %>
+<% end %>

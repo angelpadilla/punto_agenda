@@ -40,15 +40,6 @@ class Corp < ApplicationRecord
     "6" => { "active" => false, "hours" => [ { "open" => "09:00", "close" => "18:00" } ] }
   }.freeze
 
-  SLOT_DURATION_OPTIONS = [
-    [ "15 min", 15 ], [ "30 min", 30 ], [ "45 min", 45 ],
-    [ "1 hora", 60 ], [ "1 hora 15 min", 75 ], [ "1 hora 30 min", 90 ], [ "1 hora 45 min", 105 ],
-    [ "2 horas", 120 ], [ "2 horas 15 min", 135 ], [ "2 horas 30 min", 150 ], [ "2 horas 45 min", 165 ],
-    [ "3 horas", 180 ], [ "3 horas 15 min", 195 ], [ "3 horas 30 min", 210 ], [ "3 horas 45 min", 225 ],
-    [ "4 horas", 240 ], [ "4 horas 15 min", 255 ], [ "4 horas 30 min", 270 ], [ "4 horas 45 min", 285 ],
-    [ "5 horas", 300 ]
-  ].freeze
-
   enum :tipo_plan, basico: 0, plus: 1, premium: 2
   enum :status, inactivo: "inactivo", activo: "activo", probando: "probando", suspendido: "suspendido", moroso: "moroso"
 
@@ -355,10 +346,6 @@ class Corp < ApplicationRecord
       last_close:  Time.parse(all_slots.last[:end]).strftime("%I:%M %p"),
       slots:       enriched_slots
     }
-  end
-
-  def slot_duration_label
-    SLOT_DURATION_OPTIONS.find { |_, v| v == (slot_duration || 15) }&.first || "#{slot_duration || 15} min"
   end
 
   def to_fullcalendar_business_hours

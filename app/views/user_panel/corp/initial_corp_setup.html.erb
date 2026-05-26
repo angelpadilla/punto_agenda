@@ -204,18 +204,6 @@
         </div>
         <div class="box_content">
           <div class="columns is-multiline">
-            <div class="field column is-12">
-              <label class="label">Duración promedio de cita/evento</label>
-              <div class="control">
-                <div class="select">
-                  <%= form.select :slot_duration,
-                      options_for_select(Corp::SLOT_DURATION_OPTIONS, @corp.slot_duration || 15),
-                      {},
-                      { class: "select-time",
-                        data: { corp_setup_target: "slotDuration" } } %>
-                </div>
-              </div>
-            </div>
             <%= n_field(form, :min_book_amount, label: "Monto minimo para agendar", placeholder: "Ej. $100.00", min: 100.0, help: "Este es el monto mínimo que un cliente debe pagar para agendar una cita, el monto minimo es de $100.00 MXN, si lo dejas en blanco será gratis.", clas: "field column is-12 minBookAmountContainer") %>
           </div>
           <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
