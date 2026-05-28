@@ -8,6 +8,28 @@
       </span>
       Volver 
     <% end %>
+    <% if @event.agendado? and DateTime.current >= @event.hora_inicio %>
+      <%= link_to marcar_asistencia_events_path(id: @event), data: { turbo_method: :post }, class: "button is-primary is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
+        </span>
+        Asistencia
+      <% end %>
+      <%= link_to marcar_ausencia_events_path(id: @event), data: { turbo_method: :post }, class: "button is-info is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'confounded-square-svgrepo-com.svg', alt: 'view', class: 'invert', loading: 'lazy' %>
+        </span>
+        Ausencia
+      <% end %>
+    <% end %>
+    <% if @event.por_confirmar? %>
+      <%= link_to confirmar_events_path(@event), data: { turbo_method: :post }, class: "button is-success is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
+        </span>
+        Confirmar
+      <% end %>
+    <% end %>
     <% if @event.agendado? %>
       <%= link_to edit_event_path(@event), class: "button is-rounded" do %>
         <span class="icon mr-2">
@@ -16,43 +38,52 @@
         Editar
       <% end %>
     <% end %>
-    <div class="dropdown is-right is-hoverable">
-      <div class="dropdown-trigger">
-        <button class="button is-rounded" aria-haspopup="true">
-          <span class="icon">
-            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
-          </span>
-          <span>Acciones</span>
-        </button>
-      </div>
-      <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-          <a class="mtrigger dropdown-item" data-target="send_event_email">
+    <% if @event.agendado? %>
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true">
             <span class="icon">
-              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
             </span>
-            Email
-          </a>
-          <% if @corp.premium? %>
-            <a class="mtrigger dropdown-item" data-target="send_event_sms">
+            <span>Acciones</span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <a class="mtrigger dropdown-item" data-target="send_event_email">
               <span class="icon">
                 <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
               </span>
-              SMS
+              Email
             </a>
-          <% end %>
-          <% if @corp.premium? or @corp.plus? %>
-            <%# enviar por whatsapp %>
-            <a class="mtrigger dropdown-item" data-target="send_event_whatsapp">
-              <span class="icon">
-                <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
-              </span>
-              WhatsApp
-            </a>
-          <% end %>
+            <% if @corp.premium? %>
+              <a class="mtrigger dropdown-item" data-target="send_event_sms">
+                <span class="icon">
+                  <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+                </span>
+                SMS
+              </a>
+            <% end %>
+            <% if @corp.premium? or @corp.plus? %>
+              <%# enviar por whatsapp %>
+              <a class="mtrigger dropdown-item" data-target="send_event_whatsapp">
+                <span class="icon">
+                  <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+                </span>
+                WhatsApp
+              </a>
+            <% end %>
+            <% if @userr.admin? %>
+              <%# enviar por whatsapp %>
+              <a class="mtrigger dropdown-item has-text-danger" data-target="cancel_event">
+                <span class="icon material-icons-round">delete</span>
+                Cancelar evento
+              </a>
+            <% end %>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   </div>
 </div>
 <div class="box mt-4">
@@ -97,7 +128,15 @@
           </span>
           <div>
             <p class="labell">Cliente: </p>
-            <p><%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %>)</p>
+            <p>
+              <% if @event.customer %>
+                <%= link_to customer_path(@event.customer) do %>
+                  <%= @event.customer&.razon&.titleize %> (<%= @event.customer&.tel_prefix %> <%= @event.customer&.tel %>)
+                <% end %>
+              <% else %>
+                ?
+              <% end %>
+            </p>
           </div>
         </div>
       </div>
@@ -146,6 +185,19 @@
             <div>
               <p class="labell">Notas: </p>
               <p><%= @event.body %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <% if @event.motivo_cancelacion.present? %>
+        <div class="column is-12">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              dangerous
+            </span>
+            <div>
+              <p class="labell">Motivo de cancelación: </p>
+              <p><%= @event.motivo_cancelacion %></p>
             </div>
           </div>
         </div>
@@ -254,6 +306,30 @@
           Abrir WhatsApp
         <% end %>
       </footer>
+    </div>
+  </div>
+<% end %>
+<% if @userr.admin? %>
+  <div id="cancel_event" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <%= form_with(url: cancelar_events_path(id: @event), method: :post) do |form| %>
+        <header class="modal-card-head">
+          <p class="modal-card-title">Cancelar evento</p>
+          <div class="delete" aria-label="close"></div>
+        </header>
+        <section class="modal-card-body">
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <label class="label">Motivo de cancelación</label>
+              <%= form.text_area :motivo, class: 'textarea is-rounded', required: true, placeholder: "Escribe el motivo de la cancelación para registrar en el sistema y notificar al cliente" %>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <%= form.submit "Cancelar", class: "button is-danger is-rounded" %>
+        </footer>
+      <% end %>
     </div>
   </div>
 <% end %>

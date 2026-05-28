@@ -81,6 +81,7 @@ Rails.application.routes.draw do
         post :marcar_asistencia
         post :marcar_ausencia
         post :confirmar
+        post :cancelar
 
         post :send_email, as: :send_email
         post :send_sms, as: :send_sms

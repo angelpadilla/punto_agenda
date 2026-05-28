@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_094616) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_004157) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -276,6 +276,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_094616) do
     t.string "folio"
     t.datetime "hora_final"
     t.datetime "hora_inicio"
+    t.string "motivo_cancelacion"
     t.integer "status", default: 0, null: false
     t.string "title"
     t.datetime "updated_at", null: false

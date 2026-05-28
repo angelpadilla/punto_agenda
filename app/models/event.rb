@@ -62,9 +62,9 @@ class Event < ApplicationRecord
 
   private
   def set_folio
-    token = SecureRandom.alphanumeric(7)
+    token = SecureRandom.alphanumeric(7).upcase
     while Event.where(folio: token).exists?
-      token = SecureRandom.alphanumeric(7)
+      token = SecureRandom.alphanumeric(7).upcase
     end
     self.folio = token
   end

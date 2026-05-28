@@ -1,4 +1,4 @@
-<div class="snippet_slot flexx space-b vertical-center mtrigger <%= 'glow-warning' if event.por_confirmar? %>" data-target="event_<%= event.id %>">
+<div class="snippet_slot flexx space-b vertical-center mtrigger <%= 'glow-warning' if event.por_confirmar? %>" data-target="event_<%= identifier %><%= event.id %>">
   <div class="snippet_body">
     <% if event.agendado? %>
       <span class="tag is-rounded"><%= event.status&.titleize %></span>
@@ -38,7 +38,7 @@
   </div>
 </div>
 <%# modal %>
-<div class="modal" id="event_<%= event.id %>">
+<div class="modal" id="event_<%= identifier %><%= event.id %>">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
@@ -81,7 +81,7 @@
               <p class="labell">Cliente</p>
               <p>
                 <% if event.customer %>
-                  <%= link_to customer_path(event.customer), target: "_blank" do %>
+                  <%= link_to customer_path(event.customer) do %>
                     <%= event.customer&.razon&.titleize %> (<%= event.customer&.tel_prefix %> <%= event.customer&.tel %>)
                   <% end %>
                 <% else %>
@@ -128,17 +128,28 @@
           <p><%= event.body %></p>
         </div>
       <% end %>
+      <% if event.motivo_cancelacion.present? %>
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            dangerous
+          </span>
+          <div>
+            <p class="labell">Motivo de cancelación: </p>
+            <p><%= event.motivo_cancelacion %></p>
+          </div>
+        </div>
+      <% end %>
     </section>
     <footer class="modal-card-foot">
       <div class="buttons">
         <% if event.agendado? and DateTime.current >= event.hora_inicio %>
-          <%= link_to marcar_asistencia_events_path(id: event), data: { turbo_method: :post }, class: "button is-primary is-rounded" do %>
+          <%= link_to marcar_asistencia_events_path(event), data: { turbo_method: :post }, class: "button is-primary is-rounded" do %>
             <span class="icon mr-2">
               <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
             </span>
             Asistencia
           <% end %>
-          <%= link_to marcar_ausencia_events_path(id: event), data: { turbo_method: :post }, class: "button is-info is-rounded" do %>
+          <%= link_to marcar_ausencia_events_path(event), data: { turbo_method: :post }, class: "button is-info is-rounded" do %>
             <span class="icon mr-2">
               <%= image_tag 'confounded-square-svgrepo-com.svg', alt: 'view', class: 'invert', loading: 'lazy' %>
             </span>
@@ -146,7 +157,7 @@
           <% end %>
         <% end %>
         <% if event.por_confirmar? %>
-          <%= link_to confirmar_events_path(id: event), data: { turbo_method: :post }, class: "button is-success is-rounded" do %>
+          <%= link_to confirmar_events_path(event), data: { turbo_method: :post }, class: "button is-success is-rounded" do %>
             <span class="icon mr-2">
               <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
             </span>

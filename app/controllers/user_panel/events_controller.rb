@@ -1,5 +1,5 @@
 class UserPanel::EventsController < UserPanelController
-  before_action :set_event, only: %i[ show edit update destroy ]
+  before_action :set_event, only: %i[ show edit update destroy marcar_asistencia marcar_ausencia confirmar cancelar ]
 
   def index
     @customers = @corp.customers.default
@@ -102,8 +102,9 @@ class UserPanel::EventsController < UserPanelController
 
     respond_to do |format|
       if @event.save
+        start_date = @event.hora_inicio.strftime("%Y-%m-%d")
         EventMailer.with(event: @event, email: @event.customer.email).send_event.deliver_later
-        format.html { redirect_to events_path, notice: "Evento creado y notificado al cliente por email." }
+        format.html { redirect_to weekly_events_path(start_date: start_date), notice: "Evento creado y notificado al cliente por email." }
         format.json { render :show, status: :created, location: @event }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -114,7 +115,6 @@ class UserPanel::EventsController < UserPanelController
 
   def marcar_asistencia
     ## cambiar el estado del evento a completado
-    @event = @corp.events.find(params[:id])
     customer = @event.customer
     respond_to do |format|
       if @event.agendado?
@@ -131,7 +131,6 @@ class UserPanel::EventsController < UserPanelController
 
   def marcar_ausencia
     ## cambiar el estado del evento a ausencia
-    @event = @corp.events.find(params[:id])
     customer = @event.customer
     respond_to do |format|
       if @event.agendado?
@@ -148,13 +147,22 @@ class UserPanel::EventsController < UserPanelController
   end
 
   def confirmar
-    @event = @corp.events.find(params[:id])
     # validar que el evento esté en estado por_confirmar
     return redirect_back(fallback_location: events_path, alert: "Solo se pueden confirmar los eventos por confirmar.") if !@event.por_confirmar?
 
     @event.update(status: :agendado)
     EventMailer.with(event: @event, email: @event.customer.email).sent_event_confirmation.deliver_later
     redirect_back(fallback_location: events_path, notice: "Evento confirmado y notificado al cliente por email.", status: :see_other)
+  end
+
+  def cancelar
+    motivo = params[:motivo]
+    # validar que el evento no esté ya cancelado    
+    return redirect_back(fallback_location: events_path, alert: "El evento ya está cancelado.") if @event.cancelado?
+    return redirect_back(fallback_location: events_path, alert: "Motivo de cancelación es requerido.") if !motivo.present?
+
+    @event.update(status: :cancelado, motivo_cancelacion: motivo)
+    redirect_back(fallback_location: events_path, notice: "Evento cancelado y notificado al cliente por email.", status: :see_other)
   end
 
   def update

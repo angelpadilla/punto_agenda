@@ -1,4 +1,4 @@
-<div class="day_number flexx flex-block vertical-center horizontal-center mtrigger" data-target="date_info_d<%= date.strftime('%Y%m%d') %>">
+<div class="day_number flexx flex-block vertical-center horizontal-center mtrigger" data-target="date_info_<%= identifier %><%= date.strftime('%Y%m%d') %>">
   <%# date.day %>
   <div class="flexx vertical-center horizontal-center">
     <%= date.day %>
@@ -14,7 +14,7 @@
   <% end %>
 </div>
 <%# modal for date_info %>
-<div id="date_info_d<%= date.strftime('%Y%m%d') %>" class="modal">
+<div id="date_info_<%= identifier %><%= date.strftime('%Y%m%d') %>" class="modal">
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box">
@@ -73,7 +73,7 @@
 </div>
 <% if info_day %>
   <% info_day[:slots].each do |slot| %>
-    <div class="event_snippet mtrigger" data-target="slot_d<%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>">
+    <div class="event_snippet mtrigger" data-target="slot_<%= identifier %><%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>">
       <div>
         <% if slot[:fully_booked] %>
           <span class="tag is-rounded is-success">Lleno total</span>
@@ -86,7 +86,7 @@
       </div>
     </div>
     <%# modal %>
-    <div id="slot_d<%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>" class="modal">
+    <div id="slot_<%= identifier %><%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>" class="modal">
       <div class="modal-background"></div>
       <div class="modal-content">
         <div class="box">
@@ -137,7 +137,7 @@
           <% im_free = slot[:free_agents].any? { |user| user == current_user } %>
           <% if !slot[:fully_booked] and date >= Date.current %>
             <% if (current_user.colaborador? and im_free) or current_user.admin? %>
-              <%= link_to new_event_path(dia: date, slot: slot[:range]), class: "button is-rounded is-info is-fullwidth", target: "_blank" do %>
+              <%= link_to new_event_path(dia: date, slot: slot[:range]), class: "button is-rounded is-info is-fullwidth" do %>
                 <span class="icon mr-2">
                   <%= image_tag 'plus.svg', alt: 'agendar', loading: 'lazy', class: "invert" %>
                 </span>
@@ -154,7 +154,7 @@
           <% end %>
           <% if slot[:events] and slot[:events].any? %>
             <% slot[:events].each do |event| %>
-              <%= render 'snippet', event: event %>
+              <%= render 'snippet', event: event, identifier: identifier %>
             <% end %>
           <% end %>
         </div>

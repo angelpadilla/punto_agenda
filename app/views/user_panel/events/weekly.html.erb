@@ -2,11 +2,11 @@
 <h2 class="titlee">Eventos en la semana</h2>
 <div class="is-hidden-touch">
   <%= calendar(number_of_days: 7) do |date| %>
-    <%= render 'inside_days', date: date, info_day: @corp.available_slots_for_day(date, user_id: current_user.admin? ? nil : current_user.id) %>
+    <%= render 'inside_days', date: date, info_day: @corp.available_slots_for_day(date, user_id: current_user.admin? ? nil : current_user.id), identifier: 'd' %>
   <% end %>
 </div>
 <div class="is-hidden-desktop">
   <%= calendar(number_of_days: 3) do |date| %>
-    <%= render 'inside_days', date: date, info_day: @corp.available_slots_for_day(date, user_id: current_user.admin? ? nil : current_user.id) %>
+    <%= render 'inside_days', date: date, info_day: @corp.available_slots_for_day(date, user_id: current_user.admin? ? nil : current_user.id), identifier: 'm' %>
   <% end %>
 </div>
