@@ -201,7 +201,7 @@ export default class extends Controller {
             this.prevBtnTarget.style.display = index === 0 ? "none" : ""
         }
         if (this.hasNextBtnTarget) {
-            this.nextBtnTarget.textContent = isLast ? "Guardar y agregar tarjeta →" : "Siguiente →"
+            this.nextBtnTarget.textContent = isLast ? "Guardar →" : "Siguiente →"
         }
     }
 

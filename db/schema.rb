@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_004157) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_31_020945) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -140,7 +140,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_004157) do
   end
 
   create_table "corps", force: :cascade do |t|
-    t.boolean "active", default: false, null: false
     t.text "business_hours"
     t.boolean "calendar", default: false
     t.string "calle"
@@ -161,7 +160,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_004157) do
     t.boolean "facturacion", default: false
     t.string "instagram_url"
     t.string "key_pass"
-    t.datetime "last_payment_at"
     t.string "localidad"
     t.decimal "min_book_amount", precision: 10, scale: 2
     t.string "name"
@@ -182,6 +180,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_004157) do
     t.string "stripe_payment_method_id"
     t.string "stripe_subscription_id"
     t.datetime "subscription_cancelled_at"
+    t.datetime "subscription_next_billing_date"
     t.datetime "subscription_started_at"
     t.datetime "subscription_trial_end"
     t.datetime "subscription_trial_start"

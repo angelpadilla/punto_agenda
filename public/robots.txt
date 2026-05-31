@@ -1,1 +1,22 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# Robots.txt for MiiNegocio
+# See https://www.robotstxt.org/robotstxt.html for documentation
+
+User-agent: *
+Allow: /
+Allow: /public/
+Allow: /e/
+Disallow: /admin/
+Disallow: /panel/
+Disallow: /user_panel/
+Disallow: /customer_panel/
+Disallow: /devise/
+Disallow: /*.json$
+Disallow: /search
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+
+# Crawl-delay for better server performance
+Crawl-delay: 1
+
+# Sitemaps (update domain according to your environment)
+Sitemap: https://miinegocio.com/sitemap.xml

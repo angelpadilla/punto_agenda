@@ -1,0 +1,22 @@
+<svg width="443.47824" height="314.13043" viewBox="0 0 443.47824 314.13043" version="1.1" id="svg1" xml:space="preserve"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg">
+  <style>
+    .square2 {
+      fill: #313131;
+    }
+    @media (prefers-color-scheme: dark) {
+      .square2 { fill: #fffff5; }
+    }
+  </style>
+  <defs id="defs1" />
+  <g id="layer1" transform="translate(-34.26088,-98.934793)">
+    <g id="g1" transform="translate(178.09839,157.29809)">
+      <g id="logogram" transform="matrix(9.2391298,0,0,9.2391298,-143.83751,-58.363297)">
+        <path d="M 15.4992,0 H 36.5808 L 21.0816,22.9729 H 0 Z" fill="#64ed92" id="path1" />
+        <path d="M 16.4224,25.102 10.4192,34 H 32.5008 L 48,11.0271 H 31.7024 l -9.496,14.0749 z" class="square2" id="path2" />
+      </g>
+      <g id="logotype" transform="translate(54,0.5)" />
+    </g>
+  </g>
+</svg>

@@ -55,9 +55,13 @@ html {
     --light-gray: #d1d5da;
     --gray-text: #a1a1a1;
     --neon-green: #64ED92;
+    --neon-border: rgba(100, 237, 146, 0.2);
+    --neon-background: rgba(100, 237, 146, 0.05);
     --green2: #222b15;
     --green3: #4b6c17;
     --warning: #ffdd91;
+    --neon-warning-border: rgba(255, 221, 145, 0.2);
+    --neon-warning-background: rgba(241, 193, 90, 0.1);
     --border-warging: #614914;
     --danger: #ff7351;
     --white: #fffff5;
@@ -147,10 +151,19 @@ button {
     background: var(--dark);
     border-radius: var(--radius);
     border: 1px solid var(--gray);
+    font-size: 0.9rem;
+
+    h1,
+    h2,
+    h3 {
+        .icon {
+            vertical-align: bottom;
+        }
+    }
 
     &.is-main {
-        background-color: var(--green2);
-        border: 1px solid var(--green3);
+        background-color: var(--neon-background);
+        border: 1px solid var(--neon-border);
 
         h1,
         h2,
@@ -174,8 +187,8 @@ button {
     }
 
     &.is-warning {
-        background-color: #322906;
-        border: 1px solid var(--border-warging);
+        background-color: var(--neon-warning-background);
+        border: 1px solid var(--neon-warning-border);
 
         h1,
         h2,
@@ -217,8 +230,8 @@ div.box {
     }
 
     &.is-main {
-        background: var(--green2) !important;
-        border: 1px solid var(--green3);
+        background: var(--neon-background) !important;
+        border: 1px solid var(--neon-border);
         color: var(--light-gray);
 
         h1,
@@ -306,6 +319,20 @@ div.box {
     }
 
 
+}
+
+.box_box {
+    background-color: var(--black);
+    border: 1px solid var(--gray);
+    border-radius: var(--radius);
+    text-align: left;
+    padding: 20px 15px;
+    color: var(--light-gray);
+    font-size: small;
+    color: var(--white);
+    width: 100%;
+    cursor: pointer;
+    margin: 10px 0;
 }
 
 html {
@@ -781,6 +808,8 @@ div.navbar-dropdown {
             flex: 1;
             overflow: hidden;
 
+
+
             .file_name {
                 font-size: 0.9rem;
                 color: var(--white);
@@ -1053,6 +1082,10 @@ div.navbar-dropdown {
     font-size: 1.2rem;
     color: white;
     font-weight: 500;
+
+    .button {
+        margin-top: 0.5rem;
+    }
 }
 
 .is-ghost {
@@ -1269,8 +1302,8 @@ div.navbar-dropdown {
             }
         }
 
-        border: 1px solid rgba(168, 251, 34, 0.2);
-        background: rgba(168, 251, 34, 0.05);
+        border: 1px solid var(--neon-border);
+        background: var(--neon-background);
         color: var(--light-gray) !important;
 
         img {
@@ -2074,5 +2107,91 @@ tr.is-clickable {
 
     a {
         color: inherit !important;
+    }
+}
+
+/* Onboarding checklist */
+.onboarding_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    .onboarding_count {
+        font-size: 0.9rem;
+        color: var(--gray-text);
+        white-space: nowrap;
+        padding-top: 0.25rem;
+    }
+}
+
+.onboarding_list {
+    display: flex;
+    flex-direction: column;
+}
+
+.onboarding_item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray);
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    &:first-child {
+        padding-top: 0;
+    }
+
+    .onboarding_check {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid var(--gray);
+        flex-shrink: 0;
+        background: transparent;
+        transition: all 0.2s ease;
+    }
+
+    .onboarding_info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .onboarding_title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--white);
+    }
+
+    &.is-done {
+        .onboarding_check {
+            background-color: var(--neon-green);
+            border-color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &::after {
+                content: '';
+                display: block;
+                width: 5px;
+                height: 9px;
+                border: 2px solid var(--black);
+                border-top: none;
+                border-left: none;
+                transform: rotate(45deg) translateY(-1px);
+            }
+        }
+
+        .onboarding_title {
+            text-decoration: line-through;
+            color: var(--gray-text);
+        }
     }
 }

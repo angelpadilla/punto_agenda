@@ -27,7 +27,7 @@ class UserPanel::CorpController < UserPanelController
     @corp.assign_attributes(corp_params)
     @corp.visto = true
     if @corp.save
-      redirect_to stripe_new_card_path
+      redirect_to user_panel_home_path, notice: "¡Bienvenido a MiiNegocio, tu cuenta ha sido creada exitosamente!"
     else
       render :initial_corp_setup, status: :unprocessable_entity
     end

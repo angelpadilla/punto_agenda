@@ -1,3 +1,21 @@
+<!-- SEO Meta Tags -->
+<meta name="theme-color" content="#1a1a1a">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="<%= request.url %>">
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="<%= content_for(:og_type) || 'website' %>">
+<meta property="og:url" content="<%= request.url %>">
+<meta property="og:title" content="<%= content_for(:title) || 'MiiNegocio' %>">
+<meta property="og:description" content="<%= content_for(:og_description) || content_for(:meta_description) || 'Gestiona tus eventos y reservas con MiiNegocio' %>">
+<meta property="og:image" content="<%= content_for(:og_image) || asset_path('icon.png') %>">
+<meta property="og:locale" content="es_MX">
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="<%= request.url %>">
+<meta property="twitter:title" content="<%= content_for(:title) || 'MiiNegocio' %>">
+<meta property="twitter:description" content="<%= content_for(:og_description) || content_for(:meta_description) || 'Gestiona tus eventos y reservas con MiiNegocio' %>">
+<meta property="twitter:image" content="<%= content_for(:og_image) || asset_path('icon.png') %>">
+<!-- Material Icons -->
 <!-- https://material.io/resources/icons/?style=round -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round"
       rel="stylesheet">

@@ -46,7 +46,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
           name: "Compañía de #{params[:user][:full_name]}",
           email: params[:user][:email],
           subscription_trial_start: DateTime.current,
-          subscription_trial_end: 30.days.from_now
+          subscription_trial_end: 30.days.from_now,
+          # status: :probando
         )
         if corp.save # Guardar el Corp solo si el usuario se guarda correctamente
           resource.update(corp_id: corp.id)

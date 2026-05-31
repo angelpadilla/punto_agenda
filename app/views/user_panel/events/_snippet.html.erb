@@ -130,11 +130,11 @@
       <% end %>
       <% if event.motivo_cancelacion.present? %>
         <div class="flexx">
-          <span class="icon material-icons-round mr-2">
+          <span class="icon material-icons-round mr-2 has-text-danger">
             dangerous
           </span>
           <div>
-            <p class="labell">Motivo de cancelación: </p>
+            <p class="labell has-text-danger">Motivo de cancelación: </p>
             <p><%= event.motivo_cancelacion %></p>
           </div>
         </div>

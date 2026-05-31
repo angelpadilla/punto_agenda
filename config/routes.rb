@@ -20,6 +20,13 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "public#home"
 
+  # SEO Sitemaps
+  get "sitemap.xml", to: "sitemaps#index", as: :sitemap
+  scope "sitemaps" do
+    get "pages.xml", to: "sitemaps#pages", as: :sitemaps_pages
+    get "corps.xml", to: "sitemaps#corps", as: :sitemaps_corps
+  end
+
   scope "public" do
     get ":folio/ticket80", to: "public#ticket80", as: :ticket80
     get ":folio/ticket", to: "public#ticket", as: :ticket

@@ -18,24 +18,6 @@
     <% end %>
   </div>
 </div>
-<% if !@corp.premium? %>
-  <div class="box mt-4">
-    <div class="columns">
-      <div class="column is-9">
-        <h2>Tipo de plan</h2>
-        <p class="has-text-neon"><%= @corp.tipo_plan.titleize %></p>
-      </div>
-      <div class="column">
-        <div class="button is-rounded is-fullwidth is-primary">
-          <span class="icon mr-1">
-            <%= image_tag 'shield-star-svgrepo-com.svg', alt: 'login' %>
-          </span>
-          Actualizar plan
-        </div>
-      </div>
-    </div>
-  </div>
-<% end %>
 <div class="box expandable mt-4">
   <div class="box_header">
     <h2>

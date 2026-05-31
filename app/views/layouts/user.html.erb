@@ -3,20 +3,26 @@
   <head>
     <title><%= content_for(:title) || "MiiNegocio" %></title>
     <meta name="turbo-prefetch" content="false">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="<%= content_for(:meta_description) || 'Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas desde un mismo lugar. MiiNegocio: Administra tus ventas, eventos, calendarios y pagos en un solo lugar.' %>">
+    <meta name="keywords" content="<%= content_for(:meta_keywords) || 'ventas, eventos, reservas, calendario, gestión' %>">
+    <meta name="author" content="MiiNegocio">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="MiiNegocio">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="description" content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, repellat officia quos earum in accusantium sed odit a porro! Expedita ullam similique porro, amet nihil doloribus dolorum ut voluptates voluptatem."/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
     <%# stylesheet_link_tag "vendor/air-datepicker", "data-turbo-track": "reload" %>
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="<%= asset_url 'icon.svg' %>" type="image/svg+xml">
+    <link rel="icon" href="<%= asset_url 'icon.png' %>" type="image/png">
+    <!-- 3. Legacy Fallback (ICO Format - For old desktop browsers) -->
+    <link rel="icon" type="image/x-icon" href="<%= asset_url 'icon.ico' %>">
+    <link rel="apple-touch-icon" href="<%= asset_url 'icon.png' %>">
     <%= render 'shared/meta' %>
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -30,5 +36,6 @@
       <%= yield %>
     </div>
     <%= yield :body %>
+    <script src="//code.tidio.co/72fhdxmwg3fqsbtp98hngup0avkeijsz.js" async></script>
   </body>
 </html>

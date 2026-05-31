@@ -1,4 +1,281 @@
 <% content_for :title, "Ajustes" %>
+<div class="box expandable mt-4 is_active">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'lightbulb-bolt-svgrepo-com.svg', alt: "Configuración", class: "invert" %>
+      </span>
+      <%= @corp.name.titleize %>
+      <% if @corp.premium? %>
+        <span class="tag is-success is-rounded"><%= @corp.tipo_plan.titleize %></span>
+      <% elsif @corp.plus? %>
+        <span class="tag is-info is-rounded"><%= @corp.tipo_plan.titleize %></span>
+      <% else %>
+        <span class="tag is-info is-rounded"><%= @corp.tipo_plan.titleize %></span>
+      <% end %>
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-6-mobile is-6-tablet is-6-desktop">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">store</span>
+          <div>
+            <p class="labell">Tipo Negocio </p>
+            <p><%= @corp.tipo_negocio&.titleize %></p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-6-mobile is-6-tablet is-6-desktop">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">fingerprint</span>
+          <div>
+            <p class="labell">ID tienda</p>
+            <p><%= @corp.sku %>-<%= @corp.id %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-6-mobile is-4-tablet is-4-desktop">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">calendar_month</span>
+          <div>
+            <p class="labell">Ultimo pago</p>
+            <p>
+              <%= @corp.subscription_updated_at ? l(@corp.subscription_updated_at) : 'N/A' %>
+            </p>
+          </div>
+        </div>
+      </div>
+      <% if @corp.moroso? %>
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">fingerprint</span>
+            <div>
+              <p class="labell">Intento de pago fallidos</p>
+              <p>
+                <%= @corp.payment_attempts %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <% if @corp.probando? %>
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">calendar_month</span>
+            <div>
+              <p class="labell">Inicio de prueba</p>
+              <p>
+                <%= @corp.subscription_trial_start ? l(@corp.subscription_trial_start) : 'N/A' %>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">calendar_month</span>
+            <div>
+              <p class="labell">Fin de prueba</p>
+              <p>
+                <%= @corp.subscription_trial_end ? l(@corp.subscription_trial_end) : 'N/A' %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">calendar_month</span>
+            <div>
+              <p class="labell">Inicio de suscripción</p>
+              <p>
+                <%= @corp.subscription_started_at ? l(@corp.subscription_started_at) : 'N/A' %>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">calendar_month</span>
+            <div>
+              <p class="labell">Siguiente pago programado</p>
+              <p>
+                <%= @corp.subscription_next_billing_date ? l(@corp.subscription_next_billing_date) : 'N/A' %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <% if @corp.stripe_payment_method_id.present? %>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon mr-1">
+              <% if @corp.card_brand == 'visa' %>
+                <%= image_tag 'visa.svg', alt: 'Visa', class: 'invert' %>
+              <% elsif @corp.card_brand == 'mastercard' %>
+                <%= image_tag 'mastercard.svg', alt: 'Mastercard', class: 'invert' %>
+              <% else %>
+                <%= image_tag 'layers.svg', alt: 'login', class: 'invert' %>
+              <% end %>
+            </span>
+            <div>
+              <p class="labell">Marca de tarjeta</p>
+              <p><%= @corp.card_brand&.titleize %></p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">payment</span>
+            <div>
+              <p class="labell"># Tarjeta</p>
+              <p>**** **** **** <%= @corp.card_last4 %></p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6-mobile is-4-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">payment</span>
+            <div>
+              <p class="labell">Tarjeta MM/YY</p>
+              <p><%= @corp.card_exp_month %>/<%= @corp.card_exp_year %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-4-tablet is-4-desktop">
+        <div class="labell">
+          Tarjeta asociada
+          <% if @corp.stripe_payment_method_id.present? %>
+            <span class="tag is-success is-rounded">Sí</span>
+          <% end %>
+        </div>
+        <div class="contentt">
+          <div class="button is-rounded is-info">
+            <% if @corp.stripe_payment_method_id.present? %>
+              <span class="icon mr-1">
+                <%= image_tag 'card-transfer-svgrepo-com.svg', alt: 'login', class: 'invert' %>
+              </span>
+              Cambiar tarjeta
+            <% else %>
+              <span class="icon mr-1">
+                <%= image_tag 'card-send-svgrepo-com.svg', alt: 'login', class: 'invert' %>
+              </span>
+              Agregar tarjeta
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-12-mobile is-4-tablet is-4-desktop">
+        <div class="labell">
+          Plan
+          <% if @corp.premium? %>
+            <span class="tag is-success is-rounded"><%= @corp.tipo_plan.titleize %></span>
+          <% end %>
+        </div>
+        <div class="contentt">
+          <div class="button is-rounded is-info mtrigger" data-target="plan_modal">
+            <span class="icon mr-1">
+              <%= image_tag 'bolt.svg', alt: 'login', class: 'invert' %>
+            </span>
+            Cambiar plan
+          </div>
+          <div id="plan_modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+              <div class="box">
+                <h3 class="title is-4">Cambiar plan</h3>
+                <div class="noti is-danger">
+                  <h2>
+                    <span class="icon material-icons-round">warning</span>
+                    Atención
+                  </h2>
+                  <p class="mt-2">El elegir un nuevo plan, se hara el cobro del monto correspondiente en tu tarjeta, y se te habilitaran las funciones del nuevo plan inmediatamente.</p>
+                </div>
+                <div class="box_box">
+                  <div class="labell">Basico </div>
+                  <p class="contentt">
+                    $<%= Setting::PlanPrices[:basico][:price] %>/mes MXN
+                  </p>
+                  <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.basico? do  %>
+                    <span class="icon mr-1">
+                      <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
+                    </span>
+                    Elegir
+                  <% end %>
+                </div>
+                <div class="box_box">
+                  <div class="labell">Plus </div>
+                  <p class="contentt">
+                    $<%= Setting::PlanPrices[:plus][:price] %>/mes MXN
+                  </p>
+                  <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.plus? do  %>
+                    <span class="icon mr-1">
+                      <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
+                    </span>
+                    Elegir
+                  <% end %>
+                </div>
+                <div class="box_box">
+                  <div class="labell">Premium </div>
+                  <p class="contentt">
+                    $<%= Setting::PlanPrices[:premium][:price] %>/mes MXN
+                  </p>
+                  <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.premium? do  %>
+                    <span class="icon mr-1">
+                      <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
+                    </span>
+                    Elegir
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <button class="modal-close is-large" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
+      <% if @corp.payment_attempts >= 0 %>
+        <div class="column is-12-mobile is-4-tablet is-4-desktop">
+          <div class="labell">
+            Intentos de pago fallidos
+            <span class="tag is-danger is-rounded"><%= @corp.payment_attempts %></span>
+          </div>
+          <div class="contentt">
+            <div class="button is-rounded is-info">
+              <span class="icon mr-1">
+                <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login', class: 'invert' %>
+              </span>
+              Pagar ahora
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="docs_grid">
+      <% if @corp.logo.attached? %>
+        <div class="doc_tile">
+          <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
+          <div class="contentt">
+            <div class="file_name" >Logo</div>
+            <div class="labell"><%= @corp.logo.content_type %> · <%= number_to_human_size(@corp.logo.byte_size) %> </div>
+          </div>
+          <%= link_to rails_blob_path(@corp.logo, disposition: "attachment"), class: "button is-rounded actionn" do %>
+            Descargar
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
 <div class="columns is-multiline">
   <div class="column is-6">
     <%= link_to user_corp_path do %>

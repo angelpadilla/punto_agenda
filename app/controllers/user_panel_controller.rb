@@ -8,7 +8,7 @@ class UserPanelController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   def home
-    if @corp.active
+    if @corp.activo? or @corp.probando?
       today          = Date.today
       start_of_today = today.beginning_of_day
       end_of_today   = today.end_of_day
@@ -185,13 +185,13 @@ class UserPanelController < ApplicationController
   end
 
   def authorize_corp!
-    unless current_user.corp.active
+    unless (@corp.activo? or @corp.probando?)
       redirect_to user_panel_home_path, alert: "Tu cuenta no está activa. Contacta al administrador."
     end
   end
 
   def check_corp_setup
-    return unless @corp&.active && !@corp.visto
+    return unless ((@corp.activo? or @corp.probando?) && !@corp.visto)
     return if controller_name == "corp" && action_name.in?(%w[initial_corp_setup save_initial_corp_setup])
     redirect_to initial_corp_setup_path
   end

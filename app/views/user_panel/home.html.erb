@@ -1,5 +1,5 @@
 <% content_for :title, "Dashboard" %>
-<% if !@corp.visto and @corp.active %>
+<% if !@corp.visto and @corp.activo? %>
   <div class="noti is-danger mb-5">
     <div class="columns">
       <div class="column is-9">
@@ -12,7 +12,7 @@
     </div>
   </div>
 <% end %>
-<% if @corp.active %>
+<% if @corp.activo? or @corp.probando? %>
   <% content_for :body do %>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <% end %>
@@ -60,7 +60,7 @@
         <%= image_tag 'layers.svg', class: 'invert' %> Inventario
       </button>
       <%= link_to corp_home_path(@corp.sku), class: "dash_tab_btn" do %>
-        <%= image_tag 'layers.svg', class: 'invert' %>
+        <%= image_tag 'forward-1-svgrepo-com.svg', class: 'invert' %>
         Mi tienda
       <% end %>
     </div>

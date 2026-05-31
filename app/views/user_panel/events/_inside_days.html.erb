@@ -122,11 +122,9 @@
               <div>
                 <p class="labell">Agentes libres: </p>
                 <% if slot[:free_agents].any? %>
-                  <ul>
-                    <% slot[:free_agents].each do |user| %>
-                      <li><%= user&.full_name || "Agente ##{user.id}" %></li>
-                    <% end %>
-                  </ul>
+                  <% slot[:free_agents].each do |user| %>
+                    <span class="tag"><%= user&.full_name || "Agente ##{user.id}" %></span>
+                  <% end %>
                 <% else %>
                   <p>Ninguno</p>
                 <% end %>

@@ -41,7 +41,7 @@ class Corp < ApplicationRecord
   }.freeze
 
   enum :tipo_plan, basico: 0, plus: 1, premium: 2
-  enum :status, inactivo: "inactivo", activo: "activo", probando: "probando", suspendido: "suspendido", moroso: "moroso"
+  enum :status, activo: "activo", probando: "probando", suspendido: "suspendido", moroso: "moroso"
 
 
   TipoNegocios = [
@@ -80,6 +80,8 @@ class Corp < ApplicationRecord
 
   normalizes :name, :razon, :cp, :ciudad, :colonia, :localidad, :calle, :num_ext, :num_int, :phone, with: ->(e) { e.strip.downcase }
   normalizes :rfc, with: ->(e) { e.strip.upcase }
+
+  scope :activos, -> { where(status: [:activo, :probando, :moroso]) }
 
   def self.ransackable_attributes(auth_object = nil)
     %W[id name razon rfc regimen]

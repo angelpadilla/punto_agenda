@@ -4,12 +4,13 @@
       <p class="text-gray"><span class="has-text-white">50+</span> negocios ya venden con miinegocio</p>
     </div>
     <h1 class="mt-4 ptitle">
-      Administra
-      <span class="has-text-neon">citas, eventos, ventas, compras, clientes, inventario</span>.
-      <br>
       Vende
       <span class="has-text-neon">online</span>
       a tus clientes desde un mismo lugar
+      <br>
+      <br>
+      Administra
+      <span class="has-text-neon">catalogo, citas, eventos, ventas, compras, clientes, inventario</span>.
     </h1>
     <h2 class="psubtitle text-gray mt-5 mb-6">
       Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas desde un mismo lugar.
@@ -42,46 +43,46 @@
     <div class="box is-super-black">
       <div class="figures">
         <div>
-          <%= image_tag 'shop.svg', alt: 'logo' %>
+          <%= image_tag 'shop.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'items.svg', alt: 'logo' %>
+          <%= image_tag 'items.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'cup.svg', alt: 'logo' %>
+          <%= image_tag 'cup.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'bill-list-svgrepo-com.svg', alt: 'logo' %>
+          <%= image_tag 'bill-list-svgrepo-com.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'calendar.svg', alt: 'logo' %>
+          <%= image_tag 'calendar.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'bolt.svg', alt: 'logo' %>
+          <%= image_tag 'bolt.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'cup-hot-svgrepo-com.svg', alt: 'logo' %>
+          <%= image_tag 'cup-hot-svgrepo-com.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'shop.svg', alt: 'logo' %>
+          <%= image_tag 'shop.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'items.svg', alt: 'logo' %>
+          <%= image_tag 'items.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'cup.svg', alt: 'logo' %>
+          <%= image_tag 'cup.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'bill-list-svgrepo-com.svg', alt: 'logo' %>
+          <%= image_tag 'bill-list-svgrepo-com.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'calendar.svg', alt: 'logo' %>
+          <%= image_tag 'calendar.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'bolt.svg', alt: 'logo' %>
+          <%= image_tag 'bolt.svg', alt: 'logo', loading: "lazy" %>
         </div>
         <div>
-          <%= image_tag 'cup-hot-svgrepo-com.svg', alt: 'logo' %>
+          <%= image_tag 'cup-hot-svgrepo-com.svg', alt: 'logo', loading: "lazy" %>
         </div>
       </div>
       <div class="inner">
@@ -97,46 +98,64 @@
   </div>
 </section>
 <%# caracteristicas %>
-<section class="sCaracteristicas mt-6 container" id="ventajas">
-  <div class="box is-black">
-    <div class="sCaracteristicas__content">
-      <p class="tag is-success is-rounded mb-4">Ventas</p>
-      <h2 class="title is-2">
-        Catálogo digital
-      </h2>
-      <p class="subtitle text-gray mt-6">
-        Comparte tu tienda en redes sociales con un link o código QR, llega a más clientes y vende más.
-      </p>
-      <p class="subtitle text-gray">Crea tu catálogo digital con fotos, descripciones y precios.</p>
-      <p class="subtitle text-gray">Administra tus ventas de manera eficiente. Mantén un registro de tus transacciones y asegura una experiencia organizada para tus clientes.</p>
+<section class="container mt-6" id="ventajas">
+  <div class="sCaracteristicas">
+    <div class="flexx_c">
+      <div class="sCaracteristicas__content">
+        <p class="tag is-success is-rounded mb-4">Ventas</p>
+        <h2 class="title is-2">
+          Catálogo digital
+        </h2>
+        <p class="subtitle text-gray mt-6">
+          Comparte tu tienda en redes sociales con un link o código QR, llega a más clientes y vende más.
+        </p>
+        <p class="subtitle text-gray">Crea tu catálogo digital con fotos, descripciones y precios.</p>
+        <p class="subtitle text-gray">Administra tus ventas de manera eficiente. Mantén un registro de tus transacciones y asegura una experiencia organizada para tus clientes.</p>
+      </div>
+      <div class="sCaracteristicas__demo" style="
+        background-image: url('<%= asset_path('home1.png') %>');
+      ">
+      </div>
     </div>
-    <%= image_tag 'items.svg', alt: 'catalogo', class: 'sCaracteristicas__image' %>
+    <%= image_tag 'items.svg', alt: 'catalogo', class: 'sCaracteristicas__image', loading: 'lazy' %>
   </div>
 </section>
-<section class="sCaracteristicas mt-6 container">
-  <div class="box is-black">
-    <div class="sCaracteristicas__content">
-      <p class="tag is-success is-rounded mb-4">Citas y eventos</p>
-      <h2 class="title is-2">
-        Gestión de citas y eventos
-      </h2>
-      <p class="subtitle mt-4 text-gray">Administra tus citas y eventos de manera eficiente. Mantén un registro de tus compromisos y asegura una experiencia organizada para tus clientes.</p>
-      <p class="subtitle text-gray">Comparte tu agenda para que tus clientes puedan ver tu disponibilidad y reservar citas fácilmente.</p>
-      <p class="subtitle text-gray">Avisa tus citas y eventos con tus clientes a través de notificaciones y recordatorios.</p>
+<section class="container mt-6">
+  <div class="sCaracteristicas">
+    <div class="flexx_c reverse">
+      <div class="sCaracteristicas__content">
+        <p class="tag is-success is-rounded mb-4">Citas y eventos</p>
+        <h2 class="title is-2">
+          Gestión de citas y eventos
+        </h2>
+        <p class="subtitle mt-4 text-gray">Administra tus citas y eventos de manera eficiente. Mantén un registro de tus compromisos y asegura una experiencia organizada para tus clientes.</p>
+        <p class="subtitle text-gray">Comparte tu agenda para que tus clientes puedan ver tu disponibilidad y reservar citas fácilmente.</p>
+        <p class="subtitle text-gray">Avisa tus citas y eventos con tus clientes a través de notificaciones y recordatorios.</p>
+      </div>
+      <div class="sCaracteristicas__demo" style="
+        background-image: url('<%= asset_path('home2.png') %>');
+      ">
+      </div>
     </div>
-    <%= image_tag 'calendar.svg', alt: 'gestión de eventos y citas', class: 'sCaracteristicas__image' %>
+    <%= image_tag 'calendar.svg', alt: 'gestión de eventos y citas', class: 'sCaracteristicas__image', loading: 'lazy' %>
   </div>
 </section>
-<section class="sCaracteristicas mt-6 container">
-  <div class="box is-black">
-    <div class="csCaracteristicas__content">
-      <p class="tag is-success is-rounded mb-4">Clientes</p>
-      <h2 class="title is-2">
-        Gestión de clientes
-      </h2>
-      <p class="subtitle text-gray mt-4">Administra la información de tus clientes de manera eficiente. Mantén un registro de tus clientes y asegura una experiencia organizada para ellos.</p>
+<section class="container mt-6">
+  <div class="sCaracteristicas">
+    <div class="flexx_c">
+      <div class="sCaracteristicas__content">
+        <p class="tag is-success is-rounded mb-4">Clientes</p>
+        <h2 class="title is-2">
+          Gestión de clientes
+        </h2>
+        <p class="subtitle text-gray mt-4">Administra la información de tus clientes de manera eficiente. Mantén un registro de tus clientes y asegura una experiencia organizada para ellos.</p>
+      </div>
+      <div class="sCaracteristicas__demo" style="
+        background-image: url('<%= asset_path('home3.png') %>');
+      ">
+      </div>
     </div>
-    <%= image_tag 'cup.svg', alt: 'gestión de clientes', class: 'sCaracteristicas__image' %>
+    <%= image_tag 'cup.svg', alt: 'gestión de clientes', class: 'sCaracteristicas__image', loading: 'lazy' %>
   </div>
 </section>
 <%# planes y precios %>
@@ -155,19 +174,19 @@
     <div class="price_grid">
       <div class="price_card">
         <h3 class="title is-4 mb-2">Básico</h3>
-        <p class="subtitle is-5">$590<span class="small">/mes MXN</span></p>
+        <p class="subtitle is-5">$<%= Setting::PlanPrices[:basico][:price] %><span class="small">/mes MXN</span></p>
         <ul>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Catálogo digital con hasta <span class="has-text-white">20</span> productos
+              Catálogo digital con hasta <span class="has-text-white">50</span> productos
             </p>
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               <span class="has-text-white">1</span> usuario para gestionar tu negocio
@@ -175,7 +194,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Gestión de ventas y citas
@@ -183,7 +202,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Gestión de clientes e inventario
@@ -191,7 +210,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               <span class="has-text-white">Tienda online</span> para que tus clientes compren desde su celular
@@ -199,7 +218,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Notificaciones por <span class="has-text-white">email</span> para tus clientes
@@ -207,7 +226,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Notificaciones por <span class="has-text-white">email</span>
@@ -215,27 +234,27 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              <span class="has-text-white">Soporte</span> por correo electrónico
+              <span class="has-text-white">Soporte</span> por ticket soporte (hasta 24horas de respuesta)
             </p>
           </li>
         </ul>
         <%= link_to new_user_registration_path, class: "button is-primary is-rounded mt-4" do %>
           <span class="icon mr-2">
-            <%= image_tag 'login.svg', alt: 'registro' %>
+            <%= image_tag 'login.svg', alt: 'registro', loading: 'lazy' %>
           </span>
           Comenzar
         <% end %>
       </div>
       <div class="price_card">
         <h3 class="title is-4 mb-2">Plus</h3>
-        <p class="subtitle is-5">$790<span class="small">/mes MXN</span></p>
+        <p class="subtitle is-5">$<%= Setting::PlanPrices[:plus][:price] %><span class="small">/mes MXN</span></p>
         <ul>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Catálogo digital con hasta <span class="has-text-white">100</span> productos
@@ -243,7 +262,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Hasta <span class="has-text-white">5</span> usuarios para gestionar tu negocio
@@ -251,15 +270,15 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Gestión avanzada de ventas y citas
+              Gestión de ventas y citas
             </p>
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Gestión de clientes e inventario
@@ -267,7 +286,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               <span class="has-text-white">Tienda online</span> para que tus clientes compren desde su celular
@@ -275,7 +294,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Notificaciones por <span class="has-text-white">email</span> para tus clientes
@@ -283,7 +302,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Notificaciones por <span class="has-text-white">email</span> y <span class="has-text-white">Telegram</span>
@@ -291,27 +310,27 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              <span class="has-text-white">Soporte prioritario</span> por correo electrónico
+              <span class="has-text-white">Soporte prioritario</span> por ticket soporte (hasta 6 horas de respuesta)
             </p>
           </li>
         </ul>
         <%= link_to new_user_registration_path, class: "button is-primary is-rounded mt-4" do %>
           <span class="icon mr-2">
-            <%= image_tag 'login.svg', alt: 'registro' %>
+            <%= image_tag 'login.svg', alt: 'registro', loading: 'lazy' %>
           </span>
           Comenzar
         <% end %>
       </div>
       <div class="price_card">
         <h3 class="title is-4 mb-2">Pro</h3>
-        <p class="subtitle is-5">$990<span class="small">/mes MXN</span></p>
+        <p class="subtitle is-5">$<%= Setting::PlanPrices[:premium][:price] %><span class="small">/mes MXN</span></p>
         <ul>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Catálogo digital con productos <span class="has-text-white">ilimitados</span>
@@ -319,7 +338,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Hasta <span class="has-text-white">10</span> usuarios para gestionar tu negocio
@@ -327,15 +346,15 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Gestión avanzada de ventas y citas
+              Gestión de ventas y citas
             </p>
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Gestión de clientes e inventario
@@ -343,15 +362,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
-            </span>
-            <p>
-              Gestión avanzada de <span class="has-text-white">compras, gastos y proveedores</span>
-            </p>
-          </li>
-          <li>
-            <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               <span class="has-text-white">Tienda online</span> para que tus clientes compren desde su celular
@@ -359,7 +370,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Notificaciones por <span class="has-text-white">email</span>, <span class="has-text-white">SMS</span> y <span class="has-text-white">Whatsapp</span> para tus clientes
@@ -367,7 +378,7 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
               Notificaciones por <span class="has-text-white">email</span> y <span class="has-text-white">Telegram</span>
@@ -375,16 +386,24 @@
           </li>
           <li>
             <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert' %>
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              <span class="has-text-white">Soporte dedicado</span> por correo electrónico y WhatsApp
+              Gestión de <span class="has-text-white">compras, gastos y proveedores</span>
+            </p>
+          </li>
+          <li>
+            <span class="icon mr-2">
+              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
+            </span>
+            <p>
+              <span class="has-text-white">Soporte dedicado</span> WhatsApp y tickets soporte (menos de 1 hora de respuesta)
             </p>
           </li>
         </ul>
         <%= link_to new_user_registration_path, class: "button is-primary is-rounded mt-4" do %>
           <span class="icon mr-2">
-            <%= image_tag 'login.svg', alt: 'registro' %>
+            <%= image_tag 'login.svg', alt: 'registro', loading: 'lazy' %>
           </span>
           Comenzar
         <% end %>
