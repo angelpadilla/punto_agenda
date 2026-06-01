@@ -43,6 +43,7 @@
                 { prompt: "Escribe para buscar en SAT...", required: field_required?(Item, :sat_product_id) },
                 { "data-controller": "slimselect", class: "ss2", "data-ajax-url": search_sat_products_items_path(format: :json) }
               %>
+              <p class="help">Empieza a escribir el código o nombre para buscar en SAT ...</p>
             </div>
           </div>
           <div class="field has-addons column is-12">

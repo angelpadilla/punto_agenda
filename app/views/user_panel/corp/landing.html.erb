@@ -46,7 +46,7 @@
           <div>
             <p class="labell">Ultimo pago</p>
             <p>
-              <%= @corp.subscription_updated_at ? l(@corp.subscription_updated_at) : 'N/A' %>
+              <%= @corp.subscription_updated_at ? l(@corp.subscription_updated_at, format: :long) : 'N/A' %>
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@
             <div>
               <p class="labell">Inicio de prueba</p>
               <p>
-                <%= @corp.subscription_trial_start ? l(@corp.subscription_trial_start) : 'N/A' %>
+                <%= @corp.subscription_trial_start ? l(@corp.subscription_trial_start, format: :long) : 'N/A' %>
               </p>
             </div>
           </div>
@@ -82,7 +82,7 @@
             <div>
               <p class="labell">Fin de prueba</p>
               <p>
-                <%= @corp.subscription_trial_end ? l(@corp.subscription_trial_end) : 'N/A' %>
+                <%= @corp.subscription_trial_end ? l(@corp.subscription_trial_end, format: :long) : 'N/A' %>
               </p>
             </div>
           </div>
@@ -94,7 +94,7 @@
             <div>
               <p class="labell">Inicio de suscripción</p>
               <p>
-                <%= @corp.subscription_started_at ? l(@corp.subscription_started_at) : 'N/A' %>
+                <%= @corp.subscription_started_at ? l(@corp.subscription_started_at, format: :long) : 'N/A' %>
               </p>
             </div>
           </div>
@@ -105,7 +105,7 @@
             <div>
               <p class="labell">Siguiente pago programado</p>
               <p>
-                <%= @corp.subscription_next_billing_date ? l(@corp.subscription_next_billing_date) : 'N/A' %>
+                <%= @corp.subscription_next_billing_date ? l(@corp.subscription_next_billing_date, format: :long) : 'N/A' %>
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@
           <% end %>
         </div>
         <div class="contentt">
-          <div class="button is-rounded is-info">
+          <%= button_to stripe_new_card_path, class: "button is-rounded is-info", data: {turbo: false} do %>
             <% if @corp.stripe_payment_method_id.present? %>
               <span class="icon mr-1">
                 <%= image_tag 'card-transfer-svgrepo-com.svg', alt: 'login', class: 'invert' %>
@@ -170,9 +170,9 @@
               <span class="icon mr-1">
                 <%= image_tag 'card-send-svgrepo-com.svg', alt: 'login', class: 'invert' %>
               </span>
-              Agregar tarjeta
+              Asociar tarjeta
             <% end %>
-          </div>
+          <% end %>
         </div>
       </div>
       <div class="column is-12-mobile is-4-tablet is-4-desktop">
@@ -201,42 +201,57 @@
                   </h2>
                   <p class="mt-2">El elegir un nuevo plan, se hara el cobro del monto correspondiente en tu tarjeta, y se te habilitaran las funciones del nuevo plan inmediatamente.</p>
                 </div>
-                <div class="box_box">
-                  <div class="labell">Basico </div>
-                  <p class="contentt">
-                    $<%= Setting::PlanPrices[:basico][:price] %>/mes MXN
-                  </p>
-                  <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.basico? do  %>
-                    <span class="icon mr-1">
-                      <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
-                    </span>
-                    Elegir
-                  <% end %>
-                </div>
-                <div class="box_box">
-                  <div class="labell">Plus </div>
-                  <p class="contentt">
-                    $<%= Setting::PlanPrices[:plus][:price] %>/mes MXN
-                  </p>
-                  <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.plus? do  %>
-                    <span class="icon mr-1">
-                      <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
-                    </span>
-                    Elegir
-                  <% end %>
-                </div>
-                <div class="box_box">
-                  <div class="labell">Premium </div>
-                  <p class="contentt">
-                    $<%= Setting::PlanPrices[:premium][:price] %>/mes MXN
-                  </p>
-                  <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.premium? do  %>
-                    <span class="icon mr-1">
-                      <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
-                    </span>
-                    Elegir
-                  <% end %>
-                </div>
+                <% if @corp.stripe_payment_method_id.present? %>
+                  <div class="box_box">
+                    <div class="labell">Basico </div>
+                    <p class="contentt">
+                      $<%= Setting::PlanPrices[:basico][:price] %>/mes MXN
+                    </p>
+                    <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.basico? do  %>
+                      <span class="icon mr-1">
+                        <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
+                      </span>
+                      Elegir
+                    <% end %>
+                  </div>
+                  <div class="box_box">
+                    <div class="labell">Plus </div>
+                    <p class="contentt">
+                      $<%= Setting::PlanPrices[:plus][:price] %>/mes MXN
+                    </p>
+                    <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.plus? do  %>
+                      <span class="icon mr-1">
+                        <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
+                      </span>
+                      Elegir
+                    <% end %>
+                  </div>
+                  <div class="box_box">
+                    <div class="labell">Premium </div>
+                    <p class="contentt">
+                      $<%= Setting::PlanPrices[:premium][:price] %>/mes MXN
+                    </p>
+                    <%= button_to root_path, class: "button is-primary is-rounded is-fullwidth", disabled: @corp.premium? do  %>
+                      <span class="icon mr-1">
+                        <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
+                      </span>
+                      Elegir
+                    <% end %>
+                  </div>
+                <% else %>
+                  <div class="box_box">
+                    <div class="labell">No tienes una tarjeta asociada</div>
+                    <p class="">
+                      Para cambiar de plan, primero debes asociar una tarjeta de crédito o débito a tu cuenta.
+                    </p>
+                    <%= button_to stripe_new_card_path, class: "button is-primary is-rounded is-fullwidth", data: {turbo: false} do  %>
+                      <span class="icon mr-1">
+                        <%= image_tag 'card-send-svgrepo-com.svg', alt: 'login' %>
+                      </span>
+                      Asociar tarjeta
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
             </div>
             <button class="modal-close is-large" aria-label="close"></button>
@@ -250,12 +265,21 @@
             <span class="tag is-danger is-rounded"><%= @corp.payment_attempts %></span>
           </div>
           <div class="contentt">
-            <div class="button is-rounded is-info">
-              <span class="icon mr-1">
-                <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login', class: 'invert' %>
-              </span>
-              Pagar ahora
-            </div>
+            <% if @corp.stripe_payment_method_id.present? %>
+              <%= button_to pay_now_path, class: "button is-rounded is-info" do %>
+                <span class="icon mr-1">
+                  <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login', class: 'invert' %>
+                </span>
+                Pagar ahora
+              <% end %>
+            <% else %>
+              <%= button_to stripe_new_card_path, class: "button is-rounded is-info", data: {turbo: false} do %>
+                <span class="icon mr-1">
+                  <%= image_tag 'card-send-svgrepo-com.svg', alt: 'login', class: 'invert' %>
+                </span>
+                Asociar tarjeta primero
+              <% end %>
+            <% end %>
           </div>
         </div>
       <% end %>

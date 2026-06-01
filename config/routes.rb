@@ -3,13 +3,14 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     registrations: "users/registrations"
   }
+  devise_for :admins
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # mount MissionControl::Jobs::Engine, at: "/jobstatus"
+  mount MissionControl::Jobs::Engine, at: "/jobstatus"
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
@@ -58,6 +59,7 @@ Rails.application.routes.draw do
       match "stripe_new_card", to: "user_panel/corp#stripe_new_card", as: :stripe_new_card, via: [ :get, :post ]
       get "stripe_card_success", to: "user_panel/corp#stripe_card_success", as: :stripe_card_success
       get "stripe_card_error", to: "user_panel/corp#stripe_card_error", as: :stripe_card_error
+      post "pay_now", to: "user_panel/corp#pay_now", as: :pay_now
     end
 
     resources :bills, controller: "user_panel/bills", only: %i[index show] do

@@ -88,12 +88,25 @@ module Gtools
   end
 
   def self.stripe_payment(amount:, corp:, desc: nil)
-    unless corp && corp.stripe_customer_id && corp.stripe_payment_method_id
-      puts "🚫 Corp sin métodos de pago para pago Stripe: #{corp.id}"
-      return
-    end
+    # unless corp && corp.stripe_customer_id && corp.stripe_payment_method_id
+    #   puts "🚫 Corp sin métodos de pago para pago Stripe: #{corp.id}"
+    #   return
+    # end
 
     stripe_client = Stripe::StripeClient.new(Rails.application.credentials.dig(Rails.env.to_sym, :stripe, :secret_key))
+    unless corp.stripe_customer_id.present?
+      customer = stripe_client.v1.customers.create({
+        name: corp.name,
+        email: corp.email
+      })
+      corp.update(stripe_customer_id: customer.id)
+    end
+
+    unless corp.stripe_payment_method_id.present?
+      puts "🚫 Corp sin método de pago para pago Stripe: #{corp.id}"
+      return { success: false, status: nil, error: "Corp sin método de pago para pago Stripe", error_message: "Corp sin método de pago para pago Stripe", body: nil }
+    end
+
     payment_intent = stripe_client.v1.payment_intents.create({
       amount: (amount * 100).to_i,
       currency: "mxn",
@@ -110,7 +123,7 @@ module Gtools
         success: true,
         status: payment_intent.status,
         error: nil,
-        erro_message: nil,
+        error_message: nil,
         body: payment_intent
       }
     else
@@ -125,9 +138,62 @@ module Gtools
     end
   rescue Stripe::CardError => e
     puts "🚫 Error de tarjeta al procesar pago Stripe: #{e}"
+    { success: false, status: nil,  error: e, error_message: e.message, body: nil }
   rescue Stripe::StripeError => e
     puts "🚫 Error de Stripe al procesar pago: #{e}"
+    { success: false, status: nil,  error: e, error_message: e.message, body: nil }
   rescue => e
     puts "🚫 Error inesperado al procesar pago Stripe: #{e}"
+    { success: false, status: nil,  error: e, error_message: e.message, body: nil }
+  end
+
+
+  def self.do_bill(corp:)
+    noww = DateTime.current.strftime("%d %b %I:%M %p")
+    monto = Setting::PlanPrices[corp.tipo_plan.to_sym][:price]
+    descuento = corp.discount
+    bill = nil
+    line = nil
+    internacional = corp.card_country.present? && corp.card_country != "MX"
+    ActiveRecord::Base.transaction do
+      bill = Bill.new(
+        corp_id: corp.id,
+        tipo: "remision",
+        forma_pago: :tarjeta_de_debito,
+        moneda: "mxn",
+        status_pago: "pendiente",
+      )
+      line =  BillItem.new(
+        cantidad: 1,
+        nombre: "Suscripción #{corp.tipo_plan.titleize}",
+        precio: monto,
+        descuento: descuento,
+        iva: 16.0,
+        costo: self.stripe_fee(monto, internacional: internacional)
+      )
+      bill.bill_items << line
+      bill.save
+    end
+
+    puts "🧾 Bill total: #{bill.total}"
+    puts "🧾 Bill line_items: #{bill.bill_items.count}"
+
+    response = self.stripe_payment(amount: bill.total, corp: corp, desc: "Suscripción #{corp.tipo_plan.titleize} fecha: #{noww}, folio: #{bill.folio}")
+    if response[:success]
+      bill.update(status_pago: "pagado")
+      line.update(stripe_payment_intent_id: response[:body].id)
+      self.telegram_noti(message: "MiiNegocio \nPago exitoso de:\n Monto: #{bill.total} MXN\n Corp ID: #{corp.id}\n Folio: #{bill.folio}\n Fecha: #{noww}")
+      puts "🧾 Factura creada para Corp #{corp.id} con pago Stripe exitoso"
+      return { success: true, bill: bill, response: response }
+    else
+      bill.update(status_pago: "error_pago", error: response[:error_message], nota_for_corp: "Error al procesar pago Stripe: #{response[:error_message]}")
+      line.update(error: response[:error_message])
+      puts "🚫 No se pudo crear factura para Corp #{corp.id} debido a error en pago Stripe: #{response[:error_message]}"
+      return { success: false, bill: bill, response: response }
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    puts "🚫 Error al crear Bill/BillItem: #{e.record.errors.full_messages.join(', ')}"
+  rescue => e
+    puts "🚫 Error inesperado al crear factura: #{e}"
   end
 end

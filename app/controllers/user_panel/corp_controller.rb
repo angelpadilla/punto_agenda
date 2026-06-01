@@ -33,13 +33,29 @@ class UserPanel::CorpController < UserPanelController
     end
   end
 
+  def pay_now
+    response = Gtools.do_bill(corp: @corp)
+
+    if response[:success]
+      @corp.update(
+        status: :activo,
+        subscription_updated_at: DateTime.current,
+        subscription_next_billing_date: 30.days.from_now,
+        subscription_started_at: @corp.subscription_started_at.present? ? @corp.subscription_started_at : DateTime.current
+      )
+      redirect_to user_corp_landing_path, notice: "Pago exitoso. Se ha generado una factura por $#{response[:bill].total} MXN. Folio: #{response[:bill].folio}"
+    else
+      redirect_to user_corp_landing_path, alert: "Error al procesar el pago: #{response[:response][:error_message]}"
+    end
+  end
+
   def stripe_new_card
     unless @corp.stripe_customer_id.present?
       customer = @stripe_client.v1.customers.create({ name: @corp.name, email: @corp.email })
       if customer && customer.id
         @corp.update(stripe_customer_id: customer.id)
       else
-        return redirect_to user_corp_path, alert: "Error al crear el cliente en Stripe"
+        return redirect_to user_corp_landing_path, alert: "Error al crear el cliente en Stripe"
       end
     end
 
@@ -56,12 +72,12 @@ class UserPanel::CorpController < UserPanelController
     redirect_to session.url, allow_other_host: true, status: 303
   rescue Stripe::InvalidRequestError => e
     puts e
-    redirect_to user_corp_path, alert: "Error al crear la sesión de Stripe"
+    redirect_to user_corp_landing_path, alert: "Error al crear la sesión de Stripe"
   end
 
 
   def stripe_card_success
-    return redirect_to user_corp_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 2" unless params[:session_id].present?
+    return redirect_to user_corp_landing_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 2" unless params[:session_id].present?
 
     session = @stripe_client.v1.checkout.sessions.retrieve(params[:session_id])
     set_up = @stripe_client.v1.setup_intents.retrieve(session.setup_intent)
@@ -83,21 +99,21 @@ class UserPanel::CorpController < UserPanelController
         card_country: attach_intent.card.country
       )
       if @corp.save
-        redirect_to user_corp_path, notice: "Tarjeta guardada"
+        redirect_to user_corp_landing_path, notice: "Tarjeta guardada"
       else
         puts @corp.errors.messages
-        redirect_to user_corp_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 0"
+        redirect_to user_corp_landing_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 0"
       end
     else
-      redirect_to user_corp_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 1"
+      redirect_to user_corp_landing_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 1"
     end
 
   rescue Stripe::InvalidRequestError => e
     puts e
-    redirect_to user_corp_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 3"
+    redirect_to user_corp_landing_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 3"
   rescue => e
     puts e
-    redirect_to user_corp_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 4"
+    redirect_to user_corp_landing_path, alert: "No se pudo completar el proceso, intenta de nuevo. Error: 4"
   end
 
   def stripe_card_error

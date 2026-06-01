@@ -237,6 +237,7 @@ class Corp < ApplicationRecord
 
   before_create :gen_sku
   after_create :create_stripe_customer
+  after_create :send_notification
 
   def working_day?(date)
     return false if business_hours.blank?
@@ -415,6 +416,13 @@ class Corp < ApplicationRecord
       end
       config["hours"] = [ { "open" => "09:00", "close" => "18:00" } ] if config["hours"].blank?
     end
+  end
+
+  def send_notification
+    # Aquí puedes implementar la lógica para enviar una notificación, por ejemplo, usando ActionMailer o un servicio de terceros
+    # Ejemplo con ActionMailer:
+    # CorpMailer.with(corp: self).new_corp_notification.deliver_later
+    Gtools.telegram_noti(message: "Nueva Corp creada: #{name} (ID: #{id}, Tipo negocio: #{tipo_negocio})")
   end
 
 end
