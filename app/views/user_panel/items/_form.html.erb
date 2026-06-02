@@ -48,7 +48,7 @@
           </div>
           <div class="field has-addons column is-12">
             <div class="control is-expanded <%= item.errors.include?(:brand_id) ? 'select-is-danger' : '' %>">
-              <%= form.select :brand_id, options_for_select(Brand.default.map { |k| [k.name&.titleize, k.id] }, item.brand_id),
+              <%= form.select :brand_id, options_for_select(@corp.brands.default.map { |k| [k.name&.titleize, k.id] }, item.brand_id),
                 {prompt: "Selecciona Marca", required: field_required?(Item, :brand_id)},
                 { "data-controller": "slimselect", class: "ss2"}
                 %>
@@ -61,7 +61,7 @@
               </div>
             </div>
           </div>
-          <%= s_field(form, :unidad, options: Item::UnidadSAT, label: "Unidad", clas: "field column is-6") %>
+          <%= s_field(form, :unidad, options: Item::UnidadSAT, label: "Unidad SAT", clas: "field column is-6") %>
           <%= s_field(form, :cate, options: Item.cates.keys.map { |k| [k.humanize, k] }, label: "Categoria", clas: "field column is-6") %>
           <%= a_field(form, :desc, label: "Descripción", placeholder: "Descripción del item") %>
           <%= t_field(form, :garantia, label: "Garantía o términos y condiciones de tu producto", placeholder: "Ej. 1 año de garantía") %>

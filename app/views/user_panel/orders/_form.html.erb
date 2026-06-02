@@ -12,9 +12,9 @@
     <% end %>
     <div class="columns is-multiline">
       <div class="field column is-12">
-        <label class="label">Cliente  <%= method %></label>
+        <label class="label">Cliente</label>
         <div class="control is-expanded <%= order.errors.include?(:customer_id) ? 'select-is-danger' : '' %>">
-          <%= form.select :customer_id, options_for_select(Customer.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, order.customer_id),
+          <%= form.select :customer_id, options_for_select(@corp.customers.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, order.customer_id),
               {prompt: "Selecciona", required: field_required?(Order, :customer_id)},
               { "data-controller": "slimselect", class: "ss2"}
               %>
