@@ -125,6 +125,7 @@ class Customer < ApplicationRecord
   scope :default, -> { order(razon: :asc) }
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
+  scope :my_customers, ->(corp) { joins(:corps).where(corps: { id: corp.id }) }
   scope :con_vencidas, -> {
     # joins(:orders).where("orders.status = ? AND orders.tipo IN (?) AND orders.deadline < ?", "credito", [ "remision", "factura" ], Date.today).distinct
     joins(:orders)

@@ -284,20 +284,6 @@
         </div>
       <% end %>
     </div>
-    <div class="docs_grid">
-      <% if @corp.logo.attached? %>
-        <div class="doc_tile">
-          <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
-          <div class="contentt">
-            <div class="file_name" >Logo</div>
-            <div class="labell"><%= @corp.logo.content_type %> · <%= number_to_human_size(@corp.logo.byte_size) %> </div>
-          </div>
-          <%= link_to rails_blob_path(@corp.logo, disposition: "attachment"), class: "button is-rounded actionn" do %>
-            Descargar
-          <% end %>
-        </div>
-      <% end %>
-    </div>
   </div>
 </div>
 <div class="columns is-multiline">
