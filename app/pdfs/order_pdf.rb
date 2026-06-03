@@ -13,6 +13,7 @@ class OrderPdf < Prawn::Document
     totales
     notas
     factura if @order.tipo == "factura" and @order.xml.present?
+    bar_code
   end
 
   def head
@@ -22,8 +23,8 @@ class OrderPdf < Prawn::Document
 
     if @corp.logo.attached?
       logo_path = ActiveStorage::Blob.service.path_for(@corp.logo.key)
-      image(logo_path, height: 100)
-      move_down 10
+      image(logo_path, height: 50)
+      move_down 20
     end
 
     if @order.cotizacion?
@@ -219,6 +220,12 @@ class OrderPdf < Prawn::Document
       end
     end
     header + items
+  end
+
+  def bar_code
+    move_down 20
+    baba = Barby::Code128B.new("#{@order.folio}")
+    svg baba.to_svg(height: 30, margin: 0, xdim: 1), at: [ 0, cursor ], width: 150
   end
 
   private

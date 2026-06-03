@@ -19,17 +19,19 @@ class Order80Pdf < Prawn::Document
     totales
     notas
     factura if @order.tipo == "factura"
+    bar_code
   end
 
   def head
     move_down 10
     if @corp.logo.attached?
       logo_path = ActiveStorage::Blob.service.path_for(@corp.logo.key)
-      image(logo_path, height: 100, position: :center)
+      image(logo_path, height: 50, position: :center)
       move_down 10
     end
 
-    text "HORA DE IMPRESION: #{@timee.strftime("%d/%m/%Y %I:%M%p")}", size: @fontsize, align: :center
+
+    text "HORA DE IMPRESION: #{@timee.strftime("%d/%m/%Y %I:%M%p")}", size: @fontsize, align: :left
     move_down 10
 
     if @order.cotizacion?
@@ -160,6 +162,12 @@ class Order80Pdf < Prawn::Document
     move_down 5
     text "Sello del SAT:", style: :bold
     text @order.sat_sello
+  end
+
+  def bar_code
+    move_down 20
+    baba = Barby::Code128B.new("#{@order.folio}")
+    svg baba.to_svg(height: 30, margin: 0, xdim: 1), at: [ bounds.width / 2 - 75, cursor ], width: 150
   end
 
 

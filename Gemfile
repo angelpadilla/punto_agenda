@@ -103,6 +103,9 @@ gem "prawn-table"
 # https://github.com/whomwah/rqrcode
 gem "rqrcode", "~> 2.0"
 
+# https://github.com/toretore/barby
+gem "barby"
+
 gem "csv", "~> 3.3"
 gem "rubyXL", "3.4.33"
 gem "nokogiri", "~> 1.18"

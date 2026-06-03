@@ -36,10 +36,10 @@
   </div>
 </div>
 <hr>
-<%= search_form_for @q, url: orders_path do |f| %>
+<%= search_form_for @q, url: orders_path, data: { controller: "focus-search" } do |f| %>
   <div class="columns is-multiline">
     <div class="column is-3">
-      <%= f.search_field :folio_eq, class: 'is-rounded search_input', placeholder: 'Folio' %>
+      <%= f.search_field :folio_eq, class: 'is-rounded search_input', placeholder: 'Folio', data: { focus_search_target: "inputt" } %>
     </div>
     <div class="column is-2">
       <div class="select is-rounded">

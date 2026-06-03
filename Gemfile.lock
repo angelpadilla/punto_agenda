@@ -87,6 +87,7 @@ GEM
     audited (5.8.0)
       activerecord (>= 5.2, < 8.2)
       activesupport (>= 5.2, < 8.2)
+    barby (0.7.0)
     base64 (0.3.0)
     bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.2)
@@ -492,6 +493,7 @@ PLATFORMS
 DEPENDENCIES
   active_storage_validations
   audited
+  barby
   bootsnap
   brakeman
   bundler-audit

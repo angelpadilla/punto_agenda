@@ -1,26 +1,29 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+    static targets = ["inputt"]
+
     connect() {
         this._keydownHandler = this._onKeydown.bind(this)
         this._submitHandler = this._onSubmit.bind(this)
         document.addEventListener("keydown", this._keydownHandler)
+        console.log(this.inputtTarget)
 
-        const form = document.getElementById("q_name_or_sku_cont")?.closest("form")
+        const form = this.inputtTarget.closest("form")
         if (form) form.addEventListener("submit", this._submitHandler)
     }
 
     disconnect() {
         document.removeEventListener("keydown", this._keydownHandler)
 
-        const form = document.getElementById("q_name_or_sku_cont")?.closest("form")
+        const form = this.inputtTarget.closest("form")
         if (form) form.removeEventListener("submit", this._submitHandler)
     }
 
     _onSubmit() {
         // After Turbo renders the response, clear the input and keep focus
         const clear = () => {
-            const input = document.getElementById("q_name_or_sku_cont")
+            const input = document.querySelector("[data-focus-search-target='inputt']")
             if (input) {
                 input.value = ""
                 input.focus()
@@ -41,7 +44,7 @@ export default class extends Controller {
             event.key === "ArrowLeft" || event.key === "ArrowRight"
         ) return
 
-        const input = document.getElementById("q_name_or_sku_cont")
+        const input = this.inputtTarget
         if (!input) return
 
         // Don't redirect if the user is already typing in an input/textarea/select

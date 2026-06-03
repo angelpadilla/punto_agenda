@@ -1,11 +1,11 @@
-<div class="column is-9-desktop is-12-tablet is-12-mobile" data-controller="autofocus-search">
+<div class="column is-9-desktop is-12-tablet is-12-mobile">
   <%# partial erros %>
   <div id="order_errors"></div>
   <%# buscador %>
-  <%= search_form_for @q, url: order.carrito? ? new_order_path : edit_order_path(order) do |f| %>
+  <%= search_form_for @q, url: order.carrito? ? new_order_path : edit_order_path(order), data: { controller: "focus-search" } do |f| %>
     <div class="columns is-multiline">
       <div class="column is-8">
-        <%= f.search_field :name_or_sku_cont, class: 'is-rounded search_input', placeholder: 'Nombre/SKU' %>
+        <%= f.search_field :name_or_sku_cont, class: 'is-rounded search_input', placeholder: 'Nombre/SKU', data: { focus_search_target: "inputt" } %>
       </div>
       <div class="column is-2">
         <div class="select is-rounded">
