@@ -14,7 +14,7 @@
     <% end %>
   </div>
   <div class="actions">
-    <div class="button is-rounded">
+    <div class="button is-rounded mtrigger" data-target="search_modal">
       <span class="icon">
         <%= image_tag 'search2.svg', alt: 'filter', class: 'invert' %>
       </span>
@@ -25,5 +25,49 @@
       </span>
       Nuevo evento
     <% end %>
+  </div>
+</div>
+<%# modal %>
+<div id="search_modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <%= search_form_for @q, url: events_path do |f| %>
+        <div class="columns is-multiline">
+          <div class="column is-12">
+            <%= f.search_field :folio_eq, class: 'input is-rounded', placeholder: 'Folio' %>
+          </div>
+          <div class="column is-6">
+            <div class="control">
+              <%= f.select :customer_id_eq,
+                options_for_select(@customers.map {|c| ["#{c.razon} #{c.tel_prefix} #{c.tel}", c.id]}),
+                { prompt: "Cliente" },
+                { "data-controller": "slimselect", class: "ss2",}
+              %>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="control">
+              <%= f.select :user_id_eq,
+                options_for_select(@users.map {|u| [u.full_name, u.id]}),
+                { prompt: "Agente/Vendedor" },
+                { "data-controller": "slimselect", class: "ss2",}
+              %>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="select is-rounded">
+              <%= f.select :status_eq, options_for_select(Event.statuses.keys.map {|k| [k.humanize, k]}), {prompt: "Status"}, {class: ""} %>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="select is-rounded">
+              <%= f.select :canal_eq, options_for_select(Event.canals.keys.map {|k| [k.humanize, k]}), {prompt: "Canal"}, {class: ""} %>
+            </div>
+          </div>
+        </div>
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary is-fullwidth" %>
+      <% end %>
+    </div>
   </div>
 </div>

@@ -12,22 +12,18 @@ class UserPanel::EventsController < UserPanelController
   end
 
   def monthly
-    # @events = @corp.events.indexx
-
-    # @q = @events.ransack(params[:q])
+    @customers = @corp.customers.default
+    @users = @corp.users.default
+    @events = @corp.events.default
+    @q = @events.ransack(params[:q])
   end
   def weekly
-    # @events = @corp.events.indexx
-
-    # @q = @events.ransack(params[:q])
+    @customers = @corp.customers.default
+    @users = @corp.users.default
+    @events = @corp.events.default
+    @q = @events.ransack(params[:q])
   end
 
-  def daily
-    events = @corp.events
-    @events = events.today
-
-    @q = events.ransack(params[:q])
-  end
 
   def slot_agents
     date = Date.parse(params[:dia])

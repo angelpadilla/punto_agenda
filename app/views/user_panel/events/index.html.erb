@@ -73,7 +73,7 @@
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box">
-      <%= search_form_for @q, url: items_path do |f| %>
+      <%= search_form_for @q, url: events_path do |f| %>
         <div class="columns is-multiline">
           <div class="column is-12">
             <%= f.search_field :folio_eq, class: 'input is-rounded', placeholder: 'Folio' %>

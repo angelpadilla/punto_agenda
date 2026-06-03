@@ -85,7 +85,6 @@ Rails.application.routes.draw do
       collection do
         get :monthly
         get :weekly
-        get :daily
         get :slot_agents
         post :marcar_asistencia
         post :marcar_ausencia

@@ -2,12 +2,32 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
     connect() {
-        this._handler = this._onKeydown.bind(this)
-        document.addEventListener("keydown", this._handler)
+        this._keydownHandler = this._onKeydown.bind(this)
+        this._submitHandler = this._onSubmit.bind(this)
+        document.addEventListener("keydown", this._keydownHandler)
+
+        const form = document.getElementById("q_name_or_sku_cont")?.closest("form")
+        if (form) form.addEventListener("submit", this._submitHandler)
     }
 
     disconnect() {
-        document.removeEventListener("keydown", this._handler)
+        document.removeEventListener("keydown", this._keydownHandler)
+
+        const form = document.getElementById("q_name_or_sku_cont")?.closest("form")
+        if (form) form.removeEventListener("submit", this._submitHandler)
+    }
+
+    _onSubmit() {
+        // After Turbo renders the response, clear the input and keep focus
+        const clear = () => {
+            const input = document.getElementById("q_name_or_sku_cont")
+            if (input) {
+                input.value = ""
+                input.focus()
+            }
+            document.removeEventListener("turbo:render", clear)
+        }
+        document.addEventListener("turbo:render", clear)
     }
 
     _onKeydown(event) {
