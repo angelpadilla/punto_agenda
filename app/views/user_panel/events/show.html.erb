@@ -23,7 +23,7 @@
       <% end %>
     <% end %>
     <% if @event.por_confirmar? %>
-      <%= link_to confirmar_events_path(@event), data: { turbo_method: :post }, class: "button is-success is-rounded" do %>
+      <%= link_to confirmar_events_path(id: @event), data: { turbo_method: :post }, class: "button is-success is-rounded" do %>
         <span class="icon mr-2">
           <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
         </span>
