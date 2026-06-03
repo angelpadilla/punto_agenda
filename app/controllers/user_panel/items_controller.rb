@@ -90,7 +90,7 @@ class UserPanel::ItemsController < UserPanelController
 
     # Only allow a list of trusted parameters through.
     def item_params
-      params.expect(item: [ :name, :bar_code, :brand_id, :brand_name, :quantity, :cate, :cost, :desc, :garantia, :offer, :price, :price2, :price3, :sat_product_id, :sku, :status, :stock, :alerta_stock, :unidad, :img1, :img2, :img3, :img4, :img5 ])
+      params.expect(item: [ :name, :bar_code, :brand_id, :brand_name, :quantity, :cate, :cost, :desc, :garantia, :offer, :price, :price2, :price3, :sat_product_id, :sku, :status, :stock, :alerta_stock, :unidad, :com_vendedor, :img1, :img2, :img3, :img4, :img5 ])
     end
 
     def validate_corp

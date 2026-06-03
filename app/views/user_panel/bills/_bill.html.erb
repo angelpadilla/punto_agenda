@@ -1,4 +1,11 @@
 <tr>
+  <td class="has-text-right">
+    <%= link_to bill_path(bill), class: "mr-2" do %>
+      <span class="icon">
+        <%= image_tag 'eye.svg', alt: 'view', class: 'invert' %>
+      </span>
+    <% end %>
+  </td>
   <td><%= l(bill.created_at, format: :short) %></td>
   <td><%= bill.folio %></td>
   <td>
@@ -12,11 +19,4 @@
   </td>
   <td><span class="tag is-rounded"><%= bill.tipo.humanize %></span></td>
   <td>$<%= number_with_precision(bill.total, precision: 2) %></td>
-  <td class="has-text-right">
-    <%= link_to bill_path(bill), class: "mr-2" do %>
-      <span class="icon">
-        <%= image_tag 'eye.svg', alt: 'view', class: 'invert' %>
-      </span>
-    <% end %>
-  </td>
 </tr>

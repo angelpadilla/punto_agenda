@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_01_125636) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_03_184833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -316,6 +316,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_125636) do
     t.string "bar_code"
     t.integer "brand_id"
     t.integer "cate"
+    t.decimal "com_vendedor", precision: 17, scale: 4, default: "0.0"
     t.integer "corp_id", null: false
     t.decimal "cost", precision: 17, scale: 4
     t.datetime "created_at", null: false
@@ -342,6 +343,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_125636) do
 
   create_table "line_items", force: :cascade do |t|
     t.decimal "cantidad", precision: 17, scale: 4
+    t.decimal "com_vendedor", precision: 17, scale: 4, default: "0.0"
     t.string "comentario"
     t.decimal "costo", precision: 17, scale: 4, default: "0.0"
     t.datetime "created_at", null: false
@@ -358,6 +360,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_125636) do
 
   create_table "orders", force: :cascade do |t|
     t.decimal "abonado", precision: 17, scale: 4, default: "0.0"
+    t.decimal "com_vendedor", precision: 17, scale: 4, default: "0.0"
     t.integer "corp_id", null: false
     t.decimal "costo", precision: 17, scale: 4
     t.decimal "costo_terminal", precision: 17, scale: 4

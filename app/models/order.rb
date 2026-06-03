@@ -213,6 +213,7 @@ class Order < ApplicationRecord
     # self.ganancia = self.line_items.sum { |line| line.ganancia_total }
     self.costo_terminal = self.deposits.sum(:comision_terminal)
     self.ganancia = self.total - self.costo - self.costo_terminal
+    self.com_vendedor = self.line_items.sum { |line| line.com_vendedor_total }
 
     puts "Total: #{self.total}, Subtotal: #{self.subtotal}, Impuestos: #{self.impuestos}, Descuento: #{self.descuento}, Costo: #{self.costo}, Ganancia: #{self.ganancia}"
 

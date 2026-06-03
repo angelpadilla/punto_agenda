@@ -24,6 +24,26 @@ class UserPanel::BillsController < UserPanelController
     end
   end
 
+  def timbra
+    @bill = @corp.bills.find(params[:id])
+
+    ## validaciones
+    return redirect_back fallback_location: user_panel_bills_path, alert: "Esta factura ya ha sido timbrada." if @bill.timbre?
+
+    return redirect_back fallback_location: user_panel_bills_path, alert: "Datos SAT incompletos." if !@bill.me_pueden_facturar?
+    return redirect_back fallback_location: user_panel_bills_path, alert: "Uso de CFDI requerido" if params[:uso_cfdi].blank?
+
+    @bill.uso_cfdi = params[:uso_cfdi]
+
+    response = Ftools.timbra_bill(@bill, @bill.uso_cfdi)
+
+    if response
+      redirect_back fallback_location: user_panel_bills_path, notice: "Factura timbrada exitosamente."
+    else
+      redirect_back fallback_location: user_panel_bills_path, alert: "Error al timbrar la factura."
+    end
+  end
+
   private
 
   def set_bill

@@ -135,7 +135,7 @@
           <% if @slots_info %>
             <div class="column is-12-mobile is-6-tablet is-4-desktop">
               <div class="box dashboard_box">
-                <h3 class="dashboard_section_title mb-3">Slots hoy</h3>
+                <h3 class="dashboard_section_title mb-3">Espacios hoy</h3>
                 <p class="labell mb-3"><%= @slots_info[:ranges] %> <%= 'slot'.pluralize(@slots_info[:ranges]) %> · <%= @slots_info[:open] %> – <%= @slots_info[:close] %></p>
                 <div class="flexx space-b flex-end mb-1">
                   <span class="labell">Ocupados</span>
@@ -146,7 +146,7 @@
                      style="width:<%= @slots_info[:pct] %>%;"></div>
                 </div>
                 <div class="stat_val has-text-neon" style="font-size:2.5rem;line-height:1;"><%= @slots_info[:disponibles] %></div>
-                <div class="labell">slots disponibles</div>
+                <div class="labell">espacios disponibles</div>
               </div>
             </div>
           <% end %>
@@ -464,7 +464,7 @@
               <div class="box stat_card">
                 <div class="stat_icon"><%= image_tag 'calendar-date-svgrepo-com.svg', class: 'invert' %></div>
                 <div class="stat_val"><%= @slots_info[:disponibles] %></div>
-                <div class="stat_label">Slots disponibles hoy</div>
+                <div class="stat_label">Espacios disponibles hoy</div>
               </div>
             </div>
           <% end %>

@@ -43,10 +43,6 @@ class LineItem < ApplicationRecord
     costo * self.cantidad
   end
 
-  # def com_vendedor_total
-  #   self.com_vendedor * self.cantidad
-  # end
-
   def ganancia_total
     self.total - self.costo_total
   end
@@ -62,5 +58,9 @@ class LineItem < ApplicationRecord
 
   def precio_descuento
     self.precio - self.descuento
+  end
+
+  def com_vendedor_total
+    self.com_vendedor * self.cantidad
   end
 end

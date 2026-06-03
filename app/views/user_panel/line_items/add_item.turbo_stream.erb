@@ -1,1 +1,12 @@
 <%= turbo_stream.update "ticket_resumen", partial: "user_panel/orders/ticket_resumen", locals: { order: @order } %>
+<%# 2. Cerrar el modal %>
+<%= turbo_stream.update "close_modal_#{@item.id}" do %>
+  <script>
+    (function() {
+      const modal = document.getElementById("item_<%= @item.id %>");
+      if (modal) {
+        modal.classList.remove("is-active");
+      }
+    })();
+  </script>
+<% end %>

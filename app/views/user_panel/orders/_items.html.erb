@@ -47,91 +47,101 @@
       <% end %>
     <% end %>
   </div>
-  <div class="columns is-multiline">
-    <% @items.each do |item| %>
-      <% images = [item.img1, item.img2, item.img3, item.img4, item.img5].select(&:attached?) %>
-      <!-- Product 1 -->
-      <div class="column is-4">
-        <div class="card card_new_order">
-          <div class="card-image p-4">
-            <div class="order_item_image">
-              <% if (first_image = images.first) %>
-                <%= image_tag first_image.variant(resize_to_limit: [400, 400]), alt: item.name, loading: 'lazy' %>
-              <% else %>
-                <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
-              <% end %>
-            </div>
-          </div>
-          <div class="card-content pt-0">
-            <p class="is-size-7 has-text-weight-bold has-text-neon" >
-              <%= item.cate&.titleize %>
-            </p>
-            <h3 class="title is-5 mb-2 font-headline"><%= item.brand&.name&.titleize %> | <%= item.name %></h3>
-            <div class="level is-mobile">
-              <div class="level-left">
-                <p class="is-size-7 has-text-grey"><%= item.sku %></p>
-              </div>
-              <div class="level-right">
-                <% if item.offer.present? %>
-                  <span class="has-text-weight-bold has-text-neon">
-                    <%= number_to_currency(item.offer) %>
-                  </span>
-                  <span class="has-text-weight-bold tacha"><%= number_to_currency(item.price) %></span>
+  <% if @items.any? %>
+    <div class="columns is-multiline">
+      <% @items.each do |item| %>
+        <% images = [item.img1, item.img2, item.img3, item.img4, item.img5].select(&:attached?) %>
+        <!-- Product 1 -->
+        <div class="column is-4">
+          <div class="card card_new_order">
+            <div class="card-image p-4">
+              <div class="order_item_image">
+                <% if (first_image = images.first) %>
+                  <%= image_tag first_image.variant(resize_to_limit: [400, 400]), alt: item.name, loading: 'lazy' %>
                 <% else %>
-                  <span class="has-text-weight-bold"><%= number_to_currency(item.price) %></span>
+                  <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
                 <% end %>
               </div>
             </div>
-            <button class="button is-primary is-fullwidth is-rounded mtrigger" data-target="<%= item.id %>">
-              <span class="icon mr-2">
-                <%= image_tag 'plus.svg', alt: 'carrito' %>
-              </span>
-              Agregar
-            </button>
-          </div>
-        </div>
-      </div>
-      <%# modal agregar %>
-      <div class="modal" id="<%= item.id %>">
-        <div class="modal-background"></div>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title"><%= item.name %></p>
-            <button class="delete" aria-label="close"></button>
-          </header>
-          <%= form_with url: add_item_line_items_path, method: :post do |form| %>
-            <%= form.hidden_field :item_id, value: item.id %>
-            <%= form.hidden_field :order_id, value: order.id %>
-            <section class="modal-card-body">
-              <div class="columns is-multiline">
-                <div class="field column is-12">
-                  <label class="label">Precios</label>
-                  <div class="control">
-                    <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 0.1, step: 'any', class: "input is-rounded" %>
-                  </div>
+            <div class="card-content pt-0">
+              <p class="is-size-7 has-text-weight-bold has-text-neon" >
+                <%= item.cate&.titleize %>
+              </p>
+              <h3 class="title is-5 mb-2 font-headline"><%= item.brand&.name&.titleize %> | <%= item.name %></h3>
+              <div class="level is-mobile">
+                <div class="level-left">
+                  <p class="is-size-7 has-text-grey"><%= item.sku %></p>
                 </div>
-                <div class="field column is-6">
-                  <label class="label">Cantidad</label>
-                  <div class="control">
-                    <%= form.number_field :cantidad, value: 1, min: 0.1, step: 'any', class: "input is-rounded" %>
-                  </div>
-                </div>
-                <div class="field column is-6">
-                  <label class="label">Descuento</label>
-                  <div class="control">
-                    <%= form.number_field :descuento, value: 0, min: 0, step: 'any', class: "input is-rounded" %>
-                  </div>
+                <div class="level-right">
+                  <% if item.offer.present? %>
+                    <span class="has-text-weight-bold has-text-neon">
+                      <%= number_to_currency(item.offer) %>
+                    </span>
+                    <span class="has-text-weight-bold tacha"><%= number_to_currency(item.price) %></span>
+                  <% else %>
+                    <span class="has-text-weight-bold"><%= number_to_currency(item.price) %></span>
+                  <% end %>
                 </div>
               </div>
-            </section>
-            <footer class="modal-card-foot">
-              <%= form.submit "Agregar", class: "button is-success is-fullwidth is-rounded" %>
-            </footer>
-          <% end %>
+              <button class="button is-primary is-fullwidth is-rounded mtrigger" data-target="item_<%= item.id %>">
+                <span class="icon mr-2">
+                  <%= image_tag 'plus.svg', alt: 'carrito' %>
+                </span>
+                Agregar
+              </button>
+            </div>
+          </div>
         </div>
+        <%# modal agregar %>
+        <div class="modal" id="item_<%= item.id %>">
+          <div class="modal-background"></div>
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">Agregar Item</p>
+              <button class="delete" aria-label="close"></button>
+            </header>
+            <%= form_with url: add_item_line_items_path, method: :post do |form| %>
+              <%= form.hidden_field :item_id, value: item.id %>
+              <%= form.hidden_field :order_id, value: order.id %>
+              <section class="modal-card-body">
+                <div id="line-item-errors"></div>
+                <div class="columns is-multiline">
+                  <div class="field column is-12">
+                    <label class="label">Precios</label>
+                    <div class="control">
+                      <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 0.1, step: 'any', class: "input is-rounded" %>
+                    </div>
+                  </div>
+                  <div class="field column is-6">
+                    <label class="label">Cantidad</label>
+                    <div class="control">
+                      <%= form.number_field :cantidad, value: 1, min: 0.1, step: 'any', class: "input is-rounded" %>
+                    </div>
+                  </div>
+                  <div class="field column is-6">
+                    <label class="label">Descuento</label>
+                    <div class="control">
+                      <%= form.number_field :descuento, value: 0, min: 0, step: 'any', class: "input is-rounded" %>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <footer class="modal-card-foot">
+                <%= form.submit "Agregar", class: "button is-success is-fullwidth is-rounded" %>
+              </footer>
+            <% end %>
+          </div>
+        </div>
+        <div id="close_modal_<%= item.id %>" style="display:none;"></div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="box">
+      <div class="has-text-centered">
+        <p class="is-size-5 mt-3">No tienes items disponibles con esta categoría</p>
       </div>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
   <% if @pagy.pages > 1 %>
     <br>
     <%== @pagy.series_nav(:bulma) %>

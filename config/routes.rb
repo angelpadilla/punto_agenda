@@ -114,6 +114,7 @@ Rails.application.routes.draw do
     resources :line_items, controller: "user_panel/line_items" do
       collection do
         post :add_item
+        post :down_item
         post :remove_item
         post :clear_items
       end

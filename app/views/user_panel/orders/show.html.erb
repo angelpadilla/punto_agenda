@@ -561,9 +561,9 @@
   <div class="modal-card">
     <%
       wa_tel = "#{@order.customer&.tel_prefix&.delete('+')}#{@order.customer&.tel}"
-      wa_msg = "Tu detalles de tu pedido: #{@order.folio}\n" \
-               "Total: $#{@order.total}\n" \
-               "Lo puedes consultar en: #{ticket_url(@order.folio)}\n" \
+      wa_msg = "**Detalles de tu pedido**: #{@order.folio}\n" \
+               "**Total**: $#{@order.total}\n" \
+               "Lo puedes consultar en: #{ticket_url(@order.folio)}\n\n" \
                "Gracias por tu preferencia en #{@corp.name}!"
       wa_url = "https://wa.me/#{wa_tel}?text=#{CGI.escape(wa_msg)}"
     %>

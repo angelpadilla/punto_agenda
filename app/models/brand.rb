@@ -4,7 +4,7 @@ class Brand < ApplicationRecord
 
   validates :name,
             presence: { message: "El nombre es obligatorio" },
-            uniqueness: { scope: :corp_id, message: "ya existe una marca con este nombre", case_sensitive: false }
+            uniqueness: { scope: :corp_id, message: "Ya existe una marca con este nombre", case_sensitive: false }
 
 
   normalizes :name, with: ->(e) { e.strip.downcase }

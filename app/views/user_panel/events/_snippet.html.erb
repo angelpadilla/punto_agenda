@@ -143,13 +143,13 @@
     <footer class="modal-card-foot">
       <div class="buttons">
         <% if event.agendado? and DateTime.current >= event.hora_inicio %>
-          <%= link_to marcar_asistencia_events_path(event), data: { turbo_method: :post }, class: "button is-primary is-rounded" do %>
+          <%= link_to marcar_asistencia_events_path(id: event), data: { turbo_method: :post }, class: "button is-primary is-rounded" do %>
             <span class="icon mr-2">
               <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
             </span>
             Asistencia
           <% end %>
-          <%= link_to marcar_ausencia_events_path(event), data: { turbo_method: :post }, class: "button is-info is-rounded" do %>
+          <%= link_to marcar_ausencia_events_path(id: event), data: { turbo_method: :post }, class: "button is-info is-rounded" do %>
             <span class="icon mr-2">
               <%= image_tag 'confounded-square-svgrepo-com.svg', alt: 'view', class: 'invert', loading: 'lazy' %>
             </span>
@@ -157,14 +157,14 @@
           <% end %>
         <% end %>
         <% if event.por_confirmar? %>
-          <%= link_to confirmar_events_path(event), data: { turbo_method: :post }, class: "button is-success is-rounded" do %>
+          <%= link_to confirmar_events_path(id: event), data: { turbo_method: :post }, class: "button is-success is-rounded" do %>
             <span class="icon mr-2">
               <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
             </span>
             Confirmar
           <% end %>
         <% end %>
-        <%= link_to event_path(event), class: "button  is-rounded" do %>
+        <%= link_to event_path(id: event), class: "button  is-rounded" do %>
           <span class="icon mr-2">
             <%= image_tag 'eye.svg', alt: 'view', class: 'invert', loading: 'lazy' %>
           </span>

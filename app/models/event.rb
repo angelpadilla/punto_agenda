@@ -34,7 +34,7 @@ class Event < ApplicationRecord
   def no_overlap_events
     return if hora_inicio.blank? || hora_final.blank? || corp.blank?
 
-    overlapping_events = Event.where(corp_id: corp_id, user_id: user_id, status: [:agendado, :completado])
+    overlapping_events = Event.where(corp_id: corp_id, user_id: user_id, status: [ :agendado, :completado ])
                               .where.not(id: id)
                               .where("hora_inicio < ? AND hora_final > ?", hora_final, hora_inicio)
 

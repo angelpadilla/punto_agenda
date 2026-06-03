@@ -269,7 +269,7 @@
       wa_tel = "#{@event.customer&.tel_prefix&.delete('+')}#{@event.customer&.tel}"
       wa_msg = "Tu evento programado: #{@event.title}\n" \
                "Dia: #{@event.hora_inicio.strftime('%d/%m/%Y')}\n" \
-               "Hora: #{@event.hora_inicio.strftime('%I:%M %p')} - #{@event.hora_final.strftime('%I:%M %p')}\n" \
+               "Hora: #{@event.hora_inicio.strftime('%I:%M %p')} - #{@event.hora_final.strftime('%I:%M %p')}\n\n" \
                "#{"Notas: #{@event.body}\n" if @event.body.present?}" \
                "Gracias por tu preferencia en #{@corp.name}!"
       wa_url = "https://wa.me/#{wa_tel}?text=#{CGI.escape(wa_msg)}"

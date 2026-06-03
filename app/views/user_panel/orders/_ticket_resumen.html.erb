@@ -28,6 +28,9 @@
                 <%= number_to_currency(line_item.total_antes_descuento) %>
                 <%= line_item.descuento > 0 ? "(-#{number_to_currency(line_item.descuento)} descuento)" : "" %>
               </p>
+              <%= link_to remove_item_line_items_path(line_id: line_item.id, order_id: order.id), data: { turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas eliminar este item?" }, class: "is-small" do %>
+                Eliminar
+              <% end %>
             </div>
             <div class="column is-narrow has-text-centered">
               <div class="is-flex is-flex-direction-column">
@@ -42,7 +45,7 @@
                   </button>
                 <% end %>
                 <span class="has-text-weight-bold"><%= line_item.cantidad %></span>
-                <%= form_with url: remove_item_line_items_path, method: :post do |form| %>
+                <%= form_with url: down_item_line_items_path, method: :post do |form| %>
                   <%= form.hidden_field :line_id, value: line_item.id %>
                   <%= form.hidden_field :order_id, value: order.id %>
                   <%= form.hidden_field :cantidad, value: 1 %>
