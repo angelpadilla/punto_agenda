@@ -1,5 +1,5 @@
 class UserPanel::BillsController < UserPanelController
-  before_action :set_bill, only: %i[ show ]
+  before_action :set_bill, only: %i[ show timbra ]
   def index
     bills = @corp.bills.default
 
@@ -25,7 +25,6 @@ class UserPanel::BillsController < UserPanelController
   end
 
   def timbra
-    @bill = @corp.bills.find(params[:id])
 
     ## validaciones
     return redirect_back fallback_location: user_panel_bills_path, alert: "Esta factura ya ha sido timbrada." if @bill.timbre?

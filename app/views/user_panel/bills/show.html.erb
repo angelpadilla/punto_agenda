@@ -163,21 +163,12 @@
     <div class="modal-background"></div>
     <div class="modal-content">
       <div class="box">
-        <%= form_with url: timbra_orders_path(folio: @order.folio), method: :post do |form| %>
+        <%= form_with url: timbra_bill_path(@bill), method: :post do |form| %>
           <div class="columns is-multiline">
             <div class="field column is-12">
               <label class="label">Uso de CFDI</label>
               <div class="select is-rounded">
-                <%= form.select :uso_cfdi, Order::UsoCFDI, {required: true}, {} %>
-              </div>
-            </div>
-            <div class="field column is-12">
-              <label class="label">Cliente</label>
-              <div class="control">
-                <%= form.select :customer_id, options_for_select(@corp.customers.active.default.collect {|cus| ["#{cus.tel} - #{cus.razon}", cus.id] }, @order.customer_id),
-              {prompt: "Selecciona un cliente", required: true},
-              { "data-controller": "slimselect", class: "ss2"}
-              %>
+                <%= form.select :uso_cfdi, Bill::UsoCFDI, {required: true}, {} %>
               </div>
             </div>
           </div>

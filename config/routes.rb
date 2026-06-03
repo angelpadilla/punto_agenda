@@ -65,7 +65,7 @@ Rails.application.routes.draw do
     resources :bills, controller: "user_panel/bills", only: %i[index show] do
       member do
         # get :bill_pdf, as: :pdf
-        # post :bill_xml, as: :xml
+        post :timbra
       end
     end
 
