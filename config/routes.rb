@@ -134,4 +134,14 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  scope "admin" do
+    get "", to: "admin#home", as: :admin_panel_home
+    resources :corps, controller: "admin/corps"
+    resources :users, controller: "admin/users"
+    resources :events, controller: "admin/events"
+    resources :items, controller: "admin/items"
+    resources :orders, controller: "admin/orders"
+    resources :deposits, controller: "admin/deposits"
+  end
 end

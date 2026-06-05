@@ -1,0 +1,9 @@
+Pago de suscripción exitoso <%= @bill.folio %>
+Te adjuntamos los detalles de tu pago.
+Cliente: <%= @corp.name&.titleize %>
+Folio: <%= @bill.folio %>
+Fecha y hora: <%= @bill.created_at.strftime("%d/%m/%Y, %I:%M %p") %>
+Si tienes dudas o comentarios, no dudes en contactarnos.
+Gracias por tu preferencia, que tengas un excelente día.
+* Puedes ver mas detalles de este pago desde tu panel de usuario (Ajustes > Facturación).
+* Si tienes configurado correctamente tus datos fiscales (Ajustes > Ajustes Generales > Datos Fiscales), puedes facturar este pago desde tu panel de usuario (Ajustes > Facturación).

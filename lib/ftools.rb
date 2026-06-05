@@ -4,10 +4,116 @@ module Ftools
     ApplicationRecord.descendants.map { |model| model.name }.sort
   end
 
+
+  def self.timbra_bill(bill, uso_cfdi = "G03")
+    @setting = Setting.find(1)
+    @factura = self.set_bill(@setting)
+    time_noww = Time.current
+    fecha_timbre = time_noww.strftime("%Y-%m-%dT%H:%M:%S")
+    metodo = "PUE"
+    forma_pago = Bill.forma_pagos[bill.forma_pago]
+
+    params = {
+      moneda: "MXN",
+      series: "FA",
+      folio: bill.folio || bill.id,
+      forma_pago: forma_pago,
+      metodo_pago: metodo,
+      cp: @setting.cp,
+      receptor_cp: (bill.corp and bill.corp.cp) ? (bill.corp.rfc == "XAXX010101000" ? @setting.cp : bill.corp.cp) : @setting.cp,
+      receptor_razon: bill.corp.razon,
+      receptor_rfc: bill.corp.rfc,
+      receptor_regimen: bill.corp.regimen,
+      uso_cfdi: (bill.corp and bill.corp.rfc == "XAXX010101000") ? "S01" : uso_cfdi,
+      time: fecha_timbre,
+      line_items: bill.line_items.map do |line|
+        {
+          clave_prod_serv: "25172500",
+          clave_unidad: "E48",
+          unidad: "E48",
+          sku: "001",
+          cantidad: line.cantidad,
+          descripcion: line.nombre,
+          valor_unitario: line.precio_descuento,
+          descuento: 0.0,
+          tax: line.iva,
+          retencion_iva: 0
+        }
+      end
+    }
+
+    response = @factura.timbra_doc(params)
+
+    if response[:status] == 200
+      puts " --- Timbrado con exito"
+      puts response.inspect
+      puts "--------------------------------"
+
+      order.xml = response[:xml]
+      order.sat_uuid = response[:uuid]
+      order.sat_timbre_fecha = response[:fecha_timbrado]
+      order.sat_cfdi = response[:sello_cfd]
+      order.sat_sello = response[:sello_sat]
+      order.sat_sello_emisor = response[:no_certificado_sat]
+      order.sat_serial = @factura.serial
+      order.tipo = "factura"
+
+      order.error = nil
+      order.save
+
+      ## Si la orden era a credito y remision y ya tenia algunos depositos, timbrarlos
+      if order.deposits.any? and order.credito?
+        order.deposits.each do |dep|
+          self.timbra_deposito(order, dep)
+        end
+      end
+      true
+    else
+      puts " --- Timbrado fallido"
+      puts "Status: #{response[:status]}"
+      puts "Error details: #{response[:message_error]}"
+      order.error = response[:message_error]
+      order.tipo = "remision"
+      order.save
+      false
+    end
+
+  end
+
+  def self.cancela_bill(bill)
+    @setting = Setting.find(1)
+    @factura = self.set_bill(@setting)
+
+    params = {
+      uuid: bill.sat_uuid,
+      rfcReceptor: bill.corp.rfc,
+      total_sale: bill.total,
+      motivo: "02"
+    }
+
+    response = @factura.cancela_doc(params)
+    if response[:status] == 200
+      puts " --- Cancelación con éxito"
+      puts response.inspect
+      puts "--------------------------------"
+      bill.xml = response[:xml]
+      bill.error = nil
+      bill.save
+      true
+    else
+      puts " --- Cancelación fallida"
+      puts "Status: #{response[:status]}"
+      puts "Error details: #{response[:message_error]}"
+      bill.error = response[:message_error]
+      bill.save
+      false
+    end
+  end
+
   def self.timbra_order(order, uso_cfdi = "G03")
     @factura = self.set_factura(order)
     @alias = order.corp
-    time_noww = DateTime.current
+    time_noww = Time.current
 
     # fecha_timbre = order.fecha.strftime("%Y-%m-%dT%H:%M:%S")
     # fecha_timbre = Time.current.strftime("%Y-%m-%dT%H:%M:%S")
@@ -139,7 +245,7 @@ module Ftools
     @factura = self.set_factura(order)
     @alias = order.corp
 
-    timenow = DateTime.current.strftime("%Y-%m-%dT%H:%M:00")
+    timenow = Time.current.strftime("%Y-%m-%dT%H:%M:00")
 
     ## la fecha del pago no es necesaria convertirla a tiempo de mexico porque
     ##  la ingresa el usuario manualmente en el formulario
@@ -236,6 +342,18 @@ module Ftools
   end
 
   private
+
+  def self.set_bill(setting)
+    Factura.new(
+      Rails.application.credentials.dig(:factura_key),
+      setting.rfc,
+      setting.razon,
+      setting.regimen,
+      ActiveStorage::Blob.service.path_for(setting.key.key),
+      setting.key_pass,
+      ActiveStorage::Blob.service.path_for(setting.cer.key),
+    )
+  end
 
   def self.set_factura(order)
     Factura.new(

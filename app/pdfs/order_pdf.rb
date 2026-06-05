@@ -54,10 +54,10 @@ class OrderPdf < Prawn::Document
     if @order.tipo == "factura"
       text_box(
         %(<strong>Detalles</strong> \n
-          <strong>Folio</strong>: #{@order.sku}
+          <strong>Folio</strong>: #{@order.folio}
           <strong>Fecha folio</strong>: #{@order.fecha.strftime('%d/%m/%Y')}
           <strong>Forma de pago</strong>: #{@order.forma_pago&.titleize}
-          <strong>Estatus de venta</strong>: #{@order.status&.titleize}
+          <strong>Estatus de venta</strong>: #{@order.status_pago&.titleize}
           <strong>Uso CFDI</strong>: #{@order.uso_cfdi}
         ),
         at: [ (bounds.width / 2), y_pos ],
@@ -151,70 +151,60 @@ class OrderPdf < Prawn::Document
   end
 
   def factura
-      move_down 20
+    move_down 20
 
-      # text "tamaño de hoja: #{bounds.width}"
-      y_pos = cursor
-      qr = RQRCode::QRCode.new("https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@order.sat_uuid}&re=#{@corp.rfc}&rr=#{@order.customer.rfc}&tt=#{@order.total}&fe=#{@order.sat_cfdi[-8..-1]}")
-      svg "#{qr.as_svg}", at: [ 0, y_pos ], width: 150
+    # text "tamaño de hoja: #{bounds.width}"
+    y_pos = cursor
+    qr = RQRCode::QRCode.new("https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@order.sat_uuid}&re=#{@corp.rfc}&rr=#{@order.customer.rfc}&tt=#{@order.total}&fe=#{@order.sat_cfdi[-8..-1]}")
+    svg "#{qr.as_svg}", at: [ 0, y_pos ], width: 150
 
-      bounding_box([ 160, y_pos ], width: 370, height: 180) do
-        text "Sello digital del CFDI", size: 7, style: :bold
-        text "#{@order.sat_cfdi}", size: 7
-        move_down 5
+    bounding_box([ 160, y_pos ], width: 370, height: 180) do
+      text "Sello digital del CFDI", size: 7, style: :bold
+      text "#{@order.sat_cfdi}", size: 7
+      move_down 5
 
-        text "Sello del SAT", size: 7, style: :bold
-        text "#{@order.sat_sello}", size: 7
-        move_down 5
+      text "Sello del SAT", size: 7, style: :bold
+      text "#{@order.sat_sello}", size: 7
+      move_down 5
 
-        text "Folio fiscal", size: 7, style: :bold
-        text "#{@order.sat_uuid}", size: 7
-        move_down 5
+      text "Folio fiscal", size: 7, style: :bold
+      text "#{@order.sat_uuid}", size: 7
+      move_down 5
 
-        text "Número de serie del certificado del SAT", size: 7, style: :bold
-        text "#{@order.sat_serial}", size: 7
-        move_down 5
+      text "Número de serie del certificado del SAT", size: 7, style: :bold
+      text "#{@order.sat_serial}", size: 7
+      move_down 5
 
-        text "Fecha y hora de certificación", size: 7, style: :bold
-        text "#{@order.sat_timbre_fecha}", size: 7
-        move_down 5
+      text "Fecha y hora de certificación", size: 7, style: :bold
+      text "#{@order.sat_timbre_fecha}", size: 7
+      move_down 5
 
-        text "Este documento es una representación impresa de un CFDI", size: 7
-      end
+      text "Este documento es una representación impresa de un CFDI", size: 7
+    end
   end
 
   def items_rows
     if @order.tipo == "factura"
-      header = [ [ "Unidad", "Concepto", "Cantidad", "Precio Unitario", "Importe" ] ]
-      if @order.facturado_especial_madre
-        items = @order.line_items.map do |line|
-          [
-            line.item.unidad,
-            "Factura conjunta de folios: #{@order.ids_facturados_especial.split(',').join(', ')}",
-            line.cantidad,
-            "$#{line.precio} #{@order.moneda}",
-            "$#{line.total} #{@order.moneda}"
-          ]
-        end
-      else
-        items = @order.line_items.map do |line|
-          [
-            line.item.unidad,
-            "#{line.item.brand.name} - #{line.item.name}",
-            line.cantidad,
-            "$#{line.precio} #{@order.moneda}",
-            "$#{line.total} #{@order.moneda}"
-          ]
-        end
+      header = [ [ "Unidad", "Concepto", "Cantidad", "Precio Unitario", "Descuento", "Importe" ] ]
+      items = @order.line_items.map do |line|
+        [
+          line.item.unidad,
+          "#{line.item.brand.name} - #{line.item.name}",
+          line.cantidad,
+          number_to_currency(line.precio),
+          number_to_currency(line.descuento),
+          number_to_currency(line.total)
+        ]
       end
     else
-      header = [ [ "Unidad", "Concepto", "Cantidad", "Precio Unitario", "Importe" ] ]
+      header = [ [ "Unidad", "Concepto", "Cantidad", "Precio Unitario", "Descuento", "Importe" ] ]
       items = @order.line_items.map do |line|
         [
           line.item.unidad,
           "#{line.item&.brand&.name&.titleize} - #{line.item.name}",
           line.cantidad,
           number_to_currency(line.precio),
+          number_to_currency(line.descuento),
           number_to_currency(line.total)
         ]
       end

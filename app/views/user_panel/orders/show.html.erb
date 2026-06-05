@@ -205,34 +205,36 @@
     </h2>
   </div>
   <div class="box_content">
-    <table class="table is-fullwidth">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Precio unitario</th>
-          <th>Monto(antes de descuento)</th>
-          <th>Descuento</th>
-          <th>Monto</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @order.line_items.each do |line| %>
+    <div class="table-container">
+      <table class="table is-fullwidth">
+        <thead>
           <tr>
-            <th>
-              <%= link_to line.item.name.titleize, line.item %>
-            </th>
-            <td><%= line.cantidad %></td>
-            <td><%= number_to_currency(line.precio) %></td>
-            <td><%= number_to_currency(line.total_antes_descuento) %></td>
-            <td>
-              - <%= number_to_currency(line.descuento) %>
-            </td>
-            <td><%= number_to_currency(line.total) %></td>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Monto(antes de descuento)</th>
+            <th>Descuento</th>
+            <th>Monto</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @order.line_items.each do |line| %>
+            <tr>
+              <th>
+                <%= link_to line.item.name.titleize, line.item %>
+              </th>
+              <td><%= line.cantidad %></td>
+              <td><%= number_to_currency(line.precio) %></td>
+              <td><%= number_to_currency(line.total_antes_descuento) %></td>
+              <td>
+                - <%= number_to_currency(line.descuento) %>
+              </td>
+              <td><%= number_to_currency(line.total) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <div class="box expandable">

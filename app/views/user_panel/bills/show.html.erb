@@ -8,7 +8,7 @@
       </span>
       Volver a listado 
     <% end %>
-    <% if !@bill.timbre? and @corp.me_pueden_facturar? %>
+    <% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and false %>
       <button class="mtrigger button is-rounded" data-target="timbraa">
         <span class="icon mr-2">
           <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
@@ -16,36 +16,52 @@
         Timbra
       </button>
     <% end %>
-    <div class="dropdown is-right is-hoverable">
-      <div class="dropdown-trigger">
-        <button class="button is-rounded" aria-haspopup="true">
-          <span class="icon">
-            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
-          </span>
-          <span>Acciones</span>
-        </button>
-      </div>
-      <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-          <%= link_to bill_path(@bill, format: :pdf), class: "dropdown-item" do %>
+    <% if @bill.pagado? %>
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true">
             <span class="icon">
-              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
             </span>
-            PDF
-          <% end %>
-          <% if @bill.factura? and @bill.xml.present? %>
-            <%= link_to bill_path(@bill, format: :xml), class: "dropdown-item" do %>
+            <span>Acciones</span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <%= link_to bill_path(@bill, format: :pdf), class: "dropdown-item" do %>
               <span class="icon">
-                <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
+                <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
               </span>
-              XML
+              PDF
             <% end %>
-          <% end %>
+            <% if @bill.factura? and @bill.xml.present? %>
+              <%= link_to bill_path(@bill, format: :xml), class: "dropdown-item" do %>
+                <span class="icon">
+                  <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
+                </span>
+                XML
+              <% end %>
+            <% end %>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   </div>
 </div>
+<% if @bill.nota_for_corp.present? %>
+  <div class="noti is-warning mt-4">
+    <p>
+      <%= @bill.nota_for_corp %>
+    </p>
+  </div>
+<% end %>
+<% if @bill.error.present? %>
+  <div class="noti is-danger mt-4">
+    <p>
+      <%= @bill.error %>
+    </p>
+  </div>
+<% end %>
 <div class="box mt-4">
   <span class="tag is-light is-rounded"><%= @bill.tipo.titleize %></span>
   <% if @bill.status_pago == "pagado" %>
@@ -71,14 +87,6 @@
       <p class="contentt"><%= @bill.forma_pago&.titleize %></p>
     </div>
   </div>
-  <% if @bill.nota_interna.present? %>
-    <div class="columns is-mobile is-multiline mt-2">
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Notas</div>
-        <p class=""><%= @bill.nota_interna %></p>
-      </div>
-    </div>
-  <% end %>
 </div>
 <div class="box">
   <div class="box_header">
@@ -90,34 +98,36 @@
     </h2>
   </div>
   <div class="box_content">
-    <table class="table is-fullwidth">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Precio unitario</th>
-          <th>Monto(antes de descuento)</th>
-          <th>Descuento</th>
-          <th>Monto</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @bill.bill_items.each do |line| %>
+    <div class="table-container">
+      <table class="table is-fullwidth">
+        <thead>
           <tr>
-            <th>
-              <%= line.nombre %>
-            </th>
-            <td><%= line.cantidad %></td>
-            <td><%= number_to_currency(line.precio) %></td>
-            <td><%= number_to_currency(line.total_antes_descuento) %></td>
-            <td>
-              - <%= number_to_currency(line.descuento) %>
-            </td>
-            <td><%= number_to_currency(line.total) %></td>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Monto(antes de descuento)</th>
+            <th>Descuento</th>
+            <th>Monto</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @bill.bill_items.each do |line| %>
+            <tr>
+              <th>
+                <%= line.nombre %>
+              </th>
+              <td><%= line.cantidad %></td>
+              <td><%= number_to_currency(line.precio) %></td>
+              <td><%= number_to_currency(line.total_antes_descuento) %></td>
+              <td>
+                - <%= number_to_currency(line.descuento) %>
+              </td>
+              <td><%= number_to_currency(line.total) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <div class="box">
@@ -143,20 +153,6 @@
     </div>
   </div>
 </div>
-<% if @bill.nota_for_corp.present? %>
-  <div class="noti is-warning mt-4">
-    <p>
-      <%= @bill.nota_for_corp %>
-    </p>
-  </div>
-<% end %>
-<% if @bill.error.present? %>
-  <div class="noti is-danger mt-4">
-    <p>
-      <%= @bill.error %>
-    </p>
-  </div>
-<% end %>
 <%# modals %>
 <% if !@bill.timbre? and @corp.me_pueden_facturar? %>
   <div id="timbraa" class="modal">

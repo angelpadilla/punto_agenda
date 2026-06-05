@@ -24,7 +24,7 @@
         <%= @corp.name&.titleize %> (<%= @corp.sku %>)
         <span class="tag"><%= @corp.tipo_plan %></span>
       </h2>
-      <p class="labell"><%= l(DateTime.current, format: :long) %></p>
+      <p class="labell"><%= l(Time.current, format: :long) %></p>
     </div>
     <div class="actions">
       <%= link_to new_order_path, class: "button is-primary is-rounded" do %>

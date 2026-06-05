@@ -55,7 +55,12 @@ class BillItem < ApplicationRecord
     self.precio - self.subtotal_u
   end
 
-  def precio_descuento
-    self.precio - self.descuento
+  def descuento_unitario
+    self.descuento / self.cantidad
   end
+
+  def precio_descuento
+    self.precio - self.descuento_unitario
+  end
+
 end

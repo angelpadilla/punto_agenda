@@ -1,0 +1,63 @@
+<table border="0" cellpadding="0" cellspacing="0" class="body">
+  <tr>
+    <td>&nbsp;</td>
+    <td class="container">
+      <div class="content">
+        <!-- START CENTERED WHITE CONTAINER -->
+        <table class="main">
+          <!-- START MAIN CONTENT AREA -->
+          <tr>
+            <td class="wrapper">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <h2>Pago de suscripción fallido <%= @bill.folio %></h2>
+                    <br>
+                    <p>
+                      <b>Cliente:</b> <%= @corp.name&.titleize %>
+                    </p>
+                    <p>
+                      <b>Folio:</b> <%= @bill.folio %>
+                    </p>
+                    <p>
+                      <b>Fecha y hora:</b> <%= @bill.created_at.strftime("%d/%m/%Y, %I:%M %p") %>
+                    </p>
+                    <p>
+                      <b>Numero de intentos de pago fallidos:</b> <%= @bill.payment_attempts %>
+                    </p>
+                    <p>Si tienes dudas o comentarios, no dudes en contactarnos.</p>
+                    <br>
+                    <p>Gracias por tu preferencia, que tengas un excelente día.</p>
+                    <br>
+                    <p>
+                      * Tu cuenta puede ser suspendida por superar el numero maximo de intentos de pago fallidos (10). Para evitar esto, actualiza tu metodo de pago lo antes posible desde tu panel de usuario (Ajustes > Boton "Cambiar tarjeta") o contacta a soporte para recibir asistencia.
+                    </p>
+                    <p>
+                      * Puedes ver mas detalles de este pago desde tu panel de usuario (Ajustes > Facturación).
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- END MAIN CONTENT AREA -->
+        </table>
+        <!-- START FOOTER -->
+        <div class="footer">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="content-block">
+                <span class="apple-link">Software desarrollado por &copy; Ghoster, todos los derechos reservados.</span>
+                <br>
+                <a href="https://ghoster.mx/">www.ghoster.mx</a>.
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- END FOOTER -->
+        <!-- END CENTERED WHITE CONTAINER -->
+      </div>
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+</table>

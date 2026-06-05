@@ -388,6 +388,19 @@ class Corp < ApplicationRecord
     end
   end
 
+  def self.get_corps_cobranza
+    noww = Time.current
+    where(status: [:activo, :probando, :moroso])
+      .where(
+        "(subscription_trial_end IS NULL OR subscription_trial_end <= ?) AND (subscription_next_billing_date IS NULL OR subscription_next_billing_date <= ?)",
+        noww, noww
+      )
+  end
+
+  
+  
+  private
+  
   def gen_sku
     token = SecureRandom.alphanumeric(5).upcase
     while Corp.where(sku: token).exists?
@@ -396,8 +409,6 @@ class Corp < ApplicationRecord
     self.sku = token
   end
 
-  
-  private
 
   def set_default_business_hours
     self.business_hours ||= DEFAULT_BUSINESS_HOURS.deep_dup

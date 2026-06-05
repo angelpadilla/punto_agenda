@@ -38,7 +38,7 @@
       <%= s_field(form, :status_pago, options: Order::Status, label: "Estado de pago", clas: "field column is-12") %>
       <div class="field column is-12">
         <label class="label">Fecha limite del credito</label>
-        <%= form.date_field :deadline, class: "control input #{order.errors.include?(:deadline) ? 'is-danger' : ''}", min: Time.now %>
+        <%= form.date_field :deadline, class: "control input #{order.errors.include?(:deadline) ? 'is-danger' : ''}", min: Time.current %>
       </div>
       <%= s_field(form, :uso_cfdi, options: Order::UsoCFDI, label: "Uso CFDI", clas: "field column is-12 uso_cfdi") %>
       <%= s_field(form, :seller_id, options: @corp.users.actives.map { |u| [u.full_name, u.id] }, label: "Vendedor", clas: "field column is-12", value: current_user.id) %>

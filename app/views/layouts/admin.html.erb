@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html class="theme-dark darkk">
+  <head>
+    <title><%= content_for(:title) || "MiiNegocio" %></title>
+    <meta name="turbo-prefetch" content="false">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="<%= content_for(:meta_description) || 'Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas desde un mismo lugar. MiiNegocio: Administra tus ventas, eventos, calendarios y pagos en un solo lugar.' %>">
+    <meta name="keywords" content="<%= content_for(:meta_keywords) || 'ventas, eventos, reservas, calendario, gestión' %>">
+    <meta name="author" content="MiiNegocio">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="MiiNegocio">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <link rel="icon" href="<%= asset_url 'icon.svg' %>" type="image/svg+xml">
+    <link rel="icon" href="<%= asset_url 'icon.png' %>" type="image/png">
+    <!-- 3. Legacy Fallback (ICO Format - For old desktop browsers) -->
+    <link rel="icon" type="image/x-icon" href="<%= asset_url 'icon.ico' %>">
+    <link rel="apple-touch-icon" href="<%= asset_url 'icon.png' %>">
+    <%= render 'shared/meta' %>
+    <%# Structured Data JSON-LD %>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "<%= content_for(:schema_type) || 'Organization' %>",
+        "name": "MiiNegocio",
+        "url": "<%= root_url %>",
+        "logo": "<%= asset_path('icon.png') %>",
+        "description": "Plataforma de gestión de ventas, eventos y reservas online",
+        "sameAs": [
+          "https://www.facebook.com/profile.php?id=61590667013847",
+          "https://www.instagram.com/MiiNegocio"
+        ]
+        <% if content_for(:breadcrumbs) %>
+          , "breadcrumb": <%= content_for(:breadcrumbs).html_safe %>
+        <% end %>
+      }
+    </script>
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= Sentry.get_trace_propagation_meta.html_safe %>
+    <link rel="preconnect" href="https://challenges.cloudflare.com">
+  </head>
+  <body class="public_view">
+    <%= render 'shared/flash' %>
+    <% if controller_name == 'sessions' or controller_name == 'registrations' or controller_name == 'passwords' or controller_name == 'confirmations' or controller_name == 'unlocks' %>
+      <div class="container is-fluid">
+        <%= yield %>
+      </div>
+    <% else %>
+      <%= render 'shared/nav' %>
+      <%= yield %>
+      <%= render 'shared/footer' %>
+    <% end %>
+    <%= yield :body %>
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+      async
+      defer
+    ></script>
+    <script>
+      function renderTurnstile() {
+        const turnstiles = document.querySelectorAll('.cf-turnstile:not([data-rendered])');
+        turnstiles.forEach(el => {
+          turnstile.render(el, {
+            sitekey: el.dataset.sitekey,
+            size: el.dataset.size || 'normal',
+          });
+          el.setAttribute('data-rendered', 'true');
+        });
+      }
+      document.addEventListener('turbo:load', renderTurnstile);
+      document.addEventListener('turbo:render', renderTurnstile);
+    </script>
+    <script src="//code.tidio.co/72fhdxmwg3fqsbtp98hngup0avkeijsz.js" async></script>
+  </body>
+</html>

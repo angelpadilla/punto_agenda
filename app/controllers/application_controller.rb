@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_vars
-    @settings = Setting.first || nil
+    @setting = Setting.first || nil
   end
 
   def after_sign_in_path_for(model)
@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
       user_panel_home_path
     elsif model.model_name.name == "Admin"
       puts "***2"
-      root_path
+      admin_panel_home_path
     else
       puts "***3"
       super

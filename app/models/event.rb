@@ -7,10 +7,10 @@ class Event < ApplicationRecord
   enum :canal, interno: 0, web: 1
 
   scope :default, -> { order(hora_inicio: :desc) }
-  scope :upcoming, -> { where("hora_inicio >= ?", DateTime.now) }
-  scope :past, -> { where("hora_inicio < ?", DateTime.now) }
+  scope :upcoming, -> { where("hora_inicio >= ?", Time.current) }
+  scope :past, -> { where("hora_inicio < ?", Time.current) }
   scope :indexx, -> { default.where.not(status: :cancelado) }
-  scope :today, -> { where(hora_inicio: DateTime.now.beginning_of_day..DateTime.now.end_of_day) }
+  scope :today, -> { where(hora_inicio: Time.current.beginning_of_day..Time.current.end_of_day) }
 
   validates :title, presence: { message: "El título es requerido" }
   # validates :body, presence: { message: "El cuerpo es requerido" }
@@ -54,7 +54,7 @@ class Event < ApplicationRecord
   end
 
   def self.due_today
-    where(hora_inicio: DateTime.now.beginning_of_day..DateTime.now.end_of_day, status: :agendado)
+    where(hora_inicio: Time.current.beginning_of_day..Time.current.end_of_day, status: :agendado)
   end
 
   before_create :set_folio

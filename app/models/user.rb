@@ -110,6 +110,8 @@ class User < ApplicationRecord
   #   end
   # end
 
+  after_create :send_welcome_email
+
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)
     %w[id full_name tipo email tel active]
@@ -122,5 +124,9 @@ class User < ApplicationRecord
   ## funcion para eliminar usuarios que no tienen corp asociado
   def self.cleanup_orphaned_users
     where(corp_id: nil).destroy_all
+  end
+
+  def send_welcome_email
+    UserMailer.with(user: self).welcome_email.deliver_later
   end
 end

@@ -45,7 +45,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           tel_prefix: params[:user][:tel_prefix].to_s,
           name: "Compañía de #{params[:user][:full_name]}",
           email: params[:user][:email],
-          subscription_trial_start: DateTime.current,
+          subscription_trial_start: Time.current,
           subscription_trial_end: 30.days.from_now,
           # status: :probando
         )

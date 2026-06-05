@@ -45,4 +45,11 @@ namespace :corps do
 
     puts "✅ Listo: #{migrated} migrados, #{skipped} ya actualizados, #{errors} errores."
   end
+
+  desc "Ejecuta cobranza diaria para todos los Corps (genera bills, manda correos, etc)"
+  task cobranza: :environment do
+    puts "Iniciando cobranza diaria para todos los Corps..."
+    Gtools.cobranza
+    puts "Cobranza diaria completada para todos los Corps."
+  end
 end

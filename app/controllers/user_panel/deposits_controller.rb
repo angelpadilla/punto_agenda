@@ -26,7 +26,7 @@ class UserPanel::DepositsController < UserPanelController
       format.html
       format.pdf {
         pdf = DepositsPdf.new(deposits: @resultados, inicio: params[:q][:created_at_gteq], fin: @fin)
-        send_data pdf.render, filename: "deposits_#{Time.now}.pdf", type: "application/pdf", disposition: "inline"
+        send_data pdf.render, filename: "deposits_#{Time.current.to_i}.pdf", type: "application/pdf", disposition: "inline"
       }
     end
   end

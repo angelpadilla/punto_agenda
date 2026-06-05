@@ -39,9 +39,9 @@ class UserPanel::CorpController < UserPanelController
     if response[:success]
       @corp.update(
         status: :activo,
-        subscription_updated_at: DateTime.current,
+        subscription_updated_at: Time.current,
         subscription_next_billing_date: 30.days.from_now,
-        subscription_started_at: @corp.subscription_started_at.present? ? @corp.subscription_started_at : DateTime.current
+        subscription_started_at: @corp.subscription_started_at.present? ? @corp.subscription_started_at : Time.current
       )
       redirect_to user_corp_landing_path, notice: "Pago exitoso. Se ha generado una factura por $#{response[:bill].total} MXN. Folio: #{response[:bill].folio}"
     else

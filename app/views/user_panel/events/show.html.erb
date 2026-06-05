@@ -8,7 +8,7 @@
       </span>
       Volver 
     <% end %>
-    <% if @event.agendado? and DateTime.current >= @event.hora_inicio %>
+    <% if @event.agendado? and Time.current >= @event.hora_inicio %>
       <%= link_to marcar_asistencia_events_path(id: @event), data: { turbo_method: :post }, class: "button is-primary is-rounded" do %>
         <span class="icon mr-2">
           <%= image_tag 'verified-check-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
