@@ -19,6 +19,9 @@ production:
   clear_old_orders_carritos:
     command: "Order.carrito.where('created_at < ?', 2.day.ago).in_batches.destroy_all"
     schedule: every 1 day at 3am
+  cobranza_automatica:
+    class: CobranzaJob
+    schedule: every 1 day at 6am
 
 development:
   clear_solid_queue_finished_jobs:
