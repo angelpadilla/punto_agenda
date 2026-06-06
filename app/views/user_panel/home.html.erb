@@ -70,7 +70,8 @@
       <% first_item = @corp.items.any? ? true : false %>
       <% first_order = @corp.orders.any? ? true : false %>
       <% first_event = @corp.events.any? ? true : false %>
-      <% alltrue = [first_item, first_order, first_event, @corp.corp_ready?].all?(&:itself) %>
+      <% corp_ready = @corp.corp_ready? %>
+      <% alltrue = [first_item, first_order, first_event, corp_ready].all?(&:itself) %>
       <% unless alltrue %>
         <div class="box">
           <div class="onboarding_header">
@@ -80,13 +81,13 @@
             </div>
           </div>
           <div class="onboarding_list mt-4">
-            <div class="onboarding_item <%= @corp.corp_ready? ? 'is-done' : '' %>">
+            <div class="onboarding_item <%= corp_ready ? 'is-done' : '' %>">
               <div class="onboarding_check"></div>
               <div class="onboarding_info">
                 <div class="onboarding_title">Configura tu cuenta</div>
                 <div class="labell">Completa la configuración de tu cuenta, datos básicos, logo, teléfono de contacto, tarjeta de pago, etc.</div>
               </div>
-              <% if @corp.corp_ready? %>
+              <% if corp_ready %>
                 <a href="#!" class="button is-rounded is-small">Completado</a>
               <% else %>
                 <%= link_to "Ajustes", edit_user_corp_path, class: "button is-rounded is-small is-primary" %>
