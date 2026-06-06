@@ -66,7 +66,74 @@
     </div>
     <%# ══ HOY ══════════════════════════════════════════════════════ %>
     <div id="panel-hoy" class="dash_panel">
-      <div class="columns is-multiline is-mobile mb-2">
+      <%# Onboarding checklist — primeros pasos del usuario %>
+      <% first_item = @corp.items.any? ? true : false %>
+      <% first_order = @corp.orders.any? ? true : false %>
+      <% first_event = @corp.events.any? ? true : false %>
+      <% alltrue = [first_item, first_order, first_event, @corp.corp_ready?].all?(&:itself) %>
+      <% unless alltrue %>
+        <div class="box">
+          <div class="onboarding_header">
+            <div>
+              <h2>¡Empieza con tu negocio!</h2>
+              <span class="labell">Completa estos pasos y aprovecha tu cuenta al máximo</span>
+            </div>
+          </div>
+          <div class="onboarding_list mt-4">
+            <div class="onboarding_item <%= @corp.corp_ready? ? 'is-done' : '' %>">
+              <div class="onboarding_check"></div>
+              <div class="onboarding_info">
+                <div class="onboarding_title">Configura tu cuenta</div>
+                <div class="labell">Completa la configuración de tu cuenta, datos básicos, logo, teléfono de contacto, tarjeta de pago, etc.</div>
+              </div>
+              <% if @corp.corp_ready? %>
+                <a href="#!" class="button is-rounded is-small">Completado</a>
+              <% else %>
+                <%= link_to "Ajustes", edit_user_corp_path, class: "button is-rounded is-small is-primary" %>
+              <% end %>
+            </div>
+            <div class="onboarding_item <%= first_item ? 'is-done' : '' %>">
+              <div class="onboarding_check"></div>
+              <div class="onboarding_info">
+                <div class="onboarding_title">Agrega un producto o servicio</div>
+                <div class="labell">Crea tu primer artículo en tu catálogo</div>
+              </div>
+              <% if first_item %>
+                <a href="#!" class="button is-rounded is-small">Completado</a>
+              <% else %>
+                <%= link_to "Crear", new_item_path, class: "button is-rounded is-small is-primary" %>
+              <% end %>
+            </div>
+            <div class="onboarding_item <%= first_order ? 'is-done' : '' %>">
+              <div class="onboarding_check"></div>
+              <div class="onboarding_info">
+                <div class="onboarding_title">Haz tu primera venta</div>
+                <div class="labell">Registra un cobro o pedido para comenzar</div>
+              </div>
+              <% if first_order %>
+                <a href="#!" class="button is-rounded is-small">Completado</a>
+              <% else %>
+                <%= link_to "Comenzar", new_order_path, class: "button is-rounded is-small is-primary" %>
+              <% end %>
+            </div>
+            <% if @corp.calendar %>
+              <div class="onboarding_item <%= first_event ? 'is-done' : '' %>">
+                <div class="onboarding_check"></div>
+                <div class="onboarding_info">
+                  <div class="onboarding_title">Agenda tu primera cita</div>
+                  <div class="labell">Usa el calendario para gestionar tus servicios</div>
+                </div>
+                <% if first_event %>
+                  <a href="#!" class="button is-rounded is-small">Completado</a>
+                <% else %>
+                  <%= link_to "Agendar", new_event_path, class: "button is-rounded is-small is-primary" %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      <div class="columns is-multiline is-mobile mb-2 mt-4">
         <div class="column is-6-mobile is-3-tablet">
           <div class="box stat_card">
             <div class="stat_icon"><%= image_tag 'bill-list-svgrepo-com.svg', class: 'invert' %></div>

@@ -81,7 +81,7 @@ class Corp < ApplicationRecord
   normalizes :name, :razon, :cp, :ciudad, :colonia, :localidad, :calle, :num_ext, :num_int, :phone, with: ->(e) { e.strip.downcase }
   normalizes :rfc, with: ->(e) { e.strip.upcase }
 
-  scope :activos, -> { where(status: [:activo, :probando, :moroso]) }
+  scope :activos, -> { where(status: [ :activo, :probando, :moroso ]) }
 
   def self.ransackable_attributes(auth_object = nil)
     %W[id name razon rfc regimen]
@@ -117,6 +117,14 @@ class Corp < ApplicationRecord
 
   def me_pueden_facturar?
     if self.rfc.present? and self.razon.present? and self.regimen.present? and self.estado.present? and self.cp.present?
+      true
+    else
+      false
+    end
+  end
+
+  def corp_ready?
+    if self.name.present? and self.email.present? and self.tipo_negocio.present? and self.phone.present? and self.tel_prefix.present? and self.logo.attached?
       true
     else
       false
@@ -370,7 +378,7 @@ class Corp < ApplicationRecord
   def create_stripe_customer
     return if stripe_customer_id.present?
     client = Stripe::StripeClient.new(Rails.application.credentials.dig(Rails.env.to_sym, :stripe, :secret_key))
-    customer = client.v1.customers.create({name: "#{self.name}, corpId: #{self.id}", email: self.email})
+    customer = client.v1.customers.create({ name: "#{self.name}, corpId: #{self.id}", email: self.email })
     if customer && customer.id
       update(stripe_customer_id: customer.id)
     else
@@ -390,17 +398,17 @@ class Corp < ApplicationRecord
 
   def self.get_corps_cobranza
     noww = Time.current
-    where(status: [:activo, :probando, :moroso])
+    where(status: [ :activo, :probando, :moroso ])
       .where(
         "(subscription_trial_end IS NULL OR subscription_trial_end <= ?) AND (subscription_next_billing_date IS NULL OR subscription_next_billing_date <= ?)",
         noww, noww
       )
   end
 
-  
-  
+
+
   private
-  
+
   def gen_sku
     token = SecureRandom.alphanumeric(5).upcase
     while Corp.where(sku: token).exists?
@@ -435,5 +443,4 @@ class Corp < ApplicationRecord
     # CorpMailer.with(corp: self).new_corp_notification.deliver_later
     Gtools.telegram_noti(message: "Nueva Corp creada: #{name} (ID: #{id}, Tipo negocio: #{tipo_negocio})")
   end
-
 end

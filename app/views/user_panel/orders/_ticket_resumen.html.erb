@@ -36,9 +36,6 @@
               <p class="is-size-7 has-text-grey">
                 Descuento: - <%= number_to_currency(line_item.descuento) %>
               </p>
-              <p class="is-size-7 has-text-grey">
-                Com. vendedor: <%= number_to_currency(line_item.com_vendedor_total) %>
-              </p>
               <%= link_to remove_item_line_items_path(line_id: line_item.id, order_id: order.id), data: { turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas eliminar este item?" }, class: "is-small" do %>
                 Eliminar
               <% end %>
