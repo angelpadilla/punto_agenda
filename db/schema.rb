@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_184833) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_072141) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -110,7 +110,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_184833) do
     t.decimal "iva", precision: 17, scale: 4, default: "16.0"
     t.string "nombre"
     t.decimal "precio", precision: 17, scale: 4
-    t.string "stripe_payment_intent_id"
     t.datetime "updated_at", null: false
     t.index ["bill_id"], name: "index_bill_items_on_bill_id"
   end
@@ -135,6 +134,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_184833) do
     t.string "sat_timbre_fecha"
     t.string "sat_uuid"
     t.string "status_pago", default: "pendiente"
+    t.string "stripe_payment_id"
     t.decimal "subtotal", precision: 17, scale: 4
     t.string "tipo", default: "remision"
     t.decimal "total", precision: 17, scale: 4
@@ -165,6 +165,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_184833) do
   end
 
   create_table "corps", force: :cascade do |t|
+    t.decimal "balance", precision: 17, scale: 2, default: "0.0"
     t.text "business_hours"
     t.boolean "calendar", default: false
     t.string "calle"
@@ -199,6 +200,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_184833) do
     t.string "regimen"
     t.string "rfc", default: "XAXX010101000"
     t.string "sku"
+    t.integer "sms", default: 0
     t.string "status", default: "probando"
     t.string "status_message"
     t.string "stripe_customer_id"
@@ -284,6 +286,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_184833) do
     t.text "sat_serial"
     t.text "sat_uuid"
     t.string "stamp_date"
+    t.string "stripe_payment_id"
     t.integer "tipo", null: false
     t.datetime "updated_at", null: false
     t.text "uso_cfdi"

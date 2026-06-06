@@ -79,7 +79,7 @@
     <div class="table_cell"><%= sort_link(@q, :fecha, 'Fecha') %></div>
   </div>
   <div class="table_content">
-    <%= render @orders %>
+    <%= render @orders, comision: false, items: false, link: true %>
   </div>
 </div>
 <% if @pagy.pages > 1 %>

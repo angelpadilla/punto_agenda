@@ -76,5 +76,11 @@
       </span>
       <div class="tooltip up">Agenda evento</div>
     <% end %>
+    <%= link_to new_order_path(customer_id: customer.id), class: "button is-rounded is-primary has_tooltip" do  %>
+      <span class="icon reset">
+        <%= image_tag 'bill-list-svgrepo-com.svg', alt: 'clear', class: '' %>
+      </span>
+      <div class="tooltip up">Nueva venta</div>
+    <% end %>
   </div>
 </div>

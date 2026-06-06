@@ -1,6 +1,37 @@
 class UserPanel::OrdersController < UserPanelController
   before_action :set_order, only: %i[ show edit update destroy cancel ]
 
+  def reporte_comisiones
+    ## validations
+    # validar que fecha_inicial y fecha_final esten presentes
+    if !params[:fecha_inicial].present? or !params[:fecha_final].present?
+      return redirect_to user_panel_landing_orders_path, alert: "Selecciona ambas fechas para el reporte"
+    end
+    # validar que fecha_inicial sea menor o igual a fecha_final
+    if params[:fecha_inicial] > params[:fecha_final]
+      return redirect_to user_panel_landing_orders_path, alert: "La fecha inicial no puede ser mayor a la fecha final"
+    end
+
+    @fecha_inicial = Date.parse(params[:fecha_inicial]).in_time_zone("America/Mexico_City").beginning_of_day
+    @fecha_final = Date.parse(params[:fecha_final]).in_time_zone("America/Mexico_City").end_of_day
+
+    orders = @corp.orders.includes(:customer, :seller).where.not(seller_id: nil, tipo: [ :carrito, :cotizacion ], status_pago: :cancelado).where(fecha: @fecha_inicial..@fecha_final).order(fecha: :desc)
+    @total_bruto = orders.sum(:total)
+    @total_comision = orders.sum(:com_vendedor)
+    @total_orders = orders.count
+
+    @q = orders.ransack(params[:q])
+    @pagy, @orders = pagy(@q.result(distinct: true), limit: 20)
+
+    respond_to do |format|
+      format.html
+      # format.pdf {
+      #   pdf = ReporteVentasPdf.new(orders: @orders, fecha_inicial: @fecha_inicial, fecha_final: @fecha_final)
+      #   send_data pdf.render, filename: "reporte_ventas_#{@fecha_inicial.strftime("%Y%m%d")}_a_#{@fecha_final.strftime("%Y%m%d")}.pdf", type: "application/pdf", disposition: "inline"
+      # }
+    end
+  end
+
   def index
     orders = @corp.orders.not_carritos.includes(:customer)
 
@@ -30,7 +61,7 @@ class UserPanel::OrdersController < UserPanelController
   end
 
   def show
-    return redirect_back(fallback_location: user_panel_home_path, alert: "Venta no encontrada") if @order.carrito?
+    redirect_back(fallback_location: user_panel_home_path, alert: "Venta no encontrada") if @order.carrito?
   end
 
   def new
@@ -44,6 +75,12 @@ class UserPanel::OrdersController < UserPanelController
       # entonces este bloque se asegura de que si el carrito en session no es realmente un carrito, se cree uno nuevo
       @carrito = Order.create!(user_id: current_user.id, corp_id: @corp.id)
       session[:carrito_id] = @carrito.id
+    end
+
+    if params[:customer_id].present?
+      customer = @corp.customers.find(params[:customer_id])
+      @carrito.customer = customer
+      @carrito.save(validate: false)
     end
 
     @brands = @corp.brands.default

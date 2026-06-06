@@ -25,8 +25,19 @@
             <div class="column">
               <p class="is-size-7 has-text-weight-bold"><%= line_item.item.name %></p>
               <p class="is-size-7 has-text-grey">
-                <%= number_to_currency(line_item.total_antes_descuento) %>
-                <%= line_item.descuento > 0 ? "(-#{number_to_currency(line_item.descuento)} descuento)" : "" %>
+                Cantidad: <%= line_item.cantidad %>
+              </p>
+              <p class="is-size-7 has-text-grey">
+                Precio: <%= number_to_currency(line_item.precio) %>
+              </p>
+              <p class="is-size-7 has-text-grey">
+                Monto: <%= number_to_currency(line_item.total_antes_descuento) %>
+              </p>
+              <p class="is-size-7 has-text-grey">
+                Descuento: - <%= number_to_currency(line_item.descuento) %>
+              </p>
+              <p class="is-size-7 has-text-grey">
+                Com. vendedor: <%= number_to_currency(line_item.com_vendedor_total) %>
               </p>
               <%= link_to remove_item_line_items_path(line_id: line_item.id, order_id: order.id), data: { turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas eliminar este item?" }, class: "is-small" do %>
                 Eliminar
@@ -60,44 +71,44 @@
           </div>
         </div>
       <% end %>
-      <!-- Totals -->
-      <div class="mt-6">
-        <div class="flexx space-b flex-end">
-          <span class="has-text-grey">Subtotal</span>
-          <span><%= number_to_currency(order.subtotal) %></span>
-        </div>
-        <div class="flexx space-b flex-end">
-          <span class="has-text-grey">Impuestos (16%)</span>
-          <span><%= number_to_currency(order.impuestos) %></span>
-        </div>
-        <%# total %>
-        <div class="flexx space-b flex-end mt-4">
-          <span class="bold">
-            Total
-          </span>
-          <span class="has-text-neon bold">
-            <%= number_to_currency(order.total) %>
-          </span>
-        </div>
-        <button class="button is-primary is-fullwidth is-large mb-3 mt-3 is-rounded mtrigger" data-target="finalizar_ticket">
-          <span class="icon mr-2">
-            <%= image_tag 'login.svg', alt: 'carrito' %>
-          </span>
-          <% if order.carrito? %>
-            Finalizar venta
-          <% else %>
-            Remision
-          <% end %>
-        </button>
-        <% if order.carrito? %>
-          <%= link_to clear_items_line_items_path(order_id: order.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded" do %>
-            <span class="icon mr-2">
-              <%= image_tag 'trash.svg', alt: 'carrito' %>
-            </span>
-            Cancelar ticket
-          <% end %>
-        <% end %>
+    </div>
+    <!-- Totals -->
+    <div class="totals">
+      <div class="flexx space-b flex-end">
+        <span class="has-text-grey">Subtotal</span>
+        <span><%= number_to_currency(order.subtotal) %></span>
       </div>
+      <div class="flexx space-b flex-end">
+        <span class="has-text-grey">Impuestos (16%)</span>
+        <span><%= number_to_currency(order.impuestos) %></span>
+      </div>
+      <%# total %>
+      <div class="flexx space-b flex-end mt-4">
+        <span class="bold">
+          Total
+        </span>
+        <span class="has-text-neon bold">
+          <%= number_to_currency(order.total) %>
+        </span>
+      </div>
+      <button class="button is-primary is-fullwidth mb-3 mt-3 is-rounded mtrigger" data-target="finalizar_ticket">
+        <span class="icon mr-2">
+          <%= image_tag 'login.svg', alt: 'carrito' %>
+        </span>
+        <% if order.carrito? %>
+          Finalizar venta
+        <% else %>
+          Remision
+        <% end %>
+      </button>
+      <% if order.carrito? %>
+        <%= link_to clear_items_line_items_path(order_id: order.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded is-small" do %>
+          <span class="icon mr-2">
+            <%= image_tag 'trash.svg', alt: 'carrito' %>
+          </span>
+          Limpiar ticket
+        <% end %>
+      <% end %>
     </div>
   <% end %>
 </div>

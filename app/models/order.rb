@@ -169,9 +169,11 @@ class Order < ApplicationRecord
 
     if line
       line.cantidad += quantity
+      line.descuento = discount if discount > 0.0
+      line.com_vendedor = item.com_vendedor
       line.save
     else
-      self.line_items.create!(item_id: item.id, precio: price, costo: costo, descuento: discount, cantidad: quantity)
+      self.line_items.create!(item_id: item.id, precio: price, costo: costo, descuento: discount, cantidad: quantity, com_vendedor: item.com_vendedor)
     end
   end
 

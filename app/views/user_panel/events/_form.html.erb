@@ -64,7 +64,7 @@
         <label class="label">*Selecciona cliente</label>
         <div class="field has-addons">
           <div class="control is-expanded <%= event.errors.include?(:customer_id) ? 'select-is-danger' : '' %>">
-            <%= form.select :customer_id, options_for_select(@corp.customers.default.map { |k| [k.razon&.titleize, k.id] }, event.customer_id),
+            <%= form.select :customer_id, options_for_select(@corp.customers.default.map { |k| [k.razon&.titleize, k.id] }, params[:customer_id] || event.customer_id),
                   {prompt: "Selecciona", required: field_required?(Event, :customer_id)},
                   { "data-controller": "slimselect", class: "ss2"}
                   %>

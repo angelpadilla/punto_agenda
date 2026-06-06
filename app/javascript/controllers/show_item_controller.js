@@ -7,7 +7,7 @@ export default class extends Controller {
             type: 'fade',
             rewind: true,
             pagination: false,
-            arrows: false,
+            arrows: true,
             // cover: true,
             gap: "10rem",
         });
@@ -17,6 +17,7 @@ export default class extends Controller {
             gap: 10,
             rewind: true,
             pagination: false,
+            arrows: false,
             isNavigation: true,
             // focus: 'center',
             breakpoints: {

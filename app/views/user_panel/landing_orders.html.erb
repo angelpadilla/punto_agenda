@@ -16,4 +16,40 @@
       </div>
     <% end %>
   </div>
+  <% if @userr.admin? %>
+    <div class="column is-6">
+      <a class="mtrigger" data-target="calc_comision">
+        <div class="linkk">
+          <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'cargos', class: 'invert' %>
+          Calcular comision de ventas
+        </div>
+      </a>
+    </div>
+  <% end %>
 </div>
+<% if @userr.admin? %>
+  <%# modal calcular comision %>
+  <div id="calc_comision" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <p>Selecciona el rango de fechas para el reporte ...</p>
+        <br>
+        <%= form_with url: reporte_comisiones_orders_path, method: :get do |form| %>
+          <div class="columns is-multiline">
+            <div class="field column is-6">
+              <label class="label">Fecha inicial</label>
+              <%= form.date_field :fecha_inicial, class: "input is-rounded", required: true %>
+            </div>
+            <div class="field column is-6">
+              <label class="label">Fecha final</label>
+              <%= form.date_field :fecha_final, class: "input is-rounded", required: true %>
+            </div>
+          </div>
+          <%= form.submit "Consultar", class: "button is-primary is-fullwidth is-rounded" %>
+        <% end %>
+      </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+<% end %>

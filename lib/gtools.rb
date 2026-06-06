@@ -109,11 +109,11 @@ module Gtools
 
     puts "🧾 Bill total: #{bill.total}"
     puts "🧾 Bill line_items: #{bill.bill_items.count}"
+    puts "🧾 Bill ID: #{bill.id}, Folio: #{bill.folio}"
 
-    response = self.stripe_payment(amount: bill.total, corp: corp, desc: "Pago de prueba para remision dummy fecha: #{noww}, folio: #{bill.folio}")
+    response = self.stripe_payment(amount: bill.total, corp: corp, desc: "Pago de prueba para remision dummy fecha: #{noww}, folio: #{bill.folio}", folio: bill.folio)
     if response[:success]
-      bill.update(status_pago: "pagado")
-      line.update(stripe_payment_intent_id: response[:body].id)
+      bill.update(status_pago: "pagado", stripe_payment_id: response[:body].id)
       self.telegram_noti(message: "Creando remision de prueba para Corp #{corp_id}, folio: #{bill.folio}, fecha: #{noww}")
       puts "🧾 remision dummy creada para Corp #{corp_id} con pago Stripe exitoso"
     else
@@ -129,7 +129,7 @@ module Gtools
     puts "🚫 Error inesperado al crear remision dummy: #{e}"
   end
 
-  def self.stripe_payment(amount:, corp:, desc: nil)
+  def self.stripe_payment(amount:, corp:, desc: nil, folio: nil)
     # unless corp && corp.stripe_customer_id && corp.stripe_payment_method_id
     #   puts "🚫 Corp sin métodos de pago para pago Stripe: #{corp.id}"
     #   return
@@ -156,7 +156,8 @@ module Gtools
       payment_method: corp.stripe_payment_method_id,
       off_session: true,
       confirm: true,
-      description: desc
+      description: desc,
+      metadata: { corp_id: corp.id, amount: amount, folio: folio ? folio : nil }
     })
 
     if payment_intent.status == "succeeded"
@@ -220,10 +221,9 @@ module Gtools
     puts "🧾 Bill total: #{bill.total}"
     puts "🧾 Bill line_items: #{bill.bill_items.count}"
 
-    response = self.stripe_payment(amount: bill.total, corp: corp, desc: "Suscripción #{corp.tipo_plan.titleize} fecha: #{noww}, folio: #{bill.folio}")
+    response = self.stripe_payment(amount: bill.total, corp: corp, desc: "Suscripción #{corp.tipo_plan.titleize} fecha: #{noww}, folio: #{bill.folio}", folio: bill.folio)
     if response[:success]
-      bill.update(status_pago: "pagado")
-      line.update(stripe_payment_intent_id: response[:body].id)
+      bill.update(status_pago: "pagado", stripe_payment_id: response[:body].id)
       self.telegram_noti(message: "MiiNegocio \nPago exitoso de:\n Monto: #{bill.total} MXN\n Corp ID: #{corp.id}\n Folio: #{bill.folio}\n Fecha: #{noww}")
       puts "🧾 remision creada para Corp #{corp.id} con pago Stripe exitoso"
       return { success: true, bill: bill, response: response }
@@ -269,10 +269,9 @@ module Gtools
     puts "🧾 Bill total: #{bill.total}"
     puts "🧾 Bill line_items: #{bill.bill_items.count}"
 
-    response = self.stripe_payment(amount: bill.total, corp: corp, desc: "#{concepto} fecha: #{noww}, folio: #{bill.folio}")
+    response = self.stripe_payment(amount: bill.total, corp: corp, desc: "#{concepto} fecha: #{noww}, folio: #{bill.folio}", folio: bill.folio)
     if response[:success]
-      bill.update(status_pago: "pagado")
-      line.update(stripe_payment_intent_id: response[:body].id)
+      bill.update(status_pago: "pagado", stripe_payment_id: response[:body].id)
       self.telegram_noti(message: "MiiNegocio \nPago exitoso de:\n Monto: #{bill.total} MXN\n Corp ID: #{corp.id}\n Folio: #{bill.folio}\n Fecha: #{noww}")
       puts "🧾 Remision creada para Corp #{corp.id} con pago Stripe exitoso"
       return { success: true, bill: bill, response: response }

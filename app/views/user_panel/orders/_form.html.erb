@@ -14,7 +14,7 @@
       <div class="field column is-12">
         <label class="label">Cliente</label>
         <div class="control is-expanded <%= order.errors.include?(:customer_id) ? 'select-is-danger' : '' %>">
-          <%= form.select :customer_id, options_for_select(@corp.customers.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, order.customer_id),
+          <%= form.select :customer_id, options_for_select(@corp.customers.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, params[:customer_id] || order.customer_id),
               {prompt: "Selecciona", required: field_required?(Order, :customer_id)},
               { "data-controller": "slimselect", class: "ss2"}
               %>
@@ -41,7 +41,7 @@
         <%= form.date_field :deadline, class: "control input #{order.errors.include?(:deadline) ? 'is-danger' : ''}", min: Time.current %>
       </div>
       <%= s_field(form, :uso_cfdi, options: Order::UsoCFDI, label: "Uso CFDI", clas: "field column is-12 uso_cfdi") %>
-      <%= s_field(form, :seller_id, options: @corp.users.actives.map { |u| [u.full_name, u.id] }, label: "Vendedor", clas: "field column is-12", value: current_user.id) %>
+      <%= s_field(form, :seller_id, options: @corp.users.actives.map { |u| [u.full_name, u.id] }, label: "Vendedor", clas: "field column is-12") %>
     </div>
     <div class="columns is-multiline" id="sat_stuff">
     </div>

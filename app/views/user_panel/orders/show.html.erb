@@ -214,6 +214,7 @@
             <th>Precio unitario</th>
             <th>Monto(antes de descuento)</th>
             <th>Descuento</th>
+            <th>Comisión vendedor</th>
             <th>Monto</th>
           </tr>
         </thead>
@@ -221,13 +222,16 @@
           <% @order.line_items.each do |line| %>
             <tr>
               <th>
-                <%= link_to line.item.name.titleize, line.item %>
+                <%= link_to truncate(line.item.name.titleize, length: 20), line.item, title: line.item.name.titleize %>
               </th>
               <td><%= line.cantidad %></td>
               <td><%= number_to_currency(line.precio) %></td>
               <td><%= number_to_currency(line.total_antes_descuento) %></td>
               <td>
                 - <%= number_to_currency(line.descuento) %>
+              </td>
+              <td>
+                <%= number_to_currency(line.com_vendedor_total) %>
               </td>
               <td><%= number_to_currency(line.total) %></td>
             </tr>
@@ -261,6 +265,35 @@
           <p class="contentt has-text-success"><%= number_to_currency(@order.ganancia) %></p>
         <% else %>
           <p class="contentt"><%= number_to_currency(@order.ganancia) %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'sale-svgrepo-com.svg', class: "invert", alt: "Totales" %>
+      </span>
+      Comisiones de vendedor 
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Comisión total de venta</div>
+        <p class="contentt has-text-warning"><%= number_to_currency(@order.com_vendedor) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Vendedor</div>
+        <% if @order.seller %>
+          <p class="contentt"><%= @order.seller.full_name %></p>
+        <% else %>
+          <p class="contentt">-</p>
         <% end %>
       </div>
     </div>
@@ -558,6 +591,7 @@
   </div>
   <button class="modal-close is-large" aria-label="close"></button>
 </div>
+<%# modal enviar orden por whatsapp %>
 <div id="send_order_whatsapp" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">

@@ -48,12 +48,8 @@ class UserPanel::EventsController < UserPanelController
       redirect_to new_event_path(params.permit(:customer_id, :slot).except(:dia, :slot))
       return
     end
-    if params[:customer_id].present?
-      @customer = @corp.customers.find(params[:customer_id])
-      @event = Event.new(customer: @customer)
-    else
-      @event = Event.new
-    end
+
+    @event = Event.new
   rescue ArgumentError
     redirect_to new_event_path
   end

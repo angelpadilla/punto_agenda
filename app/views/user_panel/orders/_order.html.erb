@@ -16,32 +16,32 @@
       <div class="columns is-mobile is-multiline ">
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="labell">Total</div>
-          <p class="contentt has-text-neon"><%= number_to_currency(order.total) %></p>
+          <p class="<%= comision ? '' : 'has-text-neon' %>"><%= number_to_currency(order.total) %></p>
         </div>
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="labell">Cliente</div>
-          <p class="contentt"><%= order.customer&.razon %></p>
+          <p><%= order.customer&.razon %></p>
         </div>
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="labell">Fecha</div>
-          <p class="contentt"><%= l(order.fecha, format: :long) %></p>
+          <p><%= l(order.fecha, format: :long) %></p>
         </div>
       </div>
       <% if order.credito? %>
         <div class="columns is-mobile is-multiline">
           <div class="column is-12-mobile is-6-tablet is-4-desktop">
             <div class="labell">Debe</div>
-            <p class="contentt">
+            <p>
               <%= number_to_currency(order.debe) %>
             </p>
           </div>
           <div class="column is-12-mobile is-6-tablet is-4-desktop">
             <div class="labell">Abonado</div>
-            <p class="contentt"><%= number_to_currency(order.abonado) %></p>
+            <p><%= number_to_currency(order.abonado) %></p>
           </div>
           <div class="column is-12-mobile is-6-tablet is-4-desktop">
             <div class="labell">Vence</div>
-            <p class="contentt <%= order.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(order.deadline, format: :long) %></p>
+            <p class="<%= order.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(order.deadline, format: :long) %></p>
           </div>
         </div>
       <% end %>
@@ -53,11 +53,62 @@
           </div>
         </div>
       <% end %>
+      <% if comision %>
+        <!-- info -->
+        <div class="columns is-mobile is-multiline ">
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Comisión total de venta</div>
+            <p class="<%= order.com_vendedor > 0 ? 'has-text-neon' : '' %>"><%= number_to_currency(order.com_vendedor) %></p>
+          </div>
+          <div class="column is-12-mobile is-6-tablet is-6-desktop">
+            <div class="labell">Vendedor</div>
+            <p><%= order.seller.full_name %></p>
+          </div>
+        </div>
+      <% end %>
+      <% if items %>
+        <div class="table-container">
+          <table class="table is-fullwidth">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio unitario</th>
+                <th>Monto(antes de descuento)</th>
+                <th>Descuento</th>
+                <th>Comisión vendedor</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% order.line_items.each do |line| %>
+                <tr>
+                  <th>
+                    <%= link_to truncate(line.item.name.titleize, length: 20), line.item, title: line.item.name.titleize %>
+                  </th>
+                  <td><%= line.cantidad %></td>
+                  <td><%= number_to_currency(line.precio) %></td>
+                  <td><%= number_to_currency(line.total_antes_descuento) %></td>
+                  <td>
+                    - <%= number_to_currency(line.descuento) %>
+                  </td>
+                  <td>
+                    <%= number_to_currency(line.com_vendedor_total) %>
+                  </td>
+                  <td><%= number_to_currency(line.total) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
     </div>
   </div>
-  <div class="item_buttons mt-4">
-    <%= link_to order_path(order), class: "button is-rounded is-fullwidth" do  %>
-      Ver detalles
-    <% end %>
-  </div>
+  <% if link %>
+    <div class="item_buttons mt-4">
+      <%= link_to order_path(order), class: "button is-rounded is-fullwidth" do  %>
+        Ver detalles
+      <% end %>
+    </div>
+  <% end %>
 </div>

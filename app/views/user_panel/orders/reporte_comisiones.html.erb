@@ -1,0 +1,136 @@
+<% content_for :title, "Reporte de Comisiones" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Reporte <%= l(@fecha_inicial, format: :date) %> - <%= l(@fecha_final, format: :date) %></h2>
+  <div class="actions">
+    <a href="#!" class="button is-info is-rounded mtrigger" data-target="calc_comision">
+      <span class="icon mr-2">
+        <%= image_tag 'calendar-search-svgrepo-com.svg', alt: 'carrito', class: 'invert' %>
+      </span>
+      Nueva consulta
+    </a>
+    <% if false %>
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true">
+            <span class="icon">
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+            </span>
+            <span>Acciones</span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <%= link_to reporte_comisiones_orders_path(format: :pdf), class: "dropdown-item" do  %>
+              <span class="icon">
+                <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+              </span>
+              Exportar PDF
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div class="columns is-mobile is-multiline mt-3">
+  <div class="column is-6-mobile is-6-tablet is-4-desktop">
+    <div class="labell">Total Bruto</div>
+    <p><%= number_to_currency(@total_bruto) %></p>
+  </div>
+  <div class="column is-6-mobile is-6-tablet is-4-desktop">
+    <div class="labell">Total Comisión</div>
+    <p><%= number_to_currency(@total_comision) %></p>
+  </div>
+  <div class="column is-6-mobile is-6-tablet is-4-desktop">
+    <div class="labell">Ventas en periodo</div>
+    <p><%= @total_orders %></p>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: reporte_comisiones_orders_path, data: { controller: "focus-search" } do |f| %>
+  <%= hidden_field_tag :fecha_inicial, @fecha_inicial.strftime("%Y-%m-%d") %>
+  <%= hidden_field_tag :fecha_final, @fecha_final.strftime("%Y-%m-%d") %>
+  <div class="columns is-multiline">
+    <div class="column is-3">
+      <%= f.search_field :folio_eq, class: 'is-rounded search_input', placeholder: 'Folio', data: { focus_search_target: "inputt" } %>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :customer_id_eq, options_for_select(@corp.customers.map {|c| [c.razon, c.id]}, @q.customer_id_eq), {prompt: "Cliente"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :tipo_eq, options_for_select(Order::Tipo2, (params[:q] and !params[:q][:tipo_eq].blank?) ? params[:q][:tipo_eq] : nil), {prompt: "Tipo"}, {class: ""} %>
+      </div>
+    </div>
+    <%# status pago %>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :status_pago_eq, options_for_select(Order.status_pagos.keys.map { |k| [k.humanize, k] }, (params[:q] and !params[:q][:status_pago_eq].blank?) ? params[:q][:status_pago_eq] : nil), {prompt: "Estatus pago"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="buttons">
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
+        <%= link_to reporte_comisiones_orders_path(fecha_inicial: @fecha_inicial.strftime("%Y-%m-%d"), fecha_final: @fecha_final.strftime("%Y-%m-%d")), class: "button is-rounded has_tooltip" do  %>
+          <span class="icon reset">
+            <%= image_tag 'trash.svg', alt: 'clear', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Limpiar busqueda</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="table_box">
+  <div class="table_header flexx">
+    <div class="table_cell"><%= sort_link(@q, :folio, 'Folio') %></div>
+    <div class="table_cell"><%= sort_link(@q, :tipo, 'Tipo') %></div>
+    <div class="table_cell"><%= sort_link(@q, :customer_id, 'Cliente') %></div>
+    <div class="table_cell"><%= sort_link(@q, :status_pago, 'Estatus pago') %></div>
+    <div class="table_cell"><%= sort_link(@q, :fecha, 'Fecha') %></div>
+  </div>
+  <div class="table_content">
+    <% if @orders.any? %>
+      <%= render @orders, comision: true, items: true, link: false %>
+    <% else %>
+      <div class="box mt-3">
+        <div class="has-text-centered">
+          <p class="is-size-6">Busqueda sin resultados.</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<% if @pagy.pages > 1 %>
+  <br>
+  <%== @pagy.series_nav(:bulma) %>
+  <br>
+<% end %>
+<br>
+<br>
+<%# modal calcular comision %>
+<div id="calc_comision" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <p>Selecciona el rango de fechas para el reporte ...</p>
+      <br>
+      <%= form_with url: reporte_comisiones_orders_path, method: :get do |form| %>
+        <div class="columns is-multiline">
+          <div class="field column is-6">
+            <label class="label">Fecha inicial</label>
+            <%= form.date_field :fecha_inicial, class: "input is-rounded", required: true %>
+          </div>
+          <div class="field column is-6">
+            <label class="label">Fecha final</label>
+            <%= form.date_field :fecha_final, class: "input is-rounded", required: true %>
+          </div>
+        </div>
+        <%= form.submit "Consultar", class: "button is-primary is-fullwidth is-rounded" %>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>

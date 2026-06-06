@@ -63,18 +63,19 @@
           </div>
           <%= s_field(form, :unidad, options: Item::UnidadSAT, label: "Unidad SAT", clas: "field column is-6") %>
           <%= s_field(form, :cate, options: Item.cates.keys.map { |k| [k.humanize, k] }, label: "Categoria", clas: "field column is-6") %>
-          <%= a_field(form, :desc, label: "Descripción", placeholder: "Descripción del item") %>
-          <%= t_field(form, :garantia, label: "Garantía o términos y condiciones de tu producto", placeholder: "Ej. 1 año de garantía") %>
+          <%= a_field(form, :desc, label: "Descripción", placeholder: "Descripción del item", help: "Visible para tu cliente en tienda online") %>
+          <%= t_field(form, :garantia, label: "Garantía o términos y condiciones de tu producto", placeholder: "Ej. 1 año de garantía", help: "Visible para tu cliente en tienda online") %>
         </div>
       </div>
       <div class="column is-5">
         <div class="columns is-multiline">
           <%= n_field(form, :price, label: "Precio", clas: "field column is-6") %>
-          <%= n_field(form, :offer, label: "Precio oferta", clas: "field column is-6") %>
+          <%= n_field(form, :offer, label: "Precio oferta", clas: "field column is-6", help: "Llena solo si planeas ofrecer precios especiales y que tu cliente lo vea en tu tienda online") %>
           <%= n_field(form, :cost, label: "Costo", clas: "field column is-12") %>
           <%= s_field(form, :status, options: Item::Statuses, label: "Status") %>
           <%= n_field(form, :stock, label: "Inventario (deja en blanco si es ilimitado)") %>
           <%= n_field(form, :alerta_stock, label: "Alerta inventario bajo", placeholder: "Ej. 10") %>
+          <%= n_field(form, :com_vendedor, label: "Comisión a vendedor?", placeholder: "Ej. 10", min: 0.0, help: "Monto fijo por unidad vendida para calculo de comision a vendedores") %>
         </div>
       </div>
     </div>

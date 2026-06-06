@@ -23,7 +23,7 @@
       <div class="column is-5">
         <% images = [@item.img1, @item.img2, @item.img3, @item.img4, @item.img5].select(&:attached?) %>
         <% if images.any? %>
-          <section class="splide mb-4" aria-label="Splide Basic HTML Example">
+          <section class="splide mb-4" aria-label="Splide">
             <div class="splide__track">
               <ul class="splide__list">
                 <% if images.any? %>
@@ -40,7 +40,7 @@
               </ul>
             </div>
           </section>
-          <section class="splide splide_thumbnail_carousel" aria-label="Splide Basic HTML Example">
+          <section class="splide splide_thumbnail_carousel" aria-label="Splide">
             <div class="splide__track">
               <ul class="splide__list">
                 <% images = [@item.img1, @item.img2, @item.img3, @item.img4, @item.img5].select(&:attached?) %>
@@ -83,23 +83,23 @@
           </div>
           <div class="column is-4">
             <div class="labell">Costo</div>
-            <p class="contentt"><%= @item.cost.present? && @item.cost > 0 ? number_to_currency(@item.cost) : '-' %></p>
+            <p><%= @item.cost.present? && @item.cost > 0 ? number_to_currency(@item.cost) : '-' %></p>
           </div>
           <div class="column is-6">
             <div class="labell">Marca</div>
-            <p class="contentt"><%= @item.brand&.name %></p>
+            <p><%= @item.brand&.name %></p>
           </div>
           <div class="column is-6">
             <div class="labell">SKU</div>
-            <p class="contentt"><%= @item.sku %></p>
+            <p><%= @item.sku %></p>
           </div>
           <div class="column is-6">
             <div class="labell">Categoria</div>
-            <p class="contentt"><%= @item.cate&.titleize %></p>
+            <p><%= @item.cate&.titleize %></p>
           </div>
           <div class="column is-6">
             <div class="labell">Inventario</div>
-            <p class="contentt">
+            <p>
               <% if @item.stock %>
                 <% if @item.stock < @item.alerta_stock %>
                   <span class="has-text-danger"><%= @item.stock %></span>
@@ -115,19 +115,23 @@
           </div>
           <div class="column is-6">
             <div class="labell">Alerta inventario</div>
-            <p class="contentt"><%= @item.alerta_stock || 'N/A' %></p>
+            <p><%= @item.alerta_stock || 'N/A' %></p>
           </div>
           <!-- Producto SAT -->
           <div class="column is-6">
             <p class="labell">Clave producto SAT</p>
-            <p class="contentt">(<%= @item.sat_product.sku %>) <%= @item.sat_product&.name %></p>
+            <p>(<%= @item.sat_product.sku %>) <%= @item.sat_product&.name %></p>
           </div>
         </div>
         <div class="columns is-multiline is-mobile mb-4">
           <!-- orders count -->
           <div class="column is-6">
+            <p class="labell">Comision a vendedor</p>
+            <p><%= @item.com_vendedor > 0 ? number_to_currency(@item.com_vendedor) : '-' %></p>
+          </div>
+          <div class="column is-6">
             <p class="labell">Ventas</p>
-            <p class="contentt"><%= @item.orders_count %></p>
+            <p><%= @item.orders_count %></p>
           </div>
         </div>
         <div class="columns is-multiline is-mobile mb-4">
@@ -146,11 +150,11 @@
           </div>
           <div class="column is-6">
             <div class="labell">Fecha de creación</div>
-            <p class="title is-6"><%= @item.created_at.strftime("%d/%m/%Y %H:%M") %></p>
+            <p class="title is-6"><%= l(@item.created_at, format: :long) %></p>
           </div>
           <div class="column is-6">
             <div class="labell">Fecha ultima actualización</div>
-            <p class="title is-6"><%= @item.updated_at.strftime("%d/%m/%Y %H:%M") %></p>
+            <p class="title is-6"><%= l(@item.updated_at, format: :long) %></p>
           </div>
         </div>
       </div>

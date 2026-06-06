@@ -108,6 +108,7 @@ Rails.application.routes.draw do
         post :send_email, as: :send_email
         post :timbra, as: :timbra
         post :cancel
+        get :reporte_comisiones
       end
     end
     resources :line_items, controller: "user_panel/line_items" do

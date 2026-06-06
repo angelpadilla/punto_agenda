@@ -6,6 +6,10 @@
       const modal = document.getElementById("item_<%= @item.id %>");
       if (modal) {
         modal.classList.remove("is-active");
+
+        // Limpiar formulario modal
+        // modal.querySelector("form").reset();
+
       }
     })();
   </script>

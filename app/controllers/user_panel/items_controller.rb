@@ -41,7 +41,7 @@ class UserPanel::ItemsController < UserPanelController
 
     respond_to do |format|
       if @item.save
-        format.html { redirect_to items_path, notice: "Item creado." }
+        format.html { redirect_to item_path(@item), notice: "Item creado." }
         format.json { render :show, status: :created, location: @item }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -54,7 +54,7 @@ class UserPanel::ItemsController < UserPanelController
   def update
     respond_to do |format|
       if @item.update(item_params)
-        format.html { redirect_to items_path, notice: "Item actualizado.", status: :see_other }
+        format.html { redirect_to item_path(@item), notice: "Item actualizado.", status: :see_other }
         format.json { render :show, status: :ok, location: @item }
       else
         format.html { render :edit, status: :unprocessable_entity }

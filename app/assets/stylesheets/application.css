@@ -944,7 +944,7 @@ div.navbar-dropdown {
     font-size: 0.95rem;
 
     img {
-        max-height: 25rem;
+        max-height: 15rem;
     }
 }
 
@@ -1605,6 +1605,15 @@ div.navbar-dropdown {
         border-bottom: 1px solid var(--gray);
         color: var(--white);
         font-weight: 600;
+    }
+
+    .panel-block {
+        max-height: 40rem;
+        overflow-y: auto;
+    }
+
+    .totals {
+        padding: 1.5rem;
     }
 }
 
