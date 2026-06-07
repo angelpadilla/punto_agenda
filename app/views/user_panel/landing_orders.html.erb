@@ -45,6 +45,15 @@
               <label class="label">Fecha final</label>
               <%= form.date_field :fecha_final, class: "input is-rounded", required: true %>
             </div>
+            <div class="field column is-12">
+              <label class="label">Vendedor</label>
+              <div class="control">
+                <div class="select is-rounded is-fullwidth">
+                  <%= form.select :seller_id,
+                        options_for_select(@corp.users.pluck(:full_name, :id)), {prompt: 'Selecciona un vendedor...', required: true}, { class: '' } %>
+                </div>
+              </div>
+            </div>
           </div>
           <%= form.submit "Consultar", class: "button is-primary is-fullwidth is-rounded" %>
         <% end %>

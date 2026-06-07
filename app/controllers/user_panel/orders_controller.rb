@@ -12,10 +12,15 @@ class UserPanel::OrdersController < UserPanelController
       return redirect_to user_panel_landing_orders_path, alert: "La fecha inicial no puede ser mayor a la fecha final"
     end
 
+    if !params[:seller_id].present?
+      return redirect_to user_panel_landing_orders_path, alert: "Selecciona un vendedor para el reporte"
+    end
+
     @fecha_inicial = Date.parse(params[:fecha_inicial]).in_time_zone("America/Mexico_City").beginning_of_day
     @fecha_final = Date.parse(params[:fecha_final]).in_time_zone("America/Mexico_City").end_of_day
+    @seller = @corp.users.find(params[:seller_id])
 
-    orders = @corp.orders.includes(:customer, :seller).where.not(seller_id: nil, tipo: [ :carrito, :cotizacion ], status_pago: :cancelado).where(fecha: @fecha_inicial..@fecha_final).order(fecha: :desc)
+    orders = @corp.orders.includes(:customer, :seller).where.not(seller_id: nil, tipo: [ :carrito, :cotizacion ], status_pago: :cancelado).where(fecha: @fecha_inicial..@fecha_final, seller_id: @seller.id).order(fecha: :desc)
     @total_bruto = orders.sum(:total)
     @total_comision = orders.sum(:com_vendedor)
     @total_orders = orders.count

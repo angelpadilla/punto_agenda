@@ -45,6 +45,10 @@
     <div class="labell">Ventas en periodo</div>
     <p><%= @total_orders %></p>
   </div>
+  <div class="column is-6-mobile is-6-tablet is-4-desktop">
+    <div class="labell">Vendedor</div>
+    <p><%= @seller.full_name %></p>
+  </div>
 </div>
 <hr>
 <%= search_form_for @q, url: reporte_comisiones_orders_path, data: { controller: "focus-search" } do |f| %>

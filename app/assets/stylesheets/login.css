@@ -1,7 +1,7 @@
 .login {
     display: flex;
     margin-top: 1.5rem;
-    --height: 60rem;
+
     .login_ad_box {
         /* position: relative; */
         display: flex;
@@ -11,8 +11,8 @@
         border-radius: 1rem;
         background: var(--black);
         padding: 1rem;
-        height: var(--height);
-        max-height: 100vh;
+        height: 60rem;
+        max-height: 85vh;
         background-image: url('duna.jpg');
         background-size: cover;
         background-position: center;
@@ -31,6 +31,7 @@
                 }
             }
         }
+
         .footerr {
             text-align: center;
             color: white;
@@ -48,23 +49,29 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+
         .login_form {
             max-width: 70%;
             width: 30rem;
+
             .login_box_textt {
                 padding: 2rem 0;
             }
+
             .login_box_logo {
                 margin-bottom: 1rem;
+
                 img {
                     height: 2.5rem;
                 }
             }
+
             .login_box_title {
                 color: white;
                 font-size: 1.5rem;
                 font-weight: 400;
             }
+
             .login_box_p {
                 /* color: white; */
                 /* font-size: 1.2rem; */
@@ -76,12 +83,14 @@
     /* de tablet y menor */
     @media (max-width: 1023px) {
         flex-direction: column;
+
         .login_ad_box {
             flex: none;
             height: 20rem;
             order: 2;
             margin: 3rem 0;
         }
+
         .login_box {
             margin-top: 3rem;
         }
