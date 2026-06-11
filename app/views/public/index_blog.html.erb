@@ -1,7 +1,8 @@
 <% content_for :body_class, "blog_index" %>
+<% set_page_meta(title: "Articulos", description: "Explora nuestros artículos y noticias") %>
 <section class="heroo pad_top_nav" loading="lazy">
   <div class="container">
-    <%= search_form_for @q, url: index_blog_path, class: "blog_search" do |f| %>
+    <%= search_form_for @q, url: index_blog_path, class: "blog_search has-text-centered" do |f| %>
       <%= f.search_field :title_or_extract_cont, class: 'input is-rounded', placeholder: 'Busca por titulo o contenido' %>
     <% end %>
   </div>

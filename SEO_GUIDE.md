@@ -17,7 +17,7 @@ Los sitemaps se generan dinámicamente en:
 - Accesibles en:
   - `/sitemap.xml` - Índice principal
   - `/sitemaps/pages.xml` - Páginas estáticas
-  - `/sitemaps/events.xml` - Eventos
+  - `/sitemaps/articles.xml` - Articulos
   - `/sitemaps/corps.xml` - Empresas
 
 ### 3. Robots.txt

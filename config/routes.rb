@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   scope "sitemaps" do
     get "pages.xml", to: "sitemaps#pages", as: :sitemaps_pages
     get "corps.xml", to: "sitemaps#corps", as: :sitemaps_corps
+    get "articles.xml", to: "sitemaps#articles", as: :sitemaps_articles
   end
 
   scope "public" do

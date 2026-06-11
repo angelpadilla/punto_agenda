@@ -29,6 +29,15 @@ class SitemapsController < ApplicationController
     end
   end
 
+  def articles
+    @articles = Post.default
+
+    respond_to do |format|
+      format.xml { render :articles, content_type: 'application/xml' }
+    end
+  end
+
+
   private
 
   def generate_sitemap_index

@@ -1,4 +1,5 @@
 <% content_for :body_class, "blog_index" %>
+<% set_page_meta(title: @post.title, description: @post.extract, image: url_for(@post.cover)) %>
 <section class="hero is-medium is-bold pad_top_nav" >
   <div class="hero-body"style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= url_for(@post.cover) %>);">
     <div class="container has-text-centered">
