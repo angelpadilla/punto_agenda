@@ -1,26 +1,36 @@
-<h2>Log in</h2>
-
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+<% content_for :title, "Inicio de sesión usuario" %>
+<div class="login">
+  <div class="login_box flexx-1">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'login_form' }) do |f| %>
+      <div class="cf-turnstile" data-size='flexible' data-sitekey="<%= Rails.application.credentials.dig(Rails.env.to_sym, :turnstile, :site_key) %>"></div>
+      <div class="login_box_textt">
+        <div class="login_box_logo">
+          <%= image_tag 'logo2.svg', alt: 'MiiNegocio', class: 'logo' %>
+        </div>
+        <div class="login_box_title">Inicia sesión </div>
+        <div class="login_box_p">Potencia tu productividad</div>
+      </div>
+      <div class="field">
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'input is-rounded', placeholder: 'Email', required: true %>
+      </div>
+      <div class="field">
+        <%= f.password_field :password, autocomplete: "current-password", class: 'input is-rounded', placeholder: 'Contraseña', required: true %>
+      </div>
+      <button type="submit" class="button is-rounded is-primary is-fullwidth">
+        <span class="icon mr-2">
+          <%= image_tag 'login.svg', alt: 'login' %>
+        </span>
+        Iniciar sesión
+      </button>
+      <br>
+      <% if devise_mapping.rememberable? %>
+        <div class="field">
+          <%= f.check_box :remember_me %>
+          <%= f.label :remember_me, 'Recuerdame' %>
+        </div>
+      <% end %>
+      <hr>
+      <%= render "users/shared/links" %>
+    <% end %>
   </div>
-
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
-
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
-    </div>
-  <% end %>
-
-  <div class="actions">
-    <%= f.submit "Log in" %>
-  </div>
-<% end %>
-
-<%= render "admins/shared/links" %>
+</div>

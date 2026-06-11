@@ -46,8 +46,13 @@
     <%= javascript_importmap_tags %>
     <%= Sentry.get_trace_propagation_meta.html_safe %>
     <link rel="preconnect" href="https://challenges.cloudflare.com">
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+      async
+      defer
+    ></script>
   </head>
-  <body class="public_view">
+  <body class="<%= content_for(:body_class) || "public_view" %>">
     <%= render 'shared/flash' %>
     <% if controller_name == 'sessions' or controller_name == 'registrations' or controller_name == 'passwords' or controller_name == 'confirmations' or controller_name == 'unlocks' %>
       <div class="container is-fluid">
@@ -59,11 +64,6 @@
       <%= render 'shared/footer' %>
     <% end %>
     <%= yield :body %>
-    <script
-      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-      async
-      defer
-    ></script>
     <script>
       function renderTurnstile() {
         const turnstiles = document.querySelectorAll('.cf-turnstile:not([data-rendered])');

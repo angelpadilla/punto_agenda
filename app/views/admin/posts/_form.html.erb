@@ -1,0 +1,54 @@
+<%= form_with(model: post) do |form| %>
+  <% if post.errors.any? %>
+    <div class="notification is-warning">
+      <h2 class="subtitle"><%= pluralize(post.errors.count, "error") %> impidieron que este articulo se guardara:</h2>
+      <ul>
+        <% post.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="box mt-4">
+    <div class="columns is-multiline">
+      <div class="column is-12">
+        <div class="doc_input" data-controller="preview-image">
+          <div class="image_preview">
+            <% if post.cover.attached? && post.cover.persisted? %>
+              <%= image_tag post.cover.variant(resize_to_limit: [400, 400]), alt: "Cover", class: 'doc_image_preview' %>
+            <% end %>
+          </div>
+          <div class="doc_file_name"></div>
+          <div class="doc_file_size">JPG o PNG · max 5MB</div>
+          <%= form.file_field :cover, class: "doc_file_field", accept: ".png, .jpg, .jpeg", data: { action: "change->preview-image#previewDoc" } %>
+          <span class="doc_action"><%= post.cover.attached? ? "Reemplaza" : "Selecciona" %> cover</span>
+        </div>
+      </div>
+      <%= s_field(form, :cate, options: Post.cates.map {|k, v| [k.humanize, k]}, label: "Categoria", clas: "field column is-6") %>
+      <%= t_field(form, :youtube_url, label: "Youtube URL", clas: "field column is-6") %>
+      <%= t_field(form, :title, label: "Titulo (min 15 caracteres, max 100 caracteres)") %>
+      <%= t_field(form, :extract, label: "Extracto (min 50 caracteres, max 550 caracteres)") %>
+      <div class="field column is-12">
+        <label class="label">Contenido</label>
+        <% if post.errors.include?(:content) %>
+          <%= form.rich_text_area :content %>
+          <p class="help is-danger">
+            <% post.errors.full_messages_for(:content).each do |mss| %>
+              <%= mss %>.
+            <% end %>
+          </p>
+        <% else %>
+          <%= form.rich_text_area :content %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="field is-grouped is-justify-content-space-between mt-5">
+    <div class="control">
+      <%= link_to "Cancelar", posts_path, class: "button is-rounded" %>
+    </div>
+    <div class="control">
+      <%= form.submit "Guardar", class: "button is-rounded is-primary" %>
+    </div>
+  </div>
+<% end %>

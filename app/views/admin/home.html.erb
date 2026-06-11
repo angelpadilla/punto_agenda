@@ -1,0 +1,98 @@
+  <nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../">Bulma</a></li>
+    <li><a href="../">Templates</a></li>
+    <li><a href="../">Examples</a></li>
+    <li class="is-active"><a href="#" aria-current="page">Admin</a></li>
+  </ul>
+</nav>
+<section class="hero is-info welcome is-small">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Hola, <%= current_admin.email %>.
+      </h1>
+      <h2 class="subtitle">
+        Bienvenido al panel de administración de MiiNegocio.
+      </h2>
+    </div>
+  </div>
+</section>
+<%# contadores tiles %>
+<div class="columns is-multiline is-mobile mb-2 mt-4">
+  <div class="column is-6-mobile is-3-tablet">
+    <div class="box stat_card">
+      <div class="stat_icon"><%= image_tag 'user-plus-rounded-svgrepo-com.svg', class: 'invert' %></div>
+      <div class="stat_val"><%= Corp.count %></div>
+      <div class="stat_label">Clientes (companias) </div>
+    </div>
+  </div>
+  <div class="column is-6-mobile is-3-tablet">
+    <div class="box stat_card is-accent">
+      <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
+      <div class="stat_val"><%= User.count %></div>
+      <div class="stat_label">Usuarios</div>
+    </div>
+  </div>
+  <div class="column is-6-mobile is-3-tablet">
+    <div class="box stat_card">
+      <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
+      <div class="stat_val">-</div>
+      <div class="stat_label">Citas hoy</div>
+    </div>
+  </div>
+  <div class="column is-6-mobile is-3-tablet">
+    <div class="box stat_card is-danger">
+      <div class="stat_icon"><%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert' %></div>
+      <div class="stat_val">
+        -
+      </div>
+      <div class="stat_label">Ordenes hoy</div>
+    </div>
+  </div>
+</div>
+<%# ordenes recientes %>
+<div class="box">
+  <div class="flexx space-b flex-end mb-4">
+    <h3 class="dashboard_section_title">Facturacion reciente</h3>
+    <%= link_to admin_panel_home_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
+  </div>
+  <% if Bill.any? %>
+    <div class="table-container">
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Compania</th>
+            <th>Tipo</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% Bill.default.limit(10).each do |o| %>
+            <tr class="is-clickable" onclick="window.location.href='<%= admin_panel_home_path %>'">
+              <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= o.folio %>-<%= o.id %></span></td>
+              <td><%= o.corp.name&.titleize || "—" %></td>
+              <td><span class="tag is-rounded"><%= o.tipo&.titleize %></span></td>
+              <td class="has-text-neon"><strong><%= number_to_currency(o.total) %></strong></td>
+              <td>
+                <% if o.pagado? %><span class="tag is-rounded is-success">Pagado</span>
+                <% elsif o.cancelado? %><span class="tag is-rounded is-danger">Cancelado</span>
+                <% elsif o.error_pago? %><span class="tag is-rounded is-warning">Error</span>
+                <% elsif o.pendiente? %><span class="tag is-rounded is-warning">Pendiente</span>
+                <% end %>
+              </td>
+              <td><span class="labell"><%= l(o.created_at, format: :short)%></span></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="empty_state">
+      <p>Sin órdenes recientes</p>
+    </div>
+  <% end %>
+</div>

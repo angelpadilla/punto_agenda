@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
   devise_for :customers
   devise_for :users, controllers: {
-    registrations: "users/registrations"
+    registrations: "users/registrations",
+    sessions: "users/sessions"
   }
-  devise_for :admins
+  devise_for :admins, controllers: {
+    sessions: "users/sessions"
+  }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -37,6 +40,11 @@ Rails.application.routes.draw do
     post ":folio/ticket_xml", to: "public#ticket_xml", as: :ticket_xml
   end
 
+  scope "blog" do
+    get "", to: "public#index_blog", as: :index_blog
+    get ":slug", to: "public#show_blog", as: :show_blog
+  end
+
   scope "e" do
     get ":sku", to: "public#show_corp", as: :corp_home
     get ":sku/cat", to: "public#show_corp_menu", as: :corp_menu
@@ -60,6 +68,9 @@ Rails.application.routes.draw do
       get "stripe_card_success", to: "user_panel/corp#stripe_card_success", as: :stripe_card_success
       get "stripe_card_error", to: "user_panel/corp#stripe_card_error", as: :stripe_card_error
       post "pay_now", to: "user_panel/corp#pay_now", as: :pay_now
+      post "change_plan", to: "user_panel/corp#change_plan", as: :change_plan
+      post "charge_sms", to: "user_panel/corp#charge_sms", as: :charge_sms
+      post "charge_timbres", to: "user_panel/corp#charge_timbres", as: :charge_timbres
     end
 
     resources :bills, controller: "user_panel/bills", only: %i[index show] do
@@ -144,5 +155,6 @@ Rails.application.routes.draw do
     resources :items, controller: "admin/items"
     resources :orders, controller: "admin/orders"
     resources :deposits, controller: "admin/deposits"
+    resources :posts, controller: "admin/posts"
   end
 end

@@ -25,4 +25,13 @@
     </span>
     Mes
   <% end %>
+  <% if @por_confirmar > 0 %>
+    <%= link_to events_path(q: { status_eq: 3 }), class: "button is-rounded is-warning" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'danger-triangle-svgrepo-com.svg', alt: 'filter', class: '' %>
+      </span>
+      Por confirmar
+      <span class="tag is-rounded ml-2"><%= @por_confirmar %></span>
+    <% end %>
+  <% end %>
 </div>

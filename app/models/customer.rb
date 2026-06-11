@@ -121,6 +121,7 @@ class Customer < ApplicationRecord
 
   normalizes :razon, with: ->(item) { item.strip.downcase.titleize }
   normalizes :rfc, with: ->(item) { item.strip.upcase }
+  normalizes :tel, :tel_prefix, with: ->(item) { item.strip }
 
   scope :default, -> { order(razon: :asc) }
   scope :active, -> { where(active: true) }

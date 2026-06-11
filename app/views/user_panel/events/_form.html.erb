@@ -119,6 +119,46 @@
       </div>
     </div>
   </div>
+  <%# ── Recurrencia ──────────────────────────────────────────────────── %>
+  <% unless event.persisted? %>
+    <div class="box mt-4" data-controller="recurrence-toggle">
+      <label class="checkbox mb-3" style="font-weight:600;">
+        <input type="checkbox" data-action="change->recurrence-toggle#toggle"> ¿Evento recurrente?
+      </label>
+      <div data-recurrence-toggle-target="fields" style="display:none;">
+        <div class="columns is-multiline">
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">Frecuencia</label>
+              <div class="control">
+                <div class="select is-rounded is-fullwidth">
+                  <%= form.select :recurrence_rule,
+                    options_for_select([
+                      ["Diario",    "daily"],
+                      ["Semanal",   "weekly"],
+                      ["Quincenal", "biweekly"],
+                      ["Mensual",   "monthly"]
+                    ], event.recurrence_rule),
+                    { prompt: "Seleccionar frecuencia" } %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">Repetir hasta</label>
+              <div class="control">
+                <%= form.date_field :recurrence_ends_on,
+                    class: "input is-rounded",
+                    min: Date.today + 1.day,
+                    value: event.recurrence_ends_on %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
   <div class="field is-grouped is-justify-content-space-between mt-5">
     <div class="control">
       <%= link_to "Cancelar", monthly_events_path, class: "button is-rounded" %>

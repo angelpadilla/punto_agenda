@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_072141) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_070453) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,6 +67,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_072141) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.integer "rol", default: 1
     t.integer "sign_in_count", default: 0, null: false
     t.string "tel"
     t.string "tel_prefix", default: "+52"
@@ -304,12 +305,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_072141) do
     t.datetime "hora_final"
     t.datetime "hora_inicio"
     t.string "motivo_cancelacion"
+    t.date "recurrence_ends_on"
+    t.string "recurrence_id"
+    t.integer "recurrence_index"
+    t.string "recurrence_rule"
     t.integer "status", default: 0, null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["corp_id"], name: "index_events_on_corp_id"
     t.index ["customer_id"], name: "index_events_on_customer_id"
+    t.index ["recurrence_id"], name: "index_events_on_recurrence_id"
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 
@@ -361,6 +367,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_072141) do
     t.index ["order_id"], name: "index_line_items_on_order_id"
   end
 
+  create_table "message_events", force: :cascade do |t|
+    t.string "body"
+    t.bigint "corp_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "customer_id"
+    t.bigint "eventeable_id"
+    t.string "eventeable_type"
+    t.string "prefix"
+    t.string "response"
+    t.integer "status", default: 0, null: false
+    t.integer "tipo"
+    t.string "to"
+    t.datetime "updated_at", null: false
+    t.index ["corp_id"], name: "index_message_events_on_corp_id"
+    t.index ["customer_id"], name: "index_message_events_on_customer_id"
+    t.index ["eventeable_type", "eventeable_id"], name: "index_message_events_on_eventeable"
+  end
+
   create_table "orders", force: :cascade do |t|
     t.decimal "abonado", precision: 17, scale: 4, default: "0.0"
     t.decimal "com_vendedor", precision: 17, scale: 4, default: "0.0"
@@ -399,6 +423,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_072141) do
     t.index ["corp_id"], name: "index_orders_on_corp_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "posts", force: :cascade do |t|
+    t.integer "cate", default: 0
+    t.datetime "created_at", null: false
+    t.string "extract"
+    t.string "slug"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "visits", default: 0
+    t.string "youtube_url"
+    t.index ["slug"], name: "index_posts_on_slug", unique: true
   end
 
   create_table "providers", force: :cascade do |t|
@@ -509,6 +545,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_072141) do
   add_foreign_key "items", "sat_products"
   add_foreign_key "line_items", "items"
   add_foreign_key "line_items", "orders"
+  add_foreign_key "message_events", "corps"
+  add_foreign_key "message_events", "customers"
   add_foreign_key "orders", "corps"
   add_foreign_key "orders", "customers"
   add_foreign_key "orders", "users"

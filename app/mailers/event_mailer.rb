@@ -30,4 +30,20 @@ class EventMailer < ApplicationMailer
 
     mail(to: email, subject: "#{@corp.name} lamentamos que no hayas podido asistir a tu cita")
   end
+
+  def send_event_cancelation
+    @event = params[:event]
+    @corp = @event.corp
+    email = params[:email]
+
+    mail(to: email, subject: "#{@corp.name} tu cita ha sido cancelada")
+  end
+
+  def noti_corp
+    @corp = params[:corp]
+    @event = params[:event]
+    email = @corp.email
+
+    mail(to: email, subject: "#{@corp.name} notificación importante")
+  end
 end

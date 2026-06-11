@@ -2,7 +2,7 @@
 <div class="flexx space-b flex-end">
   <h2 class="titlee">Detalle del evento</h2>
   <div class="actions">
-    <%= link_to :back, class: "button is-rounded" do %>
+    <%= link_to events_path, class: "button is-rounded" do %>
       <span class="icon mr-2">
         <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
       </span>
@@ -56,7 +56,7 @@
               </span>
               Email
             </a>
-            <% if @corp.premium? %>
+            <% if @corp.sms > 0 %>
               <a class="mtrigger dropdown-item" data-target="send_event_sms">
                 <span class="icon">
                   <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
@@ -171,11 +171,26 @@
             access_time_filled
           </span>
           <div>
-            <p class="labell">Hora: </p>
-            <p><%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %></p>
+            <p class="labell">Fecha creacion: </p>
+            <p><%= l(@event.created_at, format: :short) %></p>
           </div>
         </div>
       </div>
+      <% if @event.recurrente? %>
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              access_time_filled
+            </span>
+            <div>
+              <p class="labell">Tipo: </p>
+              <p>
+                Recurrente
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
       <% if @event.body.present? %>
         <div class="column is-12">
           <div class="flexx">
@@ -205,6 +220,68 @@
     </div>
   </div>
 </div>
+<% if @event.recurrente? %>
+  <div class="box mt-4">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'calendar2.svg', class: "invert", alt: "Totales" %>
+        </span>
+        Informacion de recurrencia
+      </h2>
+    </div>
+    <div class="box_content">
+      <div class="columns is-multiline">
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              fingerprint
+            </span>
+            <div>
+              <p class="labell">ID recurrencia: </p>
+              <p><%= @event.recurrence_id %></p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              dynamic_feed
+            </span>
+            <div>
+              <p class="labell">Regla: </p>
+              <p>
+                <%= @event.recurrence_rule %>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              event
+            </span>
+            <div>
+              <p class="labell">Cuando termina: </p>
+              <p><%= l(@event.recurrence_ends_on, format: :long) %></p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              123
+            </span>
+            <div>
+              <p class="labell">Index: </p>
+              <p><%= @event.recurrence_index %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
 <%# modals %>
 <div id="send_event_email" class="modal">
   <div class="modal-background"></div>

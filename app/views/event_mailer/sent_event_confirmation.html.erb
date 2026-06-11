@@ -11,7 +11,7 @@
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <h2>Cita confirmada</h2>
+                    <h2>Cita confirmada y agendada</h2>
                     <p>Te adjuntamos los detalles de tu cita/evento con <b><%= @corp.name&.titleize %></b>.</p>
                     <br>
                     <p>
@@ -29,7 +29,8 @@
                     <p>
                       <b>Agente:</b> <%= @event.user&.full_name&.titleize %>
                     </p>
-                    <p>Si tienes dudas o comentarios, no dudes en contactarnos.</p>
+                    <br>
+                    <p>Si tienes dudas o comentarios, no dudes en contactarnos a:</p>
                     <p>
                       <b>Tel/whatsapp: </b><%= @event.corp&.tel_prefix %> <%= @event.corp.phone %>
                     </p>

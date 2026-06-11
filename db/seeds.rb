@@ -43,3 +43,6 @@ Setting.find_or_create_by!(id: 1) do |s|
   s.regimen = "612"
 end
 puts "- Setting creado...."
+
+puts "Creando un Admin"
+Admin.find_or_create_by!(email: "angel@gmail.com", password: "adminadmin1", password_confirmation: "adminadmin1")

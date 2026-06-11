@@ -1,0 +1,42 @@
+<% content_for :body_class, "blog_index" %>
+<section class="hero is-medium is-bold pad_top_nav" >
+  <div class="hero-body"style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= url_for(@post.cover) %>);">
+    <div class="container has-text-centered">
+      <h1 class="title is-2"><%= @post.title.humanize %></h1>
+    </div>
+  </div>
+</section>
+<div class="container">
+  <div class="article">
+    <div class="box">
+      <div class="mb-2">
+        <span class="tag is-rounded is-info"><%= @post.cate&.titleize %></span>
+      </div>
+      <p class="subtitle is-6 mt-2">
+        <%= l(@post.updated_at, format: :short) %>
+      </p>
+      <% if @post.youtube_url.present? %>
+        <div class="mb-4">
+          <% match_data = @post.youtube_url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/) %>
+          <% video_id = match_data[1] if match_data %>
+          <% if video_id %>
+            <% # Contenedor que obliga a mantener la relación 16:9 %>
+            <div class="video-responsive">
+              <iframe src="https://www.youtube.com/embed/<%= video_id %>" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            </div>
+          <% else %>
+            <%= link_to "Ver video en YouTube", @post.youtube_url, target: "_blank", class: "button is-link" %>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="mt-2">
+        <%= @post.content %>
+      </div>
+    </div>
+  </div>
+</div>

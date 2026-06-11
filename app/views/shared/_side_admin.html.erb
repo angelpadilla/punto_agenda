@@ -1,0 +1,58 @@
+<div class="column is-2">
+  <aside class="menu">
+    <p class="menu-label">
+      Panel de control
+    </p>
+    <%=  %>
+    <ul class="menu-list">
+      <li>
+        <a href="<%= admin_panel_home_path %>" class=" <%= request.path == '/admin' ? 'is-active' : '' %>">
+          <span class="material-icons-round">
+            bar_chart
+          </span>
+          Resumen
+        </a>
+      </li>
+      <li>
+        <a href="<%= posts_path %>" class="<%= request.path.include?('post') ? 'is-active' : '' %>">
+          <span class="material-icons-round">
+            token
+          </span>
+          Articulos 
+        </a>
+      </li>
+      <li>
+        <a href="<%= admin_panel_home_path %>" class="<%= request.path == '/admin/sales' ? 'is-active' : '' %>">
+          <span class="material-icons-round">
+            currency_exchange
+          </span>
+          Ventas
+        </a>
+      </li>
+      <li>
+        <% if request.path.include? "customers" %>
+          <a href="<%= admin_panel_home_path %>" class="is-active">
+          <% else %>
+            <a href="<%= admin_panel_home_path %>">
+            <% end %>
+            <span class="material-icons-round">
+              people
+            </span>
+            Clientes
+          </a>
+        </li>
+        <li>
+          <% if request.path.include? "users" %>
+            <a href="<%= admin_panel_home_path %>" class="is-active">
+            <% else %>
+              <a href="<%= admin_panel_home_path %>">
+              <% end %>
+              <span class="material-icons-round">
+                people_outline
+              </span>
+              Usuarios
+            </a>
+          </li>
+        </ul>
+      </aside>
+    </div>

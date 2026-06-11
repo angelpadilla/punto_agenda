@@ -3,14 +3,38 @@ class Event < ApplicationRecord
   belongs_to :corp
   belongs_to :user, optional: true
 
+  has_many :message_events, as: :eventeable, dependent: :destroy
+
   enum :status, agendado: 0, completado: 1, cancelado: 2, por_confirmar: 3, ausencia: 4
   enum :canal, interno: 0, web: 1
+
+  RECURRENCE_RULES = %w[daily weekly biweekly monthly].freeze
 
   scope :default, -> { order(hora_inicio: :desc) }
   scope :upcoming, -> { where("hora_inicio >= ?", Time.current) }
   scope :past, -> { where("hora_inicio < ?", Time.current) }
   scope :indexx, -> { default.where.not(status: :cancelado) }
   scope :today, -> { where(hora_inicio: Time.current.beginning_of_day..Time.current.end_of_day) }
+  scope :serie, ->(rid) { where(recurrence_id: rid).order(recurrence_index: :asc) }
+
+  # Genera un array de fechas para la serie según la regla
+  def self.generar_fechas(fecha_inicio, rule, ends_on)
+    dates  = []
+    cursor = fecha_inicio.to_date
+    limit  = ends_on.to_date
+    step   = case rule
+             when "daily"     then 1.day
+             when "weekly"    then 1.week
+             when "biweekly"  then 2.weeks
+             when "monthly"   then 1.month
+             else return [cursor]
+             end
+    while cursor <= limit
+      dates << cursor
+      cursor += step
+    end
+    dates
+  end
 
   validates :title, presence: { message: "El título es requerido" }
   # validates :body, presence: { message: "El cuerpo es requerido" }
@@ -24,7 +48,7 @@ class Event < ApplicationRecord
 
 
   def self.ransackable_attributes(auth_object = nil)
-    %W[id title folio customer_id canal status user_id corp_id]
+    %W[id title folio customer_id canal status user_id corp_id recurrence_rule]
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -44,6 +68,10 @@ class Event < ApplicationRecord
     end
   end
 
+
+  def recurrente?
+    recurrence_id.present?
+  end
 
   def start_time
     self.hora_inicio

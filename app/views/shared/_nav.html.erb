@@ -9,6 +9,7 @@
       <div class="navbar-start">
         <a href="<%= root_path %>#ventajas" class="navbar-item">Ventajas</a>
         <a href="<%= root_path %>#precios" class="navbar-item">Precios</a>
+        <%= link_to "Articulos", index_blog_path, class: "navbar-item" %>
       </div>
       <div class="navbar-end">
         <% if user_signed_in? %>

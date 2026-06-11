@@ -35,4 +35,10 @@ namespace :va do
   task telegram_noti: :environment do
     Gtools.telegram_noti(message: "Mensaje de prueba desde Rake task")
   end
+
+  desc "test sms"
+  task sms: :environment do
+    response = SmsService.sms(to: "3931209126", code: "+52", body: "Mensaje de prueba desde Rake task")
+    puts response
+  end
 end

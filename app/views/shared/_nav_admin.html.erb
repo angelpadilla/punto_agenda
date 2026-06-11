@@ -1,0 +1,112 @@
+<nav class="navbar is-black is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="container is-fluid">
+    <div class="navbar-brand">
+      <%= link_to admin_panel_home_path, class: 'navbar-item' do %>
+        <%= image_tag 'logo3.svg', height: '200px', class: 'logo', alt: 'fresh club logo' %>
+      <% end %>
+      <%# burguer nar mobil %>
+      <div class="navbar-burger burger" data-target="topNav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <div id="topNav" class="navbar-menu">
+      <% if false %>
+        <div class="navbar-start">
+          <%= link_to admin_panel_home_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Inicio</div>
+          <% end %>
+          <%= link_to user_panel_landing_orders_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'ticket.svg', alt: 'ventas', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Ventas</div>
+          <% end %>
+          <% if @corp.calendar %>
+            <%= link_to weekly_events_path, class: 'navbar-item has_tooltip' do %>
+              <span class="icon">
+                <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
+              </span>
+              <div class="tooltip down">Eventos</div>
+            <% end %>
+          <% end %>
+          <%= link_to customers_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'clientes.svg', alt: 'clientes y proveedores', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Clientes</div>
+          <% end %>
+          <%= link_to items_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'items.svg', alt: 'inventario', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Inventario</div>
+          <% end %>
+          <% if false %>
+            <%= link_to user_panel_landing_purchases_path, class: 'navbar-item has_tooltip' do %>
+              <span class="icon">
+                <%= image_tag 'compras.svg', alt: 'compras y gastos', class: 'invert' %>
+              </span>
+              <div class="tooltip down">Compras y Gastos</div>
+            <% end %>
+          <% end %>
+          <% if current_user.prop? %>
+            <%= link_to user_corp_landing_path, class: 'navbar-item has_tooltip' do %>
+              <span class="icon">
+                <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
+              </span>
+              <div class="tooltip down">Ajustes</div>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="navbar-end">
+        <% if admin_signed_in? %>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              <span class="icon">
+                <%= image_tag 'user.svg', alt: 'user', class: 'invert' %>
+              </span>
+              <span class="is-hidden-desktop">
+                Perfil
+              </span>
+            </a>
+            <div class="navbar-dropdown is-boxed is-right">
+              <div class="navbar-item is-hidden-touch">
+                <%= current_admin.email %>
+              </div>
+              <%= link_to "#", class: 'navbar-item' do  %>
+                <span class="icon">
+                  <%= image_tag 'user.svg', alt: 'inicio', class: 'invert' %>
+                </span>
+                Mi perfil
+              <% end %>
+              <% if false %>
+                <%= link_to user_corp_path, class: 'navbar-item' do  %>
+                  <span class="icon">
+                    <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
+                  </span>
+                  Ajustes
+                <% end %>
+              <% end %>
+              <hr class="navbar-divider">
+              <%= link_to destroy_admin_session_path, data: { turbo_method: :delete }, class: 'navbar-item' do %>
+                <span class="icon">
+                  <%= image_tag 'login.svg', alt: 'Salir', class: 'invert' %>
+                </span>
+                Salir
+              <% end %>
+              <p class="navbar-item">
+                <%= Version %>
+              </p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>

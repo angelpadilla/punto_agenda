@@ -326,25 +326,27 @@ class UserPanel::OrdersController < UserPanelController
   def send_sms
     ## validations
     return redirect_back(fallback_location: user_panel_home_path, alert: "Folio no proporcionado") if !params[:folio].present?
-    return redirect_back(fallback_location: user_panel_home_path, alert: "Número de teléfono no proporcionado") if !params[:tel].present? and params[:tel_prefix].present?
+    return redirect_back(fallback_location: user_panel_home_path, alert: "Número de teléfono incorrecto") if !params[:tel].present? or !params[:tel_prefix].present?
 
     @order = @corp.orders.find_by(folio: params[:folio])
 
     redirect_back(fallback_location: user_panel_home_path, alert: "Objeto no encontrado") if !@order
 
-
-    full_tel = params[:tel_prefix].strip + params[:tel].strip
+    # remove '+' from tel_prefix if it exists
+    prefix = params[:tel_prefix].strip
+    prefix = prefix[1..] if prefix.start_with?("+")
+    tel = params[:tel].strip
 
     ## Twilio SMS
-    response = SmsService.send_sms(to: full_tel, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
+    response = SmsService.sms(to: tel, code: prefix, body: "Tu ticket de compra con folio #{@order.folio}\nTotal: $#{@order.total}\nLo puedes consultar en: #{ticket_url(@order.folio)}\nGracias por tu compra en #{@corp.name}!")
 
-    puts " --- Enviando SMS a #{full_tel}"
+    puts " --- Enviando SMS a #{tel}"
     puts response
 
     if response[:success]
       redirect_to order_path(@order), notice: "SMS enviado exitosamente."
     else
-      redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:error]}"
+      redirect_to order_path(@order), alert: "Error al enviar SMS: #{response[:message]}"
     end
   end
 

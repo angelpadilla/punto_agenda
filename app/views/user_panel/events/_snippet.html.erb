@@ -13,9 +13,11 @@
     <% else %>
       <span class="tag is-rounded is-danger"><%= event.status&.titleize %></span>
     <% end %>
-    <span class="tag is-rounded">
-      <%= event.user&.full_name&.titleize %>
-    </span>
+    <% if event.recurrente? %>
+      <span class="tag is-rounded">
+        Recurrente
+      </span>
+    <% end %>
     <div class="snippet_title mt-2">
       <p>
         <span class="labell">Titulo: </span>
@@ -32,6 +34,10 @@
       <p>
         <span class="labell">Folio: </span>
         <%= event.folio %>
+      </p>
+      <p>
+        <span class="labell">Agente: </span>
+        <%= event.user&.full_name&.titleize %>
       </p>
     </div>
   </div>
@@ -108,22 +114,53 @@
           <div class="flexx">
             <span class="icon material-icons-round mr-2">event</span>
             <div>
-              <p class="labell">Dia</p>
+              <p class="labell">Dia y hora</p>
               <p>
-                <%= event.hora_inicio.strftime("%d/%m/%Y") %>
+                <%= event.hora_inicio.strftime("%d/%m/%Y") %> |
+                <%= event.hora_inicio.strftime("%I:%M %p") %> - <%= event.hora_final.strftime("%I:%M %p") %>
               </p>
             </div>
           </div>
         </div>
         <div class="column is-6">
           <div class="flexx">
-            <span class="icon material-icons-round mr-2">access_time_filled</span>
+            <span class="icon material-icons-round mr-2">
+              access_time_filled
+            </span>
             <div>
-              <p class="labell">Hora</p>
-              <p><%= l(event.hora_inicio, format: :time) %> - <%= l(event.hora_final, format: :time) %></p>
+              <p class="labell">Fecha creacion: </p>
+              <p><%= l(event.created_at, format: :short) %></p>
             </div>
           </div>
         </div>
+        <% if event.recurrente? %>
+          <div class="column is-6">
+            <div class="flexx">
+              <span class="icon material-icons-round mr-2">
+                access_time_filled
+              </span>
+              <div>
+                <p class="labell">Tipo: </p>
+                <p>
+                  Recurrente
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <% if event.body.present? %>
+          <div class="column is-12">
+            <div class="flexx">
+              <span class="icon material-icons-round mr-2">
+                description
+              </span>
+              <div>
+                <p class="labell">Notas: </p>
+                <p><%= event.body %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
       </div>
       <% if event.body.present? %>
         <div class="mt-2" id="cem-body-wrap" hidden>

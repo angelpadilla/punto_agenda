@@ -1,29 +1,77 @@
-<h2>Sign up</h2>
-
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "admins/shared/error_messages", resource: resource %>
-
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+<div class="login">
+  <div class="login_ad_box flexx-1">
+    <div class="header">
+      <div class="logo_container">
+        <%= image_tag 'logo2.svg', alt: 'MiiNegocio', class: 'logo' %>
+      </div>
+      <%= link_to root_path, class: "button is-rounded is-success" do %>
+        <span class="icon">
+          <%= image_tag 'login.svg', alt: 'login' %>
+        </span>
+        <span>Regresar a inicio</span>
+      <% end %>
+    </div>
+    <div class="footerr">
+      ¿Ya tienes una cuenta? <%= link_to "Inicia sesión aquí", new_session_path(resource_name), class: "has-text-success" %>
+    </div>
+    <div class="img_cont"></div>
   </div>
-
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
+  <div class="login_box flexx-1" style="height: auto;">
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'login_form' }) do |f| %>
+      <%= render "users/shared/error_messages", resource: resource %>
+      <div class="cf-turnstile" data-size='flexible' data-sitekey="<%= Rails.application.credentials.dig(Rails.env.to_sym, :turnstile, :site_key) %>"></div>
+      <div class="login_box_textt">
+        <div class="login_box_logo">
+          <%= image_tag 'logo2.svg', alt: 'MiiNegocio', class: 'logo' %>
+        </div>
+        <div class="login_box_title">Registro</div>
+        <div class="login_box_p">Potencia tu productividad y tu negocio, prueba nuestra plataforma por 15 días gratis</div>
+      </div>
+      <%# tipo negocio Corp::TipoNegocios %>
+      <div class="field">
+        <div class="control">
+          <div class="select">
+            <%= select_tag :tipo_negocio, options_for_select(Corp::TipoNegocios, nil), prompt: "Selecciona tipo de emprendimiento", class: "" %>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <%= f.text_field :full_name, class: "input is-rounded #{f.object.errors.include?(:full_name) ? 'is-danger' : ''}", placeholder: 'Nombre completo', required: true %>
+      </div>
+      <div class="field has-addons">
+        <div class="control <%= f.object.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
+          <%= f.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, resource.tel_prefix),
+                    {prompt: "Prefijo", required: field_required?(User, :tel_prefix)},
+                    { "data-controller": "slimselect", class: "ss2"}
+                    %>
+        </div>
+        <%= t_field(f, :tel, placeholder: "Ej. 1234567890", clas: "control is-expanded") %>
+      </div>
+      <div class="field">
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input is-rounded #{f.object.errors.include?(:email) ? 'is-danger' : ''}", placeholder: 'Email', required: true %>
+      </div>
+      <div class="field">
+        <%= f.password_field :password, autocomplete: "new-password", class: "input is-rounded #{f.object.errors.include?(:password) ? 'is-danger' : ''}", placeholder: "Contraseña (#{@minimum_password_length} caracteres mínimo)", required: true %>
+      </div>
+      <div class="field">
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input is-rounded #{f.object.errors.include?(:password_confirmation) ? 'is-danger' : ''}", placeholder: 'Confirmar Contraseña', required: true %>
+      </div>
+      <button type="submit" class="button is-rounded is-primary is-fullwidth">
+        <span class="icon mr-2">
+          <%= image_tag 'login.svg', alt: 'login' %>
+        </span>
+        Registro
+      </button>
+      <hr>
+      <div class="buttons">
+        <%= link_to root_path, class: "button is-rounded is-link is-fullwidth" do %>
+          <span class="icon mr-4">
+            <%= image_tag 'google.svg', alt: 'Google' %>
+          </span>
+          Registro con Google
+        <% end %>
+      </div>
+      <%= render "users/shared/links" %>
+    <% end %>
   </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "admins/shared/links" %>
+</div>

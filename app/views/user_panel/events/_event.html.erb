@@ -21,11 +21,16 @@
       <span class="tag is-rounded is-danger"><%= event.status&.titleize %></span>
     <% end %>
     <span class="tag is-rounded"><%= event.canal.titleize %></span>
+    <% if event.recurrente? %>
+      <span class="tag is-rounded">Recurrente</span>
+    <% end %>
+    <p class="labell">
+      <%= event.folio %>
+    </p>
     <p class="contentt">
       <%= event.title %>
     </p>
   </td>
-  <td><%= event.folio %></td>
   <td>
     <% if event.customer %>
       <p class="contentt">
@@ -49,9 +54,12 @@
     <% end %>
   </td>
   <td>
-    <%= l(event.hora_inicio, format: :date) %>
+    <%= l(event.created_at, format: :short) %>
   </td>
   <td>
-    <span class="tag"><%= l(event.hora_inicio, format: :time) %> - <%= l(event.hora_final, format: :time) %></span>
+    <span class="tag is-rounded"><%= l(event.hora_inicio, format: :time) %> - <%= l(event.hora_final, format: :time) %></span>
+    <p class="contentt">
+      <%= l(event.hora_inicio, format: :date) %>
+    </p>
   </td>
 </tr>

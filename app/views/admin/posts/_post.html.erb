@@ -1,0 +1,11 @@
+<tr onclick="window.location='<%= post_path(post) %>'" style="cursor: pointer;">
+  <td><%= post.id %></td>
+  <td><span class="tag is-rounded"><%= post.cate %></span></td>
+  <td><%= post.title.truncate(70) %></td>
+  <td><%= post.extract.truncate(200) %></td>
+  <td><%= post.created_at.strftime("%d/%m/%Y %I:%M:%S %p") %></td>
+  <td><%= post.updated_at.strftime("%d/%m/%Y %I:%M:%S %p") %></td>
+  <td>
+    <%= post.visits %>
+  </td>
+</tr>

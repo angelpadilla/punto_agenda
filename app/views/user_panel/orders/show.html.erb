@@ -78,7 +78,7 @@
             </span>
             Enviar por email
           </a>
-          <% if @corp.premium? %>
+          <% if @corp.sms > 0 %>
             <a class="mtrigger dropdown-item" data-target="send_order_sms">
               <span class="icon">
                 <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>

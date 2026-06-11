@@ -22,7 +22,7 @@ class UserPanelController < ApplicationController
       @venta_bruta_hoy  = orders_today.where.not(status_pago: :cancelado).sum(:total)
 
       @proximos_eventos = @corp.events
-                              .where(hora_inicio: start_of_today..end_of_today)
+                              .where(hora_inicio: start_of_today..end_of_today, status: :agendado)
                               .where("hora_inicio >= ?", Time.current)
                               .order(hora_inicio: :asc)
                               .includes(:customer, :user)
@@ -107,6 +107,11 @@ class UserPanelController < ApplicationController
         # Clientes con inasistencias
         @clientes_riesgo = @corp.customers.where("failed_events > 0")
                                 .order(failed_events: :desc).limit(5)
+
+        # Citas pendientes de confirmación (enviadas por el público)
+        @eventos_por_confirmar = @corp.events.por_confirmar
+                                      .order(hora_inicio: :asc)
+                                      .includes(:customer, :user)
       end
 
       # ── Tab: Inventario ───────────────────────────────────────────────
@@ -171,7 +176,7 @@ class UserPanelController < ApplicationController
     total     = hours.size
     booked    = @corp.events
                      .where(hora_inicio: date.beginning_of_day..date.end_of_day)
-                     .where.not(status: :cancelado)
+                     .where.not(status: [:cancelado, :por_confirmar, :ausencia])
                      .count
     occupied  = [ booked, total ].min
     available = [ total - occupied, 0 ].max

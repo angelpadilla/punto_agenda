@@ -42,6 +42,15 @@
     </span>
     Mes
   <% end %>
+  <% if @por_confirmar > 0 %>
+    <%= link_to events_path(q: { status_eq: 3 }), class: "button is-rounded is-warning" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'danger-triangle-svgrepo-com.svg', alt: 'filter', class: '' %>
+      </span>
+      Por confirmar
+      <span class="tag is-rounded ml-2"><%= @por_confirmar %></span>
+    <% end %>
+  <% end %>
 </div>
 <div class="table-container">
   <table class="table is-fullwidth is-hoverable mt-4">
@@ -49,11 +58,10 @@
       <tr>
         <th></th>
         <th class="table_cell"><%= sort_link(@q, :title, 'Título') %></th>
-        <th class="table_cell">Folio</th>
         <th class="table_cell"><%= sort_link(@q, :customer_id, 'Cliente') %></th>
         <th class="table_cell"><%= sort_link(@q, :user_id, 'Agente/Vendedor') %></th>
-        <th class="table_cell"><%= sort_link(@q, :hora_inicio, 'Fecha') %></th>
-        <th class="table_cell">Hora</th>
+        <th class="table_cell">Fecha creacion</th>
+        <th class="table_cell"><%= sort_link(@q, :hora_inicio, 'Fecha espacio (slot)') %></th>
       </tr>
     </thead>
     <tbody>
@@ -98,12 +106,12 @@
           </div>
           <div class="column is-6">
             <div class="select is-rounded">
-              <%= f.select :status_eq, options_for_select(Event.statuses.keys.map {|k| [k.humanize, k]}, @q.status_eq), {prompt: "Status"}, {class: ""} %>
+              <%= f.select :status_eq, options_for_select(Event.statuses.map {|k, v| [k.humanize, v]}, @q.status_eq), {prompt: "Status"}, {class: ""} %>
             </div>
           </div>
           <div class="column is-6">
             <div class="select is-rounded">
-              <%= f.select :canal_eq, options_for_select(Event.canals.keys.map {|k| [k.humanize, k]}, @q.canal_eq), {prompt: "Canal"}, {class: ""} %>
+              <%= f.select :canal_eq, options_for_select(Event.canals.map {|k, v| [k.humanize, v]}, @q.canal_eq), {prompt: "Canal"}, {class: ""} %>
             </div>
           </div>
         </div>

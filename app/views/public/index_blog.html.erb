@@ -1,0 +1,23 @@
+<% content_for :body_class, "blog_index" %>
+<section class="heroo pad_top_nav" loading="lazy">
+  <div class="container">
+    <%= search_form_for @q, url: index_blog_path, class: "blog_search" do |f| %>
+      <%= f.search_field :title_or_extract_cont, class: 'input is-rounded', placeholder: 'Busca por titulo o contenido' %>
+    <% end %>
+  </div>
+</section>
+<div class="container">
+  <!-- START ARTICLE FEED -->
+  <section class="articles">
+    <% @posts.each do |item| %>
+      <%= render 'public/blog_post', post: item %>
+    <% end %>
+  </section>
+  <% if @pagy.pages > 1 %>
+    <%== @pagy.series_nav(:bulma) %>
+    <br>
+  <% end %>
+  <br>
+  <br>
+  <!-- END ARTICLE FEED -->
+</div>

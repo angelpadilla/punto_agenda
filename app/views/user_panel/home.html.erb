@@ -134,6 +134,30 @@
           </div>
         </div>
       <% end %>
+      <% if @corp.calendar && @eventos_por_confirmar&.any? %>
+        <div class="box mb-4" style="border:2px solid #f5a623;">
+          <div class="flexx space-b flex-end mb-4">
+            <h3 class="dashboard_section_title">
+              🔔 Citas por confirmar
+              <span class="tag is-rounded is-warning ml-2"><%= @eventos_por_confirmar.size %></span>
+            </h3>
+            <%= link_to events_path(q: { status_eq: 3 }), class: "button is-rounded is-small is-warning" do %>Ver todas<% end %>
+          </div>
+          <% @eventos_por_confirmar.each do |ev| %>
+            <%= link_to event_path(ev), class: "upcoming_event" do %>
+              <div class="event_time"><%= ev.hora_inicio.strftime("%-d/%m %I:%M %p") %></div>
+              <div class="event_body">
+                <div class="event_title"><%= ev.title %></div>
+                <div class="event_meta">
+                  <%= ev.customer&.razon&.titleize || ev.customer&.email %>
+                  <% if ev.user %> · <%= ev.user.full_name&.titleize %><% end %>
+                </div>
+              </div>
+              <span class="tag is-rounded">Ver</span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
       <div class="columns is-multiline is-mobile mb-2 mt-4">
         <div class="column is-6-mobile is-3-tablet">
           <div class="box stat_card">
@@ -512,6 +536,30 @@
     <%# ══ AGENDA ════════════════════════════════════════════════════ %>
     <% if @corp.calendar %>
       <div id="panel-agenda" class="dash_panel" style="display:none;">
+        <% if @eventos_por_confirmar&.any? %>
+          <div class="box mb-4" style="border:2px solid #f5a623;">
+            <div class="flexx space-b flex-end mb-4">
+              <h3 class="dashboard_section_title">
+                🔔 Citas por confirmar
+                <span class="tag is-rounded is-warning ml-2"><%= @eventos_por_confirmar.size %></span>
+              </h3>
+              <%= link_to events_path(q: { status_eq: 3 }), class: "button is-rounded is-small is-warning" do %>Ver todas<% end %>
+            </div>
+            <% @eventos_por_confirmar.each do |ev| %>
+              <%= link_to event_path(ev), class: "upcoming_event" do %>
+                <div class="event_time"><%= ev.hora_inicio.strftime("%-d/%m %I:%M %p") %></div>
+                <div class="event_body">
+                  <div class="event_title"><%= ev.title %></div>
+                  <div class="event_meta">
+                    <%= ev.customer&.razon&.titleize || ev.customer&.email %>
+                    <% if ev.user %> · <%= ev.user.full_name&.titleize %><% end %>
+                  </div>
+                </div>
+                <span class="tag is-rounded is-warning">Por confirmar</span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
         <div class="columns is-multiline is-mobile mb-2">
           <div class="column is-6-mobile is-4-tablet">
             <div class="box stat_card is-accent">

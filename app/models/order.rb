@@ -7,6 +7,7 @@ class Order < ApplicationRecord
   has_many :deposits, as: :depositable, dependent: :destroy
   has_many :line_items, dependent: :destroy
   has_many :items, through: :line_items
+  has_many :message_events, as: :eventeable, dependent: :destroy
 
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)

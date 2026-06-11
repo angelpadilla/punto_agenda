@@ -30,7 +30,8 @@
                     <p>
                       <b>Agente:</b> <%= @event.user&.full_name&.titleize %>
                     </p>
-                    <p>Si tienes dudas o comentarios, no dudes en contactarnos.</p>
+                    <br>
+                    <p>Si tienes dudas o comentarios, no dudes en contactarnos a:</p>
                     <p>
                       <b>Tel/whatsapp: </b><%= @event.corp&.tel_prefix %> <%= @event.corp.phone %>
                     </p>

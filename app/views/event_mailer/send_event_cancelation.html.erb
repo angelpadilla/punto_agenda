@@ -1,0 +1,63 @@
+<table border="0" cellpadding="0" cellspacing="0" class="body">
+  <tr>
+    <td>&nbsp;</td>
+    <td class="container">
+      <div class="content">
+        <!-- START CENTERED WHITE CONTAINER -->
+        <table class="main">
+          <!-- START MAIN CONTENT AREA -->
+          <tr>
+            <td class="wrapper">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <h2>Cita cancelada</h2>
+                    <p>Lamentamos informarte que tu cita/evento con <b><%= @corp.name&.titleize %></b> ha sido cancelada por falta de cupo.</p>
+                    <p>Te invitamos a agendar en otro horario</p>
+                    <br>
+                    <p>
+                      <b>Día:</b> <%= @event.hora_inicio.strftime("%d/%m/%Y") %>
+                    </p>
+                    <p>
+                      <b>Hora:</b> <%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %>
+                    </p>
+                    <p>
+                      <b>Agente:</b> <%= @event.user&.full_name&.titleize %>
+                    </p>
+                    <br>
+                    <p>Si tienes dudas o comentarios, no dudes en contactarnos a:</p>
+                    <p>
+                      <b>Tel/whatsapp: </b><%= @event.corp&.tel_prefix %> <%= @event.corp.phone %>
+                    </p>
+                    <br>
+                    <p>Gracias por tu preferencia, que tengas un excelente día.</p>
+                    <br>
+                    <p>
+                      Gracias por tu preferencia, que tengas un excelente día.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- END MAIN CONTENT AREA -->
+        </table>
+        <!-- START FOOTER -->
+        <div class="footer">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="content-block">
+                <span class="apple-link">Software desarrollado por &copy; Ghoster, todos los derechos reservados.</span>
+                <br>
+                <a href="https://ghoster.mx/">www.ghoster.mx</a>.
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- END FOOTER -->
+        <!-- END CENTERED WHITE CONTAINER -->
+      </div>
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+</table>

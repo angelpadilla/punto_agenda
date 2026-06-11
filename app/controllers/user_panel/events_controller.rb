@@ -4,7 +4,8 @@ class UserPanel::EventsController < UserPanelController
   def index
     @customers = @corp.customers.default
     @users = @corp.users.default
-    events = @corp.events.default
+    events = @corp.events.order('hora_inicio DESC', 'created_at DESC')
+    @por_confirmar = events.por_confirmar.count
 
     @q = events.ransack(params[:q])
     @pagy, @events = pagy(@q.result(distinct: true), limit: 10)
@@ -15,12 +16,14 @@ class UserPanel::EventsController < UserPanelController
     @customers = @corp.customers.default
     @users = @corp.users.default
     @events = @corp.events.default
+    @por_confirmar = @events.por_confirmar.count
     @q = @events.ransack(params[:q])
   end
   def weekly
     @customers = @corp.customers.default
     @users = @corp.users.default
     @events = @corp.events.default
+    @por_confirmar = @events.por_confirmar.count
     @q = @events.ransack(params[:q])
   end
 
@@ -72,12 +75,15 @@ class UserPanel::EventsController < UserPanelController
       return render :new, status: :unprocessable_entity
     end
 
+
     unless params[:event][:user_id].present?
       @event.user_id = current_user.id
     end
 
     fecha = params[:event][:dia]
     slot  = params[:event][:slot]  # "09:00|11:00"
+    recurrence_rule     = params[:event][:recurrence_rule].presence
+    recurrence_ends_on  = params[:event][:recurrence_ends_on].presence
 
     if fecha.present? && slot.present?
       inicio, fin = slot.split("|")
@@ -86,17 +92,70 @@ class UserPanel::EventsController < UserPanelController
       @event.hora_final  = tz.parse("#{fecha} #{fin}")   if fin.present?
     end
 
-    ## validar que un evento no se repita en el mismo rango de tiempo en la misma Corp
-    # if Event.where(corp_id: @event.corp_id).where("hora_inicio < ? AND hora_final > ?", @event.hora_final, @event.hora_inicio).exists?
-    #   @event.errors.add(:hora_inicio, "Ya existe un evento en ese rango de tiempo")
-    #   return render :new, status: :unprocessable_entity
-    # end
+    # ── Recurrencia ───────────────────────────────────────────────────
+    if recurrence_rule.present? && recurrence_ends_on.present? &&
+      Event::RECURRENCE_RULES.include?(recurrence_rule)
+
+      fechas = Event.generar_fechas(fecha, recurrence_rule, recurrence_ends_on)
+      rid    = SecureRandom.uuid
+      tz     = ActiveSupport::TimeZone["America/Mexico_City"]
+      inicio_t, fin_t = slot.to_s.split("|")
+      saved_events = []
+
+      fechas.each_with_index do |f, i|
+        ev = @corp.events.new(event_params.merge(
+          hora_inicio:       tz.parse("#{f} #{inicio_t}"),
+          hora_final:        tz.parse("#{f} #{fin_t}"),
+          recurrence_id:     rid,
+          recurrence_rule:   recurrence_rule,
+          recurrence_ends_on: recurrence_ends_on,
+          recurrence_index:  i
+        ))
+        ev.user_id ||= current_user.id
+        saved_events << ev if ev.save
+      end
+
+      first = saved_events.first
+      return respond_to do |format|
+        if saved_events.any?
+          format.html { redirect_to weekly_events_path(start_date: first.hora_inicio.strftime("%Y-%m-%d")),
+                          notice: "Serie de #{saved_events.size} evento(s) creada correctamente." }
+          format.json { render json: saved_events, status: :created }
+        else
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @event.errors, status: :unprocessable_entity }
+        end
+      end
+    end
+    # ─────────────────────────────────────────────────────────────────
 
     respond_to do |format|
       if @event.save
         start_date = @event.hora_inicio.strftime("%Y-%m-%d")
-        EventMailer.with(event: @event, email: @event.customer.email).send_event.deliver_later
-        format.html { redirect_to weekly_events_path(start_date: start_date), notice: "Evento creado y notificado al cliente por email." }
+        if @corp.sms > 0
+          # # enviar sms si el corp tiene creditos de sms
+          MessageEvent.create!(
+            tipo: :sms,
+            corp: @corp,
+            eventeable: @event,
+            customer: @event.customer,
+            to: @event.customer.tel,
+            prefix: @event.customer.tel_prefix,
+            body: "Tu evento programado: #{@event.title}\nFecha y hora: #{@event.hora_inicio.strftime("%d/%m/%Y %I:%M %p")}\nGracias por tu preferencia en #{@corp.name}!"
+          )
+
+        end
+
+        # enviar email de confirmación de nuevo evento
+        MessageEvent.create!(
+          tipo: :email,
+          corp: @corp,
+          eventeable: @event,
+          customer: @event.customer,
+          to: @event.customer.email.strip,
+        )
+
+        format.html { redirect_to weekly_events_path(start_date: start_date), notice: "Evento creado y notificado al cliente." }
         format.json { render :show, status: :created, location: @event }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -143,8 +202,36 @@ class UserPanel::EventsController < UserPanelController
     return redirect_back(fallback_location: events_path, alert: "Solo se pueden confirmar los eventos por confirmar.") if !@event.por_confirmar?
 
     @event.update(status: :agendado)
+    # enviar email de confirmación al cliente
     EventMailer.with(event: @event, email: @event.customer.email).sent_event_confirmation.deliver_later
-    redirect_back(fallback_location: events_path, notice: "Evento confirmado y notificado al cliente por email.", status: :see_other)
+    if @corp.sms > 0
+      # enviar sms de confirmación al cliente
+      MessageEvent.create!(
+        tipo: :sms,
+        corp: @corp,
+        eventeable: @event,
+        customer: @event.customer,
+        to: @event.customer.tel,
+        prefix: @event.customer.tel_prefix,
+        body: "Tu evento ha sido confirmado: #{@event.title}\nFecha y hora: #{@event.hora_inicio.strftime("%d/%m/%Y %I:%M %p")}\nGracias por tu preferencia en #{@corp.name}!"
+      )
+    end
+
+    solapados = @corp.events
+                  .por_confirmar
+                  .where.not(id: @event.id)
+                  .where("hora_inicio < ? AND hora_final > ?", @event.hora_final, @event.hora_inicio)
+
+    if solapados.any?
+      solapados.each do |ev|
+        ev.update(status: :cancelado, motivo_cancelacion: "Evento cancelado automáticamente: otro cliente fue confirmado en este horario.")
+        EventMailer.with(event: ev, email: ev.customer.email).send_event_cancelation.deliver_later
+      end
+    end
+
+    msg = "Evento confirmado y notificado al cliente."
+    msg += " #{solapados.size} evento(s) en conflicto cancelados automáticamente." if solapados.any?
+    redirect_back(fallback_location: events_path, notice: msg, status: :see_other)
   end
 
   def cancelar
@@ -153,6 +240,7 @@ class UserPanel::EventsController < UserPanelController
     return redirect_back(fallback_location: events_path, alert: "El evento ya está cancelado.") if @event.cancelado?
     return redirect_back(fallback_location: events_path, alert: "Motivo de cancelación es requerido.") if !motivo.present?
 
+    # EventMailer.with(event: @event, email: @event.customer.email).send_event_cancelation.deliver_later
     @event.update(status: :cancelado, motivo_cancelacion: motivo)
     redirect_back(fallback_location: events_path, notice: "Evento cancelado y notificado al cliente por email.", status: :see_other)
   end
@@ -207,25 +295,25 @@ class UserPanel::EventsController < UserPanelController
   def send_sms
     ## validations
     return redirect_back(fallback_location: user_panel_home_path, alert: "Folio no proporcionado") if !params[:folio].present?
-    return redirect_back(fallback_location: user_panel_home_path, alert: "Número de teléfono no proporcionado") if !params[:tel].present? and params[:tel_prefix].present?
+    return redirect_back(fallback_location: user_panel_home_path, alert: "Número de teléfono incorrecto") if !params[:tel].present? or !params[:tel_prefix].present?
 
     @event = @corp.events.find_by(folio: params[:folio])
 
     redirect_back(fallback_location: user_panel_home_path, alert: "Objeto no encontrado") if !@event
 
+    prefix = params[:tel_prefix].strip
+    tel = params[:tel].strip
 
-    full_tel = params[:tel_prefix].strip + params[:tel].strip
+    ## SMS
+    response = SmsService.sms(to: tel, code: prefix, body: "Tu evento programado: #{@event.title}\nFecha y hora: #{@event.hora_inicio.strftime("%d/%m/%Y %I:%M %p")}\nGracias por tu preferencia en #{@corp.name}!")
 
-    ## Twilio SMS
-    response = SmsService.send_sms(to: full_tel, body: "Tu evento programado: #{@event.title}\nFecha y hora: #{@event.hora_inicio.strftime("%d/%m/%Y %I:%M %p")}\nGracias por tu preferencia en #{@corp.name}!")
-
-    puts " --- Enviando SMS a #{full_tel}"
+    puts " --- Enviando SMS a #{tel}"
     puts response
 
     if response[:success]
       redirect_to event_path(@event), notice: "SMS enviado exitosamente."
     else
-      redirect_to event_path(@event), alert: "Error al enviar SMS: #{response[:error]}"
+      redirect_to event_path(@event), alert: "Error al enviar SMS: #{response[:message]}"
     end
   end
 
@@ -261,7 +349,9 @@ class UserPanel::EventsController < UserPanelController
       :title,
       :body,
       :customer_id,
-      :user_id
+      :user_id,
+      :recurrence_rule,
+      :recurrence_ends_on
     ])
   end
 end

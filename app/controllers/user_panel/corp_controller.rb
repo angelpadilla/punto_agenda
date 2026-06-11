@@ -117,6 +117,73 @@ class UserPanel::CorpController < UserPanelController
   end
 
   def stripe_card_error
+    return redirect_to user_corp_landing_path, alert: "Proceso cancelado o error al procesar la tarjeta. Intenta de nuevo."
+  end
+
+  def change_plan
+    return redirect_to user_corp_landing_path, alert: "Plan no especificado" unless params[:plan].present?
+    plan = params[:plan].to_sym
+    monto = Setting::PlanPrices.dig(plan, :price)
+    if monto.nil?
+      return redirect_to user_corp_landing_path, alert: "Plan no válido"
+    end
+    
+    descuento = @corp.discount
+    noww = Time.current
+
+    response = Gtools.do_bill_monto(corp: @corp, monto: monto, descuento: descuento, concepto: "Cambio de plan #{Setting::PlanPrices[plan][:name]}")
+
+    if response[:success]
+      @corp.update(
+        status: :activo,
+        payment_attempts: 0,
+        subscription_updated_at: noww,
+        subscription_next_billing_date: 30.days.from_now,
+        subscription_started_at: @corp.subscription_started_at.present? ? @corp.subscription_started_at : noww,
+        tipo_plan: plan
+      )
+      redirect_to user_corp_landing_path, notice: "Plan cambiado exitosamente a #{Setting::PlanPrices[plan][:name]}. Se ha generado una factura por $#{response[:bill].total} MXN. Folio: #{response[:bill].folio}"
+    else
+      redirect_to user_corp_landing_path, alert: "Error al procesar el cambio de plan: #{response[:response][:error_message]}"
+    end
+
+  end
+
+  def charge_sms
+    return redirect_to user_corp_landing_path, alert: "Cantidad no especificada" unless params[:cantidad].present?
+    key = params[:cantidad].to_i
+    monto = Setting::SmsPrices.dig(key, :price)
+
+    if monto.nil?
+      return redirect_to user_corp_landing_path, alert: "Cantidad no válida"
+    end
+
+    response = Gtools.do_bill_monto(corp: @corp, monto: monto, concepto: "Compra de #{Setting::SmsPrices[key][:name]}")
+
+    if response[:success]
+      @corp.increment!(:sms, key)
+      redirect_to user_corp_landing_path, notice: "Compra de #{Setting::SmsPrices[key][:name]} exitosa. Se ha generado una factura por $#{response[:bill].total} MXN. Folio: #{response[:bill].folio}"
+    else
+      redirect_to user_corp_landing_path, alert: "Error al procesar la compra de SMS: #{response[:response][:error_message]}"
+    end
+  end
+
+  def charge_timbres
+    return redirect_to user_corp_landing_path, alert: "Cantidad no especificada" unless params[:cantidad].present?
+    key = params[:cantidad].to_i
+    monto = Setting::TimbrePrices.dig(key, :price)
+    if monto.nil?
+      return redirect_to user_corp_landing_path, alert: "Cantidad no válida"
+    end
+
+    response = Gtools.do_bill_monto(corp: @corp, monto: monto, concepto: "Compra de #{Setting::TimbrePrices[key][:name]}")
+
+    if response[:success]
+      @corp.increment!(:timbres, key)
+      redirect_to user_corp_landing_path, notice: "Compra de #{Setting::TimbrePrices[key][:name]} exitosa. Se ha generado una factura por $#{response[:bill].total} MXN. Folio: #{response[:bill].folio}"
+    else
+      redirect_to user_corp_landing_path, alert: "Error al procesar la compra de timbres: #{response[:response][:error_message]}"
+    end
   end
 
   private

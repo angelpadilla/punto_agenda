@@ -1,6 +1,12 @@
 class Admin < ApplicationRecord
   audited max_audits: 1000
 
+  Roles = [
+    [ "Super", 0 ],
+    [ "Admin", 1 ],
+    [ "Editor", 2 ]
+  ]
+
   devise :database_authenticatable,
   :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :trackable
 
@@ -11,5 +17,17 @@ class Admin < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     %w[]
+  end
+
+  def super?
+    self.rol == 0
+  end
+
+  def admin?
+    self.rol == 0 or self.rol == 1
+  end
+
+  def editor?
+    self.rol == 2
   end
 end

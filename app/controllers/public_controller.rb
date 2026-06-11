@@ -2,9 +2,21 @@ class PublicController < ApplicationController
   before_action :find_corp_by_sku, only: [ :show_corp, :show_corp_calendar, :show_corp_menu, :book_event ]
 
   def home
-    @stripe_token = Rails.application.credentials.dig(:stripe_token)
-    @awstoken = Rails.application.credentials.dig(:aws, :token1)
+    @last_articles = Post.default.limit(6)
   end
+
+  def index_blog
+    posts = Post.default
+
+    @q = posts.ransack(params[:q])
+    @pagy, @posts = pagy(@q.result(distinct: true), limit: 6)
+  end
+
+  def show_blog
+    @post = Post.find_by(slug: params[:slug])
+    redirect_to index_blog_path, alert: "Artículo no encontrado" unless @post
+  end
+
 
   def html_elements
   end
@@ -125,7 +137,8 @@ class PublicController < ApplicationController
     )
 
     if event.save
-      redirect_to corp_home_path(@corp.sku), notice: "¡Cita agendada! Te contactaremos para confirmar."
+      EventMailer.with(corp: @corp, event: event).noti_corp.deliver_later
+      redirect_to corp_home_path(@corp.sku), notice: "¡Cita agendada! Por favor espera la confirmacion al email que proporcionaste."
     else
       redirect_to corp_calendar_path(@corp.sku), alert: event.errors.full_messages.join(", ")
     end

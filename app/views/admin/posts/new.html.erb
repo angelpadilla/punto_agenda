@@ -1,0 +1,13 @@
+<% content_for :title, "Nuevo articulo" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Nuevo articulo</h2>
+  <div class="actions">
+    <%= link_to posts_path, class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado
+    <% end %>
+  </div>
+</div>
+<%= render 'form', post: @post %>

@@ -1,0 +1,111 @@
+<% content_for :title, "Detalle de articulo" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle de articulo</h2>
+  <div class="actions">
+    <%= link_to posts_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to show_blog_path(@post.slug), class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'forward-1-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Ver en sitio
+          <% end %>
+          <%= link_to edit_post_path(@post), class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'edit.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Editar
+          <% end %>
+          <% if current_admin.admin? %>
+            <%= button_to post_path(@post), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'trash.svg', alt: 'delete', class: 'invert' %>
+              </span>
+              Eliminar
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box mt-4">
+  <div class="columns">
+    <div class="column is-2">
+      <% if @post.cover.attached? %>
+        <%= image_tag @post.cover.variant(resize_to_limit: [600, 600]), loading: "lazy", class: "image" %>
+      <% else %>
+        <%= image_tag 'documento.svg', alt: 'item', class: 'invert is-hidden-touch', loading: 'lazy' %>
+      <% end %>
+    </div>
+    <div class="column is-10">
+      <div class="tags">
+        <span class="tag is-info is-rounded"><%= @post.cate.titleize %></span>
+      </div>
+      <h3 class="titlee2 mb-4"><%= @post.title %></h3>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Vistas</div>
+          <p>
+            <%= @post.visits %>
+          </p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Youtube URL</div>
+          <a href="<%= @post.youtube_url %>">
+            <%= @post.youtube_url %>
+          </a>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Slug</div>
+          <%= link_to @post.slug, show_blog_path(@post.slug) %>
+        </div>
+        <div class="column is-12">
+          <div class="labell">Extracto</div>
+          <p><%= @post.extract %></p>
+        </div>
+      </div>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Fecha de creación</div>
+          <p class=""><%= l(@post.created_at, format: :long) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Fecha de última actualización</div>
+          <p class=""><%= l(@post.updated_at, format: :long) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box expandable mt-4">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'documento.svg', alt: "Configuración", class: "invert" %>
+      </span>
+      Contenido
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <%= @post.content %>
+  </div>
+</div>

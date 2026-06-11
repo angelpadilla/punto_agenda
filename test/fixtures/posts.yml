@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  visits: 1
+  extract: MyString
+  cate: 1
+
+two:
+  title: MyString
+  visits: 1
+  extract: MyString
+  cate: 1

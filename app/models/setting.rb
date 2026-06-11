@@ -24,16 +24,71 @@ class Setting < ApplicationRecord
 
   PlanPrices = {
     basico: {
-      name: "Plan Básico - $590/mes",
+      name: "Plan Básico",
       price: 590.0,
     },
     plus: {
-      name: "Plan Plus - $790/mes",
+      name: "Plan Plus",
       price: 790.0,
     },
     premium: {
-      name: "Plan Premium - $990/mes",
+      name: "Plan Premium",
       price: 990.0,
+    }
+  }.freeze
+
+
+  SmsPrices = {
+    100 => {
+      name: "100 SMS",
+      cantidad: 100,
+      unit_price: 1.5,
+      price: 150.0
+    },
+    250 => {
+      name: "250 SMS",
+      cantidad: 250,
+      unit_price: 1.3,
+      price: 325.0
+    },
+    500 => {
+      name: "500 SMS",
+      cantidad: 500,
+      unit_price: 1.1,
+      price: 550.0
+    },
+    1000 => {
+      name: "1000 SMS",
+      cantidad: 1000,
+      unit_price: 0.9,
+      price: 900.0
+    }
+  }.freeze
+
+  TimbrePrices = {
+    100 => {
+      name: "100 Timbres",
+      cantidad: 100,
+      unit_price: 1.5,
+      price: 150.0
+    },
+    250 => {
+      name: "250 Timbres",
+      cantidad: 250,
+      unit_price: 1.3,
+      price: 325.0
+    },
+    500 => {
+      name: "500 Timbres",
+      cantidad: 500,
+      unit_price: 1.1,
+      price: 550.0
+    },
+    1000 => {
+      name: "1000 Timbres",
+      cantidad: 1000,
+      unit_price: 0.9,
+      price: 900.0
     }
   }.freeze
 
