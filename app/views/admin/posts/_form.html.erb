@@ -28,7 +28,7 @@
       <%= t_field(form, :youtube_url, label: "Youtube URL", clas: "field column is-6") %>
       <%= t_field(form, :title, label: "Titulo (min 15 caracteres, max 100 caracteres)") %>
       <%= t_field(form, :extract, label: "Extracto (min 50 caracteres, max 550 caracteres)") %>
-      <div class="field column is-12">
+      <div class="field column is-12 form_trix">
         <label class="label">Contenido</label>
         <% if post.errors.include?(:content) %>
           <%= form.rich_text_area :content %>

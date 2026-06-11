@@ -19,7 +19,7 @@
       </div>
       <div class="dropdown-menu" role="menu">
         <div class="dropdown-content">
-          <%= link_to show_blog_path(@post.slug), class: "dropdown-item" do %>
+          <%= link_to show_blog_path(@post.slug), class: "dropdown-item", target: "_blank" do %>
             <span class="icon">
               <%= image_tag 'forward-1-svgrepo-com.svg', alt: 'download', class: 'invert' %>
             </span>

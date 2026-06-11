@@ -626,3 +626,11 @@ trix-editor .attachment__metadata .attachment__size {
     }
   }
 }
+
+.form_trix {
+  trix-editor {
+
+    max-height: 100rem;
+    overflow-y: auto;
+  }
+}

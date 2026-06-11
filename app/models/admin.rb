@@ -4,7 +4,8 @@ class Admin < ApplicationRecord
   Roles = [
     [ "Super", 0 ],
     [ "Admin", 1 ],
-    [ "Editor", 2 ]
+    [ "Editor", 2 ],
+    [ "Vendedor", 3 ]
   ]
 
   devise :database_authenticatable,
@@ -29,5 +30,9 @@ class Admin < ApplicationRecord
 
   def editor?
     self.rol == 2
+  end
+
+  def vendedor?
+    self.rol == 3
   end
 end
