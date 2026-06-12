@@ -47,7 +47,6 @@ class Admin::PostsController < AdminController
     @post.destroy!
 
     redirect_to posts_path, notice: "Articulo eliminado."
-
   end
 
   private

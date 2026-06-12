@@ -190,7 +190,7 @@ class UserPanelController < ApplicationController
   end
 
   def authorize_corp!
-    unless (@corp.activo? or @corp.probando?)
+    if @corp.suspendido?
       redirect_to user_panel_home_path, alert: "Tu cuenta no está activa. Contacta al administrador."
     end
   end

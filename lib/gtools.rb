@@ -37,6 +37,7 @@ module Gtools
           subscription_started_at: corp.subscription_started_at.present? ? corp.subscription_started_at : noww
         )
         CobranzaMailer.with(corp: corp, bill: result[:bill]).success_payment.deliver_later
+        self.telegram_noti(message: "MiiNegocio \nPago exitoso de:\n Monto: #{result[:bill].total} MXN\n Corp ID: #{corp.id}\n Folio: #{result[:bill].folio}\n Fecha: #{noww}")
         puts "✅ Cobranza exitosa para Corp ID: #{corp.id}, Bill ID: #{result[:bill].id}"
       else
         if corp.payment_attempts >= 10
