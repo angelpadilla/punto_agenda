@@ -8,7 +8,7 @@ class UserPanelController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   def home
-    if @corp.activo? or @corp.probando?
+    if !@corp.suspendido?
       today          = Date.today
       start_of_today = today.beginning_of_day
       end_of_today   = today.end_of_day
