@@ -30,7 +30,9 @@
     <%= Sentry.get_trace_propagation_meta.html_safe %>
   </head>
   <body class="user_panel">
-    <%= render 'shared/flash' %>
+    <div id="turbo-flash">
+      <%= render 'shared/flash' %>
+    </div>
     <%= render 'shared/nav_user' %>
     <div class="container pb-6">
       <%= yield %>

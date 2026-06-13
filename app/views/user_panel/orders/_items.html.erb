@@ -104,7 +104,7 @@
               <%= form.hidden_field :item_id, value: item.id %>
               <%= form.hidden_field :order_id, value: order.id %>
               <section class="modal-card-body">
-                <div id="line-item-errors"></div>
+                <div id="line-item-errors-<%= item.id %>"></div>
                 <div class="columns is-multiline">
                   <div class="field column is-12">
                     <label class="label">Precio</label>
@@ -119,7 +119,17 @@
                     </div>
                   </div>
                   <div class="field column is-6">
-                    <label class="label">Descuento</label>
+                    <label class="label">
+                      Descuento
+                      <span class="has_tooltip cursor-pointer">
+                        <span class="icon">
+                          <%= image_tag 'info.svg', alt: 'info', class: 'invert' %>
+                        </span>
+                        <div class="tooltip up">
+                          El descuento se aplica al monto total del item, independientemente de la cantidad. Si ya aplicaste un descuento previamente, no es necesario volverlo a ingresar. Si ingresas un nuevo descuento, mayor o menor, se aplicará el nuevo valor.
+                        </div>
+                      </span>
+                    </label>
                     <div class="control">
                       <%= form.number_field :descuento, value: 0, min: 0, step: 'any', class: "input is-rounded" %>
                     </div>

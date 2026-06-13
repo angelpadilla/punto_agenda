@@ -38,12 +38,12 @@ class UserPanel::LineItemsController < UserPanelController
           format.turbo_stream
         else
           @error_message = "No hay suficiente inventario disponible para agregar #{cantidad} unidades de #{@item.name}. Solo tienes #{@item.stock} disponibles."
+          puts @error_message
+          format.html { redirect_back(fallback_location: new_order_path, alert: @error_message) }
+          # format.turbo_stream
           # format.turbo_stream {
-          #   render turbo_stream: turbo_stream.update("line_item_errors", partial: "user_panel/orders/line_item_errors", locals: { error_message: @error_message })
+          #   render turbo_stream: turbo_stream.replace("line-item-errors", partial: "user_panel/orders/line_form_errors", locals: { error_message: @error_message })
           # }
-          format.turbo_stream {
-            render turbo_stream: turbo_stream.replace("line-item-errors", partial: "user_panel/orders/line_form_errors", locals: { error_message: @error_message })
-          }
         end
       end
     else
@@ -103,6 +103,7 @@ class UserPanel::LineItemsController < UserPanelController
     respond_to do |format|
       @order.line_items.destroy_all
       @order.save(validate: false)
+      format.html { redirect_back(fallback_location: new_order_path, notice: "Todos los items han sido eliminados del pedido.") }
       format.turbo_stream
     end
   end

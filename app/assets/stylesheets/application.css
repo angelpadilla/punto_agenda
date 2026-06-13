@@ -480,11 +480,16 @@ a.link {
 
 
 .has_tooltip {
+    position: relative;
+
     .tooltip {
         position: absolute;
         background-color: var(--black);
         color: var(--white);
         padding: 5px 10px;
+        width: max-content;
+        max-width: 22rem;
+        text-wrap: pretty;
         border-radius: 1.3rem;
         border: 1px solid var(--gray);
         font-size: 0.8rem;
