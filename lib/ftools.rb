@@ -77,7 +77,6 @@ module Ftools
       order.save
       false
     end
-
   end
 
   def self.cancela_bill(bill)

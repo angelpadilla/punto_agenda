@@ -179,5 +179,4 @@ class AbonoPdf < Prawn::Document
   def number_to_currency(number)
     ActionController::Base.helpers.number_to_currency(number)
   end
-
 end

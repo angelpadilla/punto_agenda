@@ -62,5 +62,4 @@ class BillItem < ApplicationRecord
   def precio_descuento
     self.precio - self.descuento_unitario
   end
-
 end

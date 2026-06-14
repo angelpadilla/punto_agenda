@@ -44,6 +44,40 @@
           </div>
         </div>
       </div>
+      <div class="box expandable">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'tuning.svg', alt: "Horario", class: 'invert' %>
+            </span>
+            Horario laboral
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <p class="help is-3 mb-4">Define el horario en que este agente atiende citas. Si no se establece, se asume que trabaja todo el horario del negocio.</p>
+          <div class="columns is-multiline">
+            <div class="field column is-6">
+              <label class="label">Hora de entrada</label>
+              <div class="control select_group">
+                <%= form.time_select :work_start_time, 
+                    { prompt: { hour: "Hora", minute: "Minuto" }, ampm: true, minute_step: 30, default: user.work_start_time.presence },
+                    { class: "" } %>
+              </div>
+            </div>
+            <div class="field column is-6">
+              <label class="label">Hora de salida</label>
+              <div class="control select_group">
+                <%= form.time_select :work_end_time, 
+                      { prompt: { hour: "Hora", minute: "Minuto" }, ampm: true, minute_step: 30, default: user.work_end_time.presence },
+                      { class: "" } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="field is-grouped is-justify-content-space-between mt-5">
         <div class="control">
           <%= link_to "Cancelar", users_path, class: "button is-rounded" %>

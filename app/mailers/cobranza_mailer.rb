@@ -7,7 +7,9 @@ class CobranzaMailer < ApplicationMailer
   def success_payment
     @corp = params[:corp]
     @bill = params[:bill]
-    email = params[:email]
+    email = @corp.prop.email || @corp.email
+    return unless email.present?
+    
     pdf = BillPdf.new(@bill)
     attachments["#{@bill.folio}.pdf"] = pdf.render
 
@@ -17,7 +19,7 @@ class CobranzaMailer < ApplicationMailer
   def failed_payment
     @corp = params[:corp]
     @bill = params[:bill]
-    email = params[:email]
+    email = @corp.prop.email || @corp.email
 
     mail(to: email, subject: "MiiNegocio pago suscripción fallido #{@bill.folio}")
   end
@@ -25,7 +27,7 @@ class CobranzaMailer < ApplicationMailer
   def suspendido
     @corp = params[:corp]
     @bill = params[:bill]
-    email = params[:email]
+    email = @corp.prop.email || @corp.email
 
     mail(to: email, subject: "MiiNegocio cuenta suspendida por pagos fallidos #{@bill.folio}")
   end

@@ -98,7 +98,7 @@ class SmsService
       country_code: code
     })
 
-    puts "Respuesta de MasiveSMS: #{response.to_s}"
+    puts "Respuesta de MasiveSMS: #{response}"
 
     response_body = JSON.parse(response.to_s)
 

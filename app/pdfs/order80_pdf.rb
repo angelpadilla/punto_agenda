@@ -134,7 +134,7 @@ class Order80Pdf < Prawn::Document
     if @order.nota_customer.present?
       text "*** #{@order.nota_customer}"
     end
-    if @corp.text_factura.present? and @order.tipo == "factura" 
+    if @corp.text_factura.present? and @order.tipo == "factura"
       text @corp.text_factura
     end
     if @corp.text_remision.present? and @order.tipo == "remision"

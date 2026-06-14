@@ -4,12 +4,11 @@ class UserPanel::EventsController < UserPanelController
   def index
     @customers = @corp.customers.default
     @users = @corp.users.default
-    events = @corp.events.order('hora_inicio DESC', 'created_at DESC')
+    events = @corp.events.order("hora_inicio DESC", "created_at DESC")
     @por_confirmar = events.por_confirmar.count
 
     @q = events.ransack(params[:q])
     @pagy, @events = pagy(@q.result(distinct: true), limit: 10)
-    
   end
 
   def monthly
@@ -19,6 +18,7 @@ class UserPanel::EventsController < UserPanelController
     @por_confirmar = @events.por_confirmar.count
     @q = @events.ransack(params[:q])
   end
+
   def weekly
     @customers = @corp.customers.default
     @users = @corp.users.default
@@ -33,7 +33,9 @@ class UserPanel::EventsController < UserPanelController
     info = @corp.available_slots_for_day(date)
     if info
       data = info[:slots].each_with_object({}) do |slot, h|
-        h[slot[:range]] = slot[:booked_agents].map(&:id)
+        # IDs de agentes no disponibles (ocupados + fuera de horario)
+        unavailable = slot[:booked_agents].map(&:id) + slot[:non_working_agents].map(&:id)
+        h[slot[:range]] = unavailable.uniq
       end
       render json: data
     else
@@ -58,7 +60,7 @@ class UserPanel::EventsController < UserPanelController
   end
 
   def edit
-    return redirect_back(fallback_location: events_path, alert: "Solo se pueden editar los eventos status: agendados.") unless @event.agendado?
+    redirect_back(fallback_location: events_path, alert: "Solo se pueden editar los eventos status: agendados.") unless @event.agendado?
   end
 
   def create
@@ -236,7 +238,7 @@ class UserPanel::EventsController < UserPanelController
 
   def cancelar
     motivo = params[:motivo]
-    # validar que el evento no esté ya cancelado    
+    # validar que el evento no esté ya cancelado
     return redirect_back(fallback_location: events_path, alert: "El evento ya está cancelado.") if @event.cancelado?
     return redirect_back(fallback_location: events_path, alert: "Motivo de cancelación es requerido.") if !motivo.present?
 

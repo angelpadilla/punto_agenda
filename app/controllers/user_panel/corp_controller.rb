@@ -117,7 +117,7 @@ class UserPanel::CorpController < UserPanelController
   end
 
   def stripe_card_error
-    return redirect_to user_corp_landing_path, alert: "Proceso cancelado o error al procesar la tarjeta. Intenta de nuevo."
+    redirect_to user_corp_landing_path, alert: "Proceso cancelado o error al procesar la tarjeta. Intenta de nuevo."
   end
 
   def change_plan
@@ -127,7 +127,7 @@ class UserPanel::CorpController < UserPanelController
     if monto.nil?
       return redirect_to user_corp_landing_path, alert: "Plan no válido"
     end
-    
+
     descuento = @corp.discount
     noww = Time.current
 
@@ -146,7 +146,6 @@ class UserPanel::CorpController < UserPanelController
     else
       redirect_to user_corp_landing_path, alert: "Error al procesar el cambio de plan: #{response[:response][:error_message]}"
     end
-
   end
 
   def charge_sms

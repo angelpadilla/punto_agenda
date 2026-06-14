@@ -3,12 +3,12 @@ class Post < ApplicationRecord
   has_one_attached :cover, dependent: :destroy
   # has_many :messages, dependent: :destroy
   enum :cate, articulo: 0, tutorial: 1
-  
+
 
   validates :title, :extract, :content, :cate, presence: true
   validates :slug, presence: true, uniqueness: true
-  validates :extract, length: { 
-    maximum: 550, 
+  validates :extract, length: {
+    maximum: 550,
     too_long: ->(record, data) {
       "El máximo son 550 caracteres y escribiste #{record.extract.to_s.length}."
     },
@@ -17,11 +17,11 @@ class Post < ApplicationRecord
       "El mínimo son 50 caracteres y escribiste #{record.extract.to_s.length}."
     }
   }
-  validates :title, length: { 
-    maximum: 100, 
+  validates :title, length: {
+    maximum: 100,
     too_long: ->(record, data) {
       "El máximo son 100 caracteres y escribiste #{record.title.to_s.length}."
-    }, 
+    },
     minimum: 15,
     too_short: ->(record, data) {
       "El mínimo son 15 caracteres y escribiste #{record.title.to_s.length}."

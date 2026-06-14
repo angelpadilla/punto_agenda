@@ -20,36 +20,10 @@
 </section>
 <%# contadores tiles %>
 <div class="columns is-multiline is-mobile mb-2 mt-4">
-  <div class="column is-6-mobile is-3-tablet">
-    <div class="box stat_card">
-      <div class="stat_icon"><%= image_tag 'user-plus-rounded-svgrepo-com.svg', class: 'invert' %></div>
-      <div class="stat_val"><%= Corp.count %></div>
-      <div class="stat_label">Clientes (companias) </div>
-    </div>
-  </div>
-  <div class="column is-6-mobile is-3-tablet">
-    <div class="box stat_card is-accent">
-      <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
-      <div class="stat_val"><%= User.count %></div>
-      <div class="stat_label">Usuarios</div>
-    </div>
-  </div>
-  <div class="column is-6-mobile is-3-tablet">
-    <div class="box stat_card">
-      <div class="stat_icon"><%= image_tag 'dollar.svg', class: 'invert' %></div>
-      <div class="stat_val">-</div>
-      <div class="stat_label">Citas hoy</div>
-    </div>
-  </div>
-  <div class="column is-6-mobile is-3-tablet">
-    <div class="box stat_card is-danger">
-      <div class="stat_icon"><%= image_tag 'danger-triangle-svgrepo-com.svg', class: 'invert' %></div>
-      <div class="stat_val">
-        -
-      </div>
-      <div class="stat_label">Ordenes hoy</div>
-    </div>
-  </div>
+  <%= stat_card(@total_corps, "Clientes", icon: "user-plus-rounded-svgrepo-com", box_class: "is-accent") %>
+  <%= stat_card(@total_users, "Usuarios", icon: "user-plus-rounded-svgrepo-com", box_class: "is-danger") %>
+  <%= stat_card(@bills_today, "Facturacion hoy", icon: "dollar", box_class: "is-danger", currency: true) %>
+  <%= stat_card(@bills_month, "Facturacion mes", icon: "dollar", box_class: "is-danger", currency: true) %>
 </div>
 <%# ordenes recientes %>
 <div class="box">

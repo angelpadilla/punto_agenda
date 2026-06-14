@@ -1,0 +1,198 @@
+<% content_for :title, "Detalle de factura" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle</h2>
+  <div class="actions">
+    <%= link_to admin_bill_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and current_admin.super? %>
+      <button class="mtrigger button is-rounded" data-target="timbraa">
+        <span class="icon mr-2">
+          <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
+        </span>
+        Timbra
+      </button>
+    <% end %>
+    <% if @bill.pagado? %>
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true">
+            <span class="icon">
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+            </span>
+            <span>Acciones</span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <%= link_to bill_path(@bill, format: :pdf), class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+              </span>
+              PDF
+            <% end %>
+            <% if @bill.factura? and @bill.xml.present? %>
+              <%= link_to bill_path(@bill, format: :xml), class: "dropdown-item" do %>
+                <span class="icon">
+                  <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
+                </span>
+                XML
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<% if @bill.nota_for_corp.present? %>
+  <div class="noti is-warning mt-4">
+    <p>
+      <%= @bill.nota_for_corp %>
+    </p>
+  </div>
+<% end %>
+<% if @bill.error.present? %>
+  <div class="noti is-danger mt-4">
+    <p>
+      <%= @bill.error %>
+    </p>
+  </div>
+<% end %>
+<div class="box mt-4">
+  <span class="tag is-light is-rounded"><%= @bill.tipo.titleize %></span>
+  <% if @bill.status_pago == "pagado" %>
+    <span class="tag is-success is-rounded"><%= @bill.status_pago.titleize %></span>
+  <% elsif @bill.status_pago == "credito" %>
+    <span class="tag is-warning is-rounded"><%= @bill.status_pago.titleize %></span>
+  <% else %>
+    <span class="tag is-danger is-rounded"><%= @bill.status_pago.titleize %></span>
+  <% end %>
+  <h3 class="titlee2"><%= @bill.folio %></h3>
+  <!-- info -->
+  <div class="columns is-mobile is-multiline ">
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Folio</div>
+      <p><%= @bill.folio %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Fecha creacion</div>
+      <p><%= l(@bill.created_at ? @bill.created_at : @bill.created_at, format: :long) %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Forma de pago</div>
+      <p><%= @bill.forma_pago&.titleize %></p>
+    </div>
+  </div>
+  <%# info corp %>
+  <% if @corp %>
+    <div class="columns is-mobile is-multiline ">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Cliente</div>
+        <p><%= @corp&.name&.titleize %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Cliente ID</div>
+        <p><%= @corp&.sku %>-<%= @corp.id %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">RFC</div>
+        <p><%= @corp.rfc %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Email</div>
+        <p><%= @corp.email %></p>
+      </div>
+    </div>
+  <% end %>
+</div>
+<div class="box">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'layers.svg', class: "invert", alt: "Items" %>
+      </span>
+      Items 
+    </h2>
+  </div>
+  <div class="box_content">
+    <div class="table-container">
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Monto(antes de descuento)</th>
+            <th>Descuento</th>
+            <th>Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @bill.bill_items.each do |line| %>
+            <tr>
+              <th>
+                <%= line.nombre %>
+              </th>
+              <td><%= line.cantidad %></td>
+              <td><%= number_to_currency(line.precio) %></td>
+              <td><%= number_to_currency(line.total_antes_descuento) %></td>
+              <td>
+                - <%= number_to_currency(line.descuento) %>
+              </td>
+              <td><%= number_to_currency(line.total) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="box">
+  <div class="box_header">
+    <h2>
+      Totales 
+    </h2>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Total</div>
+        <p><%= number_to_currency(@bill.total) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Subtotal</div>
+        <p><%= number_to_currency(@bill.subtotal) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">IVA</div>
+        <p><%= number_to_currency(@bill.impuestos) %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<%# modals %>
+<% if !@bill.timbre? and @corp.me_pueden_facturar? %>
+  <div id="timbraa" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <%= form_with url: timbra_bill_path(@bill), method: :post do |form| %>
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <label class="label">Uso de CFDI</label>
+              <div class="select is-rounded">
+                <%= form.select :uso_cfdi, Bill::UsoCFDI, {required: true}, {} %>
+              </div>
+            </div>
+          </div>
+          <%= form.submit "Timbrar", class: "button is-primary is-fullwidth is-rounded" %>
+        <% end %>
+      </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+<% end %>

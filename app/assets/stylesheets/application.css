@@ -281,13 +281,29 @@ div.box {
     }
 }
 
+.select_group {
+    display: flex;
+    gap: 0.5rem;
+
+    /* estilo para selecto porque no tiene estilos aqui */
+    select {
+        flex: 1;
+        background-color: var(--black);
+        border: 1px solid var(--gray);
+        color: var(--light-gray);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+    }
+
+}
+
 .box {
 
     .box_header {
         display: flex;
         gap: 0.5rem;
         justify-content: space-between;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         padding-bottom: 1rem;
         border-bottom: 1px solid var(--gray);
 
@@ -332,7 +348,7 @@ div.box {
             }
 
             .box_header {
-                margin-bottom: 2rem;
+                margin-bottom: 1rem;
                 padding-bottom: 1rem;
                 border-bottom: 1px solid var(--gray);
             }
@@ -1508,6 +1524,10 @@ div.navbar-dropdown {
 }
 
 .event_snippet {
+    &.border_warning {
+        border-left: 4px solid var(--warning) !important;
+    }
+
     background-color: var(--black);
     border: 1px solid var(--gray);
     border-radius: var(--radius);

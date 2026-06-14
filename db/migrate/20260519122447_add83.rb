@@ -19,6 +19,5 @@ class Add83 < ActiveRecord::Migration[8.1]
     add_column :corps, :subscription_updated_at, :datetime
     add_column :corps, :subscription_cancelled_at, :datetime
     add_column :corps, :payment_attempts, :integer, default: 0
-
   end
 end

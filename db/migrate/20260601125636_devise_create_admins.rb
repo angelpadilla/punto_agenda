@@ -44,7 +44,5 @@ class DeviseCreateAdmins < ActiveRecord::Migration[8.1]
     add_index :admins, :reset_password_token, unique: true
     # add_index :admins, :confirmation_token,   unique: true
     add_index :admins, :unlock_token,         unique: true
-
-
   end
 end

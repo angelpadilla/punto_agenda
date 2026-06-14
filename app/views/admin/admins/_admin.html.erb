@@ -1,0 +1,16 @@
+<tr>
+  <td>
+    <%= link_to admin_admin_path(admin), class: "mr-2" do %>
+      <span class="icon">
+        <%= image_tag 'eye.svg', alt: 'view', class: 'invert' %>
+      </span>
+    <% end %>
+  </td>
+  <td><%= admin.id %></td>
+  <td><%= admin.full_name %></td>
+  <td><%= admin.email %></td>
+  <td><span class="tag is-rounded"><%= Admin::Roles[admin.rol][0] %></span></td>
+  <td><%= admin.last_sign_in_ip %></td>
+  <td><%= l(admin.created_at, format: :short) %></td>
+  <td><%= l(admin.updated_at, format: :short) %></td>
+</tr>

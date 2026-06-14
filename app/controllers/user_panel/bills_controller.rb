@@ -25,7 +25,6 @@ class UserPanel::BillsController < UserPanelController
   end
 
   def timbra
-
     ## validaciones
     return redirect_back fallback_location: user_panel_bills_path, alert: "Esta factura ya ha sido timbrada." if @bill.timbre?
 

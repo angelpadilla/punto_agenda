@@ -63,6 +63,33 @@
         </div>
       </div>
     </div>
+    <% if @user.work_start_time.present? && @user.work_end_time.present? %>
+      <div class="box expandable is_active">
+        <div class="box_header">
+          <h2>
+            <span class="icon mr-2">
+              <%= image_tag 'tuning.svg', alt: "Horario", class: 'invert' %>
+            </span>
+            Horario laboral
+          </h2>
+          <span class="icon toggle_icon">
+            <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
+          </span>
+        </div>
+        <div class="box_content">
+          <div class="columns is-multiline is-mobile">
+            <div class="column is-6-desktop is-6-tablet is-12-mobile">
+              <div class="labell">Hora de entrada</div>
+              <p class="contentt"><%= @user.work_start_time.strftime("%I:%M %p") %></p>
+            </div>
+            <div class="column is-6-desktop is-6-tablet is-12-mobile">
+              <div class="labell">Hora de salida</div>
+              <p class="contentt"><%= @user.work_end_time.strftime("%I:%M %p") %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
   <div class="column is-3-desktop is-12-tablet is-12-mobile">
     <div class="box">

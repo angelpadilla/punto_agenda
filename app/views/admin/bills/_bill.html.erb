@@ -1,0 +1,29 @@
+<tr>
+  <td class="has-text-right">
+    <%= link_to admin_bill_path(bill), class: "mr-2" do %>
+      <span class="icon">
+        <%= image_tag 'eye.svg', alt: 'view', class: 'invert' %>
+      </span>
+    <% end %>
+  </td>
+  <td><%= l(bill.created_at, format: :short) %></td>
+  <td><%= bill.folio %></td>
+  <td>
+    <% if bill.status_pago == "pagado" %>
+      <span class="tag is-rounded is-success"><%= bill.status_pago.humanize %></span>
+    <% elsif bill.status_pago == "pendiente" %>
+      <span class="tag is-rounded is-warning"><%= bill.status_pago.humanize %></span>
+    <% else %>
+      <span class="tag is-rounded"><%= bill.status_pago.humanize %></span>
+    <% end %>
+  </td>
+  <td><span class="tag is-rounded"><%= bill.tipo.humanize %></span></td>
+  <td>
+    <% if bill.corp %>
+      <%= truncate(bill.corp.name&.titleize, length: 20) %>
+    <% else %>
+      —
+    <% end %>
+  </td>
+  <td>$<%= number_with_precision(bill.total, precision: 2) %></td>
+</tr>

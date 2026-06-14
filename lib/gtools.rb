@@ -25,6 +25,7 @@ module Gtools
   def self.cobranza
     corps = Corp.get_corps_cobranza
     noww = Time.current
+    puts "Iniciando proceso de cobranza para #{corps.count} Corps a las #{noww.strftime("%d %b %I:%M %p")}"
     corps.find_each do |corp|
       puts "Procesando cobranza para Corp ID: #{corp.id}, Nombre: #{corp.name}"
       result = self.do_bill(corp: corp)
@@ -120,7 +121,7 @@ module Gtools
     else
       bill.update(status_pago: "error_pago", error: response[:error_message], nota_for_corp: "Error al procesar pago Stripe: #{response[:error_message]}")
       line.update(error: response[:error_message])
-      puts "🚫 No se pudo crear remision dummy para Corp #{corp_id} debido a error en pago Stripe: #{response[:error_message]}"
+      puts "🚫 No se pudo completar remision dummy para Corp #{corp_id} debido a error en pago Stripe: #{response[:error_message]}"
     end
   rescue ActiveRecord::RecordInvalid => e
     puts "🚫 Error al crear Bill/BillItem: #{e.record.errors.full_messages.join(', ')}"
@@ -146,7 +147,7 @@ module Gtools
     end
 
     unless corp.stripe_payment_method_id.present?
-      puts "🚫 Corp sin método de pago para pago Stripe: #{corp.id}"
+      puts "🚫 Corp sin método de pago para pago Stripe, corp: #{corp.id}"
       return { success: false, status: nil, error: "Corp sin método de pago para pago Stripe", error_message: "Corp sin método de pago para pago Stripe", body: nil }
     end
 
@@ -227,12 +228,12 @@ module Gtools
       bill.update(status_pago: "pagado", stripe_payment_id: response[:body].id)
       self.telegram_noti(message: "MiiNegocio \nPago exitoso de:\n Monto: #{bill.total} MXN\n Corp ID: #{corp.id}\n Folio: #{bill.folio}\n Fecha: #{noww}")
       puts "🧾 remision creada para Corp #{corp.id} con pago Stripe exitoso"
-      return { success: true, bill: bill, response: response }
+      { success: true, bill: bill, response: response }
     else
       bill.update(status_pago: "error_pago", error: response[:error_message], nota_for_corp: "Error al procesar pago con tu tarjeta: #{response[:error_message]}")
       line.update(error: response[:error_message])
-      puts "🚫 No se pudo crear remision para Corp #{corp.id} debido a error en pago Stripe: #{response[:error_message]}"
-      return { success: false, bill: bill, response: response }
+      puts "🚫 No se pudo completar remision para Corp #{corp.id} debido a error en pago Stripe: #{response[:error_message]}"
+      { success: false, bill: bill, response: response }
     end
   rescue ActiveRecord::RecordInvalid => e
     puts "🚫 Error al crear Bill/BillItem: #{e.record.errors.full_messages.join(', ')}"
@@ -275,12 +276,12 @@ module Gtools
       bill.update(status_pago: "pagado", stripe_payment_id: response[:body].id)
       self.telegram_noti(message: "MiiNegocio \nPago exitoso de:\n Monto: #{bill.total} MXN\n Corp ID: #{corp.id}\n Folio: #{bill.folio}\n Fecha: #{noww}")
       puts "🧾 Remision creada para Corp #{corp.id} con pago Stripe exitoso"
-      return { success: true, bill: bill, response: response }
+      { success: true, bill: bill, response: response }
     else
       bill.update(status_pago: "error_pago", error: response[:error_message], nota_for_corp: "Error al procesar pago Stripe: #{response[:error_message]}")
       line.update(error: response[:error_message])
-      puts "🚫 No se pudo crear remision para Corp #{corp.id} debido a error en pago Stripe: #{response[:error_message]}"
-      return { success: false, bill: bill, response: response }
+      puts "🚫 No se pudo completar remision para Corp #{corp.id} debido a error en pago Stripe: #{response[:error_message]}"
+      { success: false, bill: bill, response: response }
     end
   rescue ActiveRecord::RecordInvalid => e
     puts "🚫 Error al crear Bill/BillItem: #{e.record.errors.full_messages.join(', ')}"

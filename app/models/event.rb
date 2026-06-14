@@ -23,12 +23,12 @@ class Event < ApplicationRecord
     cursor = fecha_inicio.to_date
     limit  = ends_on.to_date
     step   = case rule
-             when "daily"     then 1.day
-             when "weekly"    then 1.week
-             when "biweekly"  then 2.weeks
-             when "monthly"   then 1.month
-             else return [cursor]
-             end
+    when "daily"     then 1.day
+    when "weekly"    then 1.week
+    when "biweekly"  then 2.weeks
+    when "monthly"   then 1.month
+    else return [ cursor ]
+    end
     while cursor <= limit
       dates << cursor
       cursor += step

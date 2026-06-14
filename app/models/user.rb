@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
   :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :trackable
-  
+
   audited max_audits: 1000
 
   belongs_to :corp, optional: true
@@ -19,11 +19,11 @@ class User < ApplicationRecord
   normalizes :full_name, with: ->(n) { n.strip.downcase.titleize }
   validates :tipo, inclusion: { in: %w[propietario administrador colaborador] }
   # validates :tipo, presence: { message: "El tipo de usuario es requerido" }
-  
+
   validates :full_name, presence: { message: "es requerido" }
   validates :email, presence: { message: "es requerido" }
   validates :email, uniqueness: { message: "ya ha sido tomado por alguien más" }
-  
+
   validates :tel, :tel_prefix, presence: true
   validates :tel_prefix, inclusion: { in: Customer::TelPrefixes.keys, message: "Prefijo no válido" }
   validates :tel, format: { with: /\A\d+\z/, message: "debe ser un número" }
@@ -42,12 +42,12 @@ class User < ApplicationRecord
   Tipos = [
     [ "Propietario", "propietario" ],
     [ "Administrador", "administrador" ],
-    [ "Usuario editor", "colaborador" ],
+    [ "Usuario editor", "colaborador" ]
   ]
 
   Tipos2 = [
     [ "Administrador", "administrador" ],
-    [ "Colaborador", "colaborador" ],
+    [ "Colaborador", "colaborador" ]
   ]
 
 
@@ -61,6 +61,24 @@ class User < ApplicationRecord
 
   def colaborador?
     tipo == "colaborador"
+  end
+
+  # ¿Este agente trabaja durante el slot dado?
+  # Si no tiene work_start_time/work_end_time definidos, se asume que trabaja todo el día
+  # @param slot_start [Time] inicio del slot
+  # @param slot_end [Time] fin del slot
+  # @return [Boolean]
+  def works_during?(slot_start, slot_end)
+    return true if work_start_time.blank? || work_end_time.blank?
+
+    # Convertir horas a minutos desde medianoche para comparar sin fecha
+    work_start_mins = work_start_time.hour * 60 + work_start_time.min
+    work_end_mins   = work_end_time.hour * 60 + work_end_time.min
+    slot_start_mins = slot_start.hour * 60 + slot_start.min
+    slot_end_mins   = slot_end.hour * 60 + slot_end.min
+
+    # El slot debe estar completamente dentro del horario del agente
+    slot_start_mins >= work_start_mins && slot_end_mins <= work_end_mins
   end
 
 

@@ -52,7 +52,6 @@ class DeviseCreateCustomers < ActiveRecord::Migration[8.1]
       t.string :num_ext
       t.boolean :active, default: true
       t.decimal :credit, precision: 17, scale: 4, default: "0.0"
-
     end
 
     add_index :customers, :email,                unique: true

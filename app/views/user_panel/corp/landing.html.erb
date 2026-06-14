@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-      <% if @corp.facturacion %>
+      <% if @corp.facturacion? %>
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
           <div class="flexx">
             <span class="icon material-icons-round mr-2">fingerprint</span>
@@ -360,7 +360,7 @@
     </div>
   </div>
 </div>
-<% if @corp.fac_and_timbres? or true %>
+<% if @corp.facturacion? %>
   <div class="box is-main">
     <div class="columns">
       <div class="column is-9">

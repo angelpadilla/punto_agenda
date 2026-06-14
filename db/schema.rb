@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_070453) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -523,6 +523,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_070453) do
     t.string "unconfirmed_email"
     t.string "unlock_token"
     t.datetime "updated_at", null: false
+    t.time "work_end_time"
+    t.time "work_start_time"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["corp_id"], name: "index_users_on_corp_id"
     t.index ["email"], name: "index_users_on_email", unique: true

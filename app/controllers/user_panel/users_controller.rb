@@ -74,7 +74,7 @@ class UserPanel::UsersController < UserPanelController
   end
 
   def user_params
-    params.expect(user: [ :full_name, :tel, :tel_prefix, :tipo, :active, :email, :password, :password_confirmation ])
+    params.expect(user: [ :full_name, :tel, :tel_prefix, :tipo, :active, :email, :password, :password_confirmation, :work_start_time, :work_end_time ])
   end
 
   def password_params

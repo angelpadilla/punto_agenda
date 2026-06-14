@@ -164,29 +164,7 @@ class UserPanelController < ApplicationController
   end
 
   def slots_today_info(date)
-    bh = @corp.business_hours
-    return nil if bh.blank?
-
-    cfg = bh[date.wday.to_s]
-    return nil unless cfg && ActiveModel::Type::Boolean.new.cast(cfg["active"])
-
-    hours = cfg["hours"].presence || []
-    return nil if hours.empty?
-
-    total     = hours.size
-    booked    = @corp.events
-                     .where(hora_inicio: date.beginning_of_day..date.end_of_day)
-                     .where.not(status: [:cancelado, :por_confirmar, :ausencia])
-                     .count
-    occupied  = [ booked, total ].min
-    available = [ total - occupied, 0 ].max
-    pct       = (occupied * 100.0 / total).round
-
-    first_open  = hours.first["open"]
-    last_close  = hours.last["close"]
-
-    { total: total, disponibles: available, ocupados: occupied, pct: pct,
-      open: first_open, close: last_close, ranges: hours.size }
+    @corp.available_slots_for_day(date)
   end
 
   def authorize_corp!
@@ -196,7 +174,7 @@ class UserPanelController < ApplicationController
   end
 
   def check_corp_setup
-    return unless ((@corp.activo? or @corp.probando?) && !@corp.visto)
+    return unless (@corp.activo? or @corp.probando?) && !@corp.visto
     return if controller_name == "corp" && action_name.in?(%w[initial_corp_setup save_initial_corp_setup])
     redirect_to initial_corp_setup_path
   end

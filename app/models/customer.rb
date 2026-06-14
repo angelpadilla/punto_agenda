@@ -108,7 +108,7 @@ class Customer < ApplicationRecord
     "+234" => "🇳🇬 Nigeria",
     "+212" => "🇲🇦 Marruecos",
     "+213" => "🇩🇿 Argelia",
-    "+254" => "🇰🇪 Kenia",
+    "+254" => "🇰🇪 Kenia"
   }.freeze
 
   validates :razon, :tel, :tel_prefix, presence: true

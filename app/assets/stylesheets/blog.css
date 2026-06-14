@@ -9,7 +9,7 @@
 
     .heroo {
         background: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)),
-            url("https://images.pexels.com/photos/37898647/pexels-photo-37898647.jpeg");
+            url("blog_index.jpg");
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;

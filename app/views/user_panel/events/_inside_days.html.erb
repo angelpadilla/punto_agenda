@@ -13,7 +13,7 @@
     <progress class="progress is-danger" value="1" max="1"></progress>
   <% end %>
 </div>
-<%# modal for date_info %>
+<%# modal para el dia completo %>
 <div id="date_info_<%= identifier %><%= date.strftime('%Y%m%d') %>" class="modal">
   <div class="modal-background"></div>
   <div class="modal-content">
@@ -85,7 +85,7 @@
         <%= slot[:start] %> - <%= slot[:end] %>
       </div>
     </div>
-    <%# modal %>
+    <%# modal para cada slot %>
     <div id="slot_<%= identifier %><%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>" class="modal">
       <div class="modal-background"></div>
       <div class="modal-content">
@@ -107,7 +107,7 @@
               <span class="icon material-icons-round">event_seat</span>
               <div>
                 <p class="labell">Agentes libres: </p>
-                <p><%= slot[:agentes_libres] %></p>
+                <p><%= slot[:agentes_libres] %> / <%= slot[:agentes_activos] %></p>
               </div>
             </div>
             <div class="column is-4-desktop is-6-tablet is-6-mobile">
@@ -131,7 +131,6 @@
               </div>
             </div>
           </div>
-          <%# I'm in the slot free agents? %>
           <% im_free = slot[:free_agents].any? { |user| user == current_user } %>
           <% if !slot[:fully_booked] and date >= Date.current %>
             <% if (current_user.colaborador? and im_free) or current_user.admin? %>
@@ -158,6 +157,29 @@
         </div>
       </div>
       <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+  <% end %>
+  <%# ── NEW: Eventos desfasados (no encajan en los slots actuales) ── %>
+  <% if info_day[:unmatched_events].any? %>
+    <div class="event_snippet border_warning mtrigger" data-target="desfasados_<%= identifier %><%= date.strftime('%Y%m%d') %>">
+      <div>
+        <span class="tag is-rounded mr-1"><%= info_day[:unmatched_events].size %></span> Eventos desfasados
+      </div>
+    </div>
+    <div id="desfasados_<%= identifier %><%= date.strftime('%Y%m%d') %>" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box">
+          <h3 class="title is-4">Eventos desfasados</h3>
+          <p class="help mb-3">
+            Estos eventos ya no coinciden con los horarios actuales del día. 
+            Revisa los horarios de atención o reasigna estas citas.
+          </p>
+          <% info_day[:unmatched_events].each do |event| %>
+            <%= render 'snippet', event: event, identifier: identifier %>
+          <% end %>
+        </div>
+      </div>
     </div>
   <% end %>
 <% end %>

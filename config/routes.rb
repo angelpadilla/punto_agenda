@@ -13,14 +13,14 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  mount MissionControl::Jobs::Engine, at: "/jobstatus"
+  mount MissionControl::Jobs::Engine, at: "/jobss"
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "KlQnEMoLkkAWfl8j2" => "public#html_elements", as: :html_elements
-  
+
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-  
+
   # Defines the root path route ("/")
   root "public#home"
 
@@ -87,8 +87,8 @@ Rails.application.routes.draw do
         get :search_sat_products
       end
     end
-    resources :customers, controller: "user_panel/customers" do 
-      collection do 
+    resources :customers, controller: "user_panel/customers" do
+      collection do
         post :create_from_event
       end
     end
@@ -150,7 +150,15 @@ Rails.application.routes.draw do
 
   scope "admin" do
     get "", to: "admin#home", as: :admin_panel_home
-    resources :corps, controller: "admin/corps"
+    resources :bills, controller: "admin/bills", only: %i[index show], as: :admin_bills do
+      member do
+        post :timbra
+      end
+    end
+    resources :corps, controller: "admin/corps", only: %i[index show edit update], as: :admin_corps do
+    end
+    resources :admins, controller: "admin/admins", as: :admin_admins do
+    end
     resources :users, controller: "admin/users"
     resources :events, controller: "admin/events"
     resources :items, controller: "admin/items"

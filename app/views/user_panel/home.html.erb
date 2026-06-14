@@ -228,7 +228,7 @@
             <div class="column is-12-mobile is-6-tablet is-4-desktop">
               <div class="box dashboard_box">
                 <h3 class="dashboard_section_title mb-3">Espacios hoy</h3>
-                <p class="labell mb-3"><%= @slots_info[:ranges] %> <%= 'slot'.pluralize(@slots_info[:ranges]) %> · <%= @slots_info[:open] %> – <%= @slots_info[:close] %></p>
+                <p class="labell mb-3"><%= @slots_info[:slots].size %> <%= 'slot'.pluralize(@slots_info[:slots].size) %> · <%= @slots_info[:first_open] %> – <%= @slots_info[:last_close] %></p>
                 <div class="flexx space-b flex-end mb-1">
                   <span class="labell">Ocupados</span>
                   <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>
@@ -590,7 +590,7 @@
             <div class="box dashboard_box">
               <h3 class="dashboard_section_title mb-3">Ocupación hoy</h3>
               <% if @slots_info %>
-                <p class="labell mb-2"><%= @slots_info[:ranges] %> <%= 'slot'.pluralize(@slots_info[:ranges]) %> · <%= @slots_info[:open] %> – <%= @slots_info[:close] %></p>
+                <p class="labell mb-2"><%= @slots_info[:slots].size %> <%= 'slot'.pluralize(@slots_info[:slots].size) %> · <%= @slots_info[:first_open] %> – <%= @slots_info[:last_close] %></p>
                 <div class="flexx space-b flex-end mb-1">
                   <span class="labell">Ocupados</span>
                   <span class="labell"><%= @slots_info[:ocupados] %> / <%= @slots_info[:total] %></span>

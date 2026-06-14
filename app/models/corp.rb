@@ -81,6 +81,7 @@ class Corp < ApplicationRecord
   normalizes :name, :razon, :cp, :ciudad, :colonia, :localidad, :calle, :num_ext, :num_int, :phone, with: ->(e) { e.strip.downcase }
   normalizes :rfc, with: ->(e) { e.strip.upcase }
 
+  scope :default, -> { order(created_at: :desc) }
   scope :activos, -> { where(status: [ :activo, :probando, :moroso ]) }
 
   def self.ransackable_attributes(auth_object = nil)
@@ -306,9 +307,18 @@ class Corp < ApplicationRecord
     filter_agent_ids = user_id.present? ? [ user_id ] : all_agent_ids
     return nil if all_agent_ids.empty?
 
+    # eventos que caben en al menos un slot actual (los desfasados no deben bloquear agentes)
+    matched_booked_ids = booked_events.select { |ev|
+      all_slots.any? { |s|
+        s_start = Time.zone.parse("#{date} #{s[:start]}")
+        s_end   = Time.zone.parse("#{date} #{s[:end]}")
+        ev.hora_inicio >= s_start && ev.hora_final <= s_end
+      }
+    }.map(&:id)
+
     free_for = ->(uid, slot_start, slot_end) {
       booked_events
-        .select { |ev| ev.user_id == uid }
+        .select { |ev| ev.user_id == uid && matched_booked_ids.include?(ev.id) }
         .none?  { |ev| ev.hora_inicio < slot_end && ev.hora_final > slot_start }
     }
 
@@ -316,16 +326,24 @@ class Corp < ApplicationRecord
       slot_start = Time.zone.parse("#{date} #{slot[:start]}")
       slot_end   = Time.zone.parse("#{date} #{slot[:end]}")
 
-      # calcular estado por agente una sola vez para evitar llamadas repetidas a free_for
-      agent_free        = all_agent_ids.index_with { |uid| free_for.call(uid, slot_start, slot_end) }
-      fully_booked      = agent_free.values.none?
-      agentes_libres    = agent_free.count { |_, free| free }
-      agentes_ocupados  = all_agent_ids.size - agentes_libres
-      booked_agents     = agent_free.filter_map { |uid, free| all_agents.find { |u| u.id == uid } unless free }
-      free_agents       = agent_free.filter_map { |uid, free| all_agents.find { |u| u.id == uid } if free }
+      # agentes que trabajan durante este slot (según su horario personal)
+      working_agents    = all_agents.select { |u| u.works_during?(slot_start, slot_end) }
+      working_agent_ids = working_agents.map(&:id)
+      non_working_agents = all_agents - working_agents
+      slot_agent_count  = working_agent_ids.size
+
+      # calcular estado solo para agentes que trabajan en este slot
+      agent_free       = working_agent_ids.index_with { |uid| free_for.call(uid, slot_start, slot_end) }
+      fully_booked     = slot_agent_count > 0 && agent_free.values.none?
+      agentes_libres   = agent_free.count { |_, free| free }
+      agentes_ocupados = slot_agent_count - agentes_libres
+      booked_agents    = agent_free.filter_map { |uid, free| all_agents.find { |u| u.id == uid } unless free }
+      free_agents      = agent_free.filter_map { |uid, free| all_agents.find { |u| u.id == uid } if free }
       available_for_user = filter_agent_ids.any? { |uid| agent_free[uid] }
+      # eventos que solapan con el slot (para calcular ocupación de agentes)
       slot_events       = booked_events.select { |ev| ev.hora_inicio < slot_end && ev.hora_final > slot_start }
-      slot_events_all    = eventss.select { |ev| ev.hora_inicio < slot_end && ev.hora_final > slot_start }
+      # solo eventos contenidos completamente dentro del slot (evita duplicados entre slots)
+      slot_events_all    = eventss.select { |ev| ev.hora_inicio >= slot_start && ev.hora_final <= slot_end }
 
       slot.merge(
         start: slot_start.strftime("%I:%M %p"),
@@ -333,20 +351,26 @@ class Corp < ApplicationRecord
         range: "#{slot[:start]}|#{slot[:end]}",
         fully_booked: fully_booked,
         available_for_user: available_for_user,
+        agentes_activos: slot_agent_count,
         agentes_libres: agentes_libres,
         agentes_ocupados: agentes_ocupados,
         booked_agents: booked_agents,
         free_agents: free_agents,
+        non_working_agents: non_working_agents,
         events: slot_events_all
       )
     end
 
-    total       = all_slots.size * all_agent_ids.size
+    # total real: suma de agentes activos por slot (respeta horarios personales)
+    total       = enriched_slots.sum { |s| s[:agentes_activos] }
     disponibles = enriched_slots.sum { |s| s[:agentes_libres] }
     ocupados    = enriched_slots.sum { |s| s[:agentes_ocupados] }
 
     # porcentaje de ocupación del dia, redondeado a 1 decimal, evita división por cero
     pct         = total > 0 ? (ocupados * 100.0 / total).round(1) : 0.0
+
+    matched_event_ids = enriched_slots.flat_map { |s| s[:events].map(&:id) }.uniq
+    unmatched_events = eventss.reject { |ev| matched_event_ids.include?(ev.id) }
 
     {
       total:       total,
@@ -355,7 +379,8 @@ class Corp < ApplicationRecord
       pct:         pct,
       first_open:  Time.parse(all_slots.first[:start]).strftime("%I:%M %p"),
       last_close:  Time.parse(all_slots.last[:end]).strftime("%I:%M %p"),
-      slots:       enriched_slots
+      slots:       enriched_slots,
+      unmatched_events: unmatched_events
     }
   end
 

@@ -42,7 +42,7 @@ class Order < ApplicationRecord
 
   Tipo4 = [
     [ "Remisión", :remision ],
-    [ "Factura", :factura ],
+    [ "Factura", :factura ]
   ]
 
   Tipo5 = [
@@ -52,7 +52,7 @@ class Order < ApplicationRecord
   enum :status_pago, {
     pagado: "pagado",
     credito: "credito",
-    cancelado: "cancelado",
+    cancelado: "cancelado"
   }
 
   Status = [

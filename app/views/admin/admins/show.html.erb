@@ -1,0 +1,97 @@
+<% content_for :title, "Detalle de usuario" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle de usuario</h2>
+  <div class="actions">
+    <%= link_to admin_admins_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Listado 
+    <% end %>
+    <% if current_admin.admin? %>
+      <%= link_to edit_admin_admin_path(@admin), class: "button is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+        </span>
+        Editar
+      <% end %>
+      <%= link_to edit_password_user_path(@admin), class: "button is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'key-svgrepo-com.svg', alt: 'editar', class: "invert" %>
+        </span>
+        Editar contraseña
+      <% end %>
+    <% end %>
+    <% if current_admin.admin? and @admin != current_admin %>
+      <%= link_to user_path(@admin), data: { turbo_confirm: "¿Estás seguro?", turbo_method: :delete }, class: "button is-rounded is-danger" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'trash.svg', alt: 'delete', class: '' %>
+        </span>
+        Eliminar
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<div class="columns is-mobile is-multiline mt-4">
+  <div class="column is-9-desktop is-12-tablet is-12-mobile">
+    <div class="box expandable is_active">
+      <div class="box_header">
+        <h2>
+          <span class="icon mr-2">
+            <%= image_tag 'user_data.svg', alt: "Datos principales", class: 'invert' %>
+          </span>
+          Datos principales
+        </h2>
+        <span class="icon toggle_icon">
+          <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
+        </span>
+      </div>
+      <div class="box_content">
+        <div class="columns is-multiline is-mobile">
+          <div class="column is-12">
+            <div class="labell">Nombre completo</div>
+            <p class="contentt"><%= @admin.full_name %></p>
+          </div>
+          <div class="column is-6-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Email</div>
+            <p class="contentt"><%= @admin.email %></p>
+          </div>
+          <div class="column is-6-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Teléfono</div>
+            <p class="contentt"><%= @admin.tel_prefix %> <%= @admin.tel %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column is-3-desktop is-12-tablet is-12-mobile">
+    <div class="box">
+      <div class="box_header">
+        <h2>
+          <span class="icon mr-2">
+            <%= image_tag 'shield-star-svgrepo-com.svg', alt: "Permisos", class: 'invert' %>
+          </span>
+          Permisos
+        </h2>
+      </div>
+      <div class="box_content">
+        <div>
+          <div class="labell">Status</div>
+          <p class="">
+            <% if @admin.active %>
+              <span class="tag is-success is-rounded">Activo</span>
+            <% else %>
+              <span class="tag is-danger is-rounded">Inactivo</span>
+            <% end %>
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="labell">Rol</div>
+          <p class="">
+            <span class="tag is-rounded"><%= Admin::Roles[@admin.rol][0] %></span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

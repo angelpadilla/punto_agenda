@@ -2,13 +2,13 @@
 
 module SeoHelper
   # Set page title and meta tags for SEO
-  def set_page_meta(title:, description:, keywords: nil, type: 'website', image: nil)
+  def set_page_meta(title:, description:, keywords: nil, type: "website", image: nil)
     content_for :title, title
     content_for :meta_description, description
     content_for :meta_keywords, keywords if keywords.present?
     content_for :og_type, type
     content_for :og_description, description
-    content_for :og_image, image || asset_path('og-image.png') if image.present?
+    content_for :og_image, image || asset_path("og-image.png") if image.present?
   end
 
   # Add breadcrumbs structured data
@@ -60,7 +60,7 @@ module SeoHelper
       "@type": "Organization",
       "name": "MiiNegocio",
       "url": root_url,
-      "logo": asset_path('logo3.svg'),
+      "logo": asset_path("logo3.svg"),
       "description": "Plataforma de gestión de ventas, eventos y reservas online",
       "contactPoint": {
         "@type": "ContactPoint",

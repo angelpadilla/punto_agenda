@@ -68,6 +68,11 @@
                 background-color: transparent;
                 border-radius: var(--radiuss);
 
+                img {
+
+                    filter: invert(0.9);
+                }
+
                 &:hover {
                     /* background-color: var(--neon-green); */
                     color: var(--white);
@@ -76,6 +81,10 @@
                 &.is-active {
                     background-color: var(--neon-green);
                     color: var(--dark);
+
+                    img {
+                        filter: invert(0);
+                    }
                 }
 
             }

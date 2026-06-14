@@ -54,7 +54,9 @@
     <% end %>
   </td>
   <td>
-    <%= l(event.created_at, format: :short) %>
+    <p  class="labell">
+      <%= l(event.created_at, format: :short) %>
+    </p>
   </td>
   <td>
     <span class="tag is-rounded"><%= l(event.hora_inicio, format: :time) %> - <%= l(event.hora_final, format: :time) %></span>

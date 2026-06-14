@@ -32,4 +32,4 @@ development:
     schedule: every 60 minutes
   notify_events_today:
     class: EventsSetJob
-    schedule: every 60 minutes
+    schedule: every 90 minutes

@@ -7,52 +7,46 @@
     <ul class="menu-list">
       <li>
         <a href="<%= admin_panel_home_path %>" class=" <%= request.path == '/admin' ? 'is-active' : '' %>">
-          <span class="material-icons-round">
-            bar_chart
+          <span class="icon mr-2">
+            <%= image_tag 'course-up-svgrepo-com.svg', alt: "Configuración" %>
           </span>
           Resumen
         </a>
       </li>
       <li>
+        <a href="<%= admin_bills_path %>" class="<%= request.path.include?('bill') ? 'is-active' : '' %>">
+          <span class="icon mr-2">
+            <%= image_tag 'dollar.svg', alt: "Configuración" %>
+          </span>
+          Facturacion
+        </a>
+      </li>
+      <li>
+        <a href="<%= admin_corps_path %>" class="<%= request.path.include?('corp') ? 'is-active' : '' %>">
+          <span class="icon mr-2">
+            <%= image_tag 'crown-star-svgrepo-com.svg', alt: "Configuración" %>
+          </span>
+          Clientes (Negocios)
+        </a>
+      </li>
+      <% if current_admin.admin? %>
+        <li>
+          <a href="<%= admin_admins_path %>" class="<%= request.path.include?('admins') ? 'is-active' : '' %>">
+            <span class="icon mr-2">
+              <%= image_tag 'user.svg', alt: "Configuración" %>
+            </span>
+            Equipo
+          </a>
+        </li>
+      <% end %>
+      <li>
         <a href="<%= posts_path %>" class="<%= request.path.include?('post') ? 'is-active' : '' %>">
-          <span class="material-icons-round">
-            token
+          <span class="icon mr-2">
+            <%= image_tag 'planet-3-svgrepo-com.svg', alt: "Configuración" %>
           </span>
           Articulos 
         </a>
       </li>
-      <li>
-        <a href="<%= admin_panel_home_path %>" class="<%= request.path == '/admin/sales' ? 'is-active' : '' %>">
-          <span class="material-icons-round">
-            currency_exchange
-          </span>
-          Ventas
-        </a>
-      </li>
-      <li>
-        <% if request.path.include? "customers" %>
-          <a href="<%= admin_panel_home_path %>" class="is-active">
-          <% else %>
-            <a href="<%= admin_panel_home_path %>">
-            <% end %>
-            <span class="material-icons-round">
-              people
-            </span>
-            Clientes
-          </a>
-        </li>
-        <li>
-          <% if request.path.include? "users" %>
-            <a href="<%= admin_panel_home_path %>" class="is-active">
-            <% else %>
-              <a href="<%= admin_panel_home_path %>">
-              <% end %>
-              <span class="material-icons-round">
-                people_outline
-              </span>
-              Usuarios
-            </a>
-          </li>
-        </ul>
-      </aside>
-    </div>
+    </ul>
+  </aside>
+</div>

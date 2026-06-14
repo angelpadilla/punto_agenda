@@ -166,7 +166,7 @@ class BillPdf < Prawn::Document
         number_to_currency(line.total)
       ]
     end
-    
+
     header + items
   end
 
