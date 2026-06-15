@@ -20,6 +20,7 @@ class CobranzaMailer < ApplicationMailer
     @corp = params[:corp]
     @bill = params[:bill]
     email = @corp.prop.email || @corp.email
+    return unless email.present?
 
     mail(to: email, subject: "MiiNegocio pago suscripción fallido #{@bill.folio}")
   end
@@ -28,6 +29,7 @@ class CobranzaMailer < ApplicationMailer
     @corp = params[:corp]
     @bill = params[:bill]
     email = @corp.prop.email || @corp.email
+    return unless email.present?
 
     mail(to: email, subject: "MiiNegocio cuenta suspendida por pagos fallidos #{@bill.folio}")
   end

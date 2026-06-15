@@ -1,7 +1,7 @@
 <% content_for :body_class, "blog_index" %>
-<% set_page_meta(title: @post.title, description: @post.extract, image: url_for(@post.cover)) %>
+<% set_page_meta(title: @post.title, description: @post.extract, image: @post.cover.attached? ? url_for(@post.cover) : nil) %>
 <section class="hero is-medium is-bold pad_top_nav" >
-  <div class="hero-body"style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= url_for(@post.cover) %>);">
+  <div class="hero-body" style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= @post.cover.attached? ? url_for(@post.cover) : asset_path("home1.png") %>);">
     <div class="container has-text-centered">
       <h1 class="title is-2"><%= @post.title.humanize %></h1>
     </div>

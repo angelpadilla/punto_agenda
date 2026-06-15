@@ -14,7 +14,7 @@ class PublicController < ApplicationController
 
   def show_blog
     @post = Post.find_by(slug: params[:slug])
-    redirect_to index_blog_path, alert: "Artículo no encontrado" unless @post
+    return redirect_to index_blog_path, alert: "Artículo no encontrado" unless @post
   end
 
 

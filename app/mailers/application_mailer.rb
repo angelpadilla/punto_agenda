@@ -1,5 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "MiiNegocio.com <contacto@ghoster.mx>"
+  email_from = Rails.application.credentials.dig(:smtp, :sender_email) || "contacto@miinegocio.com"
+  default from: "MiiNegocio.com <#{email_from}>"
   layout "mailer"
 
   private

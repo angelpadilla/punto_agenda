@@ -34,5 +34,14 @@ module MiiNegocio
     #
     config.i18n.available_locales = [ :en, :es ]
     config.i18n.default_locale = :es
+
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: "smtp.resend.com",
+      port: 465,
+      user_name: "resend",
+      password: Rails.application.credentials.dig(:smtp, :password),
+      tls: true
+    }
   end
 end

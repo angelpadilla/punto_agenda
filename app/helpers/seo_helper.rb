@@ -8,7 +8,7 @@ module SeoHelper
     content_for :meta_keywords, keywords if keywords.present?
     content_for :og_type, type
     content_for :og_description, description
-    content_for :og_image, image || asset_path("og-image.png") if image.present?
+    content_for :og_image, image || asset_path("home1.png")
   end
 
   # Add breadcrumbs structured data

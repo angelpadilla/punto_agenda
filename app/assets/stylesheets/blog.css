@@ -23,6 +23,12 @@
         /* height: 500px; */
     }
 
+    .hero-body {
+        background-position: top center;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
     .blog_search {
         position: relative;
         top: 45%;

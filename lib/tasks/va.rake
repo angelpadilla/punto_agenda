@@ -41,4 +41,9 @@ namespace :va do
     response = SmsService.sms(to: "3931209126", code: "+52", body: "Mensaje de prueba desde Rake task")
     puts response
   end
+
+  desc "test email"
+  task email: :environment do
+    EventMailer.with(event: Event.last, email: "angelpadillam@gmail.com").send_event.deliver_later
+  end
 end
