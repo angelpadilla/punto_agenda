@@ -287,6 +287,10 @@ class UserPanel::OrdersController < UserPanelController
     redirect_back(fallback_location: orders_path, alert: "Venta cancelada.")
   end
 
+  def ticket_resumen
+    @order = @corp.orders.find(params[:id])
+  end
+
   def timbra
     @order = @corp.orders.find_by(folio: params[:folio])
     return redirect_back(fallback_location: user_panel_home_path, alert: "Venta no encontrada") if !@order

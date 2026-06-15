@@ -283,19 +283,6 @@
     </span>
   </div>
   <div class="box_content">
-    <div class="docs_grid">
-      <% if @corp.facturacion? %>
-        <div class="doc_tile transparent mb-4">
-          <%= image_tag 'bolt.svg', alt: 'bolt', class: 'invert' %>
-          <div class="contentt">
-            <div class="file_name" >Tienes <%= @corp.timbres %> timbres disponibles</div>
-          </div>
-          <%= link_to "#", class: "button is-rounded actionn neon" do %>
-            Comprar timbres
-          <% end %>
-        </div>
-      <% end %>
-    </div>
     <div class="columns is-multiline is-mobile">
       <div class="column is-12">
         <div class="labell">Razon fiscal</div>

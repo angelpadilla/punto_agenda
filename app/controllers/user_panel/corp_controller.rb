@@ -1,5 +1,6 @@
 class UserPanel::CorpController < UserPanelController
   before_action :set_stripe_client, only: %i[stripe_new_card stripe_card_success stripe_card_error]
+  skip_before_action :authorize_corp!, only: %i[landing pay_now]
 
   def landing
   end

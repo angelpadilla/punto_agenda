@@ -1,0 +1,19 @@
+<% content_for :title, "Editar usuario" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Edición de usuario</h2>
+  <div class="actions">
+    <%= link_to admin_admins_path, class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Listado
+    <% end %>
+    <%= link_to admin_admin_path(@admin), class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'eye.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a usuario
+    <% end %>
+  </div>
+</div>
+<%= render 'form', admin: @admin, url: admin_admin_path(@admin), method: :put %>

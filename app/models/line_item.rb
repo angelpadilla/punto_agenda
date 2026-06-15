@@ -22,6 +22,8 @@ class LineItem < ApplicationRecord
   #   self.descuento * self.cantidad
   # end
 
+  scope :default, -> { order(created_at: :asc) }
+
   def total_antes_descuento
     self.precio * self.cantidad
   end

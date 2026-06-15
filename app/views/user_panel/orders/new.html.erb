@@ -1,8 +1,11 @@
 <div class="columns is-mobile">
   <%= render 'items', order: @carrito %>
-  <div class="column is-3-desktop is-hidden-touch">
+  <div class="column is-3-desktop">
     <div id="ticket_resumen">
       <%= render 'ticket_resumen', order: @carrito %>
+      <% if @carrito.line_items.count > 0 %>
+        <%= render 'cart_button', order: @carrito %>
+      <% end %>
     </div>
   </div>
 </div>

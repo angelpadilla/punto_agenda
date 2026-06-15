@@ -2,6 +2,7 @@ class UserPanel::LineItemsController < UserPanelController
   def add_item
     @order = Order.find(params[:order_id])
     @item = Item.find(params[:item_id])
+    @show_cart_button = params[:source] != 'resumen'
     precio = params[:precio].to_f
     cantidad = params[:cantidad].to_f
     descuento = params[:descuento].to_f
@@ -57,6 +58,7 @@ class UserPanel::LineItemsController < UserPanelController
 
   def down_item
     @order = Order.find(params[:order_id])
+    @show_cart_button = params[:source] != 'resumen'
     line_id = params[:line_id]
     cantidad = params[:cantidad].to_f
 
@@ -79,6 +81,7 @@ class UserPanel::LineItemsController < UserPanelController
 
   def remove_item
     @order = Order.find(params[:order_id])
+    @show_cart_button = params[:source] != 'resumen'
     line_id = params[:line_id]
     @order.destroy_item(line_id)
     @order.save(validate: false)
@@ -100,6 +103,7 @@ class UserPanel::LineItemsController < UserPanelController
 
   def clear_items
     @order = Order.find(params[:order_id])
+    @show_cart_button = params[:source] != 'resumen'
     respond_to do |format|
       @order.line_items.destroy_all
       @order.save(validate: false)

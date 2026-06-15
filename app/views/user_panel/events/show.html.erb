@@ -79,6 +79,12 @@
                 <span class="icon material-icons-round">delete</span>
                 Cancelar evento
               </a>
+              <% if @event.recurrente? %>
+                <a class="mtrigger dropdown-item has-text-danger" data-target="cancel_event_recurrence">
+                  <span class="icon material-icons-round">delete</span>
+                  Cancelar grupo de recurrencia
+                </a>
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -251,7 +257,17 @@
             <div>
               <p class="labell">Regla: </p>
               <p>
-                <%= @event.recurrence_rule %>
+                <% if @event.recurrence_rule == "daily" %>
+                  Diario
+                <% elsif @event.recurrence_rule == "biweekly" %>
+                  Quincenal
+                <% elsif @event.recurrence_rule == "weekly" %>
+                  Semanal
+                <% elsif @event.recurrence_rule == "monthly" %>
+                  Mensual
+                <% else %>
+                  <%= @event.recurrence_rule %>
+                <% end %>
               </p>
             </div>
           </div>
@@ -273,7 +289,7 @@
               123
             </span>
             <div>
-              <p class="labell">Index: </p>
+              <p class="labell"># Numero: </p>
               <p><%= @event.recurrence_index %></p>
             </div>
           </div>
@@ -393,6 +409,28 @@
       <%= form_with(url: cancelar_events_path(id: @event), method: :post) do |form| %>
         <header class="modal-card-head">
           <p class="modal-card-title">Cancelar evento</p>
+          <div class="delete" aria-label="close"></div>
+        </header>
+        <section class="modal-card-body">
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <label class="label">Motivo de cancelación</label>
+              <%= form.text_area :motivo, class: 'textarea is-rounded', required: true, placeholder: "Escribe el motivo de la cancelación para registrar en el sistema y notificar al cliente" %>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <%= form.submit "Cancelar", class: "button is-danger is-rounded" %>
+        </footer>
+      <% end %>
+    </div>
+  </div>
+  <div id="cancel_event_recurrence" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <%= form_with(url: cancelar_recurrence_events_path(recurrence_id: @event.recurrence_id), method: :post) do |form| %>
+        <header class="modal-card-head">
+          <p class="modal-card-title">Cancelar grupo de recurrencia</p>
           <div class="delete" aria-label="close"></div>
         </header>
         <section class="modal-card-body">

@@ -102,6 +102,7 @@ Rails.application.routes.draw do
         post :marcar_ausencia
         post :confirmar
         post :cancelar
+        post :cancelar_recurrence
 
         post :send_email, as: :send_email
         post :send_sms, as: :send_sms
@@ -121,6 +122,7 @@ Rails.application.routes.draw do
         post :timbra, as: :timbra
         post :cancel
         get :reporte_comisiones
+        get ":id/ticket_resumen", to: "user_panel/orders#ticket_resumen", as: :ticket_resumen
       end
     end
     resources :line_items, controller: "user_panel/line_items" do
@@ -156,8 +158,15 @@ Rails.application.routes.draw do
       end
     end
     resources :corps, controller: "admin/corps", only: %i[index show edit update], as: :admin_corps do
+      member do
+        post :extend_prueba
+      end
     end
     resources :admins, controller: "admin/admins", as: :admin_admins do
+      member do
+        get :edit_password
+        post :update_password
+      end
     end
     resources :users, controller: "admin/users"
     resources :events, controller: "admin/events"

@@ -85,7 +85,7 @@ class Corp < ApplicationRecord
   scope :activos, -> { where(status: [ :activo, :probando, :moroso ]) }
 
   def self.ransackable_attributes(auth_object = nil)
-    %W[id name razon rfc regimen]
+    %W[id name razon rfc regimen sku]
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -463,8 +463,6 @@ class Corp < ApplicationRecord
   end
 
   def send_notification
-    # Aquí puedes implementar la lógica para enviar una notificación, por ejemplo, usando ActionMailer o un servicio de terceros
-    # Ejemplo con ActionMailer:
     # CorpMailer.with(corp: self).new_corp_notification.deliver_later
     Gtools.telegram_noti(message: "Nueva Corp creada: #{name} (ID: #{id}, Tipo negocio: #{tipo_negocio})")
   end

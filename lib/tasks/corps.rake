@@ -50,6 +50,7 @@ namespace :corps do
   task cobranza: :environment do
     puts "Iniciando cobranza diaria para todos los Corps..."
     Gtools.cobranza
+    Gtools.telegram_noti(message: "Cobranza diaria completada para todos los Corps.")
     puts "----------------------------------"
     puts "Cobranza diaria completada para todos los Corps."
   end

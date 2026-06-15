@@ -799,9 +799,15 @@
   </div>
   <%# /dash_tabs %>
 <% else %>
-  <div class="noti is-danger">
-    <h2>Sitio en estado beta</h2>
-    Contacta con soporte para que te habilitemos el acceso al sistema y podamos ayudarte a sacarle el máximo provecho a tu negocio.
-    <%= @corp.sku %>-<%= @corp.id %>
+  <div class="box is-danger">
+    <div class="columns">
+      <div class="column is-9">
+        <h2>Cuenta suspendida por falta de pago</h2>
+        <p>Contacta con soporte o realiza tu pago ahora para que te habilitemos el acceso al sistema y que puedas sacarle el máximo provecho a tu negocio.</p>
+      </div>
+      <div class="column">
+        <%= link_to "Realizar pago", user_corp_landing_path, class: "button is-rounded is-fullwidth is-danger" %>
+      </div>
+    </div>
   </div>
 <% end %>

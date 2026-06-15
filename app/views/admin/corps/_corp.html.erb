@@ -1,0 +1,27 @@
+<tr>
+  <td class="has-text-right">
+    <%= link_to admin_corp_path(corp), class: "mr-2" do %>
+      <span class="icon">
+        <%= image_tag 'eye.svg', alt: 'view', class: 'invert' %>
+      </span>
+    <% end %>
+  </td>
+  <td><%= corp.sku %>-<%= corp.id %></td>
+  <td><%= corp.name %></td>
+  <td><%= corp.tipo_negocio&.titleize || "—" %></td>
+  <td><%= corp.tipo_plan&.titleize || "—" %></td>
+  <td>
+    <% if corp.activo? %>
+      <span class="tag is-rounded is-success"><%= corp.status.humanize %></span>
+    <% elsif corp.moroso? %>
+      <span class="tag is-rounded is-danger"><%= corp.status.humanize %></span>
+    <% elsif corp.probando? %>
+      <span class="tag is-rounded is-warning"><%= corp.status.humanize %></span>
+    <% elsif corp.suspendido? %>
+      <span class="tag is-rounded is-danger"><%= corp.status.humanize %></span>
+    <% else %>
+      <span class="tag is-rounded"><%= corp.status.humanize %></span>
+    <% end %>
+  </td>
+  <td><span class="labell"><%= l(corp.created_at, format: :short) %></span></td>
+</tr>

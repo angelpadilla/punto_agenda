@@ -1,0 +1,17 @@
+<% content_for :title, "Detalle de ticket" %>
+<div data-controller="show-item">
+  <div class="flexx space-b flex-end">
+    <h2 class="titlee">Detalle de ticket</h2>
+    <div class="actions">
+      <%= link_to @order.carrito? ? new_order_path : order_path(@order), class: "button is-rounded mr-2" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+        </span>
+        Volver 
+      <% end %>
+    </div>
+  </div>
+  <hr>
+  <div id="ticket_resumen">
+    <%= render 'ticket_resumen', order: @carrito, source: 'resumen' %>
+  </div>

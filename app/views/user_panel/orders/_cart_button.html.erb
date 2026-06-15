@@ -1,0 +1,8 @@
+<div class="is-hidden-desktop">
+  <%= link_to ticket_resumen_orders_path(order), class: "cart_button" do %>
+    <span class="tag is-rounded">
+      <%= order.line_items.count %>
+    </span>
+    Ver carrito
+  <% end %>
+</div>

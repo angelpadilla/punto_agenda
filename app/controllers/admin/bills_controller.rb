@@ -1,10 +1,12 @@
 class Admin::BillsController < AdminController
   before_action :set_bill, only: %i[show timbra]
   def index
-    bills = Bill.default
+    bills = Bill.default.includes(:corp)
 
     @q = bills.ransack(params[:q])
     @pagy, @bills = pagy(@q.result(distinct: true), limit: 20)
+
+    @result = @q.result
   end
 
   def show

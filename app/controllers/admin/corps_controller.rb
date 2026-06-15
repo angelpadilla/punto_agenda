@@ -1,5 +1,5 @@
 class Admin::CorpsController < AdminController
-  before_action :set_corp, only: %i[show edit update]
+  before_action :set_corp, only: %i[show edit update extend_prueba]
 
   def index
     corps = Corp.default
@@ -20,6 +20,22 @@ class Admin::CorpsController < AdminController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def extend_prueba
+    ## extendemos 30 dias mas de prueba, y  con status premium y payment attempts  0
+    noww = Time.current
+
+    @corp.update(
+      status: :probando,
+      tipo_plan: :premium,
+      subscription_trial_start: noww,
+      subscription_trial_end: 30.days.from_now,
+      subscription_started_at: nil,
+      subscription_next_billing_date: nil,
+      payment_attempts: 0,
+    )
+    redirect_back fallback_location: admin_corp_path(@corp), notice: "Prueba extendada 30 días exitosamente."
   end
 
   private

@@ -2,6 +2,14 @@
 <div class="flexx space-b flex-end">
   <h2 class="titlee">Clientes</h2>
   <div class="actions">
+    <% if current_admin.admin? %>
+      <%= link_to new_admin_admin_path, class: "button is-primary is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'plus.svg', alt: 'nuevo usuario' %>
+        </span>
+        Nuevo usuario
+      <% end %>
+    <% end %>
     <div class="dropdown is-right is-hoverable">
       <div class="dropdown-trigger">
         <button class="button is-rounded" aria-haspopup="true">
@@ -13,7 +21,7 @@
       </div>
       <div class="dropdown-menu" role="menu">
         <div class="dropdown-content">
-          <%= link_to new_user_path, class: "dropdown-item" do %>
+          <%= link_to admin_admins_path, class: "dropdown-item" do %>
             <span class="icon">
               <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
             </span>

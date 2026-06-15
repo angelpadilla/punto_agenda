@@ -2264,3 +2264,15 @@ tr.is-clickable {
         }
     }
 }
+
+/* boton flotante en touch para ir a ticket resumen */
+.cart_button {
+    position: fixed;
+    bottom: 8rem;
+    right: 1rem;
+    z-index: 1000;
+    background: var(--neon-green);
+    color: var(--dark);
+    border-radius: var(--radius);
+    padding: 1rem;
+}

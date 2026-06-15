@@ -122,8 +122,15 @@
   <%# ── Recurrencia ──────────────────────────────────────────────────── %>
   <% unless event.persisted? %>
     <div class="box mt-4" data-controller="recurrence-toggle">
-      <label class="checkbox mb-3" style="font-weight:600;">
-        <input type="checkbox" data-action="change->recurrence-toggle#toggle"> ¿Evento recurrente?
+      <label class="toggle_field">
+        <div class="toggle_info">
+          <span class="toggle_label">¿Evento recurrente?</span>
+          <span class="toggle_desc">Repetir este evento automáticamente</span>
+        </div>
+        <input type="checkbox" class="toggle_input" data-action="change->recurrence-toggle#toggle">
+        <span class="toggle_track">
+          <span class="toggle_thumb"></span>
+        </span>
       </label>
       <div data-recurrence-toggle-target="fields" style="display:none;">
         <div class="columns is-multiline">

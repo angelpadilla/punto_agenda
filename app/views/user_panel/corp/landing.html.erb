@@ -13,6 +13,9 @@
       <% else %>
         <span class="tag is-info is-rounded"><%= @corp.tipo_plan.titleize %></span>
       <% end %>
+      <% if @corp.suspendido? %>
+        <span class="tag is-danger is-rounded">Suspendido</span>
+      <% end %>
     </h2>
     <span class="icon toggle_icon">
       <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
@@ -276,7 +279,7 @@
           </div>
         </div>
       </div>
-      <% if @corp.payment_attempts > 0 %>
+      <% if @corp.payment_attempts > 0 or @corp.suspendido? %>
         <div class="column is-12-mobile is-4-tablet is-4-desktop">
           <div class="labell">
             Intentos de pago fallidos
@@ -304,98 +307,35 @@
     </div>
   </div>
 </div>
-<div class="box is-main">
-  <div class="columns">
-    <div class="column is-9">
-      <h2>Comprar SMS</h2>
-      <p>
-        Adquiere paquetes de mensajes de texto para enviar recordatorios y notificaciones a tus clientes.
-      </p>
-    </div>
-    <div class="column">
-      <div class="button is-rounded is-fullwidth is-primary mtrigger" data-target="sms_modal">
-        <span class="icon mr-1">
-          <%= image_tag 'bolt.svg', alt: 'login' %>
-        </span>
-        Comprar
-      </div>
-      <div id="sms_modal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-          <div class="box">
-            <h3 class="title is-4">Compra de SMS</h3>
-            <% if @corp.stripe_payment_method_id.present? %>
-              <% Setting::SmsPrices.each do |key, info| %>
-                <div class="box_box">
-                  <div class="labell"><%= info[:name] %> <span class="tag is-rounded"><%= number_to_currency info[:unit_price] %> unidad</span></div>
-                  <p class="contentt mb-2">
-                    $<%= info[:price] %> MXN
-                  </p>
-                  <%= button_to charge_sms_path(cantidad: key), class: "button is-primary is-rounded is-fullwidth" do  %>
-                    <span class="icon mr-1">
-                      <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
-                    </span>
-                    Elegir
-                  <% end %>
-                </div>
-              <% end %>
-            <% else %>
-              <div class="box_box">
-                <div class="labell">No tienes una tarjeta asociada</div>
-                <p class="">
-                  Para comprar SMS, primero debes asociar una tarjeta de crédito o débito a tu cuenta.
-                </p>
-                <%= button_to stripe_new_card_path, class: "button is-primary is-rounded is-fullwidth", data: {turbo: false} do  %>
-                  <span class="icon mr-1">
-                    <%= image_tag 'card-send-svgrepo-com.svg', alt: 'login' %>
-                  </span>
-                  Asociar tarjeta
-                <% end %>
-              </div>
-            <% end %>
-          </div>
-        </div>
-        <button class="modal-close is-large" aria-label="close"></button>
-      </div>
-    </div>
-  </div>
-</div>
-<% if @corp.facturacion? %>
+<% if !@corp.suspendido? %>
   <div class="box is-main">
     <div class="columns">
       <div class="column is-9">
-        <h2>Comprar timbres</h2>
+        <h2>Comprar SMS</h2>
         <p>
-          Adquiere timbres para emitir facturas electrónicas a tus clientes. Cada factura emitida consume un timbre.
+          Adquiere paquetes de mensajes de texto para enviar recordatorios y notificaciones a tus clientes.
         </p>
       </div>
       <div class="column">
-        <div class="button is-rounded is-fullwidth is-primary mtrigger" data-target="timbre_modal">
+        <div class="button is-rounded is-fullwidth is-primary mtrigger" data-target="sms_modal">
           <span class="icon mr-1">
             <%= image_tag 'bolt.svg', alt: 'login' %>
           </span>
           Comprar
         </div>
-        <div id="timbre_modal" class="modal">
+        <div id="sms_modal" class="modal">
           <div class="modal-background"></div>
           <div class="modal-content">
             <div class="box">
-              <h3 class="title is-4">Cambiar plan</h3>
-              <div class="noti is-danger">
-                <h2>
-                  <span class="icon material-icons-round">warning</span>
-                  Atención
-                </h2>
-                <p class="mt-2">El elegir un nuevo plan, se hara el cobro del monto correspondiente en tu tarjeta, y se te habilitaran las funciones del nuevo plan inmediatamente.</p>
-              </div>
+              <h3 class="title is-4">Compra de SMS</h3>
               <% if @corp.stripe_payment_method_id.present? %>
-                <% Setting::TimbrePrices.each do |key, info| %>
+                <% Setting::SmsPrices.each do |key, info| %>
                   <div class="box_box">
                     <div class="labell"><%= info[:name] %> <span class="tag is-rounded"><%= number_to_currency info[:unit_price] %> unidad</span></div>
-                    <p class="contentt">
+                    <p class="contentt mb-2">
                       $<%= info[:price] %> MXN
                     </p>
-                    <%= button_to charge_timbres_path(cantidad: key), class: "button is-primary is-rounded is-fullwidth" do  %>
+                    <%= button_to charge_sms_path(cantidad: key), class: "button is-primary is-rounded is-fullwidth" do  %>
                       <span class="icon mr-1">
                         <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
                       </span>
@@ -407,7 +347,7 @@
                 <div class="box_box">
                   <div class="labell">No tienes una tarjeta asociada</div>
                   <p class="">
-                    Para cambiar de plan, primero debes asociar una tarjeta de crédito o débito a tu cuenta.
+                    Para comprar SMS, primero debes asociar una tarjeta de crédito o débito a tu cuenta.
                   </p>
                   <%= button_to stripe_new_card_path, class: "button is-primary is-rounded is-fullwidth", data: {turbo: false} do  %>
                     <span class="icon mr-1">
@@ -424,33 +364,100 @@
       </div>
     </div>
   </div>
+  <% if @corp.facturacion? %>
+    <div class="box is-main">
+      <div class="columns">
+        <div class="column is-9">
+          <h2>Comprar timbres</h2>
+          <p>
+            Adquiere timbres para emitir facturas electrónicas a tus clientes. Cada factura emitida consume un timbre.
+          </p>
+        </div>
+        <div class="column">
+          <div class="button is-rounded is-fullwidth is-primary mtrigger" data-target="timbre_modal">
+            <span class="icon mr-1">
+              <%= image_tag 'bolt.svg', alt: 'login' %>
+            </span>
+            Comprar
+          </div>
+          <div id="timbre_modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+              <div class="box">
+                <h3 class="title is-4">Cambiar plan</h3>
+                <div class="noti is-danger">
+                  <h2>
+                    <span class="icon material-icons-round">warning</span>
+                    Atención
+                  </h2>
+                  <p class="mt-2">El elegir un nuevo plan, se hara el cobro del monto correspondiente en tu tarjeta, y se te habilitaran las funciones del nuevo plan inmediatamente.</p>
+                </div>
+                <% if @corp.stripe_payment_method_id.present? %>
+                  <% Setting::TimbrePrices.each do |key, info| %>
+                    <div class="box_box">
+                      <div class="labell"><%= info[:name] %> <span class="tag is-rounded"><%= number_to_currency info[:unit_price] %> unidad</span></div>
+                      <p class="contentt">
+                        $<%= info[:price] %> MXN
+                      </p>
+                      <%= button_to charge_timbres_path(cantidad: key), class: "button is-primary is-rounded is-fullwidth" do  %>
+                        <span class="icon mr-1">
+                          <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'login' %>
+                        </span>
+                        Elegir
+                      <% end %>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <div class="box_box">
+                    <div class="labell">No tienes una tarjeta asociada</div>
+                    <p class="">
+                      Para cambiar de plan, primero debes asociar una tarjeta de crédito o débito a tu cuenta.
+                    </p>
+                    <%= button_to stripe_new_card_path, class: "button is-primary is-rounded is-fullwidth", data: {turbo: false} do  %>
+                      <span class="icon mr-1">
+                        <%= image_tag 'card-send-svgrepo-com.svg', alt: 'login' %>
+                      </span>
+                      Asociar tarjeta
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <button class="modal-close is-large" aria-label="close"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>
 <div class="columns is-multiline">
-  <div class="column is-6">
-    <%= link_to user_corp_path do %>
-      <div class="linkk">
-        <%= image_tag 'opciones.svg', alt: 'settings', class: 'invert' %>
-        Ajustes generales
-      </div>
-    <% end %>
-  </div>
-  <div class="column is-6">
-    <%= link_to brands_path do %>
-      <div class="linkk">
-        <%= image_tag 'layers.svg', alt: 'brands', class: 'invert' %>
-        Listado de marcas
-      </div>
-    <% end %>
-  </div>
-  <% if current_user.admin? and !@corp.basico? %>
+  <% if !@corp.suspendido? %>
     <div class="column is-6">
-      <%= link_to users_path do %>
+      <%= link_to user_corp_path do %>
         <div class="linkk">
-          <%= image_tag 'clientes.svg', alt: 'brands', class: 'invert' %>
-          Equipo
+          <%= image_tag 'opciones.svg', alt: 'settings', class: 'invert' %>
+          Ajustes generales
         </div>
       <% end %>
     </div>
+    <div class="column is-6">
+      <%= link_to brands_path do %>
+        <div class="linkk">
+          <%= image_tag 'layers.svg', alt: 'brands', class: 'invert' %>
+          Listado de marcas
+        </div>
+      <% end %>
+    </div>
+    <% if current_user.admin? and !@corp.basico? %>
+      <div class="column is-6">
+        <%= link_to users_path do %>
+          <div class="linkk">
+            <%= image_tag 'clientes.svg', alt: 'brands', class: 'invert' %>
+            Equipo
+          </div>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
   <div class="column is-6">
     <%= link_to bills_path do %>

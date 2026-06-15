@@ -1,0 +1,537 @@
+<% content_for :title, "Detalle de cliente" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle de cliente</h2>
+  <div class="actions">
+    <%= link_to admin_corps_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Listado
+    <% end %>
+    <% if current_admin.admin? %>
+      <%= link_to edit_admin_corp_path(@corp), class: "button is-rounded" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'edit.svg', alt: 'editar', class: "invert" %>
+        </span>
+        Editar
+      <% end %>
+    <% end %>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to new_user_path, class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'user.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Equipo
+          <% end %>
+          <%= link_to admin_bills_path(q: { corp_id_eq: @corp.id }), class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'dollar.svg', alt: 'download', class: 'invert' %>
+            </span>
+            Facturación
+          <% end %>
+          <%= link_to new_user_path, class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'layers.svg', alt: 'layers', class: 'invert' %>
+            </span>
+            Listado de marcas
+          <% end %>
+          <%= link_to new_user_path, class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'layers.svg', alt: 'layers', class: 'invert' %>
+            </span>
+            Listado de ventas
+          <% end %>
+          <%= link_to new_user_path, class: "dropdown-item" do %>
+            <span class="icon">
+              <%= image_tag 'layers.svg', alt: 'layers', class: 'invert' %>
+            </span>
+            Listado de eventos
+          <% end %>
+          <% if current_admin.super? %>
+            <%= button_to extend_prueba_admin_corp_path(@corp), method: :post, class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'wand.svg', alt: 'settings', class: 'invert' %>
+              </span>
+              Extender prueba
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="columns is-mobile is-multiline mt-4">
+  <div class="column is-9-desktop is-12-tablet is-12-mobile">
+    <div class="box expandable is_active">
+      <div class="box_header">
+        <h2>
+          <span class="icon mr-2">
+            <%= image_tag 'user_data.svg', alt: "Datos principales", class: 'invert' %>
+          </span>
+          Datos principales
+        </h2>
+        <span class="icon toggle_icon">
+          <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
+        </span>
+      </div>
+      <div class="box_content">
+        <div class="columns is-multiline is-mobile">
+          <div class="column is-12">
+            <div class="labell">Nombre</div>
+            <p><%= @corp.name %></p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Email</div>
+            <p><%= @corp.email %></p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Tel</div>
+            <p><%= @corp.full_tel %></p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">ID tienda</div>
+            <p><%= @corp.sku %>-<%= @corp.id %></p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Descuento</div>
+            <p>
+              <% if @corp.discount.positive? %>
+                - <%= number_to_currency(@corp.discount) %>
+              <% else %>
+                —
+              <% end %>
+            </p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">SMS</div>
+            <p><%= @corp.sms %></p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Timbres</div>
+            <p><%= @corp.timbres %></p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Calendario?</div>
+            <p>
+              <% if @corp.calendar %>
+                <span class="icon material-icons-round has-text-success">check_circle</span>
+              <% else %>
+                <span class="icon material-icons-round has-text-danger">cancel</span>
+              <% end %>
+            </p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Facturacion?</div>
+            <p>
+              <% if @corp.facturacion %>
+                <span class="icon material-icons-round has-text-success">check_circle</span>
+              <% else %>
+                <span class="icon material-icons-round has-text-danger">cancel</span>
+              <% end %>
+            </p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Pagos en línea?</div>
+            <p>
+              <% if @corp.online_payments %>
+                <span class="icon material-icons-round has-text-success">check_circle</span>
+              <% else %>
+                <span class="icon material-icons-round has-text-danger">cancel</span>
+              <% end %>
+            </p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Calendario publico?</div>
+            <p>
+              <% if @corp.public_calendar %>
+                <span class="icon material-icons-round has-text-success">check_circle</span>
+              <% else %>
+                <span class="icon material-icons-round has-text-danger">cancel</span>
+              <% end %>
+            </p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Catalogo publico?</div>
+            <p>
+              <% if @corp.public_site %>
+                <span class="icon material-icons-round has-text-success">check_circle</span>
+              <% else %>
+                <span class="icon material-icons-round has-text-danger">cancel</span>
+              <% end %>
+            </p>
+          </div>
+          <div class="column is-4-desktop is-6-tablet is-12-mobile">
+            <div class="labell">Tarjeta asociada?</div>
+            <p>
+              <% if @corp.stripe_payment_method_id.present? %>
+                <span class="icon material-icons-round has-text-success">check_circle</span>
+              <% else %>
+                <span class="icon material-icons-round has-text-danger">cancel</span>
+              <% end %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column is-3-desktop is-12-tablet is-12-mobile">
+    <div class="box">
+      <div class="box_header">
+        <h2>
+          <span class="icon mr-2">
+            <%= image_tag 'shield-star-svgrepo-com.svg', alt: "Permisos", class: 'invert' %>
+          </span>
+          Información adicional
+        </h2>
+      </div>
+      <div class="box_content">
+        <div>
+          <div class="labell">Tipo de negocio</div>
+          <p class="">
+            <%= @corp.tipo_negocio.titleize %>
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="labell">Tipo de plan</div>
+          <p class="">
+            <%= @corp.tipo_plan.titleize %>
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="labell">Status</div>
+          <p class="">
+            <% if @corp.activo? %>
+              <span class="tag is-rounded is-success"><%= @corp.status.humanize %></span>
+            <% elsif @corp.moroso? %>
+              <span class="tag is-rounded is-danger"><%= @corp.status.humanize %></span>
+            <% elsif @corp.probando? %>
+              <span class="tag is-rounded is-warning"><%= @corp.status.humanize %></span>
+            <% elsif @corp.suspendido? %>
+              <span class="tag is-rounded is-danger"><%= @corp.status.humanize %></span>
+            <% else %>
+              <span class="tag is-rounded"><%= @corp.status.humanize %></span>
+            <% end %>
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="labell">Balance</div>
+          <p class="">
+            <%= number_to_currency(@corp.balance) %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'sat1.svg', alt: "SAT", class: 'invert' %>
+      </span>
+      Tarjeta y pagos
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Inicio de prueba</div>
+        <p>
+          <%= @corp.subscription_trial_start ? l(@corp.subscription_trial_start, format: :long) : 'N/A' %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Fin de prueba</div>
+        <p>
+          <%= @corp.subscription_trial_end ? l(@corp.subscription_trial_end, format: :long) : 'N/A' %>
+        </p>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Ultimo pago</div>
+        <p>
+          <%= @corp.subscription_updated_at ? l(@corp.subscription_updated_at, format: :long) : 'N/A' %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Inicio de suscripcion</div>
+        <p>
+          <%= @corp.subscription_started_at ? l(@corp.subscription_started_at, format: :long) : 'N/A' %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Siguiente pago programado</div>
+        <p>
+          <%= @corp.subscription_next_billing_date ? l(@corp.subscription_next_billing_date, format: :long) : 'N/A' %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Intentos de pago fallidos</div>
+        <p>
+          <%= @corp.payment_attempts %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Facturas totales</div>
+        <p>
+          <%= @corp.bills.count %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Facturas exitosas</div>
+        <p>
+          <%= @corp.bills.pagado.count %>
+        </p>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Marca de tarjeta</div>
+        <p>
+          <%= @corp.card_brand || 'N/A' %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell"># tarjeta</div>
+        <p>
+          **** **** **** <%= @corp.card_last4 || 'N/A' %>
+        </p>
+      </div>
+      <div class="column is-4-desktop is-6-tablet is-12-mobile">
+        <div class="labell">Tarjeta MM/YY</div>
+        <p><%= @corp.card_exp_month %>/<%= @corp.card_exp_year %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'documento.svg', alt: "Extras de ticket", class: "invert" %>
+      </span>
+      Extras de ticket
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline">
+      <div class="column is-12">
+        <div class="labell">Texto extra en cotizaciónnnn</div>
+        <p><%= @corp.text_cotizacion %></p>
+      </div>
+      <div class="column is-12">
+        <div class="labell">Texto extra en remisión</div>
+        <p><%= @corp.text_remision %></p>
+      </div>
+      <div class="column is-12">
+        <div class="labell">Texto extra en factura</div>
+        <p><%= @corp.text_factura %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<%# show horarios de atencion %>
+<% if @corp.calendar %>
+  <div class="box expandable">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'calendar.svg', alt: "Horarios de atención", class: "invert" %>
+        </span>
+        Horarios de atención
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Abierto</th>
+            <th>Espacios / Horarios</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% Corp::DAYS_OF_WEEK.each do |wday, day_name| %>
+            <% day_config = @corp.business_hours&.dig(wday) || { "active" => false, "hours" => [ { "open" => "09:00", "close" => "18:00" } ] } %>
+            <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
+            <% hours_list = day_config["hours"].presence || [] %>
+            <tr>
+              <td><strong><%= day_name %></strong></td>
+              <td>
+                <% if is_active %>
+                  <span class="tag is-rounded is-success is-light">Abierto</span>
+                <% else %>
+                  <span class="tag is-rounded is-light">Cerrado</span>
+                <% end %>
+              </td>
+              <td>
+                <% if is_active && hours_list.any? %>
+                  <% hours_list.each do |h| %>
+                    <span class="tag is-info is-light mr-1"><%= h["open"] %> – <%= h["close"] %></span>
+                  <% end %>
+                <% else %>
+                  <span class="has-text-grey">-</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="columns is-multiline is-mobile mt-3">
+        <% if @corp.online_payments and  @corp.public_calendar %>
+          <div class="column is-6-desktop is-12-mobile">
+            <div class="labell">Monto minimo para agendar</div>
+            <p><%= number_to_currency(@corp.min_book_amount) %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'direcciones.svg', alt: "Social", class: "invert" %>
+      </span>
+      Social
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Facebook URL</div>
+        <p><%= @corp.facebook_url %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Instagram URL</div>
+        <p><%= @corp.instagram_url %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">TikTok URL</div>
+        <p><%= @corp.tiktok_url %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box expandable">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'sat2.svg', alt: "Datos fiscales" %>
+      </span>
+      Datos fiscales
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12">
+        <div class="labell">Razon fiscal</div>
+        <p><%= @corp.razon %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Regimen fiscal</div>
+        <p><%= @corp.regimen %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">RFC</div>
+        <p><%= @corp.rfc %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Estado</div>
+        <p><%= @corp.estado %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Ciudad</div>
+        <p><%= @corp.ciudad %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Código Postal</div>
+        <p><%= @corp.cp %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Colonia</div>
+        <p><%= @corp.colonia %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Localidad</div>
+        <p><%= @corp.localidad %></p>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-8-desktop">
+        <div class="labell">Calle</div>
+        <p><%= @corp.calle %></p>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <div class="labell"># Exterior</div>
+        <p><%= @corp.num_ext %></p>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <div class="labell"># Interior</div>
+        <p><%= @corp.num_int %></p>
+      </div>
+    </div>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Contraseña llave</div>
+        <p><%= @corp.key_pass.present? ? "******#{@corp.key_pass[-4..-1]}" : "-" %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="labell">Timbres</div>
+        <p><%= @corp.timbres %></p>
+      </div>
+    </div>
+    <div class="docs_grid">
+      <% if @corp.key.attached? %>
+        <div class="doc_tile">
+          <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
+          <div>
+            <div class="file_name" ><%= @corp.key.filename %></div>
+            <div class="labell"><%= @corp.key.content_type %> · <%= number_to_human_size(@corp.key.byte_size) %> </div>
+          </div>
+          <%= link_to rails_blob_path(@corp.key, disposition: "attachment"), class: "button is-rounded actionn" do %>
+            Descargar
+          <% end %>
+        </div>
+      <% end %>
+      <% if @corp.cer.attached? %>
+        <div class="doc_tile">
+          <%= image_tag 'documento.svg', alt: 'doc', class: 'invert' %>
+          <div>
+            <div class="file_name" ><%= @corp.cer.filename %></div>
+            <div class="labell"><%= @corp.cer.content_type %> · <%= number_to_human_size(@corp.cer.byte_size) %> </div>
+          </div>
+          <%= link_to rails_blob_path(@corp.cer, disposition: "attachment"), class: "button is-rounded actionn" do %>
+            Descargar
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -29,7 +29,7 @@
 <div class="box">
   <div class="flexx space-b flex-end mb-4">
     <h3 class="dashboard_section_title">Facturacion reciente</h3>
-    <%= link_to admin_panel_home_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
+    <%= link_to admin_bills_path, class: "button is-rounded is-small" do %>Ver todas<% end %>
   </div>
   <% if Bill.any? %>
     <div class="table-container">
@@ -45,8 +45,8 @@
           </tr>
         </thead>
         <tbody>
-          <% Bill.default.limit(10).each do |o| %>
-            <tr class="is-clickable" onclick="window.location.href='<%= admin_panel_home_path %>'">
+          <% @recent_bills.each do |o| %>
+            <tr class="is-clickable" onclick="window.location.href='<%= admin_bill_path(o) %>'">
               <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= o.folio %>-<%= o.id %></span></td>
               <td><%= o.corp.name&.titleize || "—" %></td>
               <td><span class="tag is-rounded"><%= o.tipo&.titleize %></span></td>

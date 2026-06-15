@@ -99,7 +99,7 @@ class UserPanel::EventsController < UserPanelController
       Event::RECURRENCE_RULES.include?(recurrence_rule)
 
       fechas = Event.generar_fechas(fecha, recurrence_rule, recurrence_ends_on)
-      rid    = SecureRandom.uuid
+      rid    = SecureRandom.alphanumeric(12)
       tz     = ActiveSupport::TimeZone["America/Mexico_City"]
       inicio_t, fin_t = slot.to_s.split("|")
       saved_events = []
@@ -246,6 +246,21 @@ class UserPanel::EventsController < UserPanelController
     @event.update(status: :cancelado, motivo_cancelacion: motivo)
     redirect_back(fallback_location: events_path, notice: "Evento cancelado y notificado al cliente por email.", status: :see_other)
   end
+
+  def cancelar_recurrence
+    motivo = params[:motivo]
+    recurrence_id = params[:recurrence_id]
+    # validar que el evento no esté ya cancelado
+    return redirect_back(fallback_location: events_path, alert: "Motivo de cancelación es requerido.") if !motivo.present?
+    return redirect_back(fallback_location: events_path, alert: "ID de recurrencia es requerido.") if !recurrence_id.present?
+
+    events = @corp.events.serie(recurrence_id)
+    events.each do |ev|
+      ev.update(status: :cancelado, motivo_cancelacion: motivo)
+    end
+    redirect_back(fallback_location: events_path, notice: "Serie de eventos cancelada.", status: :see_other)
+  end
+
 
   def update
     @event.assign_attributes(event_params)

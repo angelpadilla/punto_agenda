@@ -15,15 +15,15 @@
         </span>
         Editar
       <% end %>
-      <%= link_to edit_password_user_path(@admin), class: "button is-rounded" do %>
+      <%= link_to edit_password_admin_admin_path(@admin), class: "button is-rounded" do %>
         <span class="icon mr-2">
           <%= image_tag 'key-svgrepo-com.svg', alt: 'editar', class: "invert" %>
         </span>
         Editar contraseña
       <% end %>
     <% end %>
-    <% if current_admin.admin? and @admin != current_admin %>
-      <%= link_to user_path(@admin), data: { turbo_confirm: "¿Estás seguro?", turbo_method: :delete }, class: "button is-rounded is-danger" do %>
+    <% if current_admin.super? and @admin != current_admin %>
+      <%= link_to admin_admin_path(@admin), data: { turbo_confirm: "¿Estás seguro?", turbo_method: :delete }, class: "button is-rounded is-danger" do %>
         <span class="icon mr-2">
           <%= image_tag 'trash.svg', alt: 'delete', class: '' %>
         </span>

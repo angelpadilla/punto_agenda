@@ -48,7 +48,7 @@ class Event < ApplicationRecord
 
 
   def self.ransackable_attributes(auth_object = nil)
-    %W[id title folio customer_id canal status user_id corp_id recurrence_rule]
+    %W[id title folio customer_id canal status user_id corp_id recurrence_rule recurrence_id recurrence_index]
   end
 
   def self.ransackable_associations(auth_object = nil)

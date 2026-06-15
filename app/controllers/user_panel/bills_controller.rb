@@ -1,5 +1,6 @@
 class UserPanel::BillsController < UserPanelController
   before_action :set_bill, only: %i[ show timbra ]
+  skip_before_action :authorize_corp!, only: %i[index show]
   def index
     bills = @corp.bills.default
 
