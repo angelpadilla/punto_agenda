@@ -8,11 +8,21 @@ class Item < ApplicationRecord
   has_many :line_items, dependent: :nullify
   has_many :orders, through: :line_items
 
-  has_one_attached :img1, dependent: :destroy
-  has_one_attached :img2, dependent: :destroy
-  has_one_attached :img3, dependent: :destroy
-  has_one_attached :img4, dependent: :destroy
-  has_one_attached :img5, dependent: :destroy
+  has_one_attached :img1, dependent: :destroy do |at|
+    at.variant :thumb, resize_to_limit: [ 500,  500 ], preprocessed: true
+  end
+  has_one_attached :img2, dependent: :destroy do |at|
+    at.variant :thumb, resize_to_limit: [ 500,  500 ], preprocessed: true
+  end
+  has_one_attached :img3, dependent: :destroy do |at|
+    at.variant :thumb, resize_to_limit: [ 500,  500 ], preprocessed: true
+  end
+  has_one_attached :img4, dependent: :destroy do |at|
+    at.variant :thumb, resize_to_limit: [ 500,  500 ], preprocessed: true
+  end
+  has_one_attached :img5, dependent: :destroy do |at|
+    at.variant :thumb, resize_to_limit: [ 500,  500 ], preprocessed: true
+  end
 
   enum :status, activo: 0, activo_interno: 1, inactivo: 2
   enum :cate, producto: 0, servicio: 1, consumible: 2

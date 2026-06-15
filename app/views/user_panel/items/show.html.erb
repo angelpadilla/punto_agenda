@@ -29,7 +29,7 @@
                 <% if images.any? %>
                   <% images.each do |img| %>
                     <li class="splide__slide">
-                      <%= image_tag img.variant(resize_to_limit: [600, 600]), loading: "lazy" %>
+                      <%= image_tag img.variant(:thumb), loading: "lazy" %>
                     </li>
                   <% end %>
                 <% else %>
@@ -46,7 +46,7 @@
                 <% images = [@item.img1, @item.img2, @item.img3, @item.img4, @item.img5].select(&:attached?) %>
                 <% images.each do |img| %>
                   <li class="splide__slide">
-                    <%= image_tag img.variant(resize_to_limit: [600, 600]), loading: "lazy" %>
+                    <%= image_tag img.variant(:thumb), loading: "lazy" %>
                   </li>
                 <% end %>
               </ul>
