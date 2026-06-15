@@ -45,4 +45,4 @@ end
 puts "- Setting creado...."
 
 puts "Creando un Admin"
-Admin.find_or_create_by!(email: "angel@gmail.com", password: "adminadmin1", password_confirmation: "adminadmin1")
+Admin.create!(email: "angelpadillam@gmail.com", password: "ZW2XZ$H+gl>", password_confirmation: "ZW2XZ$H+gl>")
