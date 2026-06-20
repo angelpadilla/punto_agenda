@@ -17,6 +17,8 @@ class Bill < ApplicationRecord
     factura: "factura"
   }
 
+  enum :direccion, egreso: 0, ingreso: 1
+
   enum :status_pago, {
     pagado: "pagado",
     cancelado: "cancelado",

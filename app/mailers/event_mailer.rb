@@ -42,7 +42,7 @@ class EventMailer < ApplicationMailer
   def noti_corp
     @corp = params[:corp]
     @event = params[:event]
-    email = @corp.email
+    email = @corp.email || @corp.prop.email
 
     mail(to: email, subject: "#{@corp.name} notificación importante")
   end

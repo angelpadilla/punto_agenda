@@ -3,6 +3,7 @@ class UserPanel::CorpController < UserPanelController
   skip_before_action :authorize_corp!, only: %i[landing pay_now]
 
   def landing
+    @balance = @corp.balance
   end
 
   def show

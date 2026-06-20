@@ -1,0 +1,128 @@
+<%# Breadcrumb %>
+<div class="container px-4 pt-5">
+  <%= link_to corp_calendar_path(@corp.sku), class: "button is-rounded is-small mb-5" do %>
+    ‹ Volver al calendario
+  <% end %>
+</div>
+<div class="container px-4 pb-6">
+  <div class="columns is-multiline reverse-columns-touch">
+    <div class="column is-7-desktop is-12-tablet reverse-touch">
+      <%= form_with url: corp_book_event_path(@corp.sku), method: :post, data: { turbo: false } do |f| %>
+        <div class="box">
+          <div class="box_header mb-5">
+            <h1 class="title is-4 mb-0">
+              <span class="icon mr-2">
+                <%= image_tag 'calendar.svg', alt: '', class: 'invert', style: 'height:1.1em' %>
+              </span>
+              Completa tu reserva
+            </h1>
+          </div>
+          <%= f.hidden_field :dia, value: @dia %>
+          <%= f.hidden_field :slot, value: @slot %>
+          <%= f.hidden_field :user_id, value: @user.id %>
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <label class="label">Nombre completo <span class="has-text-danger">*</span></label>
+              <div class="control">
+                <%= f.text_field :nombre, class: 'input is-rounded', placeholder: 'Tu nombre', required: true %>
+              </div>
+            </div>
+            <div class="field column is-6">
+              <label class="label">Email <span class="has-text-danger">*</span></label>
+              <div class="control">
+                <%= f.email_field :email, class: 'input is-rounded', placeholder: 'correo@ejemplo.com', required: true %>
+              </div>
+            </div>
+            <div class="field column is-6">
+              <label class="label">Teléfono <span class="has-text-danger">*</span></label>
+              <div class="control">
+                <div class="field has-addons">
+                  <div class="control">
+                    <div class="select is-rounded">
+                      <%= f.select :tel_prefix,
+                          options_for_select(Customer::TelPrefixes.map { |k, v| [k, k] }, '+52'),
+                          {}, { class: '' } %>
+                    </div>
+                  </div>
+                  <div class="control is-expanded">
+                    <%= f.text_field :tel, class: 'input is-rounded', placeholder: '5512345678', required: true %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field column is-12">
+              <label class="label">Servicio o motivo de la cita</label>
+              <div class="control">
+                <% if @items.any? %>
+                  <div class="select is-rounded is-fullwidth">
+                    <%= f.select :servicio,
+                        options_for_select([['Selecciona un servicio...', '']] + @items.map { |i| [i.name, i.name] }),
+                        {}, { class: '' } %>
+                  </div>
+                <% else %>
+                  <%= f.text_field :servicio, class: 'input is-rounded', placeholder: 'Ej. Corte de cabello, Consulta...' %>
+                <% end %>
+              </div>
+            </div>
+            <div class="field column is-12">
+              <label class="label">Notas adicionales</label>
+              <div class="control">
+                <%= f.text_area :notas, class: 'textarea is-rounded', placeholder: 'Información extra que nos quieras compartir', rows: 3 %>
+              </div>
+            </div>
+          </div>
+          <p class="help">
+            <span class="has-text-danger">*</span> Campos obligatorios, es muy importante que ingreses informacion de contacto real para que podamos confirmar tu cita y contactarte en caso de cualquier imprevisto.
+          </p>
+        </div>
+        <%= f.button class: "button is-primary is-rounded is-fullwidth is-medium" do %>
+          <span class="show-when-enabled">
+            <span class="icon mr-2">
+              <%= image_tag 'circle-bottom-up-svgrepo-com.svg', alt: 'loading' %>
+            </span>
+            Reservar cita
+          </span>
+          <span class="show-when-disabled hidden">Reservando... <i class="fa fa-spinner fa-spin"></i></span>
+        <% end %>
+      <% end %>
+    </div>
+    <%# Info de la empresa al costado %>
+    <div class="column is-5-desktop is-12-tablet">
+      <%# Resumen de la selección %>
+      <div class="noti is-main mb-4">
+        <div class="flexx gap-1 vertical-center mb-2">
+          <span class="icon">
+            <%= image_tag 'bolt.svg', alt: '', class: 'invert', style: 'width:1rem' %>
+          </span>
+          <span><strong>Reserva con: <%= @user.full_name&.titleize %></strong></span>
+        </div>
+        <div class="flexx gap-1 vertical-center">
+          <span class="icon">
+            <%= image_tag 'calendar.svg', alt: '', class: 'invert', style: 'width:1rem' %>
+          </span>
+          <span><%= l(@dia, format: :long) %> · <%= @slot_display %></span>
+        </div>
+      </div>
+      <% if @corp.online_payments and @corp.min_book_amount > 0 %>
+        <div class="box">
+          <h3 class="title is-6 mb-4">Pago en línea</h3>
+          <p class="mb-2">El monto mínimo para reservar en línea es de:</p>
+          <p class="is-size-4 has-text-weight-bold"><%= number_to_currency(@corp.min_book_amount) %></p>
+          <hr>
+          <h3 class="title is-6 mb-4">Pago protegido</h3>
+          <div class="avatar-group left">
+            <div class="avatar">
+              <%= image_tag "stripe3.svg", alt: 'Stripe' %>
+            </div>
+            <div class="avatar">
+              <%= image_tag "mastercard2.svg", alt: 'Mastercard' %>
+            </div>
+            <div class="avatar">
+              <%= image_tag "visa2.svg", alt: 'Visa' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

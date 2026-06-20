@@ -1,149 +1,36 @@
-<%# Breadcrumb %>
-<div class="container px-4 pt-5">
-  <%= link_to corp_home_path(@corp.sku), class: "button is-rounded is-small mb-5" do %>
-    ‹ Volver a <%= @corp.name %>
-  <% end %>
-</div>
-<div class="container px-4 pb-6">
-  <div class="columns is-multiline">
-    <%# Formulario de reserva %>
-    <div class="column is-7-desktop is-12-tablet">
-      <div class="box">
-        <div class="box_header mb-5">
-          <h1 class="title is-4 mb-0">
-            <span class="icon mr-2">
-              <%= image_tag 'calendar.svg', alt: '', class: 'invert', style: 'height:1.1em' %>
-            </span>
-            Agenda tu cita
-          </h1>
-        </div>
-        <%= form_with url: corp_book_event_path(@corp.sku), method: :post do |f| %>
-          <div class="columns is-multiline">
-            <div class="field column is-12">
-              <label class="label">Nombre completo <span class="has-text-danger">*</span></label>
-              <div class="control">
-                <%= f.text_field :nombre, class: 'input is-rounded', placeholder: 'Tu nombre', required: true %>
-              </div>
-            </div>
-            <div class="field column is-6">
-              <label class="label">Email <span class="has-text-danger">*</span></label>
-              <div class="control">
-                <%= f.email_field :email, class: 'input is-rounded', placeholder: 'correo@ejemplo.com', required: true %>
-              </div>
-            </div>
-            <div class="field column is-6">
-              <label class="label">Teléfono <span class="has-text-danger">*</span></label>
-              <div class="control">
-                <div class="field has-addons">
-                  <div class="control">
-                    <div class="select is-rounded">
-                      <%= f.select :tel_prefix,
-                          options_for_select(Customer::TelPrefixes.map { |k, v| [k, k] }, '+52'),
-                          {}, { class: '' } %>
-                    </div>
-                  </div>
-                  <div class="control is-expanded">
-                    <%= f.text_field :tel, class: 'input is-rounded', placeholder: '5512345678', required: true %>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="field column is-12">
-              <label class="label">Servicio o motivo de la cita</label>
-              <div class="control">
-                <% if @items.any? %>
-                  <div class="select is-rounded is-fullwidth">
-                    <%= f.select :servicio,
-                        options_for_select([['Selecciona un servicio...', '']] + @items.map { |i| [i.name, i.name] }),
-                        {}, { class: '' } %>
-                  </div>
-                <% else %>
-                  <%= f.text_field :servicio, class: 'input is-rounded', placeholder: 'Ej. Corte de cabello, Consulta...' %>
-                <% end %>
-              </div>
-            </div>
-            <%# Slots disponibles %>
-            <div class="field column is-12">
-              <label class="label">Elige fecha y hora disponible <span class="has-text-danger">*</span></label>
-              <% if @available_slots.any? %>
-                <div class="corp_slots_grid">
-                  <% @available_slots.group_by { |s| s.to_date }.each do |date, slots| %>
-                    <div class="corp_slots_day">
-                      <div class="corp_slots_day_label">
-                        <%= l(date, format: :long) %>
-                      </div>
-                      <div class="corp_slots_times">
-                        <% slots.each do |slot| %>
-                          <label class="corp_slot_radio">
-                            <%= f.radio_button :slot, slot.iso8601, required: true %>
-                            <span><%= slot.strftime('%H:%M') %></span>
-                          </label>
-                        <% end %>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <div class="noti is-warning">
-                  <p>No hay horarios disponibles en los próximos 14 días. Contáctanos directamente.</p>
-                </div>
-              <% end %>
-            </div>
-            <div class="field column is-12">
-              <label class="label">Notas adicionales</label>
-              <div class="control">
-                <%= f.text_area :notas, class: 'textarea is-rounded', placeholder: 'Información extra que nos quieras compartir', rows: 3 %>
-              </div>
-            </div>
-          </div>
-          <% if @available_slots.any? %>
-            <div class="field mt-2">
-              <%= f.submit 'Reservar cita', class: 'button is-primary is-rounded is-fullwidth is-medium' %>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
-    </div>
-    <%# Info de la empresa al costado %>
-    <div class="column is-5-desktop is-12-tablet">
-      <div class="box has-text-centered mb-4">
-        <% if @corp.logo.attached? %>
-          <div class="corp_logo_wrap mx-auto mb-3" style="width:80px;height:80px">
-            <%= image_tag @corp.logo.variant(resize_to_limit: [80, 80]), alt: @corp.name, class: 'corp_logo_img' %>
-          </div>
-        <% end %>
-        <h2 class="title is-5"><%= @corp.name %></h2>
-        <% if @corp.phone.present? %>
-          <p class="is-size-7 has-text-grey-light">
-            <a href="tel:<%= @corp.tel_prefix %><%= @corp.phone %>" class="has-text-neon">
-              <%= @corp.tel_prefix %> <%= @corp.phone %>
-            </a>
-          </p>
-        <% end %>
-      </div>
-      <%# Horarios %>
-      <% if @corp.business_hours.present? %>
-        <div class="box">
-          <h3 class="title is-6 mb-4">Horarios</h3>
-          <% Corp::DAYS_OF_WEEK.each do |num, name| %>
-            <% day = @corp.business_hours[num] %>
-            <div class="corp_schedule_row">
-              <span class="corp_schedule_day"><%= name %></span>
-              <div class="has-text-right">
-                <% if day&.dig('active') %>
-                  <% day['hours'].each do |h| %>
-                    <span class="tag is-rounded is-small">
-                      <%= h['open'] %> – <%= h['close'] %>
-                    </span>
-                  <% end %>
-                <% else %>
-                  <span class="has-text-grey is-size-7">Cerrado</span>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-        </div>
+<div class="container mt-5">
+  <%# Breadcrumb %>
+  <div class="flexx space-b flex-end">
+    <h2 class="titlee">
+      <span class="icon mr-2">
+        <%= image_tag 'calendar.svg', alt: '', class: 'invert' %>
+      </span>
+      Selecciona tu horario
+    </h2>
+    <div class="actions">
+      <%= link_to corp_home_path(@corp.sku), class: "button is-rounded mr-2" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+        </span>
+        Volver a <%= @corp.name %>
       <% end %>
+    </div>
+  </div>
+  <div class="box mt-4">
+    <div class="mt-4">
+      <p class="has-text-grey-light is-size-7 mb-4">
+        Haz clic en un horario disponible para elegir agente y continuar con tu reserva.
+      </p>
+      <div class="is-hidden-touch pub_calendar">
+        <%= calendar(number_of_days: 7) do |date| %>
+          <%= render 'public_calendar_day', date: date, info_day: @calendar_data[date], corp: @corp, identifier: 'd' %>
+        <% end %>
+      </div>
+      <div class="is-hidden-desktop pub_calendar">
+        <%= calendar(number_of_days: 3) do |date| %>
+          <%= render 'public_calendar_day', date: date, info_day: @calendar_data[date], corp: @corp, identifier: 'm' %>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>

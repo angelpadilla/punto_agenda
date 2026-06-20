@@ -4,8 +4,9 @@ class Event < ApplicationRecord
   belongs_to :user, optional: true
 
   has_many :message_events, as: :eventeable, dependent: :destroy
+  has_many :orders, dependent: :nullify
 
-  enum :status, agendado: 0, completado: 1, cancelado: 2, por_confirmar: 3, ausencia: 4
+  enum :status, agendado: 0, completado: 1, cancelado: 2, por_confirmar: 3, ausencia: 4, pendiente_pago: 5
   enum :canal, interno: 0, web: 1
 
   RECURRENCE_RULES = %w[daily weekly biweekly monthly].freeze
@@ -62,8 +63,18 @@ class Event < ApplicationRecord
                               .where.not(id: id)
                               .where("hora_inicio < ? AND hora_final > ?", hora_final, hora_inicio)
 
-    if overlapping_events.exists?
-      puts "Evento solapado encontrado: #{overlapping_events.pluck(:id).join(', ')}"
+    # Ignorar eventos "desfasados" que ya no encajan en los slots actuales
+    blocking = overlapping_events.to_a.select do |ev|
+      day_slots = corp.slots_for_day(ev.hora_inicio.to_date)
+      day_slots.any? do |s|
+        s_start = Time.zone.parse("#{ev.hora_inicio.to_date} #{s[:start]}")
+        s_end   = Time.zone.parse("#{ev.hora_inicio.to_date} #{s[:end]}")
+        ev.hora_inicio >= s_start && ev.hora_final <= s_end
+      end
+    end
+
+    if blocking.any?
+      puts "Evento solapado encontrado: #{blocking.map(&:id).join(', ')}"
       errors.add(:base, "Ya existe un evento en ese rango de tiempo con ese agente vendedor")
     end
   end

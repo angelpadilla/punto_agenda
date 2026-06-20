@@ -1,5 +1,5 @@
 class UserPanel::EventsController < UserPanelController
-  before_action :set_event, only: %i[ show edit update destroy marcar_asistencia marcar_ausencia confirmar cancelar ]
+  before_action :set_event, only: %i[ edit update destroy marcar_asistencia marcar_ausencia confirmar cancelar ]
 
   def index
     @customers = @corp.customers.default
@@ -46,6 +46,7 @@ class UserPanel::EventsController < UserPanelController
   end
 
   def show
+    @event = @corp.events.includes(:customer, :user, :orders).find(params[:id])
   end
 
   def new

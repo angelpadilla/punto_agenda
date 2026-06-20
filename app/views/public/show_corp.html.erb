@@ -1,6 +1,6 @@
 <%# Hero %>
 <section class="corp_hero_section">
-  <div class="container px-4">
+  <div class="container py-4">
     <div class="has-text-centered py-6">
       <% if @corp.logo.attached? %>
         <div class="corp_logo_wrap mx-auto mb-4">
@@ -19,7 +19,7 @@
     </div>
   </div>
 </section>
-<div class="container px-4 pb-6 mt-4">
+<div class="container mt-6">
   <div class="columns is-multiline">
     <%# Información de contacto %>
     <div class="column is-5-desktop is-12-tablet">
@@ -63,15 +63,29 @@
             </div>
           </div>
         <% end %>
-        <div class="corp_info_row">
-          <%= image_tag 'calendar.svg', alt: 'horarios', class: 'invert corp_info_icon' %>
-          <div>
-            <div class="is-size-7 has-text-grey-light">Horarios</div>
-            <span class="has-text-light">
-              9:00 AM- 7:00 PM Lun-Sáb
-            </span>
+        <% if @corp.business_hours.present? and @corp.calendar %>
+          <div class="corp_info_row">
+            <%= image_tag 'calendar.svg', alt: 'horarios', class: 'invert corp_info_icon' %>
+            <div>
+              <div class="is-size-7 has-text-grey-light">Horarios</div>
+              <% Corp::DAYS_OF_WEEK.each do |num, name| %>
+                <% day = @corp.business_hours[num] %>
+                <div class="corp_schedule_row">
+                  <span class="corp_schedule_day"><%= name %></span>
+                  <div class="has-text-right">
+                    <% if day&.dig('active') %>
+                      <span class="tag is-rounded is-small">
+                        <%= day['hours'][0]['open'] %> – <%= day['hours'].last['close'] %>
+                      </span>
+                    <% else %>
+                      <span class="has-text-grey is-size-7">Cerrado</span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
           </div>
-        </div>
+        <% end %>
         <%# Redes sociales %>
         <% if @corp.facebook_url.present? || @corp.instagram_url.present? || @corp.tiktok_url.present? %>
           <div class="mt-4 corp_social_links">
@@ -96,7 +110,7 @@
     </div>
     <%# Accesos rápidos %>
     <div class="column is-7-desktop is-12-tablet">
-      <% if @corp.public_calendar? %>
+      <% if @corp.public_calendar %>
         <%= link_to corp_calendar_path(@corp.sku) do %>
           <div class="box corp_feature_card mb-4">
             <div class="corp_feature_inner">
@@ -112,7 +126,7 @@
           </div>
         <% end %>
       <% end %>
-      <% if @corp.public_site? %>
+      <% if @corp.public_site %>
         <%= link_to corp_menu_path(@corp.sku) do %>
           <div class="box corp_feature_card">
             <div class="corp_feature_inner">
@@ -128,7 +142,7 @@
           </div>
         <% end %>
       <% end %>
-      <% unless @corp.public_calendar? || @corp.public_site? %>
+      <% unless @corp.public_calendar || @corp.public_site %>
         <div class="box has-text-centered py-6">
           <p class="has-text-grey-light is-size-5">Próximamente más información</p>
         </div>

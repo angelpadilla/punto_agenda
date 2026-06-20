@@ -18,6 +18,11 @@
         Recurrente
       </span>
     <% end %>
+    <% if event.web? %>
+      <span class="tag is-rounded is-warning">
+        Web
+      </span>
+    <% end %>
     <div class="snippet_title mt-2">
       <p>
         <span class="labell">Titulo: </span>
@@ -133,6 +138,17 @@
             </div>
           </div>
         </div>
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              toll
+            </span>
+            <div>
+              <p class="labell">Canal: </p>
+              <p><%= event.canal %></p>
+            </div>
+          </div>
+        </div>
         <% if event.recurrente? %>
           <div class="column is-6">
             <div class="flexx">
@@ -157,6 +173,25 @@
               <div>
                 <p class="labell">Notas: </p>
                 <p><%= event.body %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <% if event.orders.any? %>
+          <div class="column is-12">
+            <div class="flexx">
+              <span class="icon material-icons-round mr-2">
+                receipt
+              </span>
+              <div>
+                <p class="labell">Ventas relacionadas: </p>
+                <ul>
+                  <% event.orders.each do |order| %>
+                    <li><%= link_to order_path(order) do %>
+                        <%= order.folio %> - <%= order.tipo %>
+                      <% end %></li>
+                  <% end %>
+                </ul>
               </div>
             </div>
           </div>

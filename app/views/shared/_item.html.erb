@@ -1,0 +1,42 @@
+<% first_image = [item.img1, item.img2, item.img3, item.img4, item.img5].find(&:attached?) %>
+<div class="column is-4-desktop is-6-tablet is-12-mobile">
+  <div class="card catalog_card">
+    <div class="card-image p-4">
+      <div class="order_item_image">
+        <% if first_image %>
+          <%= image_tag first_image.variant(resize_to_limit: [400, 400]), alt: item.name, loading: 'lazy' %>
+        <% else %>
+          <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
+        <% end %>
+      </div>
+    </div>
+    <div class="card-content pt-0">
+      <p class="is-size-7 has-text-neon mb-1">
+        <% if item.brand.present? %>
+          <%= item.brand.name&.titleize %> -
+        <% end %>
+        <%= item.cate&.titleize %>
+      </p>
+      <h3 class="title is-5 mb-2"><%= item.name %></h3>
+      <div class="level is-mobile">
+        <div class="level-left">
+          <% if item.offer.present? %>
+            <div>
+              <span class="has-text-weight-bold has-text-neon is-size-5">
+                <%= number_to_currency(item.offer) %>
+              </span>
+              <span class="has-text-grey tacha is-size-7 ml-1"><%= number_to_currency(item.price) %></span>
+            </div>
+          <% else %>
+            <span class="has-text-weight-bold is-size-5"><%= number_to_currency(item.price) %></span>
+          <% end %>
+        </div>
+        <% if item.sku.present? %>
+          <div class="level-right">
+            <p class="is-size-7 has-text-grey"><%= item.sku %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

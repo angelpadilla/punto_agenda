@@ -82,16 +82,6 @@
     <div class="box_content">
       <label class="toggle_field">
         <div class="toggle_info">
-          <span class="toggle_label">Acepta pagos en línea</span>
-          <span class="toggle_desc">Habilita pagos para citas y pedidos en línea</span>
-        </div>
-        <%= form.check_box :online_payments, class: "toggle_input", data: { action: "form-corp#toggleMinBookAmount", form_corp_target: "onlinePaymentsCheck" } %>
-        <span class="toggle_track">
-          <span class="toggle_thumb"></span>
-        </span>
-      </label>
-      <label class="toggle_field">
-        <div class="toggle_info">
           <span class="toggle_label">Facturacion?</span>
           <span class="toggle_desc">Activa si tu negocio realiza facturación</span>
         </div>
@@ -130,6 +120,19 @@
           <span class="toggle_thumb"></span>
         </span>
       </label>
+      <label class="toggle_field">
+        <div class="toggle_info">
+          <span class="toggle_label">Acepta pagos en línea</span>
+          <span class="toggle_desc">Si tienes habilitado tu calendario público, se pedira un monto minimo de pago para agendar/reservar. Si tienes habilitado tu catalogo público, los clientes podrán realizar pagos en línea para sus pedidos.</span>
+        </div>
+        <%= form.check_box :online_payments, class: "toggle_input", data: { action: "form-corp#toggleMinBookAmount", form_corp_target: "onlinePaymentsCheck" } %>
+        <span class="toggle_track">
+          <span class="toggle_thumb"></span>
+        </span>
+      </label>
+      <div class="columns is-multiline mt-2">
+        <%= n_field(form, :min_book_amount, label: "Monto minimo para agendar/reservar", placeholder: "Ej. $100.00", min: 100.0, help: "Este es el monto mínimo que un cliente debe pagar para agendar una cita, el monto minimo es de $100.00 MXN, si lo dejas en blanco será gratis.", clas: "field column is-12 minBookAmountContainer") %>
+      </div>
     </div>
   </div>
   <div class="box expandable mt-4 is_active"  data-form-corp-target="businessHoursContainer">
@@ -145,9 +148,6 @@
       </span>
     </div>
     <div class="box_content">
-      <div class="columns is-multiline">
-        <%= n_field(form, :min_book_amount, label: "Monto minimo para agendar", placeholder: "Ej. $100.00", min: 100.0, help: "Este es el monto mínimo que un cliente debe pagar para agendar una cita, el monto minimo es de $100.00 MXN, si lo dejas en blanco será gratis.", clas: "field column is-12 minBookAmountContainer") %>
-      </div>
       <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
       <table class="table is-fullwidth">
         <thead>

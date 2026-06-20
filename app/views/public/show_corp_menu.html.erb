@@ -1,23 +1,23 @@
-<%# Breadcrumb %>
-<div class="container px-4 pt-5">
-  <%= link_to corp_home_path(@corp.sku), class: "button is-rounded is-small mb-5" do %>
-    ‹ Volver a <%= @corp.name %>
-  <% end %>
-</div>
-<div class="container px-4 pb-6">
-  <%# Header %>
-  <div class="level mb-5">
-    <div class="level-left">
-      <h1 class="title is-3 mb-0">
+<div class="container mt-5">
+  <%# Breadcrumb %>
+  <div class="flexx space-b flex-end">
+    <h2 class="titlee">
+      <span class="icon mr-2">
+        <%= image_tag 'items.svg', alt: '', class: 'invert' %>
+      </span>
+      Catálogo
+    </h2>
+    <div class="actions">
+      <%= link_to corp_home_path(@corp.sku), class: "button is-rounded mr-2" do %>
         <span class="icon mr-2">
-          <%= image_tag 'items.svg', alt: '', class: 'invert', style: 'height:1.1em' %>
+          <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
         </span>
-        Catálogo
-      </h1>
+        Volver a <%= @corp.name %>
+      <% end %>
     </div>
   </div>
   <%# Filtros por categoría %>
-  <div class="tags mb-5">
+  <div class="tags mb-5 mt-4">
     <span class="tag is-rounded is-medium corp_cate_tag <%= 'is-primary' if @cate_filter.nil? %>">
       <%= link_to 'Todo', corp_menu_path(@corp.sku), class: 'has-text-inherit' %>
     </span>
@@ -29,64 +29,11 @@
   </div>
   <% if @items.any? %>
     <div class="columns is-multiline">
-      <% @items.each do |item| %>
-        <% first_image = [item.img1, item.img2, item.img3, item.img4, item.img5].find(&:attached?) %>
-        <div class="column is-4-desktop is-6-tablet is-12-mobile">
-          <div class="card">
-            <div class="card-image p-4">
-              <div class="order_item_image">
-                <% if first_image %>
-                  <%= image_tag first_image.variant(resize_to_limit: [400, 400]), alt: item.name, loading: 'lazy' %>
-                <% else %>
-                  <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
-                <% end %>
-              </div>
-            </div>
-            <div class="card-content pt-0">
-              <p class="is-size-7 has-text-neon mb-1">
-                <%= item.cate&.titleize %>
-                <% if item.brand.present? %>
-                  · <%= item.brand.name&.titleize %>
-                <% end %>
-              </p>
-              <h3 class="title is-5 mb-2"><%= item.name %></h3>
-              <% if item.desc.present? %>
-                <p class="is-size-7 has-text-grey-light mb-3" style="line-height:1.5"><%= truncate(item.desc, length: 100) %></p>
-              <% end %>
-              <div class="level is-mobile">
-                <div class="level-left">
-                  <% if item.offer.present? %>
-                    <div>
-                      <span class="has-text-weight-bold has-text-neon is-size-5">
-                        <%= number_to_currency(item.offer) %>
-                      </span>
-                      <span class="has-text-grey tacha is-size-7 ml-1"><%= number_to_currency(item.price) %></span>
-                    </div>
-                  <% else %>
-                    <span class="has-text-weight-bold is-size-5"><%= number_to_currency(item.price) %></span>
-                  <% end %>
-                </div>
-                <% if item.sku.present? %>
-                  <div class="level-right">
-                    <p class="is-size-7 has-text-grey"><%= item.sku %></p>
-                  </div>
-                <% end %>
-              </div>
-              <% if @corp.public_calendar? %>
-                <%= link_to corp_calendar_path(@corp.sku), class: 'button is-primary is-rounded is-fullwidth mt-2' do %>
-                  <span class="icon mr-2"><%= image_tag 'calendar.svg', alt: '', class: 'invert' %></span>
-                  Agendar
-                <% end %>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      <% end %>
+      <%= render partial: 'shared/item', collection: @items, as: :item %>
     </div>
   <% else %>
     <div class="box has-text-centered py-6">
-      <%= image_tag 'items.svg', alt: 'sin items', class: 'invert mb-4', style: 'height:4rem;opacity:0.3' %>
-      <p class="has-text-grey-light is-size-5">No hay productos disponibles en este momento</p>
+      <p class="has-text-grey-light is-size-5">No hay productos disponibles en esta categoría</p>
     </div>
   <% end %>
 </div>

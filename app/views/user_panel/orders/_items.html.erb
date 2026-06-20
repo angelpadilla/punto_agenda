@@ -53,7 +53,7 @@
         <% images = [item.img1, item.img2, item.img3, item.img4, item.img5].select(&:attached?) %>
         <!-- Product 1 -->
         <div class="column is-4">
-          <div class="card card_new_order">
+          <div class="card catalog_card">
             <div class="card-image p-4">
               <div class="order_item_image">
                 <% if (first_image = images.first) %>
@@ -65,14 +65,14 @@
             </div>
             <div class="card-content pt-0">
               <p class="is-size-7 has-text-weight-bold has-text-neon" >
+                <% if item.brand.present? %>
+                  <%= item.brand.name&.titleize %> -
+                <% end %>
                 <%= item.cate&.titleize %>
               </p>
-              <h3 class="title is-5 mb-2 font-headline"><%= item.brand&.name&.titleize %> | <%= item.name %></h3>
+              <h3 class="title is-5 mb-2 font-headline"><%= item.name %></h3>
               <div class="level is-mobile">
                 <div class="level-left">
-                  <p class="is-size-7 has-text-grey"><%= item.sku %></p>
-                </div>
-                <div class="level-right">
                   <% if item.offer.present? %>
                     <span class="has-text-weight-bold has-text-neon">
                       <%= number_to_currency(item.offer) %>
@@ -81,6 +81,9 @@
                   <% else %>
                     <span class="has-text-weight-bold"><%= number_to_currency(item.price) %></span>
                   <% end %>
+                </div>
+                <div class="level-right">
+                  <p class="is-size-7 has-text-grey"><%= item.sku %></p>
                 </div>
               </div>
               <button class="button is-primary is-fullwidth is-rounded mtrigger" data-target="item_<%= item.id %>">

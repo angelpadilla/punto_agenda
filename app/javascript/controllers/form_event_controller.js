@@ -96,7 +96,7 @@ export default class extends Controller {
         }
 
         const slots = cfg.hours.map(h => ({
-            label: `${h.open} – ${h.close}`,
+            label: `${this._to12h(h.open)} – ${this._to12h(h.close)}`,
             value: `${h.open}|${h.close}`
         }))
 
@@ -155,6 +155,13 @@ export default class extends Controller {
             if (slot.value === selectedValue) opt.selected = true
             this.slotSelectTarget.appendChild(opt)
         })
+    }
+
+    _to12h(time24) {
+        const [h, m] = time24.split(":").map(Number)
+        const suffix = h >= 12 ? "PM" : "AM"
+        const h12 = h % 12 || 12
+        return `${h12}:${String(m).padStart(2, "0")} ${suffix}`
     }
 }
 

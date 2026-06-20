@@ -87,7 +87,7 @@ class Order80Pdf < Prawn::Document
     ancho = bounds.width
 
     @order.line_items.each_with_index do |line, index|
-      name = "#{line.item&.brand&.name} - #{line.item&.name}"
+      name = line.item ? "#{line.item&.brand&.name} - #{line.item&.name}" : line.name
       table([
         [ "Cantidad", "Concepto" ],
         [ line.cantidad.to_i, name ]

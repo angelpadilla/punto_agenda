@@ -222,7 +222,11 @@
           <% @order.line_items.each do |line| %>
             <tr>
               <th>
-                <%= link_to truncate(line.item.name.titleize, length: 20), line.item, title: line.item.name.titleize %>
+                <% if line.item %>
+                  <%= link_to truncate(line.item.name.titleize, length: 20), line.item, title: line.item.name.titleize %>
+                <% else %>
+                  <%= line.name %>
+                <% end %>
               </th>
               <td><%= line.cantidad %></td>
               <td><%= number_to_currency(line.precio) %></td>
@@ -255,19 +259,51 @@
   </div>
   <div class="box_content">
     <div class="columns is-multiline is-mobile">
+      <% comisiones = @order.comision_terminal.positive? or @order.comision_sitio.positive? %>
+      <% utilidad_iventario = @order.total - @order.costo %>
+      <% comision_total = @order.comision_terminal + @order.comision_sitio %>
+      <% monto_corp = @order.total - comision_total %>
       <div class="column is-12-mobile is-6-tablet is-6-desktop">
-        <div class="labell">Costo</div>
+        <div class="labell">Costo inventario</div>
         <p class="contentt has-text-warning"><%= number_to_currency(@order.costo) %></p>
       </div>
       <div class="column is-12-mobile is-6-tablet is-6-desktop">
-        <div class="labell">Utilidad</div>
-        <% if @order.ganancia > 0 %>
-          <p class="contentt has-text-success"><%= number_to_currency(@order.ganancia) %></p>
+        <div class="labell">Utilidad inventario (- costo inventario)</div>
+        <% if utilidad_iventario > 0 %>
+          <p class="contentt has-text-success"><%= number_to_currency(utilidad_iventario) %></p>
         <% else %>
-          <p class="contentt"><%= number_to_currency(@order.ganancia) %></p>
+          <p class="contentt"><%= number_to_currency(utilidad_iventario) %></p>
         <% end %>
       </div>
     </div>
+    <% if comisiones %>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Comisión terminal</div>
+          <p class="contentt has-text-warning"><%= number_to_currency(@order.comision_terminal) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Comisión sitio</div>
+          <p class="contentt has-text-warning"><%= number_to_currency(@order.comision_sitio) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Comisión total</div>
+          <p class="contentt"><%= number_to_currency(comision_total) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+          <div class="labell">Utilidad neta (- comisiones - costo inventario)</div>
+          <% if @order.ganancia > 0 %>
+            <p class="contentt has-text-success"><%= number_to_currency(@order.ganancia) %></p>
+          <% else %>
+            <p class="contentt"><%= number_to_currency(@order.ganancia) %></p>
+          <% end %>
+        </div>
+        <div class="column is-12">
+          <div class="labell">Monto hacia mi balance (total - comisiones)</div>
+          <p class="contentt has-text-success"><%= number_to_currency(monto_corp) %></p>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
 <div class="box expandable">

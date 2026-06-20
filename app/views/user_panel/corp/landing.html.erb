@@ -72,6 +72,17 @@
           </div>
         </div>
       <% end %>
+      <% if @corp.online_payments and  @corp.public_calendar %>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">paid</span>
+            <div>
+              <p class="labell">Monto minimo para agendar</p>
+              <p><%= number_to_currency(@corp.min_book_amount) %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
     <div class="columns is-multiline is-mobile">
       <div class="column is-6-mobile is-4-tablet is-4-desktop">
@@ -307,8 +318,27 @@
     </div>
   </div>
 </div>
+<div class="box is-main">
+  <div class="columns">
+    <div class="column is-9">
+      <h2>Balance</h2>
+      <p><%= number_to_currency @balance %></p>
+      <p class="help">
+        El balance representa los fondos disponibles para retiro, calculados como la suma de los depósitos pagados a través de Tarjetas de credito/debito en tu tienda, menos las comisiones correspondientes. El monto minimo para poder retirar fondos es de $500 MXN. Los retiros se procesan manualmente y pueden tardar hasta 72 horas hábiles en reflejarse en tu cuenta bancaria.
+      </p>
+    </div>
+    <div class="column">
+      <div class="button is-rounded is-fullwidth is-primary" disabled="<%= !(@balance > 500) %>">
+        <span class="icon mr-1">
+          <%= image_tag 'bolt.svg', alt: 'login' %>
+        </span>
+        Retirar fondos
+      </div>
+    </div>
+  </div>
+</div>
 <% if !@corp.suspendido? %>
-  <div class="box is-main">
+  <div class="box">
     <div class="columns">
       <div class="column is-9">
         <h2>Comprar SMS</h2>
@@ -365,7 +395,7 @@
     </div>
   </div>
   <% if @corp.facturacion? %>
-    <div class="box is-main">
+    <div class="box">
       <div class="columns">
         <div class="column is-9">
           <h2>Comprar timbres</h2>

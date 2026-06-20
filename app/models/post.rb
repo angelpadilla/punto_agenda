@@ -2,7 +2,7 @@ class Post < ApplicationRecord
   has_rich_text :content
   has_one_attached :cover, dependent: :destroy
   # has_many :messages, dependent: :destroy
-  enum :cate, articulo: 0, tutorial: 1
+  enum :cate, articulo: 0, tutorial: 1, noticia: 2
 
 
   validates :title, :extract, :content, :cate, presence: true

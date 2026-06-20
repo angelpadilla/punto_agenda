@@ -200,6 +200,42 @@ class Customer < ApplicationRecord
     self.events.order(created_at: :desc).last&.created_at
   end
 
+  def create_stripe_customer
+    if self.stripe_customer_id.present?
+      return {
+        success: true,
+        message: "Cliente ya tiene Stripe ID",
+        stripe_customer_id: self.stripe_customer_id
+      }
+    end
+    stripe_client = Stripe::StripeClient.new(Rails.application.credentials.dig(Rails.env.to_sym, :stripe, :secret_key))
+    customer = stripe_client.v1.customers.create({
+        name: self.razon,
+        email: self.email,
+        phone: "#{self.tel_prefix} #{self.tel}"
+      }
+    )
+    if customer && customer.id
+      self.update(stripe_customer_id: customer.id)
+      {
+        success: true,
+        message: "Cliente creado en Stripe",
+        stripe_customer_id: customer.id
+      }
+    else
+      {
+        success: false,
+        message: "Error al crear cliente en Stripe"
+      }
+    end
+  rescue => e
+    Rails.logger.error "Error al crear cliente en Stripe: #{e.message}"
+    {
+      success: false,
+      message: "Error al crear cliente en Stripe: #{e.message}"
+    }
+  end
+
   def set_counters
     self.total_events = self.events.count
     self.total_spent = self.orders.where(status_pago: :credito, tipo: [ :remision, :factura ]).sum(:abonado) + self.orders.where(status_pago: :pagado, tipo: [ :remision, :factura ]).sum(:total)

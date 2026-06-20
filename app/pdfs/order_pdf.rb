@@ -188,8 +188,8 @@ class OrderPdf < Prawn::Document
       header = [ [ "Unidad", "Concepto", "Cantidad", "Precio Unitario", "Descuento", "Importe" ] ]
       items = @order.line_items.map do |line|
         [
-          line.item.unidad,
-          "#{line.item.brand.name} - #{line.item.name}",
+          line.item ? line.item.unidad : "Servicio",
+          line.item ? "#{line.item&.brand&.name&.titleize} - #{line.item.name}" : line.name,
           line.cantidad,
           number_to_currency(line.precio),
           number_to_currency(line.descuento),
@@ -200,8 +200,8 @@ class OrderPdf < Prawn::Document
       header = [ [ "Unidad", "Concepto", "Cantidad", "Precio Unitario", "Descuento", "Importe" ] ]
       items = @order.line_items.map do |line|
         [
-          line.item.unidad,
-          "#{line.item&.brand&.name&.titleize} - #{line.item.name}",
+          line.item ? line.item.unidad : "Servicio",
+          line.item ? "#{line.item&.brand&.name&.titleize} - #{line.item.name}" : line.name,
           line.cantidad,
           number_to_currency(line.precio),
           number_to_currency(line.descuento),

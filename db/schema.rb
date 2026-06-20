@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_20_120839) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -120,6 +120,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.decimal "costo", precision: 17, scale: 4
     t.datetime "created_at", null: false
     t.decimal "descuento", precision: 17, scale: 4, default: "0.0"
+    t.integer "direccion", default: 0
     t.string "error"
     t.string "folio"
     t.string "forma_pago"
@@ -166,7 +167,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
   end
 
   create_table "corps", force: :cascade do |t|
-    t.decimal "balance", precision: 17, scale: 2, default: "0.0"
     t.text "business_hours"
     t.boolean "calendar", default: false
     t.string "calle"
@@ -230,6 +230,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.boolean "active", default: true
     t.string "calle"
     t.string "canal", default: "interno"
+    t.string "card_brand"
+    t.string "card_country"
+    t.string "card_exp_month"
+    t.string "card_exp_year"
+    t.string "card_last4"
     t.string "ciudad"
     t.string "colonia"
     t.string "cp"
@@ -259,6 +264,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.string "reset_password_token"
     t.string "rfc", default: "XAXX010101000"
     t.integer "sign_in_count", default: 0, null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_payment_method_id"
     t.integer "success_events", default: 0
     t.string "tel"
     t.string "tel_prefix"
@@ -272,10 +279,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
   end
 
   create_table "deposits", force: :cascade do |t|
+    t.integer "canal", default: 0
+    t.decimal "comision_sitio", precision: 17, scale: 4, default: "0.0"
     t.decimal "comision_terminal", precision: 17, scale: 4, default: "0.0"
     t.datetime "created_at", null: false
     t.integer "depositable_id"
     t.string "depositable_type"
+    t.string "error"
     t.string "folio"
     t.string "forma_pago"
     t.string "moneda", default: "MXN"
@@ -287,6 +297,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.text "sat_serial"
     t.text "sat_uuid"
     t.string "stamp_date"
+    t.integer "status_pago", default: 0
     t.string "stripe_payment_id"
     t.integer "tipo", null: false
     t.datetime "updated_at", null: false
@@ -351,6 +362,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
   end
 
   create_table "line_items", force: :cascade do |t|
+    t.string "body"
     t.decimal "cantidad", precision: 17, scale: 4
     t.decimal "com_vendedor", precision: 17, scale: 4, default: "0.0"
     t.string "comentario"
@@ -360,6 +372,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.string "error"
     t.integer "item_id"
     t.decimal "iva", precision: 17, scale: 4, default: "16.0"
+    t.string "name"
     t.integer "order_id", null: false
     t.decimal "precio", precision: 17, scale: 4
     t.datetime "updated_at", null: false
@@ -388,6 +401,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
   create_table "orders", force: :cascade do |t|
     t.decimal "abonado", precision: 17, scale: 4, default: "0.0"
     t.decimal "com_vendedor", precision: 17, scale: 4, default: "0.0"
+    t.decimal "comision_sitio", precision: 17, scale: 4, default: "0.0"
+    t.decimal "comision_terminal", precision: 17, scale: 4, default: "0.0"
     t.integer "corp_id", null: false
     t.decimal "costo", precision: 17, scale: 4
     t.decimal "costo_terminal", precision: 17, scale: 4
@@ -397,6 +412,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.decimal "debe", precision: 17, scale: 4, default: "0.0"
     t.decimal "descuento", precision: 17, scale: 4, default: "0.0"
     t.string "error"
+    t.bigint "event_id"
     t.date "fecha"
     t.string "folio"
     t.string "forma_pago"
@@ -413,6 +429,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.string "sat_uuid"
     t.integer "seller_id"
     t.string "status_pago", default: "pagado"
+    t.string "stripe_payment_id"
     t.decimal "subtotal", precision: 17, scale: 4
     t.string "tipo", default: "carrito"
     t.decimal "total", precision: 17, scale: 4
@@ -422,6 +439,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
     t.text "xml"
     t.index ["corp_id"], name: "index_orders_on_corp_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["event_id"], name: "index_orders_on_event_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
@@ -551,6 +569,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_13_075313) do
   add_foreign_key "message_events", "customers"
   add_foreign_key "orders", "corps"
   add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "events"
   add_foreign_key "orders", "users"
   add_foreign_key "providers", "corps"
   add_foreign_key "users", "corps"

@@ -110,20 +110,6 @@
   <div class="box_content">
     <label class="toggle_field disabled">
       <div class="toggle_info">
-        <span class="toggle_label">Acepta pagos en línea</span>
-        <span class="toggle_desc">Habilita pagos para citas y pedidos en línea</span>
-      </div>
-      <% if @corp.online_payments %>
-        <input type="checkbox" class="toggle_input" checked disabled>
-      <% else %>
-        <input type="checkbox" class="toggle_input" disabled>
-      <% end %>
-      <span class="toggle_track">
-        <span class="toggle_thumb"></span>
-      </span>
-    </label>
-    <label class="toggle_field disabled">
-      <div class="toggle_info">
         <span class="toggle_label">Facturacion?</span>
         <span class="toggle_desc">Activa si tu negocio realiza facturación</span>
       </div>
@@ -178,6 +164,28 @@
         <span class="toggle_thumb"></span>
       </span>
     </label>
+    <label class="toggle_field disabled">
+      <div class="toggle_info">
+        <span class="toggle_label">Acepta pagos en línea</span>
+        <span class="toggle_desc">Si tienes habilitado tu calendario público, se pedira un monto minimo de pago para agendar/reservar. Si tienes habilitado tu catalogo público, los clientes podrán realizar pagos en línea para sus pedidos.</span>
+      </div>
+      <% if @corp.online_payments %>
+        <input type="checkbox" class="toggle_input" checked disabled>
+      <% else %>
+        <input type="checkbox" class="toggle_input" disabled>
+      <% end %>
+      <span class="toggle_track">
+        <span class="toggle_thumb"></span>
+      </span>
+    </label>
+    <div class="columns is-multiline is-mobile mt-2">
+      <% if @corp.online_payments and  @corp.public_calendar %>
+        <div class="column is-6-desktop is-12-mobile">
+          <div class="labell">Monto minimo para agendar</div>
+          <p class="contentt"><%= number_to_currency(@corp.min_book_amount) %></p>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
 <%# show horarios de atencion %>
@@ -230,14 +238,6 @@
           <% end %>
         </tbody>
       </table>
-      <div class="columns is-multiline is-mobile mt-3">
-        <% if @corp.online_payments and  @corp.public_calendar %>
-          <div class="column is-6-desktop is-12-mobile">
-            <div class="labell">Monto minimo para agendar</div>
-            <p class="contentt"><%= number_to_currency(@corp.min_book_amount) %></p>
-          </div>
-        <% end %>
-      </div>
     </div>
   </div>
 <% end %>

@@ -1,0 +1,53 @@
+<%# day partial for public calendar - shows available slots %>
+<div class="day_number flexx flex-block vertical-center horizontal-center">
+  <%= date.day %>
+</div>
+<% if info_day %>
+  <% info_day[:slots].each do |slot| %>
+    <% next if slot[:fully_booked] %>
+    <div class="event_snippet mtrigger"
+         data-target="pub_slot_<%= identifier %>_<%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>">
+      <div>
+        <span class="tag is-rounded mr-1 is-success">
+          <%= slot[:agentes_libres] %> libre(s)
+        </span>
+      </div>
+      <div class="snippet_body">
+        <%= slot[:start] %> – <%= slot[:end] %>
+      </div>
+    </div>
+    <%# Modal con agentes disponibles %>
+    <div id="pub_slot_<%= identifier %>_<%= date.strftime('%Y%m%d') %>_<%= slot[:index] %>" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box">
+          <h3 class="title is-4">
+            <%= l(date, format: :long) %>
+            <button class="delete" aria-label="close"></button>
+          </h3>
+          <p class="mb-4 has-text-weight-bold is-size-5">
+            <%= slot[:start] %> – <%= slot[:end] %>
+          </p>
+          <% if slot[:free_agents].any? %>
+            <p class="labell mb-3">Selecciona agente:</p>
+            <div class="buttons">
+              <% slot[:free_agents].each do |agent| %>
+                <%= link_to corp_new_booking_path(corp.sku, dia: date, slot: slot[:range], user_id: agent.id),
+                    class: "button is-rounded is-fullwidth" do %>
+                  <span class="icon mr-2">
+                    <%= image_tag 'bolt.svg', alt: '', class: 'invert', style: 'width:1rem' %>
+                  </span>
+                  <%= agent.full_name&.titleize %>
+                <% end %>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="noti is-warning">
+              No hay agentes disponibles en este horario.
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

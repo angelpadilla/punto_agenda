@@ -1,6 +1,7 @@
 class Order < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :customer, optional: true
+  belongs_to :event, optional: true
   belongs_to :corp
   belongs_to :seller, class_name: "User", foreign_key: :seller_id, optional: true
 
@@ -11,12 +12,12 @@ class Order < ApplicationRecord
 
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)
-    %w[id tipo customer_id folio status_pago]
+    %w[id tipo customer_id folio status_pago event_id]
   end
 
   # Add this method to whitelist explicit associations for Ransack
   def self.ransackable_associations(auth_object = nil)
-    %w[customer seller]
+    %w[customer seller event]
   end
 
   enum :tipo,  {
@@ -52,7 +53,8 @@ class Order < ApplicationRecord
   enum :status_pago, {
     pagado: "pagado",
     credito: "credito",
-    cancelado: "cancelado"
+    cancelado: "cancelado",
+    pendiente: "pendiente"
   }
 
   Status = [
@@ -214,8 +216,9 @@ class Order < ApplicationRecord
     self.descuento = self.line_items.sum { |line| line.descuento }
     self.costo = self.line_items.sum { |line| line.costo_total }
     # self.ganancia = self.line_items.sum { |line| line.ganancia_total }
-    self.costo_terminal = self.deposits.sum(:comision_terminal)
-    self.ganancia = self.total - self.costo - self.costo_terminal
+    self.comision_terminal = self.deposits.sum { |deposit| deposit.comision_terminal }
+    self.comision_sitio = self.deposits.sum { |deposit| deposit.comision_sitio }
+    self.ganancia = self.total - self.costo - self.comision_terminal - self.comision_sitio
     self.com_vendedor = self.line_items.sum { |line| line.com_vendedor_total }
 
     puts "Total: #{self.total}, Subtotal: #{self.subtotal}, Impuestos: #{self.impuestos}, Descuento: #{self.descuento}, Costo: #{self.costo}, Ganancia: #{self.ganancia}"
@@ -230,7 +233,7 @@ class Order < ApplicationRecord
     if self.pagado? or self.cancelado?
       self.debe = 0.0
       self.abonado = self.total
-    elsif self.credito?
+    elsif self.credito? or self.pendiente?
       self.debe = self.total - self.deposits.sum(:monto)
       self.abonado = self.deposits.sum(:monto)
 

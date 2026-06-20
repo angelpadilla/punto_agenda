@@ -1,4 +1,6 @@
-<%= render 'user_panel/events/button_selector' %>
+<% if controller_name == 'events' %>
+  <%= render 'user_panel/events/button_selector' %>
+<% end %>
 <div class="flexx space-b flex-end mt-4">
   <div class="buttons has-addons events_actions">
     <%= link_to calendar.url_for_previous_view, data: {turbo: false}, class: "button" do %>
@@ -13,64 +15,68 @@
       <span class=" material-icons-round">arrow_right</span>
     <% end %>
   </div>
-  <div class="actions">
-    <div class="button is-rounded mtrigger" data-target="search_modal">
-      <span class="icon">
-        <%= image_tag 'search2.svg', alt: 'filter', class: 'invert' %>
-      </span>
+  <% if controller_name == 'events' %>
+    <div class="actions">
+      <div class="button is-rounded mtrigger" data-target="search_modal">
+        <span class="icon">
+          <%= image_tag 'search2.svg', alt: 'filter', class: 'invert' %>
+        </span>
+      </div>
+      <%= link_to new_event_path, class: "button is-primary is-rounded" do  %>
+        <span class="icon mr-2">
+          <%= image_tag 'calendar_plus.svg', alt: 'carrito' %>
+        </span>
+        Nuevo evento
+      <% end %>
     </div>
-    <%= link_to new_event_path, class: "button is-primary is-rounded" do  %>
-      <span class="icon mr-2">
-        <%= image_tag 'calendar_plus.svg', alt: 'carrito' %>
-      </span>
-      Nuevo evento
-    <% end %>
-  </div>
+  <% end %>
 </div>
-<%# modal %>
-<div id="search_modal" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-content">
-    <div class="box">
-      <%= search_form_for @q, url: events_path do |f| %>
-        <div class="columns is-multiline">
-          <div class="column is-12">
-            <%= f.search_field :folio_eq, class: 'input is-rounded', placeholder: 'Folio' %>
-          </div>
-          <div class="column is-12">
-            <%= f.search_field :recurrence_id_eq, class: 'input is-rounded', placeholder: 'Folio recurrencia' %>
-          </div>
-          <div class="column is-6">
-            <div class="control">
-              <%= f.select :customer_id_eq,
+<% if controller_name == 'events' %>
+  <%# modal %>
+  <div id="search_modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <%= search_form_for @q, url: events_path do |f| %>
+          <div class="columns is-multiline">
+            <div class="column is-12">
+              <%= f.search_field :folio_eq, class: 'input is-rounded', placeholder: 'Folio' %>
+            </div>
+            <div class="column is-12">
+              <%= f.search_field :recurrence_id_eq, class: 'input is-rounded', placeholder: 'Folio recurrencia' %>
+            </div>
+            <div class="column is-6">
+              <div class="control">
+                <%= f.select :customer_id_eq,
                 options_for_select(@customers.map {|c| ["#{c.razon} #{c.tel_prefix} #{c.tel}", c.id]}),
                 { prompt: "Cliente" },
                 { "data-controller": "slimselect", class: "ss2",}
               %>
+              </div>
             </div>
-          </div>
-          <div class="column is-6">
-            <div class="control">
-              <%= f.select :user_id_eq,
+            <div class="column is-6">
+              <div class="control">
+                <%= f.select :user_id_eq,
                 options_for_select(@users.map {|u| [u.full_name, u.id]}),
                 { prompt: "Agente/Vendedor" },
                 { "data-controller": "slimselect", class: "ss2",}
               %>
+              </div>
+            </div>
+            <div class="column is-6">
+              <div class="select is-rounded">
+                <%= f.select :status_eq, options_for_select(Event.statuses.keys.map {|k| [k.humanize, k]}), {prompt: "Status"}, {class: ""} %>
+              </div>
+            </div>
+            <div class="column is-6">
+              <div class="select is-rounded">
+                <%= f.select :canal_eq, options_for_select(Event.canals.keys.map {|k| [k.humanize, k]}), {prompt: "Canal"}, {class: ""} %>
+              </div>
             </div>
           </div>
-          <div class="column is-6">
-            <div class="select is-rounded">
-              <%= f.select :status_eq, options_for_select(Event.statuses.keys.map {|k| [k.humanize, k]}), {prompt: "Status"}, {class: ""} %>
-            </div>
-          </div>
-          <div class="column is-6">
-            <div class="select is-rounded">
-              <%= f.select :canal_eq, options_for_select(Event.canals.keys.map {|k| [k.humanize, k]}), {prompt: "Canal"}, {class: ""} %>
-            </div>
-          </div>
-        </div>
-        <%= f.submit 'Buscar', class: "button is-rounded is-primary is-fullwidth" %>
-      <% end %>
+          <%= f.submit 'Buscar', class: "button is-rounded is-primary is-fullwidth" %>
+        <% end %>
+      </div>
     </div>
   </div>
-</div>
+<% end %>

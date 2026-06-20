@@ -92,6 +92,11 @@ class Corp < ApplicationRecord
     %w[]
   end
 
+  def balance
+    deposits.where(status_pago: :pagado, canal: :stripe)
+            .sum("deposits.monto - deposits.comision_terminal - deposits.comision_sitio") || 0.0
+  end
+
   def full_name
     "#{razon} #{rfc}"
   end
@@ -295,7 +300,7 @@ class Corp < ApplicationRecord
 
     date = date.in_time_zone.to_date
 
-    eventss = events.where(
+    eventss = events.includes(:customer, :user, :orders).where(
       hora_inicio: date.beginning_of_day..date.end_of_day
     )
 

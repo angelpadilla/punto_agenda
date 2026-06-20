@@ -288,4 +288,21 @@ module Gtools
   rescue => e
     puts "🚫 Error inesperado al crear remision: #{e}"
   end
+
+  # Calcula la comisión de la plataforma: 6% + $10 MXN fijos.
+  # De ese monto se paga la comisión de Stripe; el remanente es ganancia de MiiNegocio.
+  def self.comision_minegocio(monto, internacional: false)
+    comision_total = (monto * 0.06 + 10.00).round(2)
+    stripe_fee     = self.stripe_fee(monto, internacional: internacional)
+    comision_app   = (comision_total - stripe_fee).round(2)
+    comision_app   = 0.0 if comision_app < 0
+
+    {
+      monto:          monto,
+      comision_total: comision_total,   # lo que paga el negocio
+      stripe_fee:     stripe_fee,       # lo que se lleva Stripe
+      comision_app:   comision_app      # ganancia neta de MiiNegocio
+    }
+  end
+
 end
