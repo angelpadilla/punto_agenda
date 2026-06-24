@@ -58,7 +58,7 @@
               <%= t_field(form, :phone, label: "Teléfono", placeholder: "Ej. 1234567890", clas: "control is-expanded", label_ghost: true) %>
             </div>
             <%= s_field(form, :tipo_negocio, options: Corp::TipoNegocios, label: "Tipo de negocio", clas: "field column is-12") %>
-            <div class="column is-12">
+            <div class="column is-12-mobile">
               <div class="doc_input">
                 <div class="doc_file_name"></div>
                 <div class="doc_file_size">JPG o PNG · max 5MB</div>
@@ -182,6 +182,9 @@
             <%= form.check_box :public_site, class: "toggle_input" %>
             <span class="toggle_track"><span class="toggle_thumb"></span></span>
           </label>
+          <div class="columns is-multiline mt-2">
+            <%= n_field(form, :min_book_amount, label: "Monto minimo para agendar", placeholder: "Ej. $100.00", min: 100.0, help: "Este es el monto mínimo que un cliente debe pagar para agendar una cita, el monto minimo es de $100.00 MXN, si lo dejas en blanco será gratis.", clas: "field column is-12 minBookAmountContainer") %>
+          </div>
         </div>
       </div>
     </div>
@@ -203,9 +206,6 @@
           </span>
         </div>
         <div class="box_content">
-          <div class="columns is-multiline">
-            <%= n_field(form, :min_book_amount, label: "Monto minimo para agendar", placeholder: "Ej. $100.00", min: 100.0, help: "Este es el monto mínimo que un cliente debe pagar para agendar una cita, el monto minimo es de $100.00 MXN, si lo dejas en blanco será gratis.", clas: "field column is-12 minBookAmountContainer") %>
-          </div>
           <% horas = (0..23).flat_map { |h| [0, 15, 30, 45].map { |m| format("%02d:%02d", h, m) } } %>
           <table class="table is-fullwidth">
             <thead>
@@ -220,6 +220,7 @@
                 <% day_config = @corp.business_hours&.dig(wday) || Corp::DEFAULT_BUSINESS_HOURS[wday] %>
                 <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
                 <% hours_list = day_config["hours"].presence || [ { "open" => "09:00", "close" => "18:00" } ] %>
+                <% hours_list = hours_list.values if hours_list.is_a?(Hash) %>
                 <tr>
                   <td><strong><%= day_name %></strong></td>
                   <td>

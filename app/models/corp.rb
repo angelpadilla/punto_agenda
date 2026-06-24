@@ -247,7 +247,7 @@ class Corp < ApplicationRecord
   ]
 
   after_initialize :set_default_business_hours
-  before_save :normalize_business_hours
+  before_validation :normalize_business_hours
 
   before_create :gen_sku
   after_create :create_stripe_customer

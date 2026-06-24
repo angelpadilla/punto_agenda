@@ -162,6 +162,7 @@
             <% day_config = corp.business_hours&.dig(wday) || { "active" => false, "hours" => [ { "open" => "09:00", "close" => "18:00" } ] } %>
             <% is_active = ActiveModel::Type::Boolean.new.cast(day_config["active"]) %>
             <% hours_list = day_config["hours"].presence || [ { "open" => "09:00", "close" => "18:00" } ] %>
+            <% hours_list = hours_list.values if hours_list.is_a?(Hash) %>
             <tr>
               <td><strong><%= day_name %></strong></td>
               <td>
