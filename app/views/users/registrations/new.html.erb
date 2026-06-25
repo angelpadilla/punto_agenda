@@ -63,14 +63,16 @@
         Registro
       </button>
       <hr>
-      <div class="buttons">
-        <%= link_to root_path, class: "button is-rounded is-link is-fullwidth" do %>
-          <span class="icon mr-4">
-            <%= image_tag 'google.svg', alt: 'Google' %>
-          </span>
-          Registro con Google
-        <% end %>
-      </div>
+      <% if false %>
+        <div class="buttons">
+          <%= link_to root_path, class: "button is-rounded is-link is-fullwidth" do %>
+            <span class="icon mr-4">
+              <%= image_tag 'google.svg', alt: 'Google' %>
+            </span>
+            Registro con Google
+          <% end %>
+        </div>
+      <% end %>
       <p class="help">
         Al registrarte, estás aceptando nuestros <%= link_to "Términos y condiciones", terminos_path, target: "_blank" %> y nuestra <%= link_to "Política de privacidad", privacidad_path, target: "_blank" %>.
       </p>
