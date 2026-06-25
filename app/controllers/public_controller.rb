@@ -18,6 +18,12 @@ class PublicController < ApplicationController
   end
 
 
+  def privacidad
+  end
+
+  def terminos
+  end
+
   def html_elements
   end
 

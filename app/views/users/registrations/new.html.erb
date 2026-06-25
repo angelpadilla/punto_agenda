@@ -71,6 +71,10 @@
           Registro con Google
         <% end %>
       </div>
+      <p class="help">
+        Al registrarte, estás aceptando nuestros <%= link_to "Términos y condiciones", terminos_path, target: "_blank" %> y nuestra <%= link_to "Política de privacidad", privacidad_path, target: "_blank" %>.
+      </p>
+      <br>
       <%= render "users/shared/links" %>
     <% end %>
   </div>
