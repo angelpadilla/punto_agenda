@@ -29,6 +29,12 @@
         </span>
         Confirmar
       <% end %>
+      <div class="button is-warning is-rounded mtrigger" data-target="rechazar_event">
+        <span class="icon mr-2">
+          <%= image_tag 'danger-triangle-svgrepo-com.svg', alt: 'view', loading: 'lazy' %>
+        </span>
+        Rechazar
+      </div>
     <% end %>
     <% if @event.agendado? %>
       <%= link_to edit_event_path(@event), class: "button is-rounded" do %>
@@ -38,7 +44,7 @@
         Editar
       <% end %>
     <% end %>
-    <% if @event.agendado? %>
+    <% if @event.agendado? or @event.completado? or @event.pendiente_pago? %>
       <div class="dropdown is-right is-hoverable">
         <div class="dropdown-trigger">
           <button class="button is-rounded" aria-haspopup="true">
@@ -50,41 +56,43 @@
         </div>
         <div class="dropdown-menu" role="menu">
           <div class="dropdown-content">
-            <a class="mtrigger dropdown-item" data-target="send_event_email">
-              <span class="icon">
-                <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
-              </span>
-              Email
-            </a>
-            <% if @corp.sms > 0 %>
-              <a class="mtrigger dropdown-item" data-target="send_event_sms">
+            <% if @event.agendado? or @event.completado? %>
+              <a class="mtrigger dropdown-item" data-target="send_event_email">
                 <span class="icon">
                   <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
                 </span>
-                SMS
+                Email
               </a>
+              <% if @corp.sms > 0 %>
+                <a class="mtrigger dropdown-item" data-target="send_event_sms">
+                  <span class="icon">
+                    <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+                  </span>
+                  SMS
+                </a>
+              <% end %>
+              <% if @corp.premium? or @corp.plus? %>
+                <%# enviar por whatsapp %>
+                <a class="mtrigger dropdown-item" data-target="send_event_whatsapp">
+                  <span class="icon">
+                    <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+                  </span>
+                  WhatsApp
+                </a>
+              <% end %>
             <% end %>
-            <% if @corp.premium? or @corp.plus? %>
-              <%# enviar por whatsapp %>
-              <a class="mtrigger dropdown-item" data-target="send_event_whatsapp">
-                <span class="icon">
-                  <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
-                </span>
-                WhatsApp
-              </a>
-            <% end %>
-            <% if @userr.admin? %>
+            <% if @userr.admin? and (@event.agendado? or @event.pendiente_pago?) %>
               <%# enviar por whatsapp %>
               <a class="mtrigger dropdown-item has-text-danger" data-target="cancel_event">
                 <span class="icon material-icons-round">delete</span>
                 Cancelar evento
               </a>
-              <% if @event.recurrente? %>
-                <a class="mtrigger dropdown-item has-text-danger" data-target="cancel_event_recurrence">
-                  <span class="icon material-icons-round">delete</span>
-                  Cancelar grupo de recurrencia
-                </a>
-              <% end %>
+            <% end %>
+            <% if @userr.admin? and @event.recurrente? %>
+              <a class="mtrigger dropdown-item has-text-danger" data-target="cancel_event_recurrence">
+                <span class="icon material-icons-round">delete</span>
+                Cancelar grupo de recurrencia
+              </a>
             <% end %>
           </div>
         </div>
@@ -429,6 +437,30 @@
           Abrir WhatsApp
         <% end %>
       </footer>
+    </div>
+  </div>
+<% end %>
+<% if @event.por_confirmar? %>
+  <div id="rechazar_event" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <%= form_with(url: rechazar_events_path(id: @event), method: :post) do |form| %>
+        <header class="modal-card-head">
+          <p class="modal-card-title">Rechazar evento</p>
+          <div class="delete" aria-label="close"></div>
+        </header>
+        <section class="modal-card-body">
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <label class="label">Motivo de rechazo</label>
+              <%= form.text_area :motivo, class: 'textarea is-rounded', required: true, placeholder: "Escribe el motivo del rechazo para registrar en el sistema y notificar al cliente" %>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <%= form.submit "Rechazar", class: "button is-danger is-rounded" %>
+        </footer>
+      <% end %>
     </div>
   </div>
 <% end %>

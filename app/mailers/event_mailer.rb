@@ -42,6 +42,8 @@ class EventMailer < ApplicationMailer
   def noti_corp
     @corp = params[:corp]
     @event = params[:event]
+    @order = params[:order] || nil
+    @pagado = @order&.pagado? || false
     email = @corp.email || @corp.prop.email
 
     mail(to: email, subject: "#{@corp.name} notificación importante")

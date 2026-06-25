@@ -199,7 +199,7 @@ class PublicController < ApplicationController
       else
         # si no se necesita pago en línea, simplemente esperamos a que el cliente pague en fisico
         # y confirmacion manual de la cita por parte del admin
-        EventMailer.with(corp: @corp, event: event).noti_corp.deliver_later
+        EventMailer.with(corp: @corp, event: event, order: nil).noti_corp.deliver_later
         redirect_to corp_home_path(@corp.sku), notice: "¡Cita agendada! Por favor espera la confirmación al email que proporcionaste."
       end
 
@@ -235,6 +235,14 @@ class PublicController < ApplicationController
     puts "------------------------------------------------"
 
     if @payment_intent.status == "succeeded"
+      @order.update!(status_pago: :pagado)
+      @customer.update(orders_count: @customer.orders_count + 1)
+      @deposit.update!(status_pago: :pagado, stripe_payment_id: @payment_intent.id)
+      @event.update!(status: :agendado)
+      EventMailer.with(corp: @corp, event: @event, order: @order).noti_corp.deliver_later
+      Gtools.telegram_noti(message: "MiiNegocio \nStripe pago exitoso de reserva online:\n Monto: #{@order.total} MXN\n Corp ID: #{@corp.id}\n Order ID: #{@order.id}\n Fecha: #{Time.current.strftime("%d %b %I:%M %p")}")
+      puts "🧾 Order creada para Corp #{@corp.id} con pago Stripe exitoso"
+
       payment_method_id = @payment_intent.payment_method
       payment_method = @stripe_client.v1.payment_methods.retrieve(payment_method_id)
 
@@ -275,14 +283,31 @@ class PublicController < ApplicationController
         puts "Monto para corp después de actualizar: #{monto_para_corp_despues}"
       end
 
+      redirect_to book_payment_success_show_path(@order.folio), notice: "¡Pago completado exitosamente!"
+
     else
       redirect_to corp_calendar_path(@corp.sku), alert: "El pago no se completó exitosamente. Status: #{@payment_intent.status}"
     end
   end
 
+  def book_payment_success_show
+    unless params[:folio].present?
+      return redirect_to root_path, alert: "Parametros incompletos"
+    end
+
+    @order = Order.find_by(folio: params[:folio])
+    if @order.nil?
+      return redirect_to root_path, alert: "Datos no encontrados"
+    end
+
+    @corp = @order.corp
+    @event = @order.event
+    # @customer = @order.customer
+  end
+
   def book_payment_error
     # validaciones
-    unless params[:session_id].present? and params[:event_folio].present? and params[:order_folio].present? and params[:sku].present? and params[:deposit_id].present? and params[:customer_id].present?
+    unless params[:event_folio].present? and params[:order_folio].present? and params[:sku].present? and params[:deposit_id].present? and params[:customer_id].present?
       return redirect_to root_path, alert: "Parametros incompletos"
     end
 
@@ -296,9 +321,18 @@ class PublicController < ApplicationController
       return redirect_to root_path, alert: "Datos no encontrados"
     end
 
-    @stripe_client = set_stripe_client
-    session  = @stripe_client.v1.checkout.sessions.retrieve(params[:session_id])
-    @payment_intent = @stripe_client.v1.payment_intents.retrieve(session.payment_intent)
+    @event.update!(status: :cancelado)
+    @order.update!(status_pago: :cancelado)
+    
+    if params[:session_id].present?
+      @stripe_client = set_stripe_client
+      session  = @stripe_client.v1.checkout.sessions.retrieve(params[:session_id])
+      @payment_intent = @stripe_client.v1.payment_intents.retrieve(session.payment_intent)
+      @deposit.update!(status_pago: :pagado, stripe_payment_id: @payment_intent.id)
+    end
+
+    # mostramos el mensaje de error al usuario un rato y despues redirigimos al calendario de la empresa
+    redirect_to corp_calendar_path(@corp.sku), alert: "El pago no se completó exitosamente."
   end
 
   private
@@ -360,7 +394,7 @@ class PublicController < ApplicationController
     puts payment_intent
     puts "------------------------------------------------"
     if payment_intent.status == "open"
-      puts "✅ Pago Stripe exitoso para Corp #{corp.id}, Monto: #{amount}"
+      puts "✅ Generacion de pago exitoso para Corp #{corp.id}, Monto: #{amount}"
       {
         success: true,
         status: payment_intent.status,
@@ -370,7 +404,7 @@ class PublicController < ApplicationController
         url: payment_intent.url
       }
     else
-      puts "❌ Pago Stripe no exitoso para Corp #{corp.id}, Status: #{payment_intent.status}"
+      puts "❌ Generacion de pago no exitoso para Corp #{corp.id}, Status: #{payment_intent.status}"
       {
         success: false,
         status: payment_intent.status,
@@ -413,6 +447,7 @@ class PublicController < ApplicationController
         forma_pago: :tarjeta_de_debito,
         status_pago: "pendiente",
         fecha: nowww,
+        canal: :web,
       )
       line =  LineItem.new(
         cantidad: 1,
@@ -440,16 +475,11 @@ class PublicController < ApplicationController
     puts "🧾 Order comision_sitio: #{order.comision_sitio}"
     puts "🧾 Order line_items: #{order.line_items.count}"
 
+    ## Generacion de intento de pago con Stripe
     response = stripe_payment(amount: monto, corp: corp, customer: customer, desc: "#{concepto}, order ID: #{order.id}", event_folio: event.folio, order_folio: order.folio, deposit_id: deposit.id, customer_id: customer.id)
 
     if response[:success]
-
-      order.update!(status_pago: :pagado)
-      deposit.update!(status_pago: :pagado, stripe_payment_id: response[:body].id)
-      event.update!(status: :agendado)
-      EventMailer.with(corp: corp, event: event).noti_corp.deliver_later
-      Gtools.telegram_noti(message: "MiiNegocio \nStripe pago exitoso de reserva online:\n Monto: #{order.total} MXN\n Corp ID: #{corp.id}\n Order ID: #{order.id}\n Fecha: #{Time.current.strftime("%d %b %I:%M %p")}")
-      puts "🧾 Order creada para Corp #{corp.id} con pago Stripe exitoso"
+      deposit.update!(stripe_payment_id: response[:body].id)
 
       # { success: true, order: order, deposit: deposit, response: response }
       redirect_to response[:url], allow_other_host: true, status: 303

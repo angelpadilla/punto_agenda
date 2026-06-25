@@ -28,6 +28,8 @@ class Order < ApplicationRecord
     factura: "factura"
   }
 
+  enum :canal, interno: 0, web: 1
+
   Tipo2 = [
     [ "Remisión", :remision ],
     [ "Factura", :factura ],

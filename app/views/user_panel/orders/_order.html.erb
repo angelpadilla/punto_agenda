@@ -10,6 +10,9 @@
         <% else %>
           <span class="tag is-danger is-rounded"><%= order.status_pago.titleize %></span>
         <% end %>
+        <% if order.web? %>
+          <span class="tag is-rounded">Web</span>
+        <% end %>
       </div>
       <h3 class="titlee2"><%= order.folio %></h3>
       <!-- info -->

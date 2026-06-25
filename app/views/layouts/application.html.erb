@@ -63,7 +63,7 @@
       <%= yield %>
       <%= render 'shared/footer' %>
     <% end %>
-    <%= yield :body %>
+    <%= yield :body_extra %>
     <script>
       function renderTurnstile() {
         const turnstiles = document.querySelectorAll('.cf-turnstile:not([data-rendered])');

@@ -13,6 +13,12 @@
       </span>
       Nuevo evento
     <% end %>
+    <%= link_to events_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'trash.svg', alt: 'limpiar busqueda', class: 'invert' %>
+      </span>
+      Limpiar busqueda
+    <% end %>
   </div>
 </div>
 <div class="flexx gap-1 mt-4">
@@ -84,7 +90,7 @@
       <%= search_form_for @q, url: events_path do |f| %>
         <div class="columns is-multiline">
           <div class="column is-12">
-            <%= f.search_field :folio_eq, class: 'input is-rounded', placeholder: 'Folio' %>
+            <%= f.search_field :folio_cont, class: 'input is-rounded', placeholder: 'Folio' %>
           </div>
           <div class="column is-12">
             <%= f.search_field :recurrence_id_eq, class: 'input is-rounded', placeholder: 'Folio recurrencia' %>

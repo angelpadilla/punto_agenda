@@ -1,0 +1,218 @@
+<div class="container mt-5">
+  <%# Breadcrumb %>
+  <div class="flexx space-b flex-end">
+    <h2 class="titlee">
+      <span class="icon mr-2">
+        <%= image_tag 'calendar.svg', alt: '', class: 'invert' %>
+      </span>
+      Detalle de pago y reserva
+    </h2>
+    <div class="actions">
+      <%= link_to corp_home_path(@corp.sku), class: "button is-rounded mr-2" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+        </span>
+        Volver a <%= @corp.name %>
+      <% end %>
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true">
+            <span class="icon">
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+            </span>
+            <span>Acciones</span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <%= link_to ticket_path(@order.folio), class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+              </span>
+              PDF pago
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="noti is-main mt-4">
+    Tu reserva ha sido confirmada y el pago se ha procesado correctamente. A continuación, encontrarás los detalles de tu reserva y el pago realizado.
+  </div>
+  <div class="box expandable is_active mt-4">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'bill-list-svgrepo-com.svg', class: "invert", alt: "Pago" %>
+        </span>
+        Pago
+        <span class="tag is-light is-rounded"><%= @order.tipo.titleize %></span>
+        <% if @order.status_pago == "pagado" %>
+          <span class="tag is-success is-rounded"><%= @order.status_pago.titleize %></span>
+        <% elsif @order.status_pago == "credito" %>
+          <span class="tag is-warning is-rounded"><%= @order.status_pago.titleize %></span>
+        <% else %>
+          <span class="tag is-danger is-rounded"><%= @order.status_pago.titleize %></span>
+        <% end %>
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <!-- info -->
+      <div class="columns is-mobile is-multiline ">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Folio</div>
+          <p class="contentt"><%= @order.folio %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Cliente</div>
+          <p class="contentt">
+            <% if @order.customer %>
+              <%= @order.customer.razon %> (<%= @order.customer.tel %>)
+            <% else %>
+              -
+            <% end %>
+          </p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Fecha creacion</div>
+          <p class="contentt"><%= l(@order.created_at, format: :long) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Forma de pago</div>
+          <p class="contentt"><%= @order.forma_pago&.titleize %></p>
+        </div>
+      </div>
+      <hr>
+      <div class="table-container">
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio unitario</th>
+              <th>Monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @order.line_items.each do |line| %>
+              <tr>
+                <th>
+                  <% if line.item %>
+                    <%= link_to truncate(line.item.name.titleize, length: 20), line.item, title: line.item.name.titleize %>
+                  <% else %>
+                    <%= line.name %>
+                  <% end %>
+                </th>
+                <td><%= line.cantidad %></td>
+                <td><%= number_to_currency(line.precio) %></td>
+                <td><%= number_to_currency(line.total) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="columns is-mobile is-multiline">
+      </div>
+      <hr>
+      <div class="columns is-mobile is-multiline">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Total</div>
+          <p class="contentt"><%= number_to_currency(@order.total) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Subtotal</div>
+          <p class="contentt"><%= number_to_currency(@order.subtotal) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">IVA</div>
+          <p class="contentt"><%= number_to_currency(@order.impuestos) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%# Evento %>
+  <div class="box expandable is_active mt-4">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'calendar2.svg', class: "invert", alt: "Evento" %>
+        </span>
+        Reserva
+        <% if @event.agendado? %>
+          <span class="tag is-rounded"><%= @event.status&.titleize %></span>
+        <% elsif @event.completado? %>
+          <span class="tag is-rounded is-success"><%= @event.status&.titleize %></span>
+        <% elsif @event.cancelado? %>
+          <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
+        <% elsif @event.ausencia? %>
+          <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
+        <% elsif @event.por_confirmar? %>
+          <span class="tag is-rounded is-warning"><%= @event.status&.titleize %></span>
+        <% else %>
+          <span class="tag is-rounded is-danger"><%= @event.status&.titleize %></span>
+        <% end %>
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <div class="columns is-multiline">
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              fingerprint
+            </span>
+            <div>
+              <p class="labell">Folio: </p>
+              <p><%= @event.folio ? @event.folio : "?" %></p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              assignment_ind
+            </span>
+            <div>
+              <p class="labell">Agente: </p>
+              <p><%= @event.user.full_name %></p>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="flexx">
+            <span class="icon material-icons-round mr-2">
+              event
+            </span>
+            <div>
+              <p class="labell">Dia y hora: </p>
+              <p>
+                <%= @event.hora_inicio.strftime("%d/%m/%Y") %> |
+                <%= @event.hora_inicio.strftime("%I:%M %p") %> - <%= @event.hora_final.strftime("%I:%M %p") %>
+              </p>
+            </div>
+          </div>
+        </div>
+        <% if @event.recurrente? %>
+          <div class="column is-6">
+            <div class="flexx">
+              <span class="icon material-icons-round mr-2">
+                access_time_filled
+              </span>
+              <div>
+                <p class="labell">Tipo: </p>
+                <p>
+                  Recurrente
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -7,8 +7,8 @@
     </div>
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a href="<%= root_path %>#ventajas" class="navbar-item">Ventajas</a>
-        <a href="<%= root_path %>#precios" class="navbar-item">Precios</a>
+        <a href="<%= request.path == '/' ? '#ventajas' : root_path + '#ventajas' %>" class="navbar-item">Ventajas</a>
+        <a href="<%= request.path == '/' ? '#precios' : root_path + '#precios' %>" class="navbar-item">Precios</a>
         <%= link_to "Articulos", index_blog_path, class: "navbar-item" %>
       </div>
       <div class="navbar-end">
@@ -44,11 +44,11 @@
         <%= image_tag 'shop.svg', alt: 'inicio', class: 'invert' %>
         panel
       <% end %>
-      <%= link_to "#{root_path}#ventajas", class: 'icon' do %>
+      <%= link_to "#{request.path == '/' ? '#ventajas' : root_path + '#ventajas'}", class: 'icon' do %>
         <%= image_tag 'bolt.svg', alt: 'ventajas', class: 'invert' %>
         ventajas  
       <% end %>
-      <%= link_to "#{root_path}#precios", class: 'icon' do %>
+      <%= link_to "#{request.path == '/' ? '#precios' : root_path + '#precios'}", class: 'icon' do %>
         <%= image_tag 'dollar.svg', alt: 'precios', class: 'invert' %>
         precios  
       <% end %>

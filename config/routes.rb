@@ -53,6 +53,7 @@ Rails.application.routes.draw do
     get ":sku/reservar", to: "public#new_booking", as: :corp_new_booking
     post ":sku/reservar", to: "public#book_event", as: :corp_book_event
     get "reservar/success", to: "public#book_payment_success", as: :corp_book_payment_success
+    get "reservar/success/:folio", to: "public#book_payment_success_show", as: :book_payment_success_show
     get "reservar/error", to: "public#book_payment_error", as: :corp_book_payment_error
   end
 
@@ -105,6 +106,7 @@ Rails.application.routes.draw do
         post :marcar_ausencia
         post :confirmar
         post :cancelar
+        post :rechazar
         post :cancelar_recurrence
 
         post :send_email, as: :send_email

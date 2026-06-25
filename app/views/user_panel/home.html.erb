@@ -13,7 +13,7 @@
   </div>
 <% end %>
 <% if !@corp.suspendido? %>
-  <% content_for :body do %>
+  <% content_for :body_extra do %>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <% end %>
   <div data-controller="auto-refresh" data-auto-refresh-interval-value="30">
@@ -298,6 +298,7 @@
                         <% if o.pagado? %><span class="tag is-rounded is-success">Pagado</span>
                         <% elsif o.credito? %><span class="tag is-rounded is-warning">Crédito</span>
                         <% elsif o.cancelado? %><span class="tag is-rounded is-danger">Cancelado</span>
+                        <% else %><span class="tag is-rounded is-light"><%= o.status_pago&.titleize %></span>
                         <% end %>
                       </td>
                       <td><span class="labell"><%= o.created_at.strftime("%-d/%m/%Y") %></span></td>

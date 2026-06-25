@@ -11,7 +11,13 @@
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <h2>Cita agendada por confirmar</h2>
+                    <h2>
+                      <% if @pagado %>
+                        Cita agendada y pagada
+                      <% else %>
+                        Cita agendada por confirmar
+                      <% end %>
+                    </h2>
                     <p>Saludos, <%= @corp.name&.titleize %></p>
                     <p>Tienes una cita pendiente por confirmar, detalles: </p>
                     <br>
@@ -19,8 +25,13 @@
                       <b>Cliente:</b> <%= @event.customer&.razon&.titleize %>
                     </p>
                     <p>
-                      <b>Folio:</b> <%= @event.folio %>
+                      <b>Folio evento:</b> <%= @event.folio %>
                     </p>
+                    <% if @order and @pagado %>
+                      <p>
+                        <b>Folio venta:</b> <%= @order&.folio %>
+                      </p>
+                    <% end %>
                     <p>
                       <b>Día:</b> <%= @event.hora_inicio.strftime("%d/%m/%Y") %>
                     </p>

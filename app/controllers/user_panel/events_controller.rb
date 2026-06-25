@@ -1,10 +1,10 @@
 class UserPanel::EventsController < UserPanelController
-  before_action :set_event, only: %i[ edit update destroy marcar_asistencia marcar_ausencia confirmar cancelar ]
+  before_action :set_event, only: %i[ edit update destroy marcar_asistencia marcar_ausencia confirmar cancelar rechazar ]
 
   def index
     @customers = @corp.customers.default
     @users = @corp.users.default
-    events = @corp.events.order("hora_inicio DESC", "created_at DESC")
+    events = @corp.events.order(created_at: :desc)
     @por_confirmar = events.por_confirmar.count
 
     @q = events.ransack(params[:q])
@@ -245,6 +245,17 @@ class UserPanel::EventsController < UserPanelController
 
     # EventMailer.with(event: @event, email: @event.customer.email).send_event_cancelation.deliver_later
     @event.update(status: :cancelado, motivo_cancelacion: motivo)
+    redirect_back(fallback_location: events_path, notice: "Evento cancelado.", status: :see_other)
+  end
+
+  def rechazar
+    motivo = params[:motivo]
+    # validar que el evento no esté ya cancelado
+    return redirect_back(fallback_location: events_path, alert: "El evento ya está cancelado.") if @event.cancelado?
+    return redirect_back(fallback_location: events_path, alert: "Motivo de cancelación es requerido.") if !motivo.present?
+
+    @event.update(status: :cancelado, motivo_cancelacion: motivo)
+    EventMailer.with(event: @event, email: @event.customer.email).send_event_cancelation.deliver_later
     redirect_back(fallback_location: events_path, notice: "Evento cancelado y notificado al cliente por email.", status: :see_other)
   end
 

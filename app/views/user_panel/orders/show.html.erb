@@ -159,6 +159,25 @@
       <div class="labell">Fecha creación</div>
       <p class="contentt"><%= l(@order.created_at, format: :long) %></p>
     </div>
+    <% if @order.event %>
+      <div class="column is-12">
+        <div class="flexx">
+          <span class="icon material-icons-round mr-2">
+            event
+          </span>
+          <div>
+            <p class="labell">Evento relacionado: </p>
+            <ul>
+              <li>
+                <%= link_to event_path(@order.event) do %>
+                  <%= @order.event.folio %> - <%= @order.event.canal %>
+                <% end %>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
   <% if @order.nota_interna.present? %>
     <div class="columns is-mobile is-multiline mt-2">
@@ -301,6 +320,9 @@
         <div class="column is-12">
           <div class="labell">Monto hacia mi balance (total - comisiones)</div>
           <p class="contentt has-text-success"><%= number_to_currency(monto_corp) %></p>
+          <p class="help">
+            MiiNegocio cobra una comision del 6% + 10 MXN por cada venta realizada a traves de la plataforma, este monto se descuenta del total de la venta y se refleja en tu balance.
+          </p>
         </div>
       </div>
     <% end %>
@@ -335,18 +357,25 @@
     </div>
   </div>
 </div>
-<% if @order.credito? %>
-  <div class="box">
+<% if true %>
+  <div class="box expandable">
     <div class="box_header">
       <h2>
         <span class="icon mr-2">
           <%= image_tag 'donut-bitten-svgrepo-com.svg', class: "invert", alt: "Deuda" %>
         </span>
-        Depositos y deuda 
+        Flujo de caja y abonos
       </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
     </div>
     <div class="box_content">
       <div class="columns is-mobile is-multiline">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Abonado</div>
+          <p class="contentt"><%= number_to_currency(@order.abonado) %></p>
+        </div>
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="labell">Debe</div>
           <p class="contentt">
@@ -354,12 +383,12 @@
           </p>
         </div>
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
-          <div class="labell">Abonado</div>
-          <p class="contentt"><%= number_to_currency(@order.abonado) %></p>
-        </div>
-        <div class="column is-12-mobile is-6-tablet is-4-desktop">
-          <div class="labell">Vence</div>
-          <p class="contentt <%= @order.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(@order.deadline, format: :long) %></p>
+          <div class="labell">Fecha límite</div>
+          <% if @order.deadline %>
+            <p class="contentt <%= @order.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(@order.deadline, format: :long) %></p>
+          <% else %>
+            -
+          <% end %>
         </div>
       </div>
       <% if @order.deposits.any? %>
@@ -384,7 +413,13 @@
                   <%= depo.created_at.strftime("%d/%m/%Y %I:%M %p") %>
                 </td>
                 <td>
-                  <%= depo.num_operacion ? depo.num_operacion : '-' %>
+                  <% if depo.num_operacion.present? %>
+                    <%= depo.num_operacion %>
+                  <% elsif depo.stripe_payment_id.present? %>
+                    <%= truncate(depo.stripe_payment_id) %>
+                  <% else %>
+                    -
+                  <% end %>
                 </td>
                 <td>
                   <%= depo.forma_pago&.titleize %>
