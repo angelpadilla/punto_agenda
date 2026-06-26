@@ -77,6 +77,8 @@ Rails.application.routes.draw do
       post "change_plan", to: "user_panel/corp#change_plan", as: :change_plan
       post "charge_sms", to: "user_panel/corp#charge_sms", as: :charge_sms
       post "charge_timbres", to: "user_panel/corp#charge_timbres", as: :charge_timbres
+      post "update_spei", to: "user_panel/corp#update_spei", as: :update_spei
+      post "retiro_fondos", to: "user_panel/corp#retiro_fondos", as: :retiro_fondos
     end
 
     resources :bills, controller: "user_panel/bills", only: %i[index show] do
@@ -161,6 +163,8 @@ Rails.application.routes.draw do
     resources :bills, controller: "admin/bills", only: %i[index show], as: :admin_bills do
       member do
         post :timbra
+        post :marcar_depositado_corp
+        post :marcar_error_corp
       end
     end
     resources :corps, controller: "admin/corps", only: %i[index show edit update], as: :admin_corps do

@@ -14,9 +14,20 @@
     <% elsif bill.status_pago == "pendiente" %>
       <span class="tag is-rounded is-warning"><%= bill.status_pago.humanize %></span>
     <% else %>
-      <span class="tag is-rounded"><%= bill.status_pago.humanize %></span>
+      <span class="tag is-rounded"><%= bill.status_pago&.humanize %></span>
     <% end %>
   </td>
   <td><span class="tag is-rounded"><%= bill.tipo.humanize %></span></td>
-  <td>$<%= number_with_precision(bill.total, precision: 2) %></td>
+  <td>
+    <% if bill.ingreso? %>
+      <span class="icon material-icons-round has-text-danger">
+        keyboard_double_arrow_up
+      </span>
+    <% else %>
+      <span class="icon material-icons-round has-text-success">
+        keyboard_double_arrow_down
+      </span>
+    <% end %>
+    <%= number_to_currency(bill.total) %>
+  </td>
 </tr>

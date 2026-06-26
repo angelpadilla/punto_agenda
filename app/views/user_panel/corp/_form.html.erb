@@ -105,7 +105,7 @@
           <span class="toggle_label">Calendario público?</span>
           <span class="toggle_desc">Habilita tu calendario público, para que tus clientes puedan ver tus horarios y hacer citas</span>
         </div>
-        <%= form.check_box :public_calendar, class: "toggle_input", data: { action: "form-corp#toggleMinBookAmount", form_corp_target: "publicCalendarCheck" } %>
+        <%= form.check_box :public_calendar, class: "toggle_input", data: { action: "form-corp#toggleBookAmount", form_corp_target: "publicCalendarCheck" } %>
         <span class="toggle_track">
           <span class="toggle_thumb"></span>
         </span>
@@ -125,7 +125,7 @@
           <span class="toggle_label">Acepta pagos en línea</span>
           <span class="toggle_desc">Si tienes habilitado tu calendario público, se pedira un monto minimo de pago para agendar/reservar. Si tienes habilitado tu catalogo público, los clientes podrán realizar pagos en línea para sus pedidos.</span>
         </div>
-        <%= form.check_box :online_payments, class: "toggle_input", data: { action: "form-corp#toggleMinBookAmount", form_corp_target: "onlinePaymentsCheck" } %>
+        <%= form.check_box :online_payments, class: "toggle_input", data: { action: "form-corp#toggleBookAmount", form_corp_target: "onlinePaymentsCheck" } %>
         <span class="toggle_track">
           <span class="toggle_thumb"></span>
         </span>
@@ -135,7 +135,7 @@
       </div>
     </div>
   </div>
-  <div class="box expandable mt-4 is_active"  data-form-corp-target="businessHoursContainer">
+  <div class="box expandable mt-4 is_active" data-form-corp-target="businessHoursContainer">
     <div class="box_header">
       <h2>
         <span class="icon mr-2">

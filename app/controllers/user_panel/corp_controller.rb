@@ -22,6 +22,78 @@ class UserPanel::CorpController < UserPanelController
     end
   end
 
+  def update_spei
+    clabe = params[:banco_clabe]
+    beneficiario = params[:banco_beneficiario]
+
+    if clabe.blank? || beneficiario.blank?
+      return redirect_to user_corp_landing_path, alert: "Todos los campos de SPEI son obligatorios."
+    end
+
+    @corp.assign_attributes(banco_clabe: clabe, banco_beneficiario: beneficiario)
+    if @corp.save(validate: false)
+      redirect_to user_corp_landing_path, notice: "Información de SPEI actualizada exitosamente."
+    else
+      redirect_to user_corp_landing_path, alert: "Error al actualizar la información de SPEI: #{@corp.errors.full_messages.join(', ')}"
+    end
+  end
+
+  def retiro_fondos
+    puts "--- RETIRO DE FONDOS ---"
+    deposits = @corp.deposits.where(status_pago: :pagado, canal: :stripe)
+    balance = deposits.sum { |d| d.monto - d.comision_terminal - d.comision_sitio }
+
+    ## deposits_involded ids string
+    deposits_involved = deposits.map(&:id).join(",")
+
+    if balance <= 0 or deposits.blank?
+      return redirect_to user_corp_landing_path, alert: "No hay fondos disponibles para retiro."
+    end
+
+    bill = nil
+    line = nil
+    bill = Bill.new(
+      corp_id: @corp.id,
+      tipo: "remision",
+      forma_pago: :trasferencia_electronica,
+      moneda: "mxn",
+      status_pago: "pendiente",
+      direccion: :egreso,
+      nota_for_corp: "Solicitud de retiro, se verifica manualmente y puede tardar hasta 72 horas hábiles en reflejarse en tu cuenta bancaria.",
+      retiro_clabe: @corp.banco_clabe,
+      retiro_banco: @corp.banco_nombre,
+      retiro_beneficiario: @corp.banco_beneficiario,
+      retiro_deposits: deposits_involved
+    )
+    line =  BillItem.new(
+      cantidad: 1,
+      nombre: "Retiro de fondos",
+      precio: balance,
+      descuento: 0,
+      iva: 0.0,
+      costo: 0.0
+    )
+    bill.bill_items << line
+    if bill.save
+      puts "🧾 Bill total: #{bill.total}"
+      puts "🧾 Bill line_items: #{bill.bill_items.count}"
+
+      ## limpiamos balance del corp
+      deposits.each do |deposit|
+        deposit.update(status_pago: :depositado)
+      end
+
+      redirect_to user_corp_landing_path, notice: "Solicitud de retiro de fondos creada exitosamente. Se ha generado una factura por $#{bill.total} MXN. Folio: #{bill.folio}"
+    else
+      puts "🚫 Error al crear Bill: #{bill.errors.full_messages.join(', ')}"
+      redirect_to user_corp_landing_path, alert: "Error al crear la solicitud de retiro de fondos: #{bill.errors.full_messages.join(', ')}"
+
+    end
+  rescue => e
+    puts "🚫 Error inesperado al crear retiro: #{e}"
+    redirect_to user_corp_landing_path, alert: "Error inesperado al crear la solicitud de retiro de fondos."
+  end
+
   def initial_corp_setup
   end
 
@@ -228,7 +300,9 @@ class UserPanel::CorpController < UserPanelController
       :logo,
       :email,
       :public_calendar,
-      :min_book_amount
+      :min_book_amount,
+      :banco_clabe,
+      :banco_beneficiario
     ).to_h
     bh = params.dig(:corp, :business_hours)
     permitted["business_hours"] = bh.to_unsafe_h if bh.present?

@@ -23,7 +23,7 @@
         <p class="labell">Bienvenido de vuelta, <%= @userr.full_name&.titleize || @userr.email %> <%= @userr.id %></p>
         <h2 class="titlee">
           <%= @corp.name&.titleize %> (<%= @corp.sku %>)
-          <span class="tag"><%= @corp.tipo_plan %></span>
+          <span class="tag is-rounded"><%= @corp.tipo_plan %></span>
         </h2>
         <p class="labell"><%= l(Time.current, format: :long) %></p>
       </div>
@@ -262,7 +262,7 @@
                 <% end %>
               <% else %>
                 <div class="empty_state">
-                  <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+                  <%= image_tag 'check.svg', class: 'invert empty_state_icon' %>
                   <p>Sin alertas</p>
                 </div>
               <% end %>
@@ -503,7 +503,7 @@
                 <% end %>
               <% else %>
                 <div class="empty_state">
-                  <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+                  <%= image_tag 'check.svg', class: 'invert empty_state_icon' %>
                   <p>Sin saldos pendientes</p>
                 </div>
               <% end %>
@@ -565,7 +565,7 @@
           <div class="columns is-multiline is-mobile mb-2">
             <div class="column is-6-mobile is-4-tablet">
               <div class="box stat_card is-accent">
-                <div class="stat_icon"><%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert' %></div>
+                <div class="stat_icon"><%= image_tag 'check.svg', class: 'invert' %></div>
                 <div class="stat_val"><%= @eventos_completados_mes %></div>
                 <div class="stat_label">Eventos completados este mes</div>
               </div>
@@ -791,7 +791,7 @@
             </table>
           <% else %>
             <div class="empty_state">
-              <%= image_tag 'check-circle-svgrepo-com.svg', class: 'invert empty_state_icon' %>
+              <%= image_tag 'check.svg', class: 'invert empty_state_icon' %>
               <p>Sin alertas de inventario</p>
             </div>
           <% end %>

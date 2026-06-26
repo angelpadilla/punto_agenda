@@ -24,23 +24,61 @@
     </div>
   </div>
 </div>
-<div class="columns is-multiline is-mobile">
-  <div class="column is-4-desktop is-6-tablet is-12-mobile">
+<div class="columns is-multiline is-mobile mt-4">
+  <div class="column is-4-desktop is-6-tablet is-12-mobile has-text-centered">
     <div class="labell">Facturas</div>
     <p class="">
       <%= @result.count %>
     </p>
   </div>
-  <div class="column is-4-desktop is-6-tablet is-12-mobile">
-    <div class="labell">Facturas pagadas</div>
+  <div class="column is-4-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">
+      <span class="icon material-icons-round has-text-success">
+        keyboard_double_arrow_down
+      </span>
+      Facturas pagadas 
+    </div>
     <p class="">
       <%= @result.pagado.count %>
     </p>
   </div>
-  <div class="column is-4-desktop is-6-tablet is-12-mobile">
-    <div class="labell">Facturas pagadas total</div>
-    <p class="">
-      <%= number_to_currency(@result.pagado.sum(:total)) %>
+  <div class="column is-4-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">
+      <span class="icon material-icons-round has-text-success">
+        keyboard_double_arrow_down
+      </span>
+      Facturas pagadas monto
+    </div>
+    <p class="has-text-success ">
+      <%= number_to_currency(@bills_pagadas.sum(:total)) %>
+    </p>
+  </div>
+  <div class="column is-4-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">Retiros pendientes</div>
+    <%= link_to admin_bills_path(q: { status_pago_eq: "pendiente", direccion_eq: 1 }), class: "has-text-warning" do %>
+      <%= @retiros_pendientes.count %>
+    <% end %>
+  </div>
+  <div class="column is-4-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">
+      <span class="icon material-icons-round has-text-danger">
+        keyboard_double_arrow_up
+      </span>
+      Facturas pagadas cliente
+    </div>
+    <p class="has-text-warning">
+      <%= @bills_pagadas_a_cliente.count %>
+    </p>
+  </div>
+  <div class="column is-4-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">
+      <span class="icon material-icons-round has-text-danger">
+        keyboard_double_arrow_up
+      </span>
+      Facturas pagadas a cliente monto
+    </div>
+    <p class="has-text-warning">
+      <%= number_to_currency(@bills_pagadas_a_cliente.sum(:total)) %>
     </p>
   </div>
 </div>
@@ -61,6 +99,11 @@
     <div class="column is-2">
       <div class="select is-rounded">
         <%= f.select :status_pago_eq, options_for_select(Bill.status_pagos.keys.map { |k| [k.humanize, k] }, (params[:q] and !params[:q][:status_pago_eq].blank?) ? params[:q][:status_pago_eq] : nil), {prompt: "Estatus pago"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :direccion_eq, options_for_select(Bill.direccions.map { |k, v| [k.humanize, v] }, (params[:q] and !params[:q][:direccion_eq].blank?) ? params[:q][:direccion_eq] : nil), {prompt: "Dirección"}, {class: ""} %>
       </div>
     </div>
     <div class="column is-3">

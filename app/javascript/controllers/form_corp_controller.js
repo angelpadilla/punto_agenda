@@ -5,7 +5,7 @@ export default class extends Controller {
 
     connect() {
         this.setBussinessHours()
-        this.toggleMinBookAmount()
+        this.toggleBookAmount()
         this._boundSubmit = this._onSubmit.bind(this)
         this.element.closest("form")?.addEventListener("submit", this._boundSubmit)
     }
@@ -25,7 +25,7 @@ export default class extends Controller {
             .forEach(btn => btn.disabled = !active)
     }
 
-    toggleMinBookAmount() {
+    toggleBookAmount() {
         const show = this.onlinePaymentsCheckTarget.checked && this.publicCalendarCheckTarget.checked
         const minBookContainer = document.querySelector(".minBookAmountContainer")
         if (minBookContainer) {

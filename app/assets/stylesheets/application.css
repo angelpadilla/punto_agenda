@@ -264,6 +264,18 @@ div.box {
         }
     }
 
+    &.is-warning {
+        background-color: var(--neon-warning-background) !important;
+        border: 1px solid var(--neon-warning-border);
+
+        h1,
+        h2,
+        h3 {
+            color: var(--warning);
+            font-weight: 600;
+        }
+    }
+
     &.is-main {
         background: var(--neon-background) !important;
         border: 1px solid var(--neon-border);

@@ -6,7 +6,7 @@ class Deposit < ApplicationRecord
   scope :default, -> { order(created_at: :desc) }
 
   enum :tipo, ingreso: 0, egreso: 1
-  enum :status_pago, pagado: 0, pendiente: 1, cancelado: 2, error_pago: 3, pagado_depositado: 4
+  enum :status_pago, pagado: 0, pendiente: 1, cancelado: 2, error_pago: 3, depositado: 4
   enum :canal, interno: 0, stripe: 1
 
   enum :forma_pago, {
@@ -46,7 +46,7 @@ class Deposit < ApplicationRecord
   private
   def gen_folio
     token = SecureRandom.alphanumeric(10).downcase
-    while Order.where(folio: token).exists?
+    while Deposit.where(folio: token).exists?
       token = SecureRandom.alphanumeric(10).downcase
     end
     self.folio = token

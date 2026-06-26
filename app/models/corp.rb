@@ -63,6 +63,10 @@ class Corp < ApplicationRecord
   validates :phone, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
   validates :min_book_amount, numericality: { greater_than_or_equal_to: 100, message: "El monto mínimo debe ser al menos $100.00 MXN" }, allow_blank: true
 
+  validates :banco_clabe, presence: { message: "La CLABE es requerida" }, if: :online_payments?
+  validates :banco_clabe, format: { with: /\A\d{18}\z/, message: "La CLABE debe ser un número de 18 dígitos" }, if: :online_payments?
+  validates :banco_beneficiario, presence: { message: "El nombre del beneficiario es requerido" }, if: :online_payments?
+
   # validates :whatsapp, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }, allow_blank: true
   # validates :whatsapp, length: { maximum: 15, message: "Teléfono debe tener máximo 15 dígitos" }, allow_blank: true
 
@@ -93,8 +97,13 @@ class Corp < ApplicationRecord
   end
 
   def balance
-    deposits.where(status_pago: :pagado, canal: :stripe)
-            .sum("deposits.monto - deposits.comision_terminal - deposits.comision_sitio") || 0.0
+    # deposits.where(status_pago: :pagado, canal: :stripe)
+    #         .sum("deposits.monto - deposits.comision_terminal - deposits.comision_sitio") || 0.0
+    deposits.where(status_pago: :pagado, canal: :stripe).sum { |d| d.monto - d.comision_terminal - d.comision_sitio } || 0.0
+  end
+
+  def last_for_retiro
+    bills.where(direccion: :egreso).last
   end
 
   def full_name
@@ -131,6 +140,14 @@ class Corp < ApplicationRecord
 
   def corp_ready?
     if self.name.present? and self.email.present? and self.tipo_negocio.present? and self.phone.present? and self.tel_prefix.present? and self.logo.attached?
+      true
+    else
+      false
+    end
+  end
+
+  def spei?
+    if self.banco_clabe.present? and self.banco_nombre.present? and self.banco_beneficiario.present?
       true
     else
       false
@@ -252,6 +269,20 @@ class Corp < ApplicationRecord
   before_create :gen_sku
   after_create :create_stripe_customer
   after_create :send_notification
+
+  before_save :check_banco
+
+  def check_banco
+    ## sacamos el nombre del banco a partir de la clabe
+    if self.banco_clabe.present? and self.banco_beneficiario.present?
+      nombre = Setting::ClaveBancos[self.banco_clabe[0..2]]
+      if nombre.present?
+        self.banco_nombre = nombre.capitalize
+      else
+        self.banco_nombre = "Otro"
+      end
+    end
+  end
 
   def working_day?(date)
     return false if business_hours.blank?

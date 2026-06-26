@@ -4,7 +4,7 @@ class Bill < ApplicationRecord
 
   ## ransack search
   def self.ransackable_attributes(auth_object = nil)
-    %w[id tipo corp_id folio forma_pago status_pago]
+    %w[id tipo corp_id folio forma_pago status_pago direccion]
   end
 
   # Add this method to whitelist explicit associations for Ransack
@@ -17,10 +17,14 @@ class Bill < ApplicationRecord
     factura: "factura"
   }
 
-  enum :direccion, egreso: 0, ingreso: 1
+  # la direccion de en relacion a Miinegocio, ingreso es cuando Miinegocio recibe dinero, egreso es cuando Miinegocio paga a alguien 
+  # egresos son solicitudes de retiro de fondos del usuario
+  # ingresos son pagos de usuarios a Miinegocio (plan mensual)
+  enum :direccion, ingreso: 0, egreso: 1
 
   enum :status_pago, {
     pagado: "pagado",
+    depositado: "depositado", # status especial para retiros de fondos ya pagado al usuario
     cancelado: "cancelado",
     error_pago: "error_pago",
     pendiente: "pendiente"

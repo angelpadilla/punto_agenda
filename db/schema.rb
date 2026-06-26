@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_25_123517) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_235100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,6 +129,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_123517) do
     t.string "moneda"
     t.text "nota_for_corp"
     t.text "nota_interna"
+    t.string "num_operacion"
+    t.string "retiro_banco"
+    t.string "retiro_beneficiario"
+    t.string "retiro_clabe"
+    t.text "retiro_deposits"
     t.text "sat_cfdi"
     t.text "sat_sello"
     t.string "sat_sello_emisor"
@@ -167,6 +172,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_123517) do
   end
 
   create_table "corps", force: :cascade do |t|
+    t.string "banco_beneficiario"
+    t.string "banco_clabe"
+    t.string "banco_nombre"
     t.text "business_hours"
     t.boolean "calendar", default: false
     t.string "calle"

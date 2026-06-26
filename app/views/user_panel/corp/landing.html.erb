@@ -319,23 +319,113 @@
   </div>
 </div>
 <div class="box is-main">
-  <div class="columns">
-    <div class="column is-9">
+  <div class="columns is-multiline is-mobile">
+    <div class="column is-12">
       <h2>Balance</h2>
       <p><%= number_to_currency @balance %></p>
       <p class="help">
-        El balance representa los fondos disponibles para retiro, calculados como la suma de los depósitos pagados a través de Tarjetas de credito/debito en tu tienda, menos las comisiones correspondientes. El monto minimo para poder retirar fondos es de $500 MXN. Los retiros se procesan manualmente y pueden tardar hasta 72 horas hábiles en reflejarse en tu cuenta bancaria.
+        El balance representa los fondos disponibles para retiro, calculados como la suma de los depósitos pagados a través de Tarjetas de credito/debito en tu tienda, menos las comisiones correspondientes. El monto minimo para poder retirar fondos es de <%= number_to_currency(Setting::MontoMinimoRetiro) %> MXN. Los retiros se procesan manualmente y pueden tardar hasta 72 horas hábiles en reflejarse en tu cuenta bancaria.
       </p>
     </div>
-    <div class="column">
-      <div class="button is-rounded is-fullwidth is-primary" disabled="<%= !(@balance > 500) %>">
-        <span class="icon mr-1">
-          <%= image_tag 'bolt.svg', alt: 'login' %>
-        </span>
-        Retirar fondos
+    <% retiro = @corp.last_for_retiro %>
+    <% if retiro.present? %>
+      <div class="column is-12">
+        <div class="labell">Ultimo retiro</div>
+        <%= link_to bill_path(retiro), class: "" do %>
+          <% if retiro.depositado? %>
+            (Pagado)
+          <% else %>
+            (<%= retiro.status_pago %>)
+          <% end %>
+          <%= number_to_currency(retiro.total) %> - <%= retiro.folio %>
+        <% end %>
       </div>
+    <% end %>
+    <% if @corp.spei? %>
+      <div class="column is-6-mobile is-4-tablet is-4-desktop">
+        <div class="labell">CLABE interbancaria</div>
+        <p><%= @corp.banco_clabe %></p>
+      </div>
+      <div class="column is-6-mobile is-4-tablet is-4-desktop">
+        <div class="labell">Beneficiario</div>
+        <p><%= @corp.banco_beneficiario %></p>
+      </div>
+      <div class="column is-6-mobile is-4-tablet is-4-desktop">
+        <div class="labell">Nombre del banco</div>
+        <p><%= @corp.banco_nombre %></p>
+      </div>
+      <div class="column is-12">
+        <% if @balance > Setting::MontoMinimoRetiro %>
+          <%= button_to retiro_fondos_path, class: "button is-rounded is-fullwidth is-primary" do %>
+            <span class="icon mr-1">
+              <%= image_tag 'bolt.svg', alt: 'login' %>
+            </span>
+            Retirar fondos
+          <% end %>
+        <% else %>
+          <div class="button is-rounded is-fullwidth is-primary" disabled>
+            <span class="icon mr-1">
+              <%= image_tag 'bolt.svg', alt: 'login' %>
+            </span>
+            Retirar fondos
+          </div>
+        <% end %>
+        <div class="button is-rounded is-fullwidth is-info mt-4 mtrigger" data-target="spei_modal">
+          <span class="icon mr-1">
+            <%= image_tag 'document-add-svgrepo-com.svg', alt: 'login', class: 'invert' %>
+          </span>
+          Editar datos de cuenta SPEI
+        </div>
+      </div>
+    <% else %>
+      <div class="column is-12">
+        <div class="labell">No tienes una cuenta SPEI asociada</div>
+        <p>
+          Para poder recibir pagos mediante SPEI, primero debes ingresar los datos de tu cuenta bancaria.
+        </p>
+      </div>
+      <div class="column is-12">
+        <div class="button is-rounded is-fullwidth is-primary" disabled>
+          <span class="icon mr-1">
+            <%= image_tag 'bolt.svg', alt: 'login' %>
+          </span>
+          Retirar fondos
+        </div>
+        <div class="button is-rounded is-fullwidth is-info mt-4 mtrigger" data-target="spei_modal">
+          <span class="icon mr-1">
+            <%= image_tag 'document-add-svgrepo-com.svg', alt: 'login', class: 'invert' %>
+          </span>
+          Ingresar datos de cuenta SPEI
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div id="spei_modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <h3 class="title is-4">Datos de cuenta SPEI</h3>
+      <%= form_with url: update_spei_path, method: :post  do |f| %>
+        <div class="columns is-multiline">
+          <div class="field column is-12">
+            <label class="label">CLABE interbancaria <span class="has-text-danger">*</span></label>
+            <div class="control">
+              <%= f.text_field :banco_clabe, value: @corp.banco_clabe, class: 'input is-rounded', placeholder: '123456789012345678', required: true %>
+            </div>
+          </div>
+          <div class="field column is-12">
+            <label class="label">Nombre del beneficiario <span class="has-text-danger">*</span></label>
+            <div class="control">
+              <%= f.text_field :banco_beneficiario, value: @corp.banco_beneficiario, class: 'input is-rounded', placeholder: 'Nombre del beneficiario', required: true %>
+            </div>
+          </div>
+        </div>
+        <%= f.submit "Guardar", class: "button is-primary is-rounded is-fullwidth" %>
+      <% end %>
     </div>
   </div>
+  <button class="modal-close is-large" aria-label="close"></button>
 </div>
 <% if !@corp.suspendido? %>
   <div class="box">

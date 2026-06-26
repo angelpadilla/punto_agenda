@@ -8,7 +8,7 @@
       </span>
       Volver a listado 
     <% end %>
-    <% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and current_admin.super? %>
+    <% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and current_admin.super? and @bill.ingreso? %>
       <button class="mtrigger button is-rounded" data-target="timbraa">
         <span class="icon mr-2">
           <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
@@ -16,36 +16,50 @@
         Timbra
       </button>
     <% end %>
-    <% if @bill.pagado? %>
-      <div class="dropdown is-right is-hoverable">
-        <div class="dropdown-trigger">
-          <button class="button is-rounded" aria-haspopup="true">
-            <span class="icon">
-              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
-            </span>
-            <span>Acciones</span>
-          </button>
-        </div>
-        <div class="dropdown-menu" role="menu">
-          <div class="dropdown-content">
-            <%= link_to bill_path(@bill, format: :pdf), class: "dropdown-item" do %>
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <% if @bill.pendiente? and @bill.egreso? %>
+            <div class="dropdown-item mtrigger" data-target="marcar_depositado">
+              <span class="icon">
+                <%= image_tag 'check.svg', alt: 'download', class: 'invert' %>
+              </span>
+              Marcar depositado
+            </div>
+            <div class="dropdown-item mtrigger" data-target="marcar_error_corp">
+              <span class="icon">
+                <%= image_tag 'danger-triangle-svgrepo-com.svg', alt: 'download', class: 'invert' %>
+              </span>
+              Marcar error pago
+            </div>
+          <% end %>
+          <% if @bill.pagado? %>
+            <%= link_to admin_bill_path(@bill, format: :pdf), class: "dropdown-item" do %>
               <span class="icon">
                 <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
               </span>
               PDF
             <% end %>
             <% if @bill.factura? and @bill.xml.present? %>
-              <%= link_to bill_path(@bill, format: :xml), class: "dropdown-item" do %>
+              <%= link_to admin_bill_path(@bill, format: :xml), class: "dropdown-item" do %>
                 <span class="icon">
                   <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
                 </span>
                 XML
               <% end %>
             <% end %>
-          </div>
+          <% end %>
         </div>
       </div>
-    <% end %>
+    </div>
   </div>
 </div>
 <% if @bill.nota_for_corp.present? %>
@@ -64,12 +78,16 @@
 <% end %>
 <div class="box mt-4">
   <span class="tag is-light is-rounded"><%= @bill.tipo.titleize %></span>
-  <% if @bill.status_pago == "pagado" %>
+  <% if @bill.pagado? %>
     <span class="tag is-success is-rounded"><%= @bill.status_pago.titleize %></span>
-  <% elsif @bill.status_pago == "credito" %>
+  <% elsif @bill.depositado? %>
+    <span class="tag is-success is-rounded">Pagado</span>
+  <% elsif @bill.cancelado? or @bill.error_pago? %>
+    <span class="tag is-warning is-rounded"><%= @bill.status_pago.titleize %></span>
+  <% elsif @bill.pendiente? %>
     <span class="tag is-warning is-rounded"><%= @bill.status_pago.titleize %></span>
   <% else %>
-    <span class="tag is-danger is-rounded"><%= @bill.status_pago.titleize %></span>
+    <span class="tag is-rounded"><%= @bill.status_pago&.titleize %></span>
   <% end %>
   <h3 class="titlee2"><%= @bill.folio %></h3>
   <!-- info -->
@@ -174,6 +192,31 @@
     </div>
   </div>
 </div>
+<% if @bill.egreso? %>
+  <div class="box">
+    <div class="box_header">
+      <h2>
+        Datos transferencia en requisición de retiro
+      </h2>
+    </div>
+    <div class="box_content">
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">CLABE interbancaria</div>
+          <p class="contentt"><%= @bill.retiro_clabe %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Beneficiario</div>
+          <p class="contentt"><%= @bill.retiro_beneficiario %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Nombre del banco</div>
+          <p class="contentt"><%= @bill.retiro_banco %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
 <%# modals %>
 <% if !@bill.timbre? and @corp.me_pueden_facturar? %>
   <div id="timbraa" class="modal">
@@ -190,6 +233,52 @@
             </div>
           </div>
           <%= form.submit "Timbrar", class: "button is-primary is-fullwidth is-rounded" %>
+        <% end %>
+      </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+<% end %>
+<% if @bill.pendiente? and @bill.egreso? %>
+  <div id="marcar_depositado" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <% mensaje_sugerido = "Solicitud de retiro procesada, se han transferido los fondos a Beneficiario: #{@bill.retiro_beneficiario}, CLABE: #{@bill.retiro_clabe}, Banco: #{@bill.retiro_banco} \nMonto: #{number_to_currency(@bill.total)} MXN" %>
+        <%= form_with url: marcar_depositado_corp_admin_bill_path(@bill), method: :post do |form| %>
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <%= form.label :nota_for_corp, "Nota para el cliente", class: "label" %>
+              <%= form.text_area :nota_for_corp, value: mensaje_sugerido, class: "textarea", rows: 3, placeholder: "Agregar nota..." %>
+            </div>
+            <div class="field column is-12">
+              <%= form.label :nota_interna, "Nota interna", class: "label" %>
+              <%= form.text_area :nota_interna, value: @bill.nota_interna, class: "textarea", rows: 3, placeholder: "Agregar nota..." %>
+            </div>
+          </div>
+          <%= form.submit "Marcar como depositado", class: "button is-primary is-fullwidth is-rounded" %>
+        <% end %>
+      </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+  <div id="marcar_error_corp" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <% mensaje_sugerido = "Solicitud de retiro con error, los fondos se han devuelto a tu balance, por favor actualiza tus datos bancarios de retiro e intenta nuevamente." %>
+        <%= form_with url: marcar_error_corp_admin_bill_path(@bill), method: :post do |form| %>
+          <div class="columns is-multiline">
+            <div class="field column is-12">
+              <%= form.label :nota_for_corp, "Nota para el cliente", class: "label" %>
+              <%= form.text_area :nota_for_corp, value: mensaje_sugerido, class: "textarea", rows: 3, placeholder: "Agregar nota..." %>
+            </div>
+            <div class="field column is-12">
+              <%= form.label :nota_interna, "Nota interna", class: "label" %>
+              <%= form.text_area :nota_interna, value: @bill.nota_interna, class: "textarea", rows: 3, placeholder: "Agregar nota..." %>
+            </div>
+          </div>
+          <%= form.submit "Marcar como error", class: "button is-primary is-fullwidth is-rounded" %>
         <% end %>
       </div>
     </div>

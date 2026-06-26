@@ -1,0 +1,75 @@
+<table border="0" cellpadding="0" cellspacing="0" class="body">
+  <tr>
+    <td>&nbsp;</td>
+    <td class="container">
+      <div class="content">
+        <!-- START CENTERED WHITE CONTAINER -->
+        <table class="main">
+          <!-- START MAIN CONTENT AREA -->
+          <tr>
+            <td class="wrapper">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <h2>Retiro de fondos <%= @bill.folio %> fallido </h2>
+                    <br>
+                    <p>Te informamos que tu solicitud de retiro no pudo ser procesada.</p>
+                    <br>
+                    <p>
+                      <b>Cliente:</b> <%= @corp.name&.titleize %>
+                    </p>
+                    <p>
+                      <b>Folio:</b> <%= @bill.folio %>
+                    </p>
+                    <p>
+                      <b>Monto:</b> <%= @bill.total %>
+                    </p>
+                    <p>
+                      <b>Beneficiario:</b> <%= @bill.retiro_beneficiario %>
+                    </p>
+                    <p>
+                      <b>CLABE:</b> <%= @bill.retiro_clabe %>
+                    </p>
+                    <p>
+                      <b>Banco:</b> <%= @bill.retiro_banco %>
+                    </p>
+                    <p>
+                      <b>Fecha y hora:</b> <%= @time.strftime("%d/%m/%Y, %I:%M %p") %>
+                    </p>
+                    <p>
+                      <b>Observaciones:</b> <%= @bill.nota_for_corp %>
+                    </p>
+                    <br>
+                    <p>Si tienes dudas o comentarios, no dudes en contactarnos.</p>
+                    <br>
+                    <p>Gracias por tu preferencia, que tengas un excelente día.</p>
+                    <br>
+                    <p>
+                      * Puedes ver mas detalles de este retiro desde tu panel de usuario (Ajustes > Facturación).
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- END MAIN CONTENT AREA -->
+        </table>
+        <!-- START FOOTER -->
+        <div class="footer">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="content-block">
+                <span class="apple-link">Software desarrollado por &copy; Ghoster, todos los derechos reservados.</span>
+                <br>
+                <a href="https://ghoster.mx/">www.ghoster.mx</a>.
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- END FOOTER -->
+        <!-- END CENTERED WHITE CONTAINER -->
+      </div>
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+</table>

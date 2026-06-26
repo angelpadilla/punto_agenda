@@ -57,7 +57,12 @@
         <%= f.select :status_pago_eq, options_for_select(Order.status_pagos.keys.map { |k| [k.humanize, k] }, (params[:q] and !params[:q][:status_pago_eq].blank?) ? params[:q][:status_pago_eq] : nil), {prompt: "Estatus pago"}, {class: ""} %>
       </div>
     </div>
-    <div class="column is-3">
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :canal_eq, options_for_select(Order.canals.map { |k, v| [k.humanize, v] }, (params[:q] and !params[:q][:canal_eq].blank?) ? params[:q][:canal_eq] : nil), {prompt: "Canal"}, {class: ""} %>
+      </div>
+    </div>
+    <div class="column is-2">
       <div class="buttons">
         <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
         <%= link_to orders_path, class: "button is-rounded has_tooltip" do  %>

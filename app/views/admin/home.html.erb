@@ -21,9 +21,12 @@
 <%# contadores tiles %>
 <div class="columns is-multiline is-mobile mb-2 mt-4">
   <%= stat_card(@total_corps, "Clientes", icon: "user-plus-rounded-svgrepo-com", box_class: "is-accent") %>
-  <%= stat_card(@total_users, "Usuarios", icon: "user-plus-rounded-svgrepo-com", box_class: "is-danger") %>
-  <%= stat_card(@bills_today, "Facturacion hoy", icon: "dollar", box_class: "is-danger", currency: true) %>
-  <%= stat_card(@bills_month, "Facturacion mes", icon: "dollar", box_class: "is-danger", currency: true) %>
+  <%= stat_card(@total_users, "Usuarios", icon: "user-plus-rounded-svgrepo-com", box_class: "is-main") %>
+  <%= stat_card(@bills_today, "Facturacion hoy", icon: "dollar", box_class: "is-main", currency: true) %>
+  <%= stat_card(@bills_month, "Facturacion mes", icon: "dollar", box_class: "is-main", currency: true) %>
+</div>
+<div class="columns is-multiline is-mobile mb-2 mt-4">
+  <%= stat_card(@retiros_pendientes.count, "Retiros pendientes", icon: "danger-circle-svgrepo-com", box_class: "is-warning", currency: false, link: admin_bills_path(q: { status_pago_eq: "pendiente", direccion_eq: 1 })) %>
 </div>
 <%# ordenes recientes %>
 <div class="box">
@@ -37,28 +40,41 @@
         <thead>
           <tr>
             <th>Folio</th>
+            <th>Fecha</th>
             <th>Compania</th>
+            <th>Status pago</th>
             <th>Tipo</th>
             <th>Total</th>
-            <th>Estado</th>
-            <th>Fecha</th>
           </tr>
         </thead>
         <tbody>
           <% @recent_bills.each do |o| %>
             <tr class="is-clickable" onclick="window.location.href='<%= admin_bill_path(o) %>'">
               <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= o.folio %>-<%= o.id %></span></td>
+              <td><span class="labell"><%= l(o.created_at, format: :short)%></span></td>
               <td><%= o.corp.name&.titleize || "—" %></td>
-              <td><span class="tag is-rounded"><%= o.tipo&.titleize %></span></td>
-              <td class="has-text-neon"><strong><%= number_to_currency(o.total) %></strong></td>
               <td>
                 <% if o.pagado? %><span class="tag is-rounded is-success">Pagado</span>
+                <% elsif o.depositado? %><span class="tag is-rounded is-success">Depositado</span>
                 <% elsif o.cancelado? %><span class="tag is-rounded is-danger">Cancelado</span>
                 <% elsif o.error_pago? %><span class="tag is-rounded is-warning">Error</span>
                 <% elsif o.pendiente? %><span class="tag is-rounded is-warning">Pendiente</span>
+                <% else %><span class="tag is-rounded"><%= o.status_pago&.titleize %></span>
                 <% end %>
               </td>
-              <td><span class="labell"><%= l(o.created_at, format: :short)%></span></td>
+              <td><span class="tag is-rounded"><%= o.tipo&.titleize %></span></td>
+              <td>
+                <% if o.ingreso? %>
+                  <span class="icon material-icons-round has-text-success">
+                    keyboard_double_arrow_down
+                  </span>
+                <% else %>
+                  <span class="icon material-icons-round has-text-danger">
+                    keyboard_double_arrow_up
+                  </span>
+                <% end %>
+                <%= number_to_currency(o.total) %>
+              </td>
             </tr>
           <% end %>
         </tbody>

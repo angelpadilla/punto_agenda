@@ -8,7 +8,7 @@
       </span>
       Volver a listado 
     <% end %>
-    <% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and false %>
+    <% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and @bill.ingreso? and false %>
       <button class="mtrigger button is-rounded" data-target="timbraa">
         <span class="icon mr-2">
           <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
@@ -64,16 +64,19 @@
 <% end %>
 <div class="box mt-4">
   <span class="tag is-light is-rounded"><%= @bill.tipo.titleize %></span>
-  <% if @bill.status_pago == "pagado" %>
+  <% if @bill.pagado? %>
     <span class="tag is-success is-rounded"><%= @bill.status_pago.titleize %></span>
-  <% elsif @bill.status_pago == "credito" %>
+  <% elsif @bill.depositado? %>
+    <span class="tag is-success is-rounded">Pagado</span>
+  <% elsif @bill.cancelado? or @bill.error_pago? %>
+    <span class="tag is-warning is-rounded"><%= @bill.status_pago.titleize %></span>
+  <% elsif @bill.pendiente? %>
     <span class="tag is-warning is-rounded"><%= @bill.status_pago.titleize %></span>
   <% else %>
-    <span class="tag is-danger is-rounded"><%= @bill.status_pago.titleize %></span>
+    <span class="tag is-rounded"><%= @bill.status_pago&.titleize %></span>
   <% end %>
-  <h3 class="titlee2"><%= @bill.folio %></h3>
   <!-- info -->
-  <div class="columns is-mobile is-multiline ">
+  <div class="columns is-mobile is-multiline mt-4">
     <div class="column is-12-mobile is-6-tablet is-4-desktop">
       <div class="labell">Folio</div>
       <p class="contentt"><%= @bill.folio %></p>
@@ -153,8 +156,33 @@
     </div>
   </div>
 </div>
+<% if @bill.egreso? %>
+  <div class="box">
+    <div class="box_header">
+      <h2>
+        Datos transferencia solicitados
+      </h2>
+    </div>
+    <div class="box_content">
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">CLABE interbancaria</div>
+          <p class="contentt"><%= @bill.retiro_clabe %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Beneficiario</div>
+          <p class="contentt"><%= @bill.retiro_beneficiario %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Nombre del banco</div>
+          <p class="contentt"><%= @bill.retiro_banco %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
 <%# modals %>
-<% if !@bill.timbre? and @corp.me_pueden_facturar? %>
+<% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and @bill.ingreso? and false %>
   <div id="timbraa" class="modal">
     <div class="modal-background"></div>
     <div class="modal-content">
