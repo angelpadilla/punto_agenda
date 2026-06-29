@@ -4,7 +4,7 @@
     <div class="card-image p-4">
       <div class="order_item_image">
         <% if first_image %>
-          <%= image_tag first_image.variant(resize_to_limit: [400, 400]), alt: item.name, loading: 'lazy' %>
+          <%= image_tag first_image.variant(:thumb), alt: item.name, loading: 'lazy' %>
         <% else %>
           <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
         <% end %>
