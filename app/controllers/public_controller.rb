@@ -170,7 +170,7 @@ class PublicController < ApplicationController
     slot_range  = (day_config&.dig("hours") || []).find { |r| Time.zone.parse("#{slot.to_date} #{r['open']}") == slot }
     hora_final  = slot_range ? Time.zone.parse("#{slot.to_date} #{slot_range['close']}") : slot + 60.minutes
 
-    necesita_pago_online = @corp.online_payments && @corp.min_book_amount > 0
+    necesita_pago_online = @corp.online_payments and @corp.min_book_amount and @corp.min_book_amount > 0
 
     event = Event.new(
       corp:        @corp,

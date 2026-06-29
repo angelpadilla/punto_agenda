@@ -109,7 +109,7 @@
           <span><%= l(@dia, format: :long) %> · <%= @slot_display %></span>
         </div>
       </div>
-      <% if @corp.online_payments and @corp.min_book_amount > 0 %>
+      <% if @corp.online_payments and @corp.min_book_amount and @corp.min_book_amount > 0 %>
         <div class="box">
           <h3 class="title is-6 mb-4">Pago en línea</h3>
           <p class="mb-2">El monto mínimo para reservar en línea es de:</p>
