@@ -2,8 +2,10 @@
 
 one:
   monto: 9.99
+  tipo: 0
   xml: MyText
 
 two:
   monto: 9.99
+  tipo: 0
   xml: MyText

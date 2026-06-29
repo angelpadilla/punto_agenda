@@ -1,6 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  corp: one
   tipo: MyString
   status_pago: MyString
   forma_pago: MyString
@@ -23,6 +24,7 @@ one:
   sat_sello: MyText
 
 two:
+  corp: two
   tipo: MyString
   status_pago: MyString
   forma_pago: MyString

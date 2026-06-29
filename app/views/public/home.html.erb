@@ -13,7 +13,7 @@
       <span class="has-text-neon">catalogo, citas, eventos, ventas, compras, clientes, inventario</span>.
     </h1>
     <h2 class="psubtitle text-gray mt-5 mb-6">
-      Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas desde un mismo lugar.
+      Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas.
     </h2>
     <% if current_user %>
       <%= link_to user_panel_home_path, class: "button is-primary is-rounded mr-4" do %>
@@ -38,7 +38,66 @@
     <% end %>
   </div>
 </section>
-<section class="s2">
+<%# splide slider mostrando los tipos diferentes de negocios aplicables %>
+<% tipos = {
+  salon: {
+    title: "Salón de belleza",
+    description: "Gestiona tus citas, clientes, e inventario de productos. Muestra tu catálogo de productos y servicios a tus clientes."
+  },
+  barberia: {
+    title: "Barbería",
+    description: "Gestiona tus citas, clientes, e inventario de productos. Muestra tu catálogo de productos y servicios a tus clientes."
+  },
+  cafeteria: {
+    title: "Cafetería",
+    description: "Gestiona tus ventas e inventario de productos. Muestra tu catálogo de productos y servicios a tus clientes."
+  },
+  tienda: {
+    title: "Tienda",
+    description: "Gestiona tus ventas e inventario de productos."
+  },
+  spa: {
+    title: "Spa",
+    description: "Gestiona tus citas, clientes, e inventario de productos. Muestra tu catálogo de productos y servicios a tus clientes."
+  },
+  restaurante: {
+    title: "Restaurante",
+    description: "Muestra la informacion de tu negocio y menú a tus clientes."
+  },
+  farmacia: {
+    title: "Farmacia",
+    description: "Gestiona tus ventas e inventario de productos. Muestra tu catálogo de productos y servicios a tus clientes."
+  },
+  consultorio: {
+    title: "Consultorio",
+    description: "Gestiona tus citas, clientes, e inventario de productos. Muestra tu catálogo de productos y servicios a tus clientes."
+  },
+  mecanico: {
+    title: "Taller mecánico",
+    description: "Gestiona tus citas, clientes, e inventario de productos. Muestra tu catálogo de productos y servicios a tus clientes."
+  }
+
+} %>
+<section class="container">
+  <p class="tag is-success is-rounded mb-4">Usos</p>
+  <div class="splide splide_home" data-controller="splide" data-splide-autoplay="false" data-splide-type="loop" data-splide-pagination="true" data-splide-arrows="false" data-splide-click-to-go="true">
+    <div class="splide__track">
+      <ul class="splide__list">
+        <% tipos.each do |key, tipo| %>
+          <li class="splide__slide cursor-pointer">
+            <%= image_tag "#{key}.jpg", alt: tipo[:title], loading: "lazy" %>
+            <div class="splide_info">
+              <h3 class="title is-4"><%= tipo[:title] %></h3>
+              <p class="subtitle is-6"><%= tipo[:description] %></p>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</section>
+<%# desc 2 %>
+<section class="s2 mt-6">
   <div class="container">
     <div class="box is-super-black">
       <div class="figures">
@@ -99,9 +158,9 @@
 </section>
 <%# caracteristicas %>
 <section class="container mt-6" id="ventajas">
-  <div class="sCaracteristicas">
+  <div class="box_home">
     <div class="flexx_c">
-      <div class="sCaracteristicas__content">
+      <div class="box_home__content">
         <p class="tag is-success is-rounded mb-4">Ventas</p>
         <h2 class="title is-2">
           Catálogo digital
@@ -112,18 +171,18 @@
         <p class="subtitle text-gray">Crea tu catálogo digital con fotos, descripciones y precios.</p>
         <p class="subtitle text-gray">Administra tus ventas de manera eficiente. Mantén un registro de tus transacciones y asegura una experiencia organizada para tus clientes.</p>
       </div>
-      <div class="sCaracteristicas__demo" style="
+      <div class="box_home__demo" style="
         background-image: url('<%= asset_path('home1.png') %>');
       ">
       </div>
     </div>
-    <%= image_tag 'items.svg', alt: 'catalogo', class: 'sCaracteristicas__image', loading: 'lazy' %>
+    <%= image_tag 'items.svg', alt: 'catalogo', class: 'box_home__image', loading: 'lazy' %>
   </div>
 </section>
 <section class="container mt-6">
-  <div class="sCaracteristicas">
+  <div class="box_home">
     <div class="flexx_c reverse">
-      <div class="sCaracteristicas__content">
+      <div class="box_home__content">
         <p class="tag is-success is-rounded mb-4">Citas y eventos</p>
         <h2 class="title is-2">
           Gestión de citas y eventos
@@ -132,30 +191,30 @@
         <p class="subtitle text-gray">Comparte tu agenda para que tus clientes puedan ver tu disponibilidad y reservar citas fácilmente.</p>
         <p class="subtitle text-gray">Avisa tus citas y eventos con tus clientes a través de notificaciones y recordatorios.</p>
       </div>
-      <div class="sCaracteristicas__demo" style="
+      <div class="box_home__demo" style="
         background-image: url('<%= asset_path('home2.png') %>');
       ">
       </div>
     </div>
-    <%= image_tag 'calendar.svg', alt: 'gestión de eventos y citas', class: 'sCaracteristicas__image', loading: 'lazy' %>
+    <%= image_tag 'calendar.svg', alt: 'gestión de eventos y citas', class: 'box_home__image', loading: 'lazy' %>
   </div>
 </section>
 <section class="container mt-6">
-  <div class="sCaracteristicas">
+  <div class="box_home">
     <div class="flexx_c">
-      <div class="sCaracteristicas__content">
+      <div class="box_home__content">
         <p class="tag is-success is-rounded mb-4">Clientes</p>
         <h2 class="title is-2">
           Gestión de clientes
         </h2>
         <p class="subtitle text-gray mt-4">Administra la información de tus clientes de manera eficiente. Mantén un registro de tus clientes y asegura una experiencia organizada para ellos.</p>
       </div>
-      <div class="sCaracteristicas__demo" style="
+      <div class="box_home__demo" style="
         background-image: url('<%= asset_path('home3.png') %>');
       ">
       </div>
     </div>
-    <%= image_tag 'cup.svg', alt: 'gestión de clientes', class: 'sCaracteristicas__image', loading: 'lazy' %>
+    <%= image_tag 'cup.svg', alt: 'gestión de clientes', class: 'box_home__image', loading: 'lazy' %>
   </div>
 </section>
 <%# planes y precios %>
@@ -411,3 +470,66 @@
     </div>
   </div>
 </section>
+<% if false %>
+  <%# articulos destacados %>
+  <section class="container mt-6">
+    <div class="flexx space-b flex-end mb-4">
+      <span class="tag is-success is-rounded">Tutoriales esenciales</span>
+    </div>
+    <div class="columns is-multiline is-mobile articles-grid">
+      <% @last_articles.each do |item| %>
+        <div class="column is-6-desktop is-6-tablet is-12-mobile">
+          <%= link_to show_blog_path(item.slug), class: "is-full-height" do %>
+            <div class="box cursor-pointer mb-4 is-article-card">
+              <div>
+                <span class="tag is-rounded is-info"><%= item.cate&.titleize %></span>
+              </div>
+              <div class="coverr" 
+                style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= (item.cover.attached? and item.cover.persisted?) ? url_for(item.cover.variant(:small)) : asset_path("blog_index.jpg") %>); background-size: cover; background-position: top;">
+              </div>
+              <h1 class="title is-4"><%= item.title.humanize %></h1>
+              <p class="subtitle is-6 mt-2">
+                <%= l(item.updated_at, format: :short) %>
+              </p>
+              <div class="mt-2 extract">
+                <%= item.extract %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+<% if @last_articles.any? %>
+  <%# articulos recientes %>
+  <section class="container mt-6">
+    <div class="flexx space-b flex-end mb-4">
+      <span class="tag is-success is-rounded">Articulos recientes</span>
+      <%= link_to "ver todo", index_blog_path, class: "tag is-rounded" %>
+    </div>
+    <div class="columns is-multiline is-mobile articles-grid">
+      <% @last_articles.each do |item| %>
+        <div class="column is-4-desktop is-6-tablet is-12-mobile">
+          <%= link_to show_blog_path(item.slug), class: "is-full-height" do %>
+            <div class="box cursor-pointer mb-4 is-article-card">
+              <div>
+                <span class="tag is-rounded is-info"><%= item.cate&.titleize %></span>
+              </div>
+              <div class="coverr" 
+                style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= (item.cover.attached? and item.cover.persisted?) ? url_for(item.cover.variant(:small)) : asset_path("blog_index.jpg") %>); background-size: cover; background-position: top;">
+              </div>
+              <h1 class="title is-4"><%= item.title.humanize %></h1>
+              <p class="subtitle is-6 mt-2">
+                <%= l(item.updated_at, format: :short) %>
+              </p>
+              <div class="mt-2 extract">
+                <%= item.extract %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>

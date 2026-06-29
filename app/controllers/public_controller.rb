@@ -9,7 +9,7 @@ class PublicController < ApplicationController
     posts = Post.default
 
     @q = posts.ransack(params[:q])
-    @pagy, @posts = pagy(@q.result(distinct: true), limit: 6)
+    @pagy, @posts = pagy(@q.result(distinct: true), limit: 8)
   end
 
   def show_blog

@@ -1,6 +1,9 @@
 class Post < ApplicationRecord
   has_rich_text :content
-  has_one_attached :cover, dependent: :destroy
+  has_one_attached :cover, dependent: :destroy do |at|
+    at.variant :small, resize_to_limit: [ 300,  200 ], preprocessed: true
+    at.variant :thumb, resize_to_limit: [ 600,  400 ], preprocessed: true
+  end
   # has_many :messages, dependent: :destroy
   enum :cate, articulo: 0, tutorial: 1, noticia: 2
 

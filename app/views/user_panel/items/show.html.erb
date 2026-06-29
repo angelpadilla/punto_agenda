@@ -1,5 +1,5 @@
 <% content_for :title, "Detalle del Producto" %>
-<div data-controller="show-item">
+<div>
   <div class="flexx space-b flex-end">
     <h2 class="titlee">Detalle de item</h2>
     <div class="actions">
@@ -19,8 +19,8 @@
   </div>
   <div class="box mt-4">
     <div class="columns is-multiline">
-      <!-- imágenes -->
-      <div class="column is-5">
+      <!-- Splide imágenes -->
+      <div class="column is-5" data-controller="splide" data-splide-type="slide" data-splide-rewind="true" data-splide-pagination="false" data-splide-gap="10rem">
         <% images = [@item.img1, @item.img2, @item.img3, @item.img4, @item.img5].select(&:attached?) %>
         <% if images.any? %>
           <section class="splide mb-4" aria-label="Splide">
@@ -45,8 +45,8 @@
               <ul class="splide__list">
                 <% images = [@item.img1, @item.img2, @item.img3, @item.img4, @item.img5].select(&:attached?) %>
                 <% images.each do |img| %>
-                  <li class="splide__slide">
-                    <%= image_tag img.variant(:thumb), loading: "lazy" %>
+                  <li class="splide__slide thumbnail">
+                    <%= image_tag img.variant(:small), loading: "lazy" %>
                   </li>
                 <% end %>
               </ul>

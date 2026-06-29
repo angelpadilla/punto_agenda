@@ -23,11 +23,6 @@
         /* height: 500px; */
     }
 
-    .hero-body {
-        background-position: top center;
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
 
     .blog_search {
         position: relative;
@@ -35,31 +30,31 @@
     }
 
     .articles {
-        margin: 5rem 0;
-        margin-top: -100px;
+        /* margin: 5rem 0; */
+        margin-top: -60px;
     }
 
     .article {
         /* margin: 5rem 0; */
-        margin-top: -100px;
+        margin-top: -60px;
     }
 
     @media (max-width: 1023px) {
         .articles {
-            margin-top: -30px;
+            margin-top: 2rem;
         }
 
         .article {
-            margin-top: -30px;
+            margin-top: -50px;
         }
 
         .heroo {
-            height: 10rem;
+            height: 20rem;
         }
 
         .blog_search {
             position: relative;
-            top: 25%;
+            top: 40%;
         }
     }
 

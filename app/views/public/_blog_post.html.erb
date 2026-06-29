@@ -1,12 +1,14 @@
-<div class="box cursor-pointer" onclick="window.location='<%= show_blog_path(post.slug) %>'">
-  <div class="mb-2">
-    <span class="tag is-rounded is-info"><%= post.cate&.titleize %></span>
+<%= link_to show_blog_path(post.slug) do %>
+  <div class="box cursor-pointer mb-4">
+    <div class="mb-2">
+      <span class="tag is-rounded is-info"><%= post.cate&.titleize %></span>
+    </div>
+    <h1 class="title is-4"><%= post.title.humanize %></h1>
+    <p class="subtitle is-6 mt-2">
+      <%= l(post.updated_at, format: :short) %>
+    </p>
+    <div class="mt-2">
+      <%= post.extract %>
+    </div>
   </div>
-  <h1 class="title is-4"><%= post.title.humanize %></h1>
-  <p class="subtitle is-6 mt-2">
-    <%= l(post.updated_at, format: :short) %>
-  </p>
-  <div class="mt-2">
-    <%= post.extract %>
-  </div>
-</div>
+<% end %>
