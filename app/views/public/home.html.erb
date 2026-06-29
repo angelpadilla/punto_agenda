@@ -1,19 +1,21 @@
 <section class="sIntro flexx horizontal-center vertical-center">
   <div class="inner">
     <div>
-      <p class="text-gray"><span class="has-text-white">50+</span> negocios ya venden con miinegocio</p>
+      <div class="avatar-group">
+        <% 10.times do |index| %>
+          <div class="avatar">
+            <%= image_tag "https://api.dicebear.com/10.x/micah/svg?backgroundColor=bdf5df&mouthVariant=laughing,pucker,smile,smirk,surprised&seed=#{index}", loading: "lazy" %>
+          </div>
+        <% end %>
+      </div>
+      <p class="text-gray mt-2"><span class="has-text-white">100+</span> negocios ya venden con miinegocio</p>
     </div>
     <h1 class="mt-4 ptitle">
-      Vende
-      <span class="has-text-neon">online</span>
-      a tus clientes desde un mismo lugar
-      <br>
-      <br>
-      Administra
-      <span class="has-text-neon">catalogo, citas, eventos, ventas, compras, clientes, inventario</span>.
+      <span class="has-text-neon">Controla tu negocio</span>
+      que no te controle a ti.
     </h1>
     <h2 class="psubtitle text-gray mt-5 mb-6">
-      Crea tu catálogo, comparte tu tienda, gestiona tus ventas y citas.
+      Crea tu catálogo o configura tu calendario, comparte tu tienda, gestiona tus ventas y citas.
     </h2>
     <% if current_user %>
       <%= link_to user_panel_home_path, class: "button is-primary is-rounded mr-4" do %>

@@ -2473,7 +2473,7 @@ tr.is-clickable {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.4rem;
+    /* padding: 0.4rem; */
 }
 
 .avatar-group .avatar:not(:first-child) {
@@ -2484,4 +2484,5 @@ tr.is-clickable {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    border-radius: 50%;
 }

@@ -265,7 +265,7 @@
 .sIntro {
 
     .inner {
-        margin-top: calc(var(--spacing) * 48);
+        margin-top: calc(var(--spacing) * 40);
         margin-bottom: calc(var(--spacing) * 48);
         align-items: center;
         text-align: center;
