@@ -1,0 +1,9 @@
+<div id="ticket_reply_area" class="mt-4">
+  <div class="mb-4 noti is-<%= ticket.resuelto? ? 'main' : 'warning' %>">
+    <h3>
+      <span class="icon material-icons-round"><%= ticket.resuelto? ? 'check_circle' : 'lock' %></span>
+      Ticket <%= ticket.status.to_s.humanize %>
+    </h3>
+    <p class="mt-2">Este ticket ha sido marcado como <strong><%= ticket.status.to_s.humanize %></strong>. No se pueden enviar más mensajes. Si necesitas ayuda adicional, crea un nuevo ticket.</p>
+  </div>
+</div>

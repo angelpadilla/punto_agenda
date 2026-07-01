@@ -1,0 +1,17 @@
+<div id="ticket_reply_area" class="mt-4">
+  <%= form_with model: [ticket, message], url: user_ticket_user_ticket_messages_path(ticket), data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset", turbo: true } do |form| %>
+    <div class="columns">
+      <div class="column is-9">
+        <%= form.text_field :body, class: "input is-rounded", placeholder: "Escribe tu respuesta y presiona Enter...", required: true %>
+      </div>
+      <div class="column is-3">
+        <button type="submit" class="button is-primary is-rounded is-fullwidth">
+          <span class="icon mr-2">
+            <%= image_tag 'send.svg', alt: 'nuevo usuario' %>
+          </span>
+          Enviar
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,48 @@
+<% content_for :title, "Editar Ticket ##{@ticket.id}" %>
+<div class="flexx space-b flex-end mb-4">
+  <h2 class="titlee">Editar Ticket #<%= @ticket.id %></h2>
+  <%= link_to admin_ticket_path(@ticket), class: "button is-rounded" do %>
+    <span class="icon mr-2">
+      <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+    </span>
+    Volver
+  <% end %>
+</div>
+<hr>
+<%= form_with(model: @ticket, url: admin_ticket_path(@ticket), method: :patch) do |form| %>
+  <div class="box mt-4">
+    <% if @ticket.errors.any? %>
+      <div class="notification is-warning">
+        <h2 class="subtitle"><%= pluralize(@ticket.errors.count, "error", "errores") %> impidieron guardar:</h2>
+        <ul>
+          <% @ticket.errors.each do |error| %>
+            <li><%= error.message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="columns is-multiline">
+      <%= t_field(form, :title, label: "Asunto", clas: "field column is-12") %>
+      <% if @ticket.abierto? %>
+        <%= s_field(form, :status, options: Ticket.statuses.keys.map { |k| [k.to_s.humanize, k] }, label: "Status", clas: "field column is-6") %>
+      <% elsif @ticket.en_progreso? %>
+        <%= s_field(form, :status, options: Ticket::Status2, label: "Status", clas: "field column is-6") %>
+      <% elsif @ticket.resuelto? or @ticket.cerrado? %>
+        <%= s_field(form, :status, options: Ticket::Status3, label: "Status", clas: "field column is-6") %>
+      <% else %>
+        <%= s_field(form, :status, options: Ticket.statuses.keys.map { |k| [k.to_s.humanize, k] }, label: "Status", clas: "field column is-6") %>
+      <% end %>
+      <%= s_field(form, :priority, options: Ticket.priorities.keys.map { |k| [k.to_s.humanize, k] }, label: "Prioridad", clas: "field column is-6") %>
+      <%= s_field(form, :category, options: Ticket.categories.keys.map { |k| [k.to_s.humanize, k] }, label: "Categoría", clas: "field column is-6") %>
+      <div class="field column is-6">
+        <%= form.label :admin_id, "Asignar a", class: "label" %>
+        <div class="select is-rounded" style="width: 100%;">
+          <%= form.select :admin_id, options_from_collection_for_select(Admin.all, :id, :email, @ticket.admin_id), { prompt: "Sin asignar" }, { style: "width: 100%;" } %>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <%= form.submit "Guardar cambios", class: "button is-primary is-rounded" %>
+    </div>
+  </div>
+<% end %>

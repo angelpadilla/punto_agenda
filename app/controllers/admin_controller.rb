@@ -18,6 +18,9 @@ class AdminController < ApplicationController
     @retiros_pendientes = bills.where(status_pago: :pendiente, direccion: :egreso)
   end
 
+  def experimental
+  end
+
   private
 
   def record_not_found

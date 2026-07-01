@@ -1,0 +1,104 @@
+<div id="ticket_info">
+  <div class="box expandable is_active">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'ticket.svg', class: "invert", alt: "Totales" %>
+        </span>
+        Información del Ticket
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <div class="columns is-mobile is-multiline ">
+        <div class="column is-12">
+          <div class="labell">Asunto</div>
+          <p>
+            <%= ticket.title %>
+          </p>
+        </div>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Status</div>
+          <p>
+            <% if ticket.abierto? %>
+              <span class="tag is-rounded">Abierto</span>
+            <% elsif ticket.en_progreso? %>
+              <span class="tag is-rounded is-warning">En progreso</span>
+            <% elsif ticket.resuelto? %>
+              <span class="tag is-rounded is-success">Resuelto</span>
+            <% else %>
+              <span class="tag is-rounded is-info">Cerrado</span>
+            <% end %>
+          </p>
+        </div>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Prioridad</div>
+          <p>
+            <% if ticket.alta? %>
+              <span class="tag is-rounded is-danger">Urgente</span>
+            <% elsif ticket.media? %>
+              <span class="tag is-rounded is-info">Media</span>
+            <% else %>
+              <span class="tag is-rounded">Baja</span>
+            <% end %>
+          </p>
+        </div>
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Categoría</div>
+          <p>
+            <%= ticket.category&.humanize %>
+          </p>
+        </div>
+      </div>
+      <div class="columns is-mobile is-multiline ">
+        <div class="column is-6-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Cliente</div>
+          <p>
+            <%= ticket.corp.name&.titleize %> (<%= ticket.corp.sku %>-<%= ticket.corp.id %>)
+          </p>
+        </div>
+      </div>
+      <div class="columns is-mobile is-multiline ">
+        <div class="column is-4-mobile is-4-tablet is-4-desktop">
+          <div class="labell">Creado</div>
+          <p>
+            <%= l(ticket.created_at, format: :long) %>
+          </p>
+        </div>
+        <div class="column is-4-mobile is-4-tablet is-4-desktop">
+          <div class="labell">Última actualización</div>
+          <p>
+            <%= l(ticket.updated_at, format: :long) %>
+          </p>
+        </div>
+        <div class="column is-4-mobile is-4-tablet is-4-desktop">
+          <div class="labell">Mensajes</div>
+          <p>
+            <%= ticket.ticket_messages.count %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box expandable">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'bill-list-svgrepo-com.svg', class: "invert", alt: "Totales" %>
+        </span>
+        Descripción
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <div class="labell">Descripción</div>
+      <p>
+        <%= ticket.description %>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="ticket-message <%= message.sender.is_a?(Admin) ? 'admin-msg' : 'user-msg' %>">
+  <div class="msg-header">
+    <span class="msg-sender">
+      <% if message.sender.is_a?(Admin) %>
+        <span class="has-text-neon">🛡️ MiiNegocio</span>
+      <% else %>
+        💬 <%= message.sender.email %>
+      <% end %>
+    </span>
+    <span class="msg-time"><%= l(message.created_at, format: :short) %></span>
+  </div>
+  <div class="msg-body">
+    <%= simple_format message.body %>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<button class="button is-info"
+        data-controller="printer"
+        data-action="click->printer#print"
+  data-ticket="<%= {
+          store_name: "mii negocio",
+          items: [
+            {
+              name: "Producto 1",
+              price: 50.0,
+              qty: 1
+            }
+          ],
+          total: 100.0
+        }.to_json %>">
+  🧾 Imprimir Ticket
+</button>

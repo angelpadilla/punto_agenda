@@ -1,0 +1,28 @@
+<tr onclick="window.location='<%= admin_ticket_path(ticket) %>'" style="cursor: pointer;">
+  <td>#<%= ticket.id %></td>
+  <td><%= ticket.corp.name&.titleize %></td>
+  <td><%= ticket.title.truncate(60) %></td>
+  <td>
+    <% if ticket.abierto? %>
+      <span class="tag is-rounded">Abierto</span>
+    <% elsif ticket.en_progreso? %>
+      <span class="tag is-rounded is-warning">En progreso</span>
+    <% elsif ticket.resuelto? %>
+      <span class="tag is-rounded is-success">Resuelto</span>
+    <% else %>
+      <span class="tag is-rounded is-info">Cerrado</span>
+    <% end %>
+  </td>
+  <td>
+    <% if ticket.alta? %>
+      <span class="tag is-rounded is-danger">Alta</span>
+    <% elsif ticket.media? %>
+      <span class="tag is-rounded is-warning">Media</span>
+    <% else %>
+      <span class="tag is-rounded">Baja</span>
+    <% end %>
+  </td>
+  <td><span class="tag is-rounded"><%= ticket.category.to_s.humanize %></span></td>
+  <td><%= l(ticket.created_at, format: :short) %></td>
+  <td><%= l(ticket.updated_at, format: :short) %></td>
+</tr>

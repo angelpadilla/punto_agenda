@@ -1,0 +1,46 @@
+<div class="item_box">
+  <div class="table_item">
+    <div class="item_info flexx-3">
+      <div>
+        <% if ticket.abierto? %>
+          <span class="tag is-rounded">Abierto</span>
+        <% elsif ticket.en_progreso? %>
+          <span class="tag is-rounded is-warning">En progreso</span>
+        <% elsif ticket.resuelto? %>
+          <span class="tag is-rounded is-success">Resuelto</span>
+        <% else %>
+          <span class="tag is-rounded is-info">Cerrado</span>
+        <% end %>
+        <% if ticket.alta? %>
+          <span class="tag is-rounded is-danger ml-1">Alta</span>
+        <% end %>
+      </div>
+      <h3 class="titlee">
+        <%= ticket.title.truncate(60) %>
+      </h3>
+      <div class="columns is-mobile is-multiline mt-2">
+        <div class="column is-6-mobile is-4-tablet is-3-desktop">
+          <div class="labell">ID</div>
+          <p class="contentt">#<%= ticket.id %></p>
+        </div>
+        <div class="column is-6-mobile is-4-tablet is-3-desktop">
+          <div class="labell">Prioridad</div>
+          <p class="contentt"><%= ticket.priority.to_s.humanize %></p>
+        </div>
+        <div class="column is-6-mobile is-4-tablet is-3-desktop">
+          <div class="labell">Categoría</div>
+          <p class="contentt"><%= ticket.category.to_s.humanize %></p>
+        </div>
+        <div class="column is-6-mobile is-4-tablet is-3-desktop">
+          <div class="labell">Actualizado</div>
+          <p class="contentt"><%= l(ticket.updated_at, format: :short) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item_buttons mt-4">
+    <%= link_to user_ticket_path(ticket), class: "button is-rounded is-fullwidth" do  %>
+      Ver detalles
+    <% end %>
+  </div>
+</div>

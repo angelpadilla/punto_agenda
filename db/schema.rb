@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_25_235100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_01_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -522,6 +522,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_235100) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ticket_messages", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "sender_id", null: false
+    t.string "sender_type", null: false
+    t.bigint "ticket_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sender_type", "sender_id"], name: "index_ticket_messages_on_sender"
+    t.index ["sender_type", "sender_id"], name: "index_ticket_messages_on_sender_type_and_sender_id"
+    t.index ["ticket_id"], name: "index_ticket_messages_on_ticket_id"
+  end
+
+  create_table "tickets", force: :cascade do |t|
+    t.bigint "admin_id"
+    t.integer "category", default: 0, null: false
+    t.bigint "corp_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "priority", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_tickets_on_admin_id"
+    t.index ["category"], name: "index_tickets_on_category"
+    t.index ["corp_id"], name: "index_tickets_on_corp_id"
+    t.index ["priority"], name: "index_tickets_on_priority"
+    t.index ["status"], name: "index_tickets_on_status"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "active", default: true
     t.integer "average_rating", default: 0
@@ -581,5 +610,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_235100) do
   add_foreign_key "orders", "events"
   add_foreign_key "orders", "users"
   add_foreign_key "providers", "corps"
+  add_foreign_key "ticket_messages", "tickets"
+  add_foreign_key "tickets", "admins"
+  add_foreign_key "tickets", "corps"
   add_foreign_key "users", "corps"
 end

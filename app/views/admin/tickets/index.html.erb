@@ -1,0 +1,79 @@
+<% content_for :title, "Tickets de Soporte" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Tickets de Soporte</h2>
+  <div class="actions">
+    <div class="dropdown is-right is-hoverable">
+      <div class="dropdown-trigger">
+        <button class="button is-rounded" aria-haspopup="true">
+          <span class="icon">
+            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+          </span>
+          <span>Acciones</span>
+        </button>
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          <%= link_to admin_tickets_path(status: nil), class: "dropdown-item" do %>
+            Limpiar filtros
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: admin_tickets_path do |f| %>
+  <div class="columns is-multiline is-mobile">
+    <div class="column is-2-desktop is-3-tablet is-3-mobile">
+      <%= f.search_field :id_eq, class: 'is-rounded search_input', placeholder: 'ID' %>
+    </div>
+    <div class="column is-6-mobile is-3-desktop">
+      <%= f.search_field :title_or_description_cont, class: 'input is-rounded', placeholder: 'Título o descripción' %>
+    </div>
+    <div class="column is-2-desktop is-3-tablet is-3-mobile">
+      <div class="select is-rounded">
+        <%= f.select :status_eq, Ticket.statuses.map { |k, v| [k.to_s.humanize, v] }, { include_blank: 'Status' } %>
+      </div>
+    </div>
+    <div class="column is-2-desktop is-3-tablet is-3-mobile">
+      <div class="select is-rounded">
+        <%= f.select :priority_eq, Ticket.priorities.map { |k, v| [k.to_s.humanize, v] }, { include_blank: 'Prioridad' } %>
+      </div>
+    </div>
+    <div class="column is-3-desktop is-6-tablet is-6-mobile">
+      <div class="buttons">
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
+        <%= link_to admin_tickets_path, class: "button is-rounded has_tooltip" do %>
+          <span class="icon reset">
+            <%= image_tag 'trash.svg', alt: 'clear', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Limpiar busqueda</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="table-container">
+  <table class="table is-fullwidth is-hoverable mt-4">
+    <thead>
+      <tr>
+        <th><%= sort_link(@q, :id, 'ID') %></th>
+        <th>Corp</th>
+        <th>Título</th>
+        <th><%= sort_link(@q, :status, 'Status') %></th>
+        <th><%= sort_link(@q, :priority, 'Prioridad') %></th>
+        <th><%= sort_link(@q, :category, 'Categoría') %></th>
+        <th><%= sort_link(@q, :created_at, 'Creación') %></th>
+        <th><%= sort_link(@q, :updated_at, 'Actualización') %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render @tickets %>
+    </tbody>
+  </table>
+</div>
+<% if @pagy.pages > 1 %>
+  <br>
+  <%== @pagy.series_nav(:bulma) %>
+  <br>
+<% end %>

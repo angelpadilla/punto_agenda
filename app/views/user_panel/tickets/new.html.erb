@@ -1,0 +1,30 @@
+<% content_for :title, "Nuevo Ticket" %>
+<div class="flexx space-b flex-end mb-4">
+  <h2 class="titlee">Nuevo Ticket de Soporte</h2>
+  <%= link_to user_tickets_path, class: "button is-rounded" do %>
+    Volver
+  <% end %>
+</div>
+<hr>
+<%= form_with(model: @ticket, url: user_tickets_path) do |form| %>
+  <div class="box mt-4">
+    <% if @ticket.errors.any? %>
+      <div class="notification is-warning">
+        <h2 class="subtitle"><%= pluralize(@ticket.errors.count, "error", "errores") %> impidieron crear el ticket:</h2>
+        <ul>
+          <% @ticket.errors.each do |error| %>
+            <li><%= error.message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="columns is-multiline">
+      <%= s_field(form, :category, options: Ticket.categories.keys.map { |k| [k.to_s.humanize, k] }, label: "Categoría", clas: "field column is-12") %>
+      <%= t_field(form, :title, label: "Título", placeholder: "Ej. Error al generar factura", clas: "field column is-12") %>
+      <%= a_field(form, :description, label: "Descripción", placeholder: "Describe tu problema o consulta con el mayor detalle posible...", clas: "field column is-12") %>
+    </div>
+    <div class="field">
+      <%= form.submit "Crear ticket", class: "button is-primary is-rounded" %>
+    </div>
+  </div>
+<% end %>

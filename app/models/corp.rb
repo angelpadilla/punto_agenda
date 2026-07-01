@@ -13,6 +13,7 @@ class Corp < ApplicationRecord
   has_many :corp_customers, dependent: :destroy
   has_many :customers, through: :corp_customers
   has_many :bills, dependent: :nullify
+  has_many :tickets, dependent: :destroy
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy
@@ -63,9 +64,9 @@ class Corp < ApplicationRecord
   validates :phone, length: { maximum: 10, message: "Teléfono debe tener máximo 10 dígitos" }
   validates :min_book_amount, numericality: { greater_than_or_equal_to: 100, message: "El monto mínimo debe ser al menos $100.00 MXN" }, allow_blank: true
 
-  validates :banco_clabe, presence: { message: "La CLABE es requerida" }, if: :online_payments?
-  validates :banco_clabe, format: { with: /\A\d{18}\z/, message: "La CLABE debe ser un número de 18 dígitos" }, if: :online_payments?
-  validates :banco_beneficiario, presence: { message: "El nombre del beneficiario es requerido" }, if: :online_payments?
+  # validates :banco_clabe, presence: { message: "La CLABE es requerida" }, if: :online_payments?
+  validates :banco_clabe, format: { with: /\A\d{18}\z/, message: "La CLABE debe ser un número de 18 dígitos" }, allow_blank: true
+  # validates :banco_beneficiario, presence: { message: "El nombre del beneficiario es requerido" }, if: :online_payments?
 
   # validates :whatsapp, format: { with: /\A\+?\d+\z/, message: "Teléfono debe ser un número valido" }, allow_blank: true
   # validates :whatsapp, length: { maximum: 15, message: "Teléfono debe tener máximo 15 dígitos" }, allow_blank: true

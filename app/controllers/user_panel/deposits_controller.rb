@@ -57,21 +57,21 @@ class UserPanel::DepositsController < UserPanelController
       depositable: order  # Asigna la orden a la relación polimórfica
     )
 
-    if params[:forma_pago] == "04"
-      return redirect_back(fallback_location: user_panel_home_path, alert: "Debe seleccionar una forma de pago para tarjeta de credito") unless params[:forma_credito].present?
-      if params[:forma_credito] == "1"
-        comision_terminal = monto - (monto / 1.03)
-      elsif params[:forma_credito] == "2"
-        comision_terminal = monto - (monto / 1.11)
-      else
-        comision_terminal = monto - (monto / 1.17)
-      end
-    elsif params[:forma_pago] == "28"
-      comision_terminal = monto - (monto / 1.03)
-    else
-      comision_terminal = 0.0
-    end
-    @deposit.comision_terminal = comision_terminal
+    # if params[:forma_pago] == "04"
+    #   return redirect_back(fallback_location: user_panel_home_path, alert: "Debe seleccionar una forma de pago para tarjeta de credito") unless params[:forma_credito].present?
+    #   if params[:forma_credito] == "1"
+    #     comision_terminal = monto - (monto / 1.03)
+    #   elsif params[:forma_credito] == "2"
+    #     comision_terminal = monto - (monto / 1.11)
+    #   else
+    #     comision_terminal = monto - (monto / 1.17)
+    #   end
+    # elsif params[:forma_pago] == "28"
+    #   comision_terminal = monto - (monto / 1.03)
+    # else
+    #   comision_terminal = 0.0
+    # end
+    # @deposit.comision_terminal = comision_terminal
 
     if @deposit.save
       if order.tipo == "factura"

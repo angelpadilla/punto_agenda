@@ -156,10 +156,15 @@ Rails.application.routes.draw do
         # post :activate
       end
     end
+
+    resources :tickets, controller: "user_panel/tickets", only: %i[index show new create], as: :user_tickets do
+      resources :ticket_messages, controller: "user_panel/ticket_messages", only: :create, as: :user_ticket_messages
+    end
   end
 
   scope "admin" do
     get "", to: "admin#home", as: :admin_panel_home
+    get "experimental", to: "admin#experimental", as: :admin_panel_experimental
     resources :bills, controller: "admin/bills", only: %i[index show], as: :admin_bills do
       member do
         post :timbra
@@ -184,5 +189,8 @@ Rails.application.routes.draw do
     resources :orders, controller: "admin/orders"
     resources :deposits, controller: "admin/deposits"
     resources :posts, controller: "admin/posts"
+    resources :tickets, controller: "admin/tickets", only: %i[index show edit update], as: :admin_tickets do
+      resources :ticket_messages, controller: "admin/ticket_messages", only: :create, as: :admin_ticket_messages
+    end
   end
 end

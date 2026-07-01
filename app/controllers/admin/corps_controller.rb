@@ -24,18 +24,20 @@ class Admin::CorpsController < AdminController
 
   def extend_prueba
     ## extendemos 30 dias mas de prueba, y  con status premium y payment attempts  0
-    noww = Time.current
-
-    @corp.update(
+    @corp.assign_attributes(
       status: :probando,
       tipo_plan: :premium,
-      subscription_trial_start: noww,
+      subscription_trial_start: Time.current,
       subscription_trial_end: 30.days.from_now,
       subscription_started_at: nil,
       subscription_next_billing_date: nil,
       payment_attempts: 0,
     )
-    redirect_back fallback_location: admin_corp_path(@corp), notice: "Prueba extendada 30 días exitosamente."
+    if @corp.save(validate: false)
+      redirect_back fallback_location: admin_corp_path(@corp), notice: "Prueba extendada 30 días exitosamente."
+    else
+      redirect_back fallback_location: admin_corp_path(@corp), alert: "Error al extender la prueba: #{@corp.errors.full_messages.join(', ')}"
+    end
   end
 
   private

@@ -1,0 +1,35 @@
+<% content_for :title, "Ticket ##{@ticket.id}" %>
+<%= turbo_stream_from [@ticket, :messages] %>
+<%= turbo_stream_from [@ticket, :info] %>
+<%= turbo_stream_from [@ticket, :reply] %>
+<div class="flexx space-b flex-end mb-4">
+  <h2 class="titlee">Ticket #<%= @ticket.id %></h2>
+  <div class="actions">
+    <%= link_to user_tickets_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Mis tickets
+    <% end %>
+  </div>
+</div>
+<%= render "shared/ticket_info", ticket: @ticket %>
+<div class="box mt-5">
+  <div class="box_header">
+    <h3>Conversación</h3>
+  </div>
+  <div id="ticket_messages" class="ticket-messages-box" data-controller="auto-scroll">
+    <%= render partial: "shared/message", collection: @ticket_messages, as: :message %>
+  </div>
+  <% if @ticket.abierto_para_mensajes? %>
+    <%= render "reply_form", ticket: @ticket, message: @message %>
+  <% else %>
+    <%= render "shared/ticket_closed_notice", ticket: @ticket %>
+  <% end %>
+</div>
+<div class="columns">
+  <div class="column is-8">
+  </div>
+  <div class="column is-4">
+  </div>
+</div>
