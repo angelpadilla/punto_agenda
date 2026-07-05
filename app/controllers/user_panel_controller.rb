@@ -143,6 +143,9 @@ class UserPanelController < ApplicationController
   end
 
   def landing_purchases
+    unless @corp.plus? or @corp.premium?
+      redirect_to user_panel_landing_path, alert: "Esta funcionalidad no está disponible en tu plan actual."
+    end
   end
 
   def landing_orders
@@ -160,6 +163,10 @@ class UserPanelController < ApplicationController
 
     if session[:carrito_id]
       @carrito = Order.find_by(id: session[:carrito_id])
+    end
+
+    if session[:comprita_id]
+      @comprita = Purchase.find_by(id: session[:comprita_id])
     end
   end
 

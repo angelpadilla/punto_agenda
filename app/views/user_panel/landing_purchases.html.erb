@@ -1,13 +1,35 @@
-<% content_for :title, "Compras y gastos" %>
+<% content_for :title, "Compras, gastos y proovedores" %>
 <div class="columns is-multiline">
-  <% if current_user.can_view? :provider %>
-    <div class="column is-6">
-      <%= link_to providers_path do %>
-        <div class="linkk">
-          <%= image_tag 'layers.svg', alt: 'cargos', class: 'invert' %>
-          Proveedores
-        </div>
-      <% end %>
-    </div>
-  <% end %>
+  <div class="column is-6">
+    <%= link_to new_purchase_path(tipo: "compra") do %>
+      <div class="linkk">
+        <%= image_tag 'plus.svg', alt: 'cargos', class: 'invert' %>
+        Nueva compra
+      </div>
+    <% end %>
+  </div>
+  <div class="column is-6">
+    <%= link_to new_purchase_path(tipo: "gasto") do %>
+      <div class="linkk">
+        <%= image_tag 'plus.svg', alt: 'cargos', class: 'invert' %>
+        Nuevo gasto
+      </div>
+    <% end %>
+  </div>
+  <div class="column is-12">
+    <%= link_to purchases_path do %>
+      <div class="linkk">
+        <%= image_tag 'bill-list-svgrepo-com.svg', alt: 'cargos', class: 'invert' %>
+        Compras y gastos
+      </div>
+    <% end %>
+  </div>
+  <div class="column is-12">
+    <%= link_to orders_path do %>
+      <div class="linkk">
+        <%= image_tag 'clientes.svg', alt: 'cargos', class: 'invert' %>
+        Proveedores
+      </div>
+    <% end %>
+  </div>
 </div>

@@ -81,53 +81,6 @@ class User < ApplicationRecord
     slot_start_mins >= work_start_mins && slot_end_mins <= work_end_mins
   end
 
-
-
-  # def can_view?(model)
-  #   ## model lo introducen como simbolo, convertir a string y capitalizar
-  #   model = model.to_s.strip.downcase.capitalize
-  #   if self.prop?
-  #     true
-  #   elsif self.cargo.roles.where(model: model, action: "ver").exists?
-  #     true
-  #   else
-  #     false
-  #   end
-  # end
-
-  # def can_create?(model)
-  #   model = model.to_s.strip.downcase.capitalize
-  #   if self.prop?
-  #     true
-  #   elsif self.cargo.roles.where(model: model, action: "crear").exists?
-  #     true
-  #   else
-  #     false
-  #   end
-  # end
-
-  # def can_edit?(model)
-  #   model = model.to_s.strip.downcase.capitalize
-  #   if self.prop?
-  #     true
-  #   elsif self.cargo.roles.where(model: model, action: "editar").exists?
-  #     true
-  #   else
-  #     false
-  #   end
-  # end
-
-  # def can_delete?(model)
-  #   model = model.to_s.strip.downcase.capitalize
-  #   if self.prop?
-  #     true
-  #   elsif self.cargo.roles.where(model: model, action: "destruir").exists?
-  #     true
-  #   else
-  #     false
-  #   end
-  # end
-
   after_create :send_welcome_email
 
   ## ransack search

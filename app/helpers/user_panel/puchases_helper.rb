@@ -1,0 +1,2 @@
+module UserPanel::PuchasesHelper
+end

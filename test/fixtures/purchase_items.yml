@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  body: MyString
+  cantidad: 9.99
+  purchase: one
+  precio: 9.99
+  iva: 9.99
+  item: one
+  error: MyString
+  nombre: MyString
+
+two:
+  body: MyString
+  cantidad: 9.99
+  purchase: two
+  precio: 9.99
+  iva: 9.99
+  item: two
+  error: MyString
+  nombre: MyString

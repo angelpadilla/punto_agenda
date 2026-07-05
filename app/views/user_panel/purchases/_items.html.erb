@@ -1,0 +1,165 @@
+<div class="column is-9-desktop is-12-tablet is-12-mobile">
+  <% if purchase.compra? %>
+    <%# buscador %>
+    <%= search_form_for @q, url: purchase.carrito? ? new_purchase_path(tipo: purchase.tipo) : edit_purchase_path(purchase, tipo: purchase.tipo), data: { controller: "focus-search" } do |f| %>
+      <div class="columns is-multiline">
+        <div class="column is-8">
+          <%= f.search_field :name_or_sku_cont, class: 'is-rounded search_input', placeholder: 'Nombre/SKU', data: { focus_search_target: "inputt" } %>
+        </div>
+        <div class="column is-2">
+          <div class="select is-rounded">
+            <%= f.select :brand_id_eq, options_for_select(@brands.map {|b| [b.name&.titleize, b.id]}, @q.brand_id_eq), {prompt: "Marca"}, {class: ""} %>
+          </div>
+        </div>
+        <div class="column is-2">
+          <%= f.submit 'Buscar', class: "button is-rounded is-primary is-fullwidth" %>
+        </div>
+      </div>
+    <% end %>
+    <%# categorias %>
+    <div class="columns is-multiline is-mobile mt-2">
+      <% Item.cates.each_with_index do |cate, index| %>
+        <% if index == 0  %>
+          <div class="column is-4-desktop is-6-tablet is-6-mobile">
+            <%= link_to purchase.carrito? ? new_purchase_path(tipo: purchase.tipo) : edit_purchase_path(purchase, tipo: purchase.tipo) do %>
+              <div class="linkk big neon <%= 'active' if @q.cate_eq.nil? %>">
+                <%= image_tag 'layers.svg', alt: 'cargos' %>
+                <div>
+                  <div class="labell">Categoria</div>
+                  <div class="bold">Todo</div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="column is-4-desktop is-6-tablet is-6-mobile">
+            <%= link_to purchase.carrito? ? new_purchase_path(tipo: purchase.tipo, q: { cate_eq: cate[1] }) : edit_purchase_path(purchase, tipo: purchase.tipo, q: { cate_eq: cate[1] }) do %>
+              <div class="linkk big neon <%= 'active' if @q.cate_eq == cate[1] %>">
+                <%= image_tag 'layers.svg', alt: 'cargos' %>
+                <div>
+                  <div class="labell">Categoria</div>
+                  <div class="bold"><%= cate[0].titleize %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <% if @items.any? %>
+      <div class="columns is-multiline">
+        <% @items.each do |item| %>
+          <% images = [item.img1, item.img2, item.img3, item.img4, item.img5].select(&:attached?) %>
+          <!-- Product 1 -->
+          <div class="column is-4">
+            <div class="card catalog_card">
+              <div class="card-image p-4">
+                <div class="order_item_image">
+                  <% if (first_image = images.first) %>
+                    <%= image_tag first_image.variant(:thumb), alt: item.name, loading: 'lazy' %>
+                  <% else %>
+                    <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
+                  <% end %>
+                </div>
+              </div>
+              <div class="card-content pt-0">
+                <p class="is-size-7 has-text-weight-bold has-text-neon" >
+                  <% if item.brand.present? %>
+                    <%= item.brand.name&.titleize %> -
+                  <% end %>
+                  <%= item.cate&.titleize %>
+                </p>
+                <h3 class="title is-5 mb-2 font-headline"><%= item.name %></h3>
+                <div class="level is-mobile">
+                  <div class="level-left">
+                    <% if item.offer.present? %>
+                      <span class="has-text-weight-bold has-text-neon">
+                        <%= number_to_currency(item.offer) %>
+                      </span>
+                      <span class="has-text-weight-bold tacha"><%= number_to_currency(item.price) %></span>
+                    <% else %>
+                      <span class="has-text-weight-bold"><%= number_to_currency(item.price) %></span>
+                    <% end %>
+                  </div>
+                  <div class="level-right">
+                    <p class="is-size-7 has-text-grey"><%= item.sku %></p>
+                  </div>
+                </div>
+                <button class="button is-primary is-fullwidth is-rounded mtrigger" data-target="item_<%= item.id %>">
+                  <span class="icon mr-2">
+                    <%= image_tag 'plus.svg', alt: 'carrito' %>
+                  </span>
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+          <%# modal agregar %>
+          <div class="modal" id="item_<%= item.id %>">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+              <header class="modal-card-head">
+                <p class="modal-card-title">Agregar Item</p>
+                <button class="delete" aria-label="close"></button>
+              </header>
+              <%= form_with url: add_item_line_items_path, method: :post do |form| %>
+                <%= form.hidden_field :item_id, value: item.id %>
+                <%= form.hidden_field :purchase_id, value: purchase.id %>
+                <section class="modal-card-body">
+                  <div id="line-item-errors-<%= item.id %>"></div>
+                  <div class="columns is-multiline">
+                    <div class="field column is-12">
+                      <label class="label">Precio</label>
+                      <div class="control">
+                        <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 0.1, step: 'any', class: "input is-rounded" %>
+                      </div>
+                    </div>
+                    <div class="field column is-6">
+                      <label class="label">Cantidad</label>
+                      <div class="control">
+                        <%= form.number_field :cantidad, value: 1, min: 0.1, step: 'any', class: "input is-rounded" %>
+                      </div>
+                    </div>
+                    <div class="field column is-6">
+                      <label class="label">
+                        Descuento
+                        <span class="has_tooltip cursor-pointer">
+                          <span class="icon">
+                            <%= image_tag 'info.svg', alt: 'info', class: 'invert' %>
+                          </span>
+                          <div class="tooltip up">
+                            El descuento se aplica al monto total del item, independientemente de la cantidad. Si ya aplicaste un descuento previamente, no es necesario volverlo a ingresar. Si ingresas un nuevo descuento, mayor o menor, se aplicará el nuevo valor.
+                          </div>
+                        </span>
+                      </label>
+                      <div class="control">
+                        <%= form.number_field :descuento, value: 0, min: 0, step: 'any', class: "input is-rounded" %>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <footer class="modal-card-foot">
+                  <%= form.submit "Agregar", class: "button is-success is-fullwidth is-rounded" %>
+                </footer>
+              <% end %>
+            </div>
+          </div>
+          <div id="close_modal_<%= item.id %>" style="display:none;"></div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="box">
+        <div class="has-text-centered">
+          <p class="is-size-6">No tienes items disponibles con esta categoría</p>
+        </div>
+      </div>
+    <% end %>
+    <% if @pagy.pages > 1 %>
+      <br>
+      <%== @pagy.series_nav(:bulma) %>
+      <br>
+    <% end %>
+    <br>
+    <br>
+  <% end %>
+</div>

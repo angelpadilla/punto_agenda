@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_01_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_04_210110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -485,6 +485,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_000002) do
     t.index ["corp_id"], name: "index_providers_on_corp_id"
   end
 
+  create_table "purchase_items", force: :cascade do |t|
+    t.string "body"
+    t.decimal "cantidad", precision: 17, scale: 4
+    t.datetime "created_at", null: false
+    t.string "error"
+    t.bigint "item_id"
+    t.decimal "iva", precision: 17, scale: 4, default: "16.0"
+    t.string "nombre"
+    t.decimal "precio", precision: 17, scale: 4
+    t.bigint "purchase_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_purchase_items_on_item_id"
+    t.index ["purchase_id"], name: "index_purchase_items_on_purchase_id"
+  end
+
+  create_table "purchases", force: :cascade do |t|
+    t.decimal "abonado", precision: 17, scale: 4, default: "0.0"
+    t.bigint "corp_id", null: false
+    t.datetime "created_at", null: false
+    t.date "deadline"
+    t.decimal "debe", precision: 17, scale: 4, default: "0.0"
+    t.text "error"
+    t.date "fecha"
+    t.string "folio", null: false
+    t.integer "forma_pago", default: 0
+    t.decimal "impuestos", precision: 17, scale: 4, default: "0.0"
+    t.string "nota_admin"
+    t.string "nota_customer"
+    t.bigint "provider_id"
+    t.integer "status", default: 0
+    t.integer "status_pago", default: 0
+    t.decimal "subtotal", precision: 17, scale: 4, default: "0.0"
+    t.integer "tipo", default: 0
+    t.decimal "total", precision: 17, scale: 4, default: "0.0"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["corp_id"], name: "index_purchases_on_corp_id"
+    t.index ["provider_id"], name: "index_purchases_on_provider_id"
+    t.index ["user_id"], name: "index_purchases_on_user_id"
+  end
+
   create_table "sat_products", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -610,6 +651,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_000002) do
   add_foreign_key "orders", "events"
   add_foreign_key "orders", "users"
   add_foreign_key "providers", "corps"
+  add_foreign_key "purchase_items", "items"
+  add_foreign_key "purchase_items", "purchases"
+  add_foreign_key "purchases", "corps"
+  add_foreign_key "purchases", "providers"
+  add_foreign_key "purchases", "users"
   add_foreign_key "ticket_messages", "tickets"
   add_foreign_key "tickets", "admins"
   add_foreign_key "tickets", "corps"

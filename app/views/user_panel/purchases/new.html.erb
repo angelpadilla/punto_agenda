@@ -1,0 +1,12 @@
+<% content_for :title, "Nueva compra" %>
+<div class="columns is-mobile">
+  <%= render 'items', purchase: @comprita %>
+  <div class="column is-3-desktop">
+    <div id="compra_resumen">
+      <%= render 'compra_resumen', purchase: @comprita %>
+      <% if @comprita.purchase_items.count > 0 %>
+        <%= render 'cart_button', purchase: @comprita %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -40,7 +40,7 @@
             </span>
             <div class="tooltip down">Inventario</div>
           <% end %>
-          <% if false %>
+          <% if @corp.plus? or @corp.premium? %>
             <%= link_to user_panel_landing_purchases_path, class: 'navbar-item has_tooltip' do %>
               <span class="icon">
                 <%= image_tag 'compras.svg', alt: 'compras y gastos', class: 'invert' %>
@@ -146,6 +146,17 @@
           <% end %>
           inventario
         </span>
+      <% end %>
+      <% if @corp.plus? or @corp.premium? %>
+        <%= link_to items_path, class: 'icon' do %>
+          <span class="icon">
+            <%= image_tag 'items.svg', alt: 'carrito', class: 'invert' %>
+            <% if 1 > 0 %>
+              <div class="notification_dot2"></div>
+            <% end %>
+            compras
+          </span>
+        <% end %>
       <% end %>
       <% if current_user.prop? %>
         <%= link_to user_corp_landing_path, class: 'icon' do %>

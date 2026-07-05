@@ -1,0 +1,121 @@
+<div class="panel <%= 'is-hidden-touch' unless local_assigns.fetch(:source, '') == 'resumen' %>">
+  <div class="panel-heading">
+    <div>
+      <p class="title is-5 mb-0">Resumen compra</p>
+      <p class="is-size-7 has-text-grey-light">
+        Folio: <%= purchase.folio %>-<%= purchase.id %>
+      </p>
+    </div>
+  </div>
+  <% if purchase.purchase_items.empty? %>
+    <div class="panel-block is-block p-5">
+      <p class="has-text-grey">Carrito vacio</p>
+    </div>
+  <% else %>
+    <div class="panel-block is-block p-5">
+      <!-- Cart Items -->
+      <% purchase.purchase_items.default.each do |line_item| %>
+        <div class="ticket-item mb-5">
+          <div class="columns is-mobile is-vcentered is-variable is-2">
+            <div class="column is-narrow">
+              <figure class="image is-48x48">
+                <%= image_tag 'items.svg', alt: 'item', class: 'invert small', loading: 'lazy' %>
+              </figure>
+            </div>
+            <div class="column">
+              <p class="is-size-7 has-text-weight-bold"><%= line_item.item ? line_item.item.name : line_item.nombre %></p>
+              <p class="is-size-7 has-text-grey">
+                Cantidad: <%= line_item.cantidad %>
+              </p>
+              <p class="is-size-7 has-text-grey">
+                Precio: <%= number_to_currency(line_item.precio) %>
+              </p>
+              <p class="is-size-7 has-text-grey">
+                Monto: <%= number_to_currency(line_item.total) %>
+              </p>
+              <%= link_to remove_item_line_items_path(line_id: line_item.id, order_id: order.id, source: local_assigns.fetch(:source, '')), data: { turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas eliminar este item?" }, class: "is-small" do %>
+                Eliminar
+              <% end %>
+            </div>
+            <div class="column is-narrow has-text-centered">
+              <div class="is-flex is-flex-direction-column">
+                <%= form_with url: add_item_line_items_path, method: :post do |form| %>
+                  <%= form.hidden_field :source, value: local_assigns.fetch(:source, '') %>
+                  <%= form.hidden_field :item_id, value: line_item.item.id %>
+                  <%= form.hidden_field :order_id, value: order.id %>
+                  <%= form.hidden_field :cantidad, value: 1 %>
+                  <button class="button py-0" 
+                    type="submit"
+                    style="height: 20px;">
+                    +
+                  </button>
+                <% end %>
+                <span class="has-text-weight-bold"><%= line_item.cantidad %></span>
+                <%= form_with url: down_item_line_items_path, method: :post do |form| %>
+                  <%= form.hidden_field :source, value: local_assigns.fetch(:source, '') %>
+                  <%= form.hidden_field :line_id, value: line_item.id %>
+                  <%= form.hidden_field :order_id, value: order.id %>
+                  <%= form.hidden_field :cantidad, value: 1 %>
+                  <button class="button py-0"
+                      type="submit"
+                      style="height: 20px;">
+                    -
+                  </button>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <!-- Totals -->
+    <div class="totals">
+      <div class="flexx space-b flex-end">
+        <span class="has-text-grey">Subtotal</span>
+        <span><%= number_to_currency(purchase.subtotal) %></span>
+      </div>
+      <div class="flexx space-b flex-end">
+        <span class="has-text-grey">Impuestos (16%)</span>
+        <span><%= number_to_currency(purchase.impuestos) %></span>
+      </div>
+      <%# total %>
+      <div class="flexx space-b flex-end mt-4">
+        <span class="bold">
+          Total
+        </span>
+        <span class="has-text-neon bold">
+          <%= number_to_currency(purchase.total) %>
+        </span>
+      </div>
+      <button class="button is-primary is-fullwidth mb-3 mt-3 is-rounded mtrigger" data-target="finalizar_ticket">
+        <span class="icon mr-2">
+          <%= image_tag 'login.svg', alt: 'carrito' %>
+        </span>
+        <% if purchase.carrito? %>
+          Finalizar venta
+        <% else %>
+          Remision
+        <% end %>
+      </button>
+      <% if purchase.carrito? %>
+        <%= link_to clear_items_line_items_path(purchase_id: purchase.id, source: local_assigns.fetch(:source, '')), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded is-small" do %>
+          <span class="icon mr-2">
+            <%= image_tag 'trash.svg', alt: 'carrito' %>
+          </span>
+          Limpiar ticket
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+<%# modal finalizar %>
+<div class="modal" id="finalizar_ticket">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Finalizar ticket</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <%= render 'user_panel/purchases/form', purchase: purchase, path: purchase.carrito? ? purchases_path(id: purchase.id) : purchase_path(purchase), method: purchase.carrito? ? :post : :put %>
+  </div>
+</div>
