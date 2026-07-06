@@ -23,26 +23,26 @@
               </figure>
             </div>
             <div class="column">
-              <p class="is-size-7 has-text-weight-bold"><%= line_item.item ? line_item.item.name : line_item.nombre %></p>
+              <p class="is-size-7 has-text-weight-bold"><%= truncate(line_item.item ? line_item.item.name : line_item.nombre) %></p>
               <p class="is-size-7 has-text-grey">
                 Cantidad: <%= line_item.cantidad %>
               </p>
               <p class="is-size-7 has-text-grey">
-                Precio: <%= number_to_currency(line_item.precio) %>
+                Costo: <%= number_to_currency(line_item.precio) %>
               </p>
               <p class="is-size-7 has-text-grey">
                 Monto: <%= number_to_currency(line_item.total) %>
               </p>
-              <%= link_to remove_item_line_items_path(line_id: line_item.id, order_id: order.id, source: local_assigns.fetch(:source, '')), data: { turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas eliminar este item?" }, class: "is-small" do %>
+              <%= link_to remove_item_purchase_items_path(line_id: line_item.id, purchase_id: purchase.id, source: local_assigns.fetch(:source, '')), data: { turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas eliminar este item?" }, class: "is-small" do %>
                 Eliminar
               <% end %>
             </div>
             <div class="column is-narrow has-text-centered">
               <div class="is-flex is-flex-direction-column">
-                <%= form_with url: add_item_line_items_path, method: :post do |form| %>
+                <%= form_with url: add_item_purchase_items_path, method: :post do |form| %>
                   <%= form.hidden_field :source, value: local_assigns.fetch(:source, '') %>
                   <%= form.hidden_field :item_id, value: line_item.item.id %>
-                  <%= form.hidden_field :order_id, value: order.id %>
+                  <%= form.hidden_field :purchase_id, value: purchase.id %>
                   <%= form.hidden_field :cantidad, value: 1 %>
                   <button class="button py-0" 
                     type="submit"
@@ -51,10 +51,10 @@
                   </button>
                 <% end %>
                 <span class="has-text-weight-bold"><%= line_item.cantidad %></span>
-                <%= form_with url: down_item_line_items_path, method: :post do |form| %>
+                <%= form_with url: down_item_purchase_items_path, method: :post do |form| %>
                   <%= form.hidden_field :source, value: local_assigns.fetch(:source, '') %>
                   <%= form.hidden_field :line_id, value: line_item.id %>
-                  <%= form.hidden_field :order_id, value: order.id %>
+                  <%= form.hidden_field :purchase_id, value: purchase.id %>
                   <%= form.hidden_field :cantidad, value: 1 %>
                   <button class="button py-0"
                       type="submit"
@@ -98,7 +98,7 @@
         <% end %>
       </button>
       <% if purchase.carrito? %>
-        <%= link_to clear_items_line_items_path(purchase_id: purchase.id, source: local_assigns.fetch(:source, '')), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded is-small" do %>
+        <%= link_to clear_items_purchase_items_path(purchase_id: purchase.id, source: local_assigns.fetch(:source, '')), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar el ticket?"}, class: "button is-danger is-fullwidth is-rounded is-small" do %>
           <span class="icon mr-2">
             <%= image_tag 'trash.svg', alt: 'carrito' %>
           </span>

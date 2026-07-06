@@ -73,7 +73,7 @@
           <%= n_field(form, :offer, label: "Precio oferta", clas: "field column is-6", help: "Llena solo si planeas ofrecer precios especiales y que tu cliente lo vea en tu tienda online") %>
           <%= n_field(form, :cost, label: "Costo", clas: "field column is-12") %>
           <%= s_field(form, :status, options: Item::Statuses, label: "Status") %>
-          <%= n_field(form, :stock, label: "Inventario (deja en blanco si es ilimitado)") %>
+          <%= n_field(form, :stock, label: "Inventario (deja en blanco si es ilimitado)", placeholder: "Ej. 100") %>
           <%= n_field(form, :alerta_stock, label: "Alerta inventario bajo", placeholder: "Ej. 10") %>
           <%= n_field(form, :com_vendedor, label: "Comisión a vendedor?", placeholder: "Ej. 10", min: 0.0, help: "Monto fijo por unidad vendida para calculo de comision a vendedores") %>
         </div>

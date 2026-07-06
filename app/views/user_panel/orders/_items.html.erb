@@ -112,13 +112,13 @@
                   <div class="field column is-12">
                     <label class="label">Precio</label>
                     <div class="control">
-                      <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 0.1, step: 'any', class: "input is-rounded" %>
+                      <%= form.number_field :precio, value: item.offer ? item.offer : item.price, min: 0.1, step: 'any', class: "input is-rounded", required: true %>
                     </div>
                   </div>
                   <div class="field column is-6">
                     <label class="label">Cantidad</label>
                     <div class="control">
-                      <%= form.number_field :cantidad, value: 1, min: 0.1, step: 'any', class: "input is-rounded" %>
+                      <%= form.number_field :cantidad, value: 1, min: 0.1, step: 'any', class: "input is-rounded", required: true %>
                     </div>
                   </div>
                   <div class="field column is-6">

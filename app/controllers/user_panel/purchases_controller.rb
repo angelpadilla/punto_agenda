@@ -1,6 +1,6 @@
 class UserPanel::PurchasesController < UserPanelController
   before_action :check_plan
-  before_action :set_purchase, only: %i[ show ]
+  before_action :set_purchase, only: %i[ show cancel ]
   def index
     purchases = @corp.purchases.default_index
 
@@ -65,25 +65,61 @@ class UserPanel::PurchasesController < UserPanelController
     end
 
     @purchase.user = current_user
-    @purchase.status = :remision
+    # @purchase.status = :remision
 
-    if @purchase.save
+    @purchase.forma_pago = "por_definir" if @purchase.credito?
+
+    puts "- - - - - -Creando compra #{@purchase.id} con tipo #{@purchase.tipo}, status #{@purchase.status}, status_pago #{@purchase.status_pago}, forma_pago #{@purchase.forma_pago}, fecha #{@purchase.fecha}, total #{@purchase.total}"
+
+    if @purchase.save!
 
       if @purchase.compra?
-        ## aumentamos inventario
+        ## aumentamos inventario y actualizamos costo de los productos
         @purchase.purchase_items.each do |line|
-          if line.item
+          if line.item and !line.item.stock.nil?
             item = line.item
             item.stock += line.cantidad
+            item.cost = line.precio
             item.save(validate: false)
           end
         end
+      end
+
+      if @purchase.pagado?
+        @purchase.deposits.create!(monto: @purchase.total, forma_pago: @purchase.forma_pago, tipo: :egreso, created_at: @purchase.fecha)
       end
       session[:comprita_id] = nil
       redirect_to purchase_path(@purchase), notice: "Compra finalizada"
     else
       redirect_to user_panel_landing_purchases_path, alert: @purchase.errors.full_messages.join(", ")
     end
+  end
+
+  def compra_resumen
+    @purchase = @corp.purchases.find(params[:id])
+  end
+
+  def cancel
+    return redirect_to orders_path, alert: "La compra ya está cancelada." if @purchase.cancelado?
+
+
+    @purchase.status = :cancelado
+    @purchase.desposits.destroy_all
+
+    if @purchase.compra?
+      ## regresamos inventario
+      @purchase.purchase_items.each do |line|
+        if line.item and !line.item.stock.nil?
+          item = line.item
+          item.stock -= line.cantidad
+          item.save(validate: false)
+        end
+      end
+      @purchase.error = "Compra cancelada por el usuario #{current_user.email} con fecha #{Time.current.in_time_zone("America/Mexico_City").strftime("%d/%m/%Y %I:%M %p")}."
+    end
+
+    @purchase.save
+    redirect_back(fallback_location: purchases_path, alert: "Compra cancelada.")
   end
 
   private
@@ -96,5 +132,17 @@ class UserPanel::PurchasesController < UserPanelController
     unless @corp.plus? or @corp.premium?
       redirect_to user_panel_landing_path, alert: "Esta funcionalidad no está disponible en tu plan actual."
     end
+  end
+
+  def purchase_params
+    params.expect(purchase: [
+      :provider_id,
+      :fecha,
+      :status,
+      :status_pago,
+      :forma_pago,
+      :deadline,
+      :nota_customer
+    ])
   end
 end

@@ -1,0 +1,72 @@
+<div class="item_box">
+  <div class="table_item">
+    <div class="item_info flexx-3">
+      <div>
+        <% if purchase.cancelado? %>
+          <span class="tag is-danger is-rounded">Cancelado</span>
+        <% end %>
+      </div>
+      <h3 class="titlee2"><%= purchase.folio %></h3>
+      <div class="columns is-mobile is-multiline ">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Tipo</div>
+          <p><%= purchase.tipo.titleize %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Status Pago</div>
+          <p><%= purchase.status_pago.titleize %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Status</div>
+          <p><%= purchase.status.titleize %></p>
+        </div>
+      </div>
+      <!-- info -->
+      <div class="columns is-mobile is-multiline ">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Total</div>
+          <p class="has-text-neon"><%= number_to_currency(purchase.total) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Proveedor</div>
+          <p><%= purchase.provider&.razon %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Fecha</div>
+          <p><%= l(purchase.fecha, format: :long) %></p>
+        </div>
+      </div>
+      <% if purchase.credito? %>
+        <div class="columns is-mobile is-multiline">
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Debe</div>
+            <p>
+              <%= number_to_currency(purchase.debe) %>
+            </p>
+          </div>
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Abonado</div>
+            <p><%= number_to_currency(purchase.abonado) %></p>
+          </div>
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Vence</div>
+            <p class="<%= purchase.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(purchase.deadline, format: :long) %></p>
+          </div>
+        </div>
+      <% end %>
+      <% if purchase.nota_customer.present? %>
+        <div class="columns is-mobile is-multiline mt-2">
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <div class="labell">Notas</div>
+            <p class=""><%= purchase.nota_customer %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="item_buttons mt-4">
+    <%= link_to purchase_path(purchase), class: "button is-rounded is-fullwidth" do  %>
+      Ver detalles
+    <% end %>
+  </div>
+</div>

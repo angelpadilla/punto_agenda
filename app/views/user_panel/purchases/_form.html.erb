@@ -12,7 +12,7 @@
     <% end %>
     <div class="columns is-multiline">
       <div class="field column is-12">
-        <label class="label">Cliente</label>
+        <label class="label">Proovedor</label>
         <div class="control is-expanded <%= purchase.errors.include?(:provider_id) ? 'select-is-danger' : '' %>">
           <%= form.select :provider_id, options_for_select(@corp.providers.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, params[:provider_id] || purchase.provider_id),
               {prompt: "Selecciona", required: field_required?(Purchase, :provider_id)},
@@ -24,24 +24,18 @@
         <label class="label">Fecha venta</label>
         <%= form.date_field :fecha, class: 'control input is-rounded', max: Date.today, value: Date.today, required: true %>
       </div>
-      <% if purchase.carrito? %>
-        <%= s_field(form, :tipo, options: @corp.fac_and_timbres? ? Order::Tipo2 : Order::Tipo3, label: "Tipo", clas: "field column is-6") %>
-      <% else %>
-        <%= s_field(form, :tipo, options: @corp.fac_and_timbres? ? Order::Tipo4 : Order::Tipo5, label: "Tipo", clas: "field column is-6") %>
-      <% end %>
+      <%= s_field(form, :status, options: Purchase::Status2, label: "Status", clas: "field column is-6") %>
       <div class="field column is-12">
         <label class="label">Forma pago</label>
         <div class="select is-rounded <%= purchase.errors.include?(:forma_pago) ? 'is-danger' : '' %>">
-          <%= form.select(:forma_pago, Order.forma_pagos.keys.map { |k| [k.humanize, k] }, {}) %>
+          <%= form.select(:forma_pago, Purchase.forma_pagos.keys.map { |k| [k.humanize, k] }, {}) %>
         </div>
       </div>
-      <%= s_field(form, :status_pago, options: Order::Status, label: "Estado de pago", clas: "field column is-12") %>
+      <%= s_field(form, :status_pago, options: Purchase.status_pagos.keys.map { |k| [k.to_s.humanize, k] }, label: "Estado de pago", clas: "field column is-12") %>
       <div class="field column is-12">
         <label class="label">Fecha limite del credito</label>
         <%= form.date_field :deadline, class: "control input #{purchase.errors.include?(:deadline) ? 'is-danger' : ''}", min: Time.current %>
       </div>
-    </div>
-    <div class="columns is-multiline" id="sat_stuff">
     </div>
     <div class="columns is-multiline mt-2">
       <%= t_field(form, :nota_customer, placeholder: "Nota interna", clas: "field column is-12") %>

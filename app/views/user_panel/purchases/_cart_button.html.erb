@@ -1,0 +1,8 @@
+<div class="is-hidden-desktop">
+  <%= link_to compra_resumen_purchases_path(purchase), class: "cart_button" do %>
+    <span class="tag is-rounded">
+      <%= purchase.purchase_items.count %>
+    </span>
+    Ver carrito
+  <% end %>
+</div>

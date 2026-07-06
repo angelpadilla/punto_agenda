@@ -1,0 +1,19 @@
+<%= turbo_stream.update "compra_resumen", partial: "user_panel/purchases/compra_resumen", locals: { purchase: @purchase, source: params[:source] } %>
+<% if @show_cart_button && @purchase.purchase_items.count > 0 %>
+  <%= turbo_stream.append "compra_resumen", partial: "user_panel/purchases/cart_button", locals: { purchase: @purchase } %>
+<% end %>
+<%# 2. Cerrar el modal %>
+<%= turbo_stream.update "close_modal_#{@item.id}" do %>
+  <script>
+    (function() {
+      const modal = document.getElementById("item_<%= @item.id %>");
+      if (modal) {
+        modal.classList.remove("is-active");
+
+        // Limpiar formulario modal
+        modal.querySelector("form").reset();
+
+      }
+    })();
+  </script>
+<% end %>

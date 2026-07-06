@@ -71,7 +71,6 @@ class Order < ApplicationRecord
 
   enum :forma_pago, {
     efectivo: "01",
-    deposito_efectivo: "101",
     trasferencia_electronica: "03",
     tarjeta_de_credito: "04",
     tarjeta_de_debito: "28",

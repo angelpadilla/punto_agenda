@@ -157,7 +157,20 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :purchases, controller: "user_panel/purchases" do
+    resources :purchases, controller: "user_panel/purchases", only: %i[index show new create] do
+      collection do 
+        get ":id/compra_resumen", to: "user_panel/purchases#compra_resumen", as: :compra_resumen
+        post :cancel
+      end
+    end
+
+    resources :purchase_items, controller: "user_panel/purchase_items" do
+      collection do
+        post :add_item
+        post :down_item
+        post :remove_item
+        post :clear_items
+      end
     end
 
     resources :tickets, controller: "user_panel/tickets", only: %i[index show new create], as: :user_tickets do

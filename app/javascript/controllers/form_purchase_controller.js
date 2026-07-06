@@ -2,30 +2,27 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
     connect() {
-        this.tipo = document.getElementById("purchase_tipo");
+        this.status = document.getElementById("purchase_status");
         this.forma_pago = document.getElementById("purchase_forma_pago");
         this.status_pago = document.getElementById("purchase_status_pago");
-        this.uso_cfdi = document.getElementById("purchase_uso_cfdi");
         this.deadline = document.getElementById("purchase_deadline");
 
         this.forma_pago_container = this.forma_pago.parentElement.parentElement;
         this.status_pago_container = this.status_pago.parentElement.parentElement;
-        this.uso_cfdi_container = this.uso_cfdi.parentElement.parentElement;
         this.deadline_container = this.deadline.parentElement;
 
-        this.checkTipo();
+        this.checkStatus();
         this.checkStatusPago();
 
-        this.tipo.addEventListener("change", () => this.checkTipo());
+        this.status.addEventListener("change", () => this.checkStatus());
         this.status_pago.addEventListener("change", () => this.checkStatusPago());
     }
 
-    checkTipo() {
-        const tipo = this.tipo.value;
-        const pagable = tipo === "remision" || tipo === "factura";
-        this.setFormaPago(pagable);
-        this.setStatusPago(pagable);
-        this.setUsoCFDI(tipo === "factura");
+    checkStatus() {
+        const status = this.status.value;
+        const visible = status === "remision";
+        this.setFormaPago(visible);
+        this.setStatusPago(visible);
 
         this.checkStatusPago();
     }
@@ -53,11 +50,7 @@ export default class extends Controller {
         this.$show(this.forma_pago_container, visible);
     }
 
-    setUsoCFDI(visible) {
-        this.uso_cfdi.value = visible ? "G03" : "";
-        this.uso_cfdi.required = visible;
-        this.$show(this.uso_cfdi_container, visible);
-    }
+
 
     setDeadline(visible) {
         this.deadline.value = null;

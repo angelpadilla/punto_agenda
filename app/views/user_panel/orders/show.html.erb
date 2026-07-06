@@ -8,7 +8,7 @@
       </span>
       Volver a listado 
     <% end %>
-    <% if !@order.timbre? and @corp.facturacion? %>
+    <% if !@order.timbre? and @corp.facturacion? and !@order.cancelado? %>
       <% if @corp.timbres > 0 %>
         <button class="mtrigger button is-rounded" data-target="timbraa">
           <span class="icon mr-2">
@@ -41,67 +41,69 @@
         Editar
       <% end %>
     <% end %>
-    <div class="dropdown is-right is-hoverable">
-      <div class="dropdown-trigger">
-        <button class="button is-rounded" aria-haspopup="true">
-          <span class="icon">
-            <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
-          </span>
-          <span>Acciones</span>
-        </button>
-      </div>
-      <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-          <%= link_to ticket_path(@order.folio), class: "dropdown-item" do %>
+    <% if !@order.cancelado? %>
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true">
             <span class="icon">
-              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
             </span>
-            PDF
-          <% end %>
-          <% if @order.factura? and @order.xml.present? %>
-            <%= link_to ticket_xml_path(@order.folio), data: { turbo_method: :post }, class: "dropdown-item" do %>
+            <span>Acciones</span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <%= link_to ticket_path(@order.folio), class: "dropdown-item" do %>
               <span class="icon">
-                <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
+                <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
               </span>
-              XML
+              PDF
             <% end %>
-          <% end %>
-          <%= link_to ticket80_path(@order.folio), class: "dropdown-item" do %>
-            <span class="icon">
-              <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
-            </span>
-            Ticket 80mm
-          <% end %>
-          <a class="mtrigger dropdown-item" data-target="send_order_email">
-            <span class="icon">
-              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
-            </span>
-            Enviar por email
-          </a>
-          <% if @corp.sms > 0 %>
-            <a class="mtrigger dropdown-item" data-target="send_order_sms">
+            <% if @order.factura? and @order.xml.present? %>
+              <%= link_to ticket_xml_path(@order.folio), data: { turbo_method: :post }, class: "dropdown-item" do %>
+                <span class="icon">
+                  <%= image_tag 'timbre.svg', alt: 'download', class: 'invert' %>
+                </span>
+                XML
+              <% end %>
+            <% end %>
+            <%= link_to ticket80_path(@order.folio), class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+              </span>
+              Ticket 80mm
+            <% end %>
+            <a class="mtrigger dropdown-item" data-target="send_order_email">
               <span class="icon">
                 <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
               </span>
-              Enviar por SMS
+              Enviar por email
             </a>
-          <% end %>
-          <%# enviar por whatsapp %>
-          <a class="mtrigger dropdown-item" data-target="send_order_whatsapp">
-            <span class="icon">
-              <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
-            </span>
-            WhatsApp
-          </a>
-          <%= link_to cancel_orders_path(id: @order.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar esta orden?"}, class: "dropdown-item" do %>
-            <span class="icon">
-              <%= image_tag 'trash.svg', alt: 'cancel', class: 'invert' %>
-            </span>
-            Cancelar
-          <% end %>
+            <% if @corp.sms > 0 %>
+              <a class="mtrigger dropdown-item" data-target="send_order_sms">
+                <span class="icon">
+                  <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+                </span>
+                Enviar por SMS
+              </a>
+            <% end %>
+            <%# enviar por whatsapp %>
+            <a class="mtrigger dropdown-item" data-target="send_order_whatsapp">
+              <span class="icon">
+                <%= image_tag 'send.svg', alt: 'download', class: 'invert' %>
+              </span>
+              WhatsApp
+            </a>
+            <%= link_to cancel_orders_path(id: @order.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar esta orden?"}, class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'trash.svg', alt: 'cancel', class: 'invert' %>
+              </span>
+              Cancelar
+            <% end %>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   </div>
 </div>
 <% if @order.error.present? %>

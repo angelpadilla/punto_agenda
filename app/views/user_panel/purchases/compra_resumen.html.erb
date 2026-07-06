@@ -1,0 +1,16 @@
+<% content_for :title, "Detalle de ticket" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Resumen compra</h2>
+  <div class="actions">
+    <%= link_to @purchase.carrito? ? new_purchase_path(tipo: @purchase.tipo) : purchase_path(@purchase), class: "button is-rounded mr-2" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver 
+    <% end %>
+  </div>
+</div>
+<hr>
+<div id="compra_resumen">
+  <%= render 'compra_resumen', purchase: @purchase, source: 'resumen' %>
+</div>

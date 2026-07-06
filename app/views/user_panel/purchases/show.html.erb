@@ -1,2 +1,315 @@
-<h1>UserPanel::Puchases#show</h1>
-<p>Find me in app/views/user_panel/puchases/show.html.erb</p>
+<% content_for :title, "Detalle de la compra" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Detalle de la compra</h2>
+  <div class="actions">
+    <%= link_to purchases_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a listado 
+    <% end %>
+    <% if @purchase.credito? and @purchase.debe > 0 %>
+      <button class="mtrigger button is-rounded" data-target="anadir_abono">
+        <span class="icon mr-2">
+          <%= image_tag 'plus.svg', alt: 'editar', class: "invert" %>
+        </span>
+        Añadir abono
+      </button>
+    <% end %>
+    <% if @userr.admin? and !@purchase.cancelado? %>
+      <div class="dropdown is-right is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded" aria-haspopup="true">
+            <span class="icon">
+              <%= image_tag 'dots.svg', alt: 'actions', class: 'invert' %>
+            </span>
+            <span>Acciones</span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <%= link_to cancel_purchases_path(id: @purchase.id), data: {turbo_method: :post, turbo_confirm: "¿Estás seguro de que deseas cancelar esta compra?"}, class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'trash.svg', alt: 'cancel', class: 'invert' %>
+              </span>
+              Cancelar
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<% if @purchase.error.present? %>
+  <div class="noti is-danger mt-4">
+    <p>
+      <%= @purchase.error %>
+    </p>
+  </div>
+<% end %>
+<div class="box mt-4">
+  <span class="tag is-light is-rounded"><%= @purchase.tipo.titleize %></span>
+  <% if @purchase.pagado? %>
+    <span class="tag is-success is-rounded"><%= @purchase.status_pago.titleize %></span>
+  <% else %>
+    <span class="tag is-warning is-rounded"><%= @purchase.status_pago.titleize %></span>
+  <% end %>
+  <% if @purchase.cancelado? %>
+    <span class="tag is-danger is-rounded">Cancelado</span>
+  <% end %>
+  <h3 class="titlee2"><%= @purchase.folio %></h3>
+  <!-- info -->
+  <div class="columns is-mobile is-multiline ">
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Folio</div>
+      <p class="contentt"><%= @purchase.folio %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Proveedor</div>
+      <p class="contentt">
+        <% if @purchase.provider %>
+          <%= @purchase.provider.razon %> (<%= @purchase.provider.tel %>)
+        <% else %>
+          -
+        <% end %>
+      </p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Fecha</div>
+      <p class="contentt"><%= l(@purchase.fecha ? @purchase.fecha : @purchase.created_at, format: :long) %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Forma de pago</div>
+      <p class="contentt"><%= @purchase.forma_pago&.titleize %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Tipo</div>
+      <p class="contentt"><%= @purchase.tipo.titleize %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Status pago</div>
+      <p class="contentt"><%= @purchase.status_pago&.titleize %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Status</div>
+      <% if @purchase.cancelado? %>
+        <span class="tag is-danger is-rounded">Cancelado</span>
+      <% else %>
+        <p class="contentt"><%= @purchase.status&.titleize %></p>
+      <% end %>
+    </div>
+  </div>
+  <div class="columns is-mobile is-multiline">
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Creó</div>
+      <p class="contentt"><%= @purchase.user ? @purchase.user.full_name : "-" %></p>
+    </div>
+    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+      <div class="labell">Fecha creación</div>
+      <p class="contentt"><%= l(@purchase.created_at, format: :long) %></p>
+    </div>
+  </div>
+  <% if @purchase.nota_customer.present? %>
+    <div class="columns is-mobile is-multiline mt-2">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Notas</div>
+        <p class=""><%= @purchase.nota_customer %></p>
+      </div>
+    </div>
+  <% end %>
+</div>
+<div class="box">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'cup-star-svgrepo-com.svg', class: "invert", alt: "Totales" %>
+      </span>
+      Totales 
+    </h2>
+  </div>
+  <div class="box_content">
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Total</div>
+        <p class="contentt"><%= number_to_currency(@purchase.total) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Subtotal</div>
+        <p class="contentt"><%= number_to_currency(@purchase.subtotal) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">IVA</div>
+        <p class="contentt"><%= number_to_currency(@purchase.impuestos) %></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <%= image_tag 'layers.svg', class: "invert", alt: "Items" %>
+      </span>
+      Items 
+    </h2>
+  </div>
+  <div class="box_content">
+    <div class="table-container">
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @purchase.purchase_items.each do |line| %>
+            <tr>
+              <th>
+                <% if line.item %>
+                  <%= link_to truncate(line.item.name.titleize, length: 20), line.item, title: line.item.name.titleize %>
+                <% else %>
+                  <%= line.name %>
+                <% end %>
+              </th>
+              <td><%= line.cantidad %></td>
+              <td><%= number_to_currency(line.precio) %></td>
+              <td><%= number_to_currency(line.total) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<% if true %>
+  <div class="box expandable">
+    <div class="box_header">
+      <h2>
+        <span class="icon mr-2">
+          <%= image_tag 'donut-bitten-svgrepo-com.svg', class: "invert", alt: "Deuda" %>
+        </span>
+        Abonos
+      </h2>
+      <span class="icon toggle_icon">
+        <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+      </span>
+    </div>
+    <div class="box_content">
+      <div class="columns is-mobile is-multiline">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Abonado</div>
+          <p class="contentt"><%= number_to_currency(@purchase.abonado) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Debe</div>
+          <p class="contentt">
+            <%= number_to_currency(@purchase.debe) %>
+          </p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Fecha límite</div>
+          <% if @purchase.deadline %>
+            <p class="contentt <%= @purchase.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(@purchase.deadline, format: :long) %></p>
+          <% else %>
+            -
+          <% end %>
+        </div>
+      </div>
+      <% if @purchase.deposits.any? %>
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Num operación</th>
+              <th>Forma de pago</th>
+              <th>Monto</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @purchase.deposits.each do |depo| %>
+              <tr>
+                <td>
+                  <%= depo.folio %>
+                </td>
+                <td>
+                  <%= depo.created_at.strftime("%d/%m/%Y") %>
+                </td>
+                <td>
+                  <% if depo.num_operacion.present? %>
+                    <%= depo.num_operacion %>
+                  <% elsif depo.stripe_payment_id.present? %>
+                    <%= truncate(depo.stripe_payment_id) %>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+                <td>
+                  <%= depo.forma_pago&.titleize %>
+                </td>
+                <td>
+                  <%= number_to_currency depo.monto %>
+                </td>
+                <td>
+                  <div class="buttons">
+                    <% if !@purchase.pagado? or current_user.admin? %>
+                      <%= button_to deposit_path(depo), data: { turbo_confirm: "Estas seguro?" }, method: :delete, class: "button is-danger is-small is-rounded" do %>
+                        <span class="material-icons-round">
+                          delete_forever
+                        </span>
+                        Cancelar
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+<%# modal anadir abono %>
+<div id="anadir_abono" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <%= form_with url: deposits_path, method: :post do |form| %>
+        <div class="columns is-multiline">
+          <%= form.hidden_field :order_id, value: @purchase.id %>
+          <div class="field column is-12">
+            <label class="label">Monto (debe: $<%= @purchase.debe %>)</label>
+            <div class="control">
+              <%= form.number_field :monto, class: 'input is-rounded', step: 'any', min: '0.01', max: @purchase.debe, required: true %>
+            </div>
+          </div>
+          <div class="field column is-6">
+            <label class="label">Fecha pago</label>
+            <div class="control">
+              <%= form.datetime_field :created_at, class: 'input is-rounded', required: true, max: Time.current + 1.hour %>
+            </div>
+          </div>
+          <div class="field column is-6">
+            <label class="label">Forma pago</label>
+            <div class="select is-rounded">
+              <%= form.select :forma_pago, Purchase.forma_pagos.collect {|k, v| [k.humanize, v] }, {include_blank: true, required: true} %>
+            </div>
+          </div>
+          <div class="field column is-12">
+            <label class="label">Numero de operación</label>
+            <div class="control">
+              <%= form.text_field :num_operacion, class: 'input is-rounded' %>
+            </div>
+          </div>
+        </div>
+        <%= form.submit "Añadir", class: "button is-primary is-fullwidth is-rounded" %>
+      <% end %>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
