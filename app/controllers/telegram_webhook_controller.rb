@@ -2,8 +2,6 @@
 # Set webhook: POST to https://miinegocio.com/telegram/webhook
 class TelegramWebhookController < ApplicationController
   skip_before_action :verify_authenticity_token
-  skip_before_action :authenticate_user!
-  skip_before_action :authenticate_admin!
 
   def receive
     update = params.permit!.to_h
