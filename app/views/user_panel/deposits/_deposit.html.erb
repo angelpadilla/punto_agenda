@@ -1,0 +1,36 @@
+<tr>
+  <td><%= deposit.created_at.strftime('%d/%m/%Y %I:%M %p') %></td>
+  <td><%= deposit.folio %></td>
+  <td><%= deposit.num_operacion %></td>
+  <td><%= deposit.forma_pago&.titleize %></td>
+  <td>
+    <% if deposit.depositable_type == 'Order' %>
+      <%= link_to "Venta", order_path(deposit.depositable_id) %>
+    <% elsif deposit.depositable_type == 'Purchase' %>
+      <%= link_to "Compra", purchase_path(deposit.depositable_id) %>
+    <% else %>
+      <%= deposit.depositable_id %>
+    <% end %>
+  </td>
+  <td>
+    <% if deposit.ingreso? %>
+      <span class="icon material-icons-round has-text-success">
+        keyboard_double_arrow_down
+      </span>
+    <% else %>
+      <span class="icon material-icons-round has-text-danger">
+        keyboard_double_arrow_up
+      </span>
+    <% end %>
+    <%= deposit.tipo&.titleize %>
+  </td>
+  <td>
+    <% if deposit.ingreso? %>
+      <span class="has-text-success">
+        <%= number_to_currency(deposit.monto) %>
+      </span>
+    <% else %>
+      <span class="has-text-danger"><%= number_to_currency(deposit.monto) %></span>
+    <% end %>
+  </td>
+</tr>

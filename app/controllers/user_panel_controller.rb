@@ -29,6 +29,7 @@ class UserPanelController < ApplicationController
                               .limit(8)
 
       @slots_info = slots_today_info(today) if @corp.calendar
+      @deposits = @corp.deposits.includes(:depositable).default.where(created_at: start_of_today..end_of_today).limit(20)
 
       # ── Tab: Ventas ───────────────────────────────────────────────────
       dias = %w[Dom Lun Mar Mié Jue Vie Sáb]
@@ -167,6 +168,10 @@ class UserPanelController < ApplicationController
 
     if session[:comprita_id]
       @comprita = Purchase.find_by(id: session[:comprita_id])
+    end
+
+    if session[:gasto_id]
+      @gasto = Purchase.find_by(id: session[:gasto_id])
     end
   end
 

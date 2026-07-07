@@ -2,7 +2,6 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
     connect() {
-        this.status = document.getElementById("purchase_status");
         this.forma_pago = document.getElementById("purchase_forma_pago");
         this.status_pago = document.getElementById("purchase_status_pago");
         this.deadline = document.getElementById("purchase_deadline");
@@ -11,20 +10,9 @@ export default class extends Controller {
         this.status_pago_container = this.status_pago.parentElement.parentElement;
         this.deadline_container = this.deadline.parentElement;
 
-        this.checkStatus();
         this.checkStatusPago();
 
-        this.status.addEventListener("change", () => this.checkStatus());
         this.status_pago.addEventListener("change", () => this.checkStatusPago());
-    }
-
-    checkStatus() {
-        const status = this.status.value;
-        const visible = status === "remision";
-        this.setFormaPago(visible);
-        this.setStatusPago(visible);
-
-        this.checkStatusPago();
     }
 
     checkStatusPago() {

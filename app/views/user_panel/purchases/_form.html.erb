@@ -1,4 +1,5 @@
   <%= form_with(model: purchase, url: path, method: method, data: {controller: 'form-purchase'}) do |form| %>
+  <%= form.hidden_field :folio, value: folio %>
   <section class="modal-card-body">
     <% if purchase.errors.any? %>
       <div class="notification is-warning mt-4">
@@ -15,7 +16,7 @@
         <label class="label">Proovedor</label>
         <div class="control is-expanded <%= purchase.errors.include?(:provider_id) ? 'select-is-danger' : '' %>">
           <%= form.select :provider_id, options_for_select(@corp.providers.default.map { |k| ["#{k.razon&.titleize} #{k.tel}", k.id] }, params[:provider_id] || purchase.provider_id),
-              {prompt: "Selecciona", required: field_required?(Purchase, :provider_id)},
+              {prompt: "Selecciona", required: purchase.gasto? ? false : field_required?(Purchase, :provider_id)},
               { "data-controller": "slimselect", class: "ss2"}
               %>
         </div>
@@ -24,8 +25,7 @@
         <label class="label">Fecha venta</label>
         <%= form.date_field :fecha, class: 'control input is-rounded', max: Date.today, value: Date.today, required: true %>
       </div>
-      <%= s_field(form, :status, options: Purchase::Status2, label: "Status", clas: "field column is-6") %>
-      <div class="field column is-12">
+      <div class="field column is-6">
         <label class="label">Forma pago</label>
         <div class="select is-rounded <%= purchase.errors.include?(:forma_pago) ? 'is-danger' : '' %>">
           <%= form.select(:forma_pago, Purchase.forma_pagos.keys.map { |k| [k.humanize, k] }, {}) %>

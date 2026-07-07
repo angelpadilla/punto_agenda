@@ -19,6 +19,9 @@ production:
   clear_old_orders_carritos:
     command: "Order.carrito.where('created_at < ?', 2.day.ago).in_batches.destroy_all"
     schedule: every 1 day at 3am
+  clear_old_purchases_carritos:
+    command: "Purchase.carrito.where('created_at < ?', 2.day.ago).in_batches.destroy_all"
+    schedule: every 1 day at 3am
   cobranza_automatica:
     class: CobranzaJob
     schedule: every 1 day at 6am
@@ -29,6 +32,9 @@ development:
     schedule: every hour at minute 12
   clear_old_orders_carritos:
     command: "Order.carrito.where('created_at < ?', 1.day.ago).in_batches.destroy_all"
+    schedule: every 60 minutes
+  clear_old_purchases_carritos:
+    command: "Purchase.carrito.where('created_at < ?', 1.day.ago).in_batches.destroy_all"
     schedule: every 60 minutes
   notify_events_today:
     class: EventsSetJob

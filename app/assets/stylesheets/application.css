@@ -235,7 +235,7 @@ button {
 }
 
 div.box {
-    background: var(--dark) !important;
+    background: var(--dark);
     border-radius: 1.7rem;
     color: var(--light-gray) !important;
     box-shadow: none;
@@ -335,6 +335,10 @@ div.box {
 
     }
 
+    &.black {
+        background-color: var(--black);
+    }
+
     &.expandable {
         overflow: hidden;
         position: relative;
@@ -385,7 +389,7 @@ div.box {
 }
 
 .box_box {
-    background-color: var(--black);
+    background-color: var(--black) !important;
     border: 1px solid var(--gray);
     border-radius: var(--radius);
     text-align: left;

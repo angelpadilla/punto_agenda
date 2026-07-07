@@ -57,4 +57,40 @@ class UserPanel::PurchaseItemsController < UserPanelController
     end
   end
 
+  def add_gasto_item
+    @purchase = Purchase.find(params[:purchase_id])
+    nombre = params[:nombre].to_s.strip
+    cantidad = params[:cantidad].to_f
+    precio = params[:precio].to_f
+    iva = params[:iva].to_f
+
+    if nombre.blank? || cantidad <= 0 || precio <= 0
+      return redirect_back(fallback_location: new_gasto_purchases_path, alert: "Todos los campos son requeridos")
+    end
+
+    @purchase.purchase_items.create!(
+      nombre: nombre,
+      cantidad: cantidad,
+      precio: precio,
+      iva: iva,
+      item_id: nil
+    )
+    @purchase.save(validate: false)
+
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
+  def remove_gasto_item
+    @purchase = Purchase.find(params[:purchase_id])
+    line_id = params[:line_id]
+    @purchase.destroy_item(line_id)
+    @purchase.save(validate: false)
+
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
 end

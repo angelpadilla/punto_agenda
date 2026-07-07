@@ -18,7 +18,7 @@ class UserPanel::DepositsController < UserPanelController
     end
 
     @q = deposits.ransack(params[:q])
-    @resultados = @q.result
+    @resultados = @q.result.preload(:depositable)
 
     @pagy, @deposits = pagy(@resultados, limit: 25)
 
@@ -40,6 +40,30 @@ class UserPanel::DepositsController < UserPanelController
     @deposit = @corp.deposits.new
   end
 
+  def create_for_purchase
+    purchase = @corp.purchases.find(params[:purchase_id])
+    monto = params[:monto].to_f
+
+    return redirect_back(fallback_location: user_panel_home_path, alert: "El monto abonado no puede ser mayor al monto que se debe") if monto > purchase.debe
+
+    @deposit = purchase.deposits.new(
+      monto: monto,
+      forma_pago: params[:forma_pago],
+      tipo: :egreso,
+      created_at: params[:created_at],
+      num_operacion: params[:num_operacion],
+    )
+
+    if @deposit.save
+      purchase.status_pago = "pagado" if purchase.deposits.sum(:monto) >= purchase.total
+      purchase.save
+      redirect_to purchase_path(purchase), notice: "Deposito añadido"
+    else
+      purchase.update(error: @deposit.errors.messages)
+      redirect_to purchase_path(purchase), alert: @deposit.errors.messages
+    end
+  end
+
   # POST /deposits or /deposits.json
   def create
     order = @corp.orders.find(params[:order_id])
@@ -47,14 +71,13 @@ class UserPanel::DepositsController < UserPanelController
 
     return redirect_back(fallback_location: user_panel_home_path, alert: "El monto abonado no puede ser mayor al monto que se debe") if monto > order.debe
 
-    @deposit = @corp.deposits.new(
+    @deposit = order.deposits.new(
       monto: monto,
       forma_pago: params[:forma_pago],
       moneda: "MXN",
       tipo: :ingreso,
       created_at: params[:created_at],
       num_operacion: params[:num_operacion],
-      depositable: order  # Asigna la orden a la relación polimórfica
     )
 
     # if params[:forma_pago] == "04"
@@ -98,7 +121,7 @@ class UserPanel::DepositsController < UserPanelController
           return redirect_back(fallback_location: user_panel_home_path, alert: order.error)
         end
       end
-      order.status = "pagado" if order.deposits.sum(:monto) >= order.total
+      order.status_pago = "pagado" if order.deposits.sum(:monto) >= order.total
       order.save
       redirect_to order_path(order), notice: "Deposito añadido"
     else

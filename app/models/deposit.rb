@@ -9,6 +9,14 @@ class Deposit < ApplicationRecord
   enum :status_pago, pagado: 0, pendiente: 1, cancelado: 2, error_pago: 3, depositado: 4
   enum :canal, interno: 0, stripe: 1
 
+  scope :for_corp, ->(corp_id) {
+    order_ids    = Order.where(corp_id: corp_id).select(:id)
+    purchase_ids = Purchase.where(corp_id: corp_id).select(:id)
+
+    where(depositable_type: "Order",    depositable_id: order_ids)
+      .or(where(depositable_type: "Purchase", depositable_id: purchase_ids))
+  }
+
   enum :forma_pago, {
     efectivo: "01",
     deposito_efectivo: "101",
@@ -34,7 +42,7 @@ class Deposit < ApplicationRecord
   }
 
   def self.ransackable_attributes(auth_object = nil)
-    %W[id monto num_operacion forma_pago tipo created_at]
+    %W[id folio monto num_operacion forma_pago tipo created_at]
   end
 
   def self.ransackable_associations(auth_object = nil)

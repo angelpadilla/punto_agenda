@@ -1,0 +1,16 @@
+<% content_for :title, "Nuevo gasto" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Nuevo gasto</h2>
+  <div class="actions">
+    <%= link_to purchases_path, class: "button is-rounded" do  %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: "invert" %>
+      </span>
+      Volver
+    <% end %>
+  </div>
+</div>
+<hr>
+<div id="gasto_resumen">
+  <%= render 'gasto_resumen', gasto: @gasto %>
+</div>

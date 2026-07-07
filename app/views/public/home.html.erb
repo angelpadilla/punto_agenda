@@ -11,11 +11,11 @@
       <p class="text-gray mt-2"><span class="has-text-white">100+</span> negocios ya venden con miinegocio</p>
     </div>
     <h1 class="mt-4 ptitle">
-      <span class="has-text-neon">Controla tu negocio</span>
-      que no te controle a ti.
+      Manejo de
+      <span class="has-text-neon">citas, eventos, ventas, compras, inventario</span>.
     </h1>
     <h2 class="psubtitle text-gray mt-5 mb-6">
-      Crea tu catálogo o configura tu calendario, comparte tu tienda, gestiona tus ventas y citas.
+      Controla tu negocio, que no te controle a ti.
     </h2>
     <% if current_user %>
       <%= link_to user_panel_home_path, class: "button is-primary is-rounded mr-4" do %>
@@ -80,9 +80,23 @@
   }
 
 } %>
-<section class="container">
-  <p class="tag is-success is-rounded mb-4">Usos</p>
-  <div class="splide splide_home" data-controller="splide" data-splide-autoplay="false" data-splide-type="loop" data-splide-pagination="true" data-splide-arrows="false" data-splide-click-to-go="true">
+<section class="container" data-controller="splide" data-splide-autoplay="true" data-splide-type="loop" data-splide-pagination="true" data-splide-arrows="false" data-splide-click-to-go="true">
+  <div class="flexx space-b flex-end mb-4">
+    <span class="tag is-success is-rounded">Usos</span>
+    <div class="splide__arrows splide__arrows--custom">
+      <button class="button is-small is-rounded splide__arrow--prev" data-action="click->splide#prev" aria-label="Anterior">
+        <span class="icon is-small">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </span>
+      </button>
+      <button class="button is-small is-rounded splide__arrow--next" data-action="click->splide#next" aria-label="Siguiente">
+        <span class="icon is-small">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </span>
+      </button>
+    </div>
+  </div>
+  <div class="splide splide_home">
     <div class="splide__track">
       <ul class="splide__list">
         <% tipos.each do |key, tipo| %>
@@ -220,16 +234,6 @@
   </div>
 </section>
 <%# planes y precios %>
-<% if false %>
-  <section class="headerr">
-    <div class="container">
-      <p class="has-text-neon has-text-centered">Planes y precios</p>
-      <h2 class="title is-2 has-text-centered">
-        Elige el plan que mejor se adapte a tu negocio
-      </h2>
-    </div>
-  </section>
-<% end %>
 <section class="s3 mt-6" id="precios">
   <div class="container">
     <div class="price_grid">
@@ -242,7 +246,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Catálogo digital con hasta <span class="has-text-white">50</span> productos
+              Catálogo digital con hasta <span class="has-text-white"><%= Setting::PlanPrices[:basico][:items] %></span> productos
             </p>
           </li>
           <li>
@@ -250,7 +254,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              <span class="has-text-white">1</span> usuario para gestionar tu negocio
+              <span class="has-text-white"><%= Setting::PlanPrices[:basico][:users] %></span> usuario para gestionar tu negocio
             </p>
           </li>
           <li>
@@ -282,14 +286,6 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Notificaciones por <span class="has-text-white">email</span> para tus clientes
-            </p>
-          </li>
-          <li>
-            <span class="icon mr-2">
-              <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
-            </span>
-            <p>
               Notificaciones por <span class="has-text-white">email</span>
             </p>
           </li>
@@ -298,7 +294,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              <span class="has-text-white">Soporte</span> por ticket soporte (hasta 24horas de respuesta)
+              <span class="has-text-white">Soporte</span> por ticket de soporte (hasta 24horas de respuesta)
             </p>
           </li>
         </ul>
@@ -318,7 +314,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Catálogo digital con hasta <span class="has-text-white">100</span> productos
+              Catálogo digital con hasta <span class="has-text-white"><%= Setting::PlanPrices[:plus][:items] %></span> productos
             </p>
           </li>
           <li>
@@ -326,7 +322,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Hasta <span class="has-text-white">5</span> usuarios para gestionar tu negocio
+              Hasta <span class="has-text-white"><%= Setting::PlanPrices[:plus][:users] %></span> usuarios para gestionar tu negocio
             </p>
           </li>
           <li>
@@ -374,7 +370,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              <span class="has-text-white">Soporte prioritario</span> por ticket soporte (hasta 6 horas de respuesta)
+              <span class="has-text-white">Soporte prioritario</span> por ticket de soporte (hasta 6 horas de respuesta)
             </p>
           </li>
         </ul>
@@ -402,7 +398,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              Hasta <span class="has-text-white">10</span> usuarios para gestionar tu negocio
+              Hasta <span class="has-text-white"><%= Setting::PlanPrices[:premium][:users] %></span> usuarios para gestionar tu negocio
             </p>
           </li>
           <li>
@@ -458,7 +454,7 @@
               <%= image_tag 'plus.svg', alt: 'carrito', class: 'invert', loading: 'lazy' %>
             </span>
             <p>
-              <span class="has-text-white">Soporte dedicado</span> WhatsApp y tickets soporte (menos de 1 hora de respuesta)
+              <span class="has-text-white">Soporte dedicado</span> por tickets de soporte (menos de 1 hora de respuesta)
             </p>
           </li>
         </ul>

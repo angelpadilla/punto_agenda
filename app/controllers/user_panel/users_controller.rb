@@ -19,6 +19,7 @@ class UserPanel::UsersController < UserPanelController
   end
 
   def new
+    check_limit
     @user = @corp.users.new
   end
 
@@ -40,6 +41,7 @@ class UserPanel::UsersController < UserPanelController
   end
 
   def create
+    check_limit
     @user = @corp.users.new(user_params)
 
     if @user.save
@@ -79,5 +81,13 @@ class UserPanel::UsersController < UserPanelController
 
   def password_params
     params.expect(user: [ :password, :password_confirmation ])
+  end
+
+  def check_limit
+    limit = Setting::PlanPrices[@corp.tipo_plan.to_sym][:users]
+
+    if @corp.users.count >= limit
+      return users_path, alert: "Limite de usuarios alcanzado"
+    end
   end
 end

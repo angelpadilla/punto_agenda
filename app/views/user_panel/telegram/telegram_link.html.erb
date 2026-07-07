@@ -1,0 +1,59 @@
+<% content_for :title, "Vincular Telegram" %>
+<div class="box mt-4" style="max-width: 550px; margin: 0 auto;">
+  <div class="has-text-centered mb-4">
+    <svg viewBox="0 0 24 24" width="48" height="48" fill="#54a9eb"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.023c.24-.213-.054-.334-.373-.121l-6.87 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>
+    <h2 class="title is-4 mt-3">Vincular Telegram a <%= @corp.name %></h2>
+    <p class="text-gray">Elige una de estas dos formas:</p>
+  </div>
+  <%# Opción 1: link directo t.me %>
+  <div class="box black mb-4">
+    <h3 class="has-text-white mb-2">
+      <span class="tag is-rounded mr-2">Opción 1</span>
+      Abrir en la app (celular o desktop)
+    </h3>
+    <p class="text-gray mb-3" style="font-size: 0.85rem;">
+      Si tienes la app instalada, haz clic aqui:
+    </p>
+    <%= link_to @deep_link, @deep_link, target: "_blank", class: "button is-small is-rounded is-info mb-2" %>
+  </div>
+  <%# Opción 2: web.telegram.org %>
+  <div class="box black mb-4">
+    <h3 class="has-text-white mb-2">
+      <span class="tag is-success is-rounded mr-2">Opción 2</span>
+      Usar web.telegram.org (navegador)
+    </h3>
+    <ol class="mt-2" style="font-size: 0.9rem; color: #aaa;">
+      <li class="mb-2">
+        Abre <%= link_to "web.telegram.org", "https://web.telegram.org/", target: "_blank", class: "has-text-info" %> e inicia sesión
+      </li>
+      <li class="mb-2">
+        Busca al bot: <strong class="has-text-white">@<%= @bot_username %></strong>
+        <button class="button is-small is-rounded is-success ml-2" style="font-size: 0.75rem;" data-copy="@<%= @bot_username %>" onclick="navigator.clipboard.writeText(this.dataset.copy); this.textContent='¡Copiado!'; setTimeout(() => this.textContent='Copiar', 2000)">
+          Copiar
+        </button>
+      </li>
+      <li class="mb-2">Envía este comando al bot:</li>
+    </ol>
+    <div class="box black mb-2 p-3">
+      <code class="has-text-neon" style="font-size: 1rem; word-break: break-all;">/start <%= @token %></code>
+    </div>
+    <button class="button is-small is-rounded is-success" data-copy="/start <%= @token %>" onclick="navigator.clipboard.writeText(this.dataset.copy); this.textContent='¡Copiado!'; setTimeout(() => this.textContent='Copiar comando', 2000)">
+      Copiar comando
+    </button>
+  </div>
+  <div class="noti is-main">
+    <h2>
+      <span class="icon material-icons-round">check_circle</span>
+      Al enviar el comando, el bot te confirmará la vinculación ✅
+    </h2>
+    <p class="mt-2" style="font-size: 0.85rem;">Recibirás notificaciones de <%= @corp.name %> directamente en Telegram.</p>
+  </div>
+  <div class="has-text-centered mt-4">
+    <%= link_to user_corp_landing_path, class: "button is-rounded is-fullwidth" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'volver', class: 'invert' %>
+      </span>
+      Volver a Configuración
+    <% end %>
+  </div>
+</div>

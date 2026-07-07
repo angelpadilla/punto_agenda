@@ -1,12 +1,7 @@
 <div class="item_box">
   <div class="table_item">
     <div class="item_image">
-      <% odd_even = rand(1..2) %>
-      <% if odd_even.even? %>
-        <%= image_tag 'provider1.png', alt: 'item', class: 'rounded', loading: 'lazy' %>
-      <% else %>
-        <%= image_tag 'provider2.png', alt: 'item', class: 'rounded', loading: 'lazy' %>
-      <% end %>
+      <%= image_tag 'user.svg', alt: 'item', class: 'invert', loading: 'lazy' %>
     </div>
     <div class="item_info flexx-3">
       <h3 class="item_info_name">

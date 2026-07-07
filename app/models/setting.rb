@@ -27,15 +27,21 @@ class Setting < ApplicationRecord
   PlanPrices = {
     basico: {
       name: "Plan Básico",
-      price: 590.0
+      price: 390.0,
+      items: 50,
+      users: 1
     },
     plus: {
       name: "Plan Plus",
-      price: 790.0
+      price: 690.0,
+      items: 100,
+      users: 5
     },
     premium: {
       name: "Plan Premium",
-      price: 990.0
+      price: 990.0,
+      items: 1000000,
+      users: 10
     }
   }.freeze
 

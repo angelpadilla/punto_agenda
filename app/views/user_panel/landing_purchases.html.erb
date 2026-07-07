@@ -1,7 +1,7 @@
 <% content_for :title, "Compras, gastos y proovedores" %>
 <div class="columns is-multiline">
   <div class="column is-6">
-    <%= link_to new_purchase_path(tipo: "compra") do %>
+    <%= link_to new_purchase_path do %>
       <div class="linkk">
         <%= image_tag 'plus.svg', alt: 'cargos', class: 'invert' %>
         Nueva compra
@@ -9,7 +9,7 @@
     <% end %>
   </div>
   <div class="column is-6">
-    <%= link_to new_purchase_path(tipo: "gasto") do %>
+    <%= link_to new_gasto_purchases_path do %>
       <div class="linkk">
         <%= image_tag 'plus.svg', alt: 'cargos', class: 'invert' %>
         Nuevo gasto
@@ -25,7 +25,7 @@
     <% end %>
   </div>
   <div class="column is-12">
-    <%= link_to orders_path do %>
+    <%= link_to providers_path do %>
       <div class="linkk">
         <%= image_tag 'clientes.svg', alt: 'cargos', class: 'invert' %>
         Proveedores

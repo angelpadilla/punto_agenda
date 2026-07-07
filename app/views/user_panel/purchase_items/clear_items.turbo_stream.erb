@@ -1,1 +1,5 @@
-<%= turbo_stream.update "compra_resumen", partial: "user_panel/purchases/compra_resumen", locals: { purchase: @purchase, source: params[:source] } %>
+<% if @purchase.gasto? %>
+  <%= turbo_stream.update "gasto_resumen", partial: "user_panel/purchases/gasto_resumen", locals: { gasto: @purchase } %>
+<% else %>
+  <%= turbo_stream.update "compra_resumen", partial: "user_panel/purchases/compra_resumen", locals: { purchase: @purchase, source: params[:source] } %>
+<% end %>

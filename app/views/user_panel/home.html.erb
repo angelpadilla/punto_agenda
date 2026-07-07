@@ -279,17 +279,18 @@
               <table class="table is-fullwidth">
                 <thead>
                   <tr>
+                    <th>Fecha</th>
                     <th>Folio</th>
                     <th>Cliente</th>
                     <th>Tipo</th>
                     <th>Total</th>
                     <th>Estado</th>
-                    <th>Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% @ordenes_recientes.each do |o| %>
                     <tr class="is-clickable" onclick="window.location.href='<%= order_path(o) %>'">
+                      <td><span class="labell"><%= o.created_at.strftime("%-d/%m/%Y") %></span></td>
                       <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= o.folio %></span></td>
                       <td><%= o.customer&.razon&.titleize || "—" %></td>
                       <td><span class="tag is-rounded"><%= o.tipo&.titleize %></span></td>
@@ -301,7 +302,6 @@
                         <% else %><span class="tag is-rounded is-light"><%= o.status_pago&.titleize %></span>
                         <% end %>
                       </td>
-                      <td><span class="labell"><%= o.created_at.strftime("%-d/%m/%Y") %></span></td>
                     </tr>
                   <% end %>
                 </tbody>
@@ -310,6 +310,67 @@
           <% else %>
             <div class="empty_state">
               <p>Sin órdenes recientes</p>
+            </div>
+          <% end %>
+        </div>
+        <%# flujo de depositos hoy %>
+        <div class="box">
+          <div class="flexx space-b flex-end mb-4">
+            <h3 class="dashboard_section_title">Flujo de caja</h3>
+            <%= link_to deposits_path, class: "button is-rounded is-small" do %>Ver todo<% end %>
+          </div>
+          <% if @deposits.any? %>
+            <div class="table-container">
+              <table class="table is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Folio</th>
+                    <th>Monto</th>
+                    <th>Objeto</th>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @deposits.each do |d| %>
+                    <tr>
+                      <td><span class="labell"><%= d.created_at.strftime("%-d/%m/%Y") %></span></td>
+                      <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= d.depositable.folio %></span></td>
+                      <td class="has-text-neon"><strong><%= number_to_currency(d.monto, precision: 2, delimiter: ",", unit: "$") %></strong></td>
+                      <td>
+                        <% if d.depositable_type == "Order" %>
+                          Venta
+                        <% elsif d.depositable_type == "Purchase" %>
+                          Compra
+                        <% else %>
+                          <%= d.depositable_type %>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if d.ingreso? %>
+                          <span class="icon material-icons-round has-text-success">
+                            keyboard_double_arrow_down
+                          </span>
+                          Ingreso
+                        <% else %>
+                          <span class="icon material-icons-round has-text-danger">
+                            keyboard_double_arrow_up
+                          </span>
+                          Egreso
+                        <% end %>
+                      </td>
+                      <td>
+                        <%= number_to_currency(d.monto) %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="empty_state">
+              <p>Sin depósitos hoy</p>
             </div>
           <% end %>
         </div>

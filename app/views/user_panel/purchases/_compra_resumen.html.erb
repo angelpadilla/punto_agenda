@@ -116,6 +116,6 @@
       <p class="modal-card-title">Finalizar ticket</p>
       <button class="delete" aria-label="close"></button>
     </header>
-    <%= render 'user_panel/purchases/form', purchase: purchase, path: purchase.carrito? ? purchases_path(id: purchase.id) : purchase_path(purchase), method: purchase.carrito? ? :post : :put %>
+    <%= render 'user_panel/purchases/form', purchase: purchase, path: purchases_path, folio: purchase.folio, method: :post %>
   </div>
 </div>

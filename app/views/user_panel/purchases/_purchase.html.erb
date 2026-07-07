@@ -5,6 +5,9 @@
         <% if purchase.cancelado? %>
           <span class="tag is-danger is-rounded">Cancelado</span>
         <% end %>
+        <% if purchase.credito? %>
+          <span class="tag is-warning is-rounded">Credito</span>
+        <% end %>
       </div>
       <h3 class="titlee2"><%= purchase.folio %></h3>
       <div class="columns is-mobile is-multiline ">

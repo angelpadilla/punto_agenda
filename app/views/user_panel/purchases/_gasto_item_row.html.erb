@@ -1,0 +1,17 @@
+<tr id="gasto_item_<%= line_item.id %>">
+  <td><%= line_item.nombre %></td>
+  <td><%= line_item.cantidad %></td>
+  <td><%= number_to_currency(line_item.precio) %></td>
+  <td><%= number_to_percentage(line_item.iva, precision: 0) %></td>
+  <td><%= number_to_currency(line_item.total) %></td>
+  <td>
+    <%= button_to remove_gasto_item_purchase_items_path(line_id: line_item.id, purchase_id: line_item.purchase_id), 
+          method: :post, 
+          data: { turbo_confirm: "¿Eliminar este concepto?" },
+          class: "button is-danger is-small is-rounded" do %>
+      <span class="icon">
+        <%= image_tag 'trash.svg', alt: 'eliminar' %>
+      </span>
+    <% end %>
+  </td>
+</tr>

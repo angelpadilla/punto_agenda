@@ -28,6 +28,7 @@ class UserPanel::ItemsController < UserPanelController
 
   # GET /items/new
   def new
+    check_limit
     @item = Item.new
   end
 
@@ -37,7 +38,7 @@ class UserPanel::ItemsController < UserPanelController
 
   # POST /items or /items.json
   def create
-    @item = @corp.items.new(item_params)
+    check_limit
 
     respond_to do |format|
       if @item.save
@@ -102,6 +103,14 @@ class UserPanel::ItemsController < UserPanelController
     def validate_item
       if @item.corp_id != @corp.id
         redirect_to items_path, alert: "El item que intentas editar no fue encontrado."
+      end
+    end
+
+    def check_limit
+      limit = Setting::PlanPrices[@corp.tipo_plan.to_sym][:items]
+
+      if @corp.items.count >= limit
+        return items_path, alert: "Limite de items alcanzado"
       end
     end
 end

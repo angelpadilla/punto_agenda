@@ -2,13 +2,13 @@
 <div class="flexx space-b flex-end">
   <h2 class="titlee">Compras y gastos</h2>
   <div class="actions">
-    <%= link_to new_purchase_path(tipo: "compra"), class: "button is-primary is-rounded" do  %>
+    <%= link_to new_purchase_path, class: "button is-primary is-rounded" do  %>
       <span class="icon mr-2">
         <%= image_tag 'plus.svg', alt: 'carrito' %>
       </span>
       Nueva compra
     <% end %>
-    <%= link_to new_purchase_path(tipo: "gasto"), class: "button is-primary is-rounded" do  %>
+    <%= link_to new_gasto_purchases_path, class: "button is-primary is-rounded" do  %>
       <span class="icon mr-2">
         <%= image_tag 'plus.svg', alt: 'carrito' %>
       </span>

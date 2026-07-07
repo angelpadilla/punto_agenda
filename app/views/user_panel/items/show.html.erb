@@ -20,7 +20,7 @@
   <div class="box mt-4">
     <div class="columns is-multiline">
       <!-- Splide imágenes -->
-      <div class="column is-5" data-controller="splide" data-splide-type="slide" data-splide-rewind="true" data-splide-pagination="false" data-splide-gap="10rem">
+      <div class="column is-5" data-controller="splide" data-splide-type="fade" data-splide-rewind="true" data-splide-pagination="false" data-splide-gap="10rem">
         <% images = [@item.img1, @item.img2, @item.img3, @item.img4, @item.img5].select(&:attached?) %>
         <% if images.any? %>
           <section class="splide mb-4" aria-label="Splide">

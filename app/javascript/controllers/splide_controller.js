@@ -60,6 +60,18 @@ export default class extends Controller {
         this.thumb?.destroy();
     }
 
+    // ── public actions (for custom prev/next buttons) ──
+
+    prev() {
+        const splide = this.instance || this.main;
+        if (splide) splide.go("<");
+    }
+
+    next() {
+        const splide = this.instance || this.main;
+        if (splide) splide.go(">");
+    }
+
     // ── private helpers ──
 
     _mainOptions() {

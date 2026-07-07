@@ -1,0 +1,129 @@
+<% content_for :title, "Flujo de caja" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Mis ventas</h2>
+  <div class="actions">
+    <%= link_to user_panel_home_path, class: "button is-primary is-rounded" do  %>
+      <span class="icon mr-2">
+        <%= image_tag 'left.svg', alt: 'carrito' %>
+      </span>
+      Regresar
+    <% end %>
+    <%= link_to deposits_path, class: "button is-rounded" do  %>
+      <span class="icon mr-2">
+        <%= image_tag 'trash.svg', alt: 'carrito', class: "invert" %>
+      </span>
+      Limpiar busqueda
+    <% end %>
+    <% if params[:q] and params[:q][:created_at_gteq].present? %>
+      <%= link_to deposits_path(q: params[:q]&.to_unsafe_h, format: :pdf), class: "button is-primary is-rounded" do  %>
+        <span class="icon mr-2">
+          <%= image_tag 'file-text-svgrepo-com.svg', alt: 'carrito' %>
+        </span>
+        Imprimir
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: deposits_path do |f| %>
+  <div class="columns is-multiline">
+    <div class="field column is-3">
+      <%= f.search_field :folio_eq, placeholder: "Folio", class: "input is-rounded" %>
+    </div>
+    <div class="field column is-3">
+      <div class="control">
+        <div class="select is-rounded">
+          <%= f.select :forma_pago_eq, Order.forma_pagos.collect {|k, v| [k.humanize, k] }, {prompt: "Forma de Pago"}, {class: ""} %>
+        </div>
+      </div>
+    </div>
+    <div class="field column is-3">
+      <div class="control">
+        <div class="select is-rounded">
+          <%= f.select :tipo_eq, Deposit.tipos, {prompt: "Tipo"}, {class: ""} %>
+        </div>
+      </div>
+    </div>
+    <div class="field column is-3">
+      <%= f.search_field :num_operacion_eq, placeholder: "Numero operacion", class: "input is-rounded" %>
+    </div>
+  </div>
+  <div class="columns is-multiline">
+    <div class="field column is-3">
+      <%= f.label :created_at_gteq, 'Fecha desde', class: 'label' %>
+      <%= f.date_field :created_at_gteq, class: "input is-rounded" %>
+    </div>
+    <div class="field column is-3">
+      <%= f.label :created_at_lteq, 'Fecha hasta', class: 'label' %>
+      <%= f.date_field :created_at_lteq, class: "input is-rounded" %>
+    </div>
+  </div>
+  <%= f.submit 'Buscar', class: "button is-rounded is-primary is-fullwidth" %>
+<% end %>
+<% if params[:q] and params[:q][:created_at_gteq].present? %>
+  <% ingresos = @resultados.where(tipo: :ingreso) %>
+  <% ingresos_monto = ingresos.sum(:monto) %>
+  <% egresos = @resultados.where(tipo: :egreso).sum(:monto) %>
+  <div class="columns mt-4">
+    <div class="column is-6">
+      <div class="box has-text-centered">
+        <h3 class="title is-5">
+          <span class="icon material-icons-round has-text-success">
+            keyboard_double_arrow_down
+          </span>
+          Ingresos
+        </h3>
+        <p class="subtitle is-4 mt-2">
+          <strong>
+            <%= number_to_currency(ingresos_monto) %>
+          </strong>
+        </p>
+      </div>
+    </div>
+    <div class="column is-6">
+      <div class="box has-text-centered">
+        <h3 class="title is-5">
+          <span class="icon material-icons-round has-text-danger">
+            keyboard_double_arrow_up
+          </span>
+          Egresos
+        </h3>
+        <p class="subtitle is-4 mt-2">
+          <strong>
+            <%= number_to_currency(egresos) %>
+          </strong>
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="table-container mt-4">
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>
+          <%= sort_link(@q, :created_at, 'Fecha') %>
+        </th>
+        <th>Folio</th>
+        <th>Num Operacion</th>
+        <th>
+          <%= sort_link(@q, :forma_pago, 'Forma de pago') %>
+        </th>
+        <th>
+          <%= sort_link(@q, :depositable_type, 'Objeto') %>
+        </th>
+        <th>Tipo</th>
+        <th>Monto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render @deposits %>
+    </tbody>
+  </table>
+</div>
+<% if @pagy.pages > 1 %>
+  <%== pagy_bulma_nav(@pagy) %>
+  <br>
+<% end %>
+<br>
+<br>

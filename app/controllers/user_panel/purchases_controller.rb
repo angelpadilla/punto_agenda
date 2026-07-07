@@ -12,46 +12,74 @@ class UserPanel::PurchasesController < UserPanelController
   end
 
   def new
-    if !params[:tipo].present?
-      return redirect_to user_panel_landing_purchases_path, alert: "Tipo vacio"
-    end
-
-    tipos = %w[compra gasto]
-    unless tipos.include?(params[:tipo])
-      return redirect_to user_panel_landing_purchases_path, alert: "Tipo no valido"
-    end
 
     if !@comprita
-      @comprita = Purchase.create!(corp: @corp)
+      @comprita = Purchase.create!(corp: @corp, tipo: :compra)
       session[:comprita_id] = @comprita.id
     elsif !@comprita.carrito?
-      @comprita = Purchase.create!(corp: @corp)
+      @comprita = Purchase.create!(corp: @corp, tipo: :compra)
       session[:comprita_id] = @comprita.id
     end
 
-    @comprita.tipo = params[:tipo]
-    @comprita.save(validate: false)
+    @brands = @corp.brands.default
+    items = @corp.items.available.includes(
+      :brand,
+      img1_attachment: :blob,
+      img2_attachment: :blob,
+      img3_attachment: :blob,
+      img4_attachment: :blob,
+      img5_attachment: :blob
+    )
 
-    if @comprita.compra?
-      @brands = @corp.brands.default
-      items = @corp.items.available.includes(
-        :brand,
-        img1_attachment: :blob,
-        img2_attachment: :blob,
-        img3_attachment: :blob,
-        img4_attachment: :blob,
-        img5_attachment: :blob
-      )
+    @q = items.ransack(params[:q])
+    @pagy, @items = pagy(@q.result(distinct: true), limit: 12)
+    
+  end
 
-      @q = items.ransack(params[:q])
-      @pagy, @items = pagy(@q.result(distinct: true), limit: 12)
+  def new_gasto
+    if !@gasto
+      @gasto = Purchase.create!(corp: @corp, tipo: :gasto)
+      session[:gasto_id] = @gasto.id
+    elsif !@gasto.carrito?
+      @gasto = Purchase.create!(corp: @corp, tipo: :gasto)
+      session[:gasto_id] = @gasto.id
+    end
+  end
+
+  def create_gasto
+    @purchase = @corp.purchases.find_by(folio: params[:purchase][:folio])
+    return redirect_to user_panel_landing_purchases_path, alert: "Gasto no encontrado" unless @purchase
+
+    @purchase.assign_attributes(gasto_params)
+
+    if @purchase.purchase_items.empty?
+      return redirect_to new_gasto_purchases_path, alert: "El gasto no tiene conceptos"
+    end
+
+    @purchase.created_at = Time.current
+    unless params[:purchase][:fecha].present?
+      @purchase.fecha = @purchase.created_at
+    end
+
+    @purchase.user = current_user
+    @purchase.status = :remision
+    @purchase.forma_pago = "por_definir" if @purchase.credito?
+
+    if @purchase.save!
+      if @purchase.pagado?
+        @purchase.deposits.create!(monto: @purchase.total, forma_pago: @purchase.forma_pago, tipo: :egreso, created_at: @purchase.fecha)
+      end
+      session[:gasto_id] = nil
+      redirect_to purchase_path(@purchase), notice: "Gasto registrado"
     else
-      @items = []
+      redirect_to new_gasto_purchases_path, alert: @purchase.errors.full_messages.join(", ")
     end
   end
 
   def create
-    @purchase = @corp.purchases.find(params[:id])
+    @purchase = @corp.purchases.find_by(folio: params[:purchase][:folio])
+    return redirect_to user_panel_landing_purchases_path, alert: "Compra no encontrada" unless @purchase
+
     @purchase.assign_attributes(purchase_params)
 
     ## validaciones
@@ -65,11 +93,9 @@ class UserPanel::PurchasesController < UserPanelController
     end
 
     @purchase.user = current_user
-    # @purchase.status = :remision
+    @purchase.status = :remision
 
     @purchase.forma_pago = "por_definir" if @purchase.credito?
-
-    puts "- - - - - -Creando compra #{@purchase.id} con tipo #{@purchase.tipo}, status #{@purchase.status}, status_pago #{@purchase.status_pago}, forma_pago #{@purchase.forma_pago}, fecha #{@purchase.fecha}, total #{@purchase.total}"
 
     if @purchase.save!
 
@@ -104,7 +130,7 @@ class UserPanel::PurchasesController < UserPanelController
 
 
     @purchase.status = :cancelado
-    @purchase.desposits.destroy_all
+    @purchase.deposits.destroy_all
 
     if @purchase.compra?
       ## regresamos inventario
@@ -139,6 +165,17 @@ class UserPanel::PurchasesController < UserPanelController
       :provider_id,
       :fecha,
       :status,
+      :status_pago,
+      :forma_pago,
+      :deadline,
+      :nota_customer
+    ])
+  end
+
+  def gasto_params
+    params.expect(purchase: [
+      :provider_id,
+      :fecha,
       :status_pago,
       :forma_pago,
       :deadline,

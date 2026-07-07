@@ -65,14 +65,22 @@ module Gtools
     puts "🚫 RescueError al iniciar cobranza: #{e.message}"
   end
 
-  def self.telegram_noti(message:)
+  def self.telegram_noti(message:, chat_id: nil)
     message = message.to_s
-    puts "💬 Notificando al admin por Telegram"
+    chat_id ||= Rails.application.credentials.dig(:telegram, :admin_id)
+    return unless chat_id
 
+    puts "💬 Notificando por Telegram a #{chat_id}"
     bot = Telegram::Bot::Client.new(Rails.application.credentials.dig(:telegram, :bot_token))
-    bot.send_message(chat_id: Rails.application.credentials.dig(:telegram, :admin_id), text: message)
+    bot.send_message(chat_id: chat_id, text: message)
   rescue Telegram::Bot::Error => e
     puts "🚫 Telegram error: #{e}"
+  end
+
+  # Send Telegram notification to a corp (by their stored telegram_id)
+  def self.telegram_noti_to_corp(corp, message:)
+    return unless corp.respond_to?(:telegram_id) && corp.telegram_id.present?
+    telegram_noti(message: message, chat_id: corp.telegram_id)
   end
 
   def self.stripe_fee(monto, internacional: false)

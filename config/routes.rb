@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Telegram bot webhook (public, no auth)
+  post "telegram/webhook", to: "telegram_webhook#receive"
+
   mount MissionControl::Jobs::Engine, at: "/jobss"
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
@@ -146,6 +149,7 @@ Rails.application.routes.draw do
       collection do
         post :modificar_forma_pago, as: :modificar_forma_pago
         post :send_abono_email, as: :send_abono_email
+        post :create_for_purchase, as: :create_for_purchase
       end
     end
 
@@ -157,10 +161,17 @@ Rails.application.routes.draw do
       end
     end
 
+    # Telegram integration (per corp)
+    get "corp/telegram_link", to: "user_panel/telegram#telegram_link", as: :telegram_link_corp
+    get "telegram/callback", to: "user_panel/telegram#callback", as: :telegram_callback
+    delete "telegram/unlink", to: "user_panel/telegram#unlink", as: :telegram_unlink
+
     resources :purchases, controller: "user_panel/purchases", only: %i[index show new create] do
       collection do 
         get ":id/compra_resumen", to: "user_panel/purchases#compra_resumen", as: :compra_resumen
         post :cancel
+        get :new_gasto, to: "user_panel/purchases#new_gasto", as: :new_gasto
+        post :create_gasto, to: "user_panel/purchases#create_gasto", as: :create_gasto
       end
     end
 
@@ -170,6 +181,8 @@ Rails.application.routes.draw do
         post :down_item
         post :remove_item
         post :clear_items
+        post :add_gasto_item
+        post :remove_gasto_item
       end
     end
 

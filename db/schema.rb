@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_210110) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_07_203320) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -222,6 +222,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_210110) do
     t.datetime "subscription_trial_start"
     t.datetime "subscription_updated_at"
     t.string "tel_prefix"
+    t.bigint "telegram_id"
+    t.string "telegram_link_token"
+    t.datetime "telegram_linked_at"
     t.string "text_cotizacion"
     t.string "text_factura"
     t.string "text_remision"
@@ -232,6 +235,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_210110) do
     t.datetime "updated_at", null: false
     t.boolean "visto", default: false
     t.string "whatsapp"
+    t.index ["telegram_id"], name: "index_corps_on_telegram_id", unique: true
+    t.index ["telegram_link_token"], name: "index_corps_on_telegram_link_token"
   end
 
   create_table "customers", force: :cascade do |t|

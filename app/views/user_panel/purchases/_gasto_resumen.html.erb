@@ -1,0 +1,99 @@
+<div class="box">
+  <% if gasto.purchase_items.empty? %>
+    <div class="has-text-centered p-5">
+      <p class="is-size-5 has-text-grey mb-4">Sin conceptos</p>
+      <p class="is-size-7 has-text-grey-light">Agrega conceptos usando el formulario de abajo</p>
+    </div>
+  <% else %>
+    <div class="table-container">
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="gasto_items_list">
+          <%= render partial: "user_panel/purchases/gasto_item_row", collection: gasto.purchase_items.default, as: :line_item %>
+        </tbody>
+      </table>
+    </div>
+    <!-- Totales -->
+    <div class="totals mt-4 px-4">
+      <div class="flexx space-b flex-end mb-2">
+        <span class="has-text-grey">Subtotal</span>
+        <span><%= number_to_currency(gasto.subtotal) %></span>
+      </div>
+      <div class="flexx space-b flex-end mb-2">
+        <span class="has-text-grey">Impuestos</span>
+        <span><%= number_to_currency(gasto.impuestos) %></span>
+      </div>
+      <div class="flexx space-b flex-end mt-4 pt-3" style="border-top: 2px solid #eee;">
+        <span class="bold is-size-5">Total</span>
+        <span class="has-text-neon bold is-size-5">
+          <%= number_to_currency(gasto.total) %>
+        </span>
+      </div>
+    </div>
+    <!-- Botón finalizar -->
+    <button class="button is-primary is-fullwidth mb-3 mt-4 is-rounded mtrigger" data-target="finalizar_gasto">
+      <span class="icon mr-2">
+        <%= image_tag 'login.svg', alt: 'carrito' %>
+      </span>
+      Finalizar gasto
+    </button>
+    <%= button_to clear_items_purchase_items_path(purchase_id: gasto.id), 
+          data: { turbo_method: :post, turbo_confirm: "¿Limpiar todos los conceptos?" }, 
+          class: "button is-danger is-fullwidth is-rounded is-small" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'trash.svg', alt: 'limpiar' %>
+      </span>
+      Limpiar todo
+    <% end %>
+  <% end %>
+  <hr>
+  <!-- Formulario para añadir concepto -->
+  <h4 class="title is-5 mb-3">Agregar concepto</h4>
+  <%= form_with url: add_gasto_item_purchase_items_path, method: :post, data: { turbo: true } do |form| %>
+    <%= form.hidden_field :purchase_id, value: gasto.id %>
+    <div class="columns is-multiline is-mobile">
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <label class="label">Concepto</label>
+        <%= form.text_field :nombre, class: "input is-rounded", placeholder: "Ej: Pago de internet", required: true %>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <label class="label">Cantidad</label>
+        <%= form.number_field :cantidad, value: 1, min: 0.01, step: "any", class: "input is-rounded", required: true %>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <label class="label">Precio unitario</label>
+        <%= form.number_field :precio, value: 0, min: 0.01, step: "any", class: "input is-rounded", required: true %>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <label class="label">IVA</label>
+        <div class="select is-rounded">
+          <%= form.select :iva, options_for_select(PurchaseItem::IVAS, 16.0), {}, { class: "" } %>
+        </div>
+      </div>
+      <div class="column is-6-mobile is-3-tablet is-2-desktop">
+        <label class="label">&nbsp;</label>
+        <%= form.submit "Agregar", class: "button is-primary is-rounded is-fullwidth" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+<!-- Modal finalizar -->
+<div class="modal" id="finalizar_gasto">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Finalizar gasto</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <%= render 'user_panel/purchases/form', purchase: gasto, path: create_gasto_purchases_path, folio: gasto.folio, method: :post %>
+  </div>
+</div>

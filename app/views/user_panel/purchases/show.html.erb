@@ -130,16 +130,16 @@
   <div class="box_content">
     <div class="columns is-multiline is-mobile">
       <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <div class="labell">Total</div>
-        <p class="contentt"><%= number_to_currency(@purchase.total) %></p>
-      </div>
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
         <div class="labell">Subtotal</div>
         <p class="contentt"><%= number_to_currency(@purchase.subtotal) %></p>
       </div>
       <div class="column is-12-mobile is-6-tablet is-4-desktop">
         <div class="labell">IVA</div>
         <p class="contentt"><%= number_to_currency(@purchase.impuestos) %></p>
+      </div>
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <div class="labell">Total</div>
+        <p class="contentt"><%= number_to_currency(@purchase.total) %></p>
       </div>
     </div>
   </div>
@@ -171,7 +171,7 @@
                 <% if line.item %>
                   <%= link_to truncate(line.item.name.titleize, length: 20), line.item, title: line.item.name.titleize %>
                 <% else %>
-                  <%= line.name %>
+                  <%= line.nombre %>
                 <% end %>
               </th>
               <td><%= line.cantidad %></td>
@@ -185,7 +185,7 @@
   </div>
 </div>
 <% if true %>
-  <div class="box expandable">
+  <div class="box expandable <%= @purchase.debe > 0 ? 'is_active' : '' %>">
     <div class="box_header">
       <h2>
         <span class="icon mr-2">
@@ -212,7 +212,7 @@
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="labell">Fecha límite</div>
           <% if @purchase.deadline %>
-            <p class="contentt <%= @purchase.deadline > Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(@purchase.deadline, format: :long) %></p>
+            <p class="contentt <%= @purchase.deadline >= Time.current ? 'has-text-warning' : 'has-text-danger' %>"><%= l(@purchase.deadline, format: :long) %></p>
           <% else %>
             -
           <% end %>
@@ -279,9 +279,9 @@
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box">
-      <%= form_with url: deposits_path, method: :post do |form| %>
+      <%= form_with url: create_for_purchase_deposits_path, method: :post do |form| %>
         <div class="columns is-multiline">
-          <%= form.hidden_field :order_id, value: @purchase.id %>
+          <%= form.hidden_field :purchase_id, value: @purchase.id %>
           <div class="field column is-12">
             <label class="label">Monto (debe: $<%= @purchase.debe %>)</label>
             <div class="control">
@@ -297,7 +297,7 @@
           <div class="field column is-6">
             <label class="label">Forma pago</label>
             <div class="select is-rounded">
-              <%= form.select :forma_pago, Purchase.forma_pagos.collect {|k, v| [k.humanize, v] }, {include_blank: true, required: true} %>
+              <%= form.select :forma_pago, Purchase.forma_pagos.collect {|k, v| [k.humanize, k] }, {include_blank: true, required: true} %>
             </div>
           </div>
           <div class="field column is-12">

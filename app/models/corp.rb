@@ -7,7 +7,6 @@ class Corp < ApplicationRecord
   has_many :providers, dependent: :nullify
   has_many :brands, dependent: :destroy
   has_many :orders, dependent: :nullify
-  has_many :deposits, through: :orders
   has_many :sat_products, dependent: :destroy
   has_many :purchases, dependent: :destroy
 
@@ -89,6 +88,11 @@ class Corp < ApplicationRecord
 
   scope :default, -> { order(created_at: :desc) }
   scope :activos, -> { where(status: [ :activo, :probando, :moroso ]) }
+
+  def deposits
+    Deposit.where(depositable: orders)
+          .or(Deposit.where(depositable: purchases))
+  end
 
   def self.ransackable_attributes(auth_object = nil)
     %W[id name razon rfc regimen sku]
