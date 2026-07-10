@@ -1,4 +1,9 @@
 <div id="ticket_info_admin">
+  <% if ticket.nota_admin and ticket.nota_admin.present? %>
+    <div class="noti mb-4">
+      <%= ticket.nota_admin %>
+    </div>
+  <% end %>
   <div class="box expandable is_active">
     <div class="box_header">
       <h2>

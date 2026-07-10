@@ -1,5 +1,5 @@
 class UserPanel::TicketsController < UserPanelController
-  before_action :set_ticket, only: %i[show]
+  before_action :set_ticket, only: %i[show marcar_resuelto]
 
   def index
     tickets = @corp.tickets.default
@@ -28,7 +28,18 @@ class UserPanel::TicketsController < UserPanelController
     end
 
     if @ticket.save
+      Gtools.telegram_noti(message: "Ticket creado:\nID: #{@ticket.id}\nCorp: #{@corp.sku}-#{@corp.id}")
       redirect_to user_ticket_path(@ticket), notice: "Ticket creado exitosamente."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def marcar_resuelto
+    @ticket.status = :resuelto
+    @ticket.nota_admin = "Ticket marcado como resuelto por #{@userr.email}, #{Time.current.strftime('%d %b %I:%M %p')}"
+    if @ticket.save
+      redirect_to user_ticket_path(@ticket), notice: "Ticket marcado como resuelto."
     else
       render :new, status: :unprocessable_entity
     end

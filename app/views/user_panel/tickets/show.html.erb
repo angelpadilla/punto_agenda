@@ -11,6 +11,14 @@
       </span>
       Mis tickets
     <% end %>
+    <% unless @ticket.resuelto? or @ticket.cerrado? %>
+      <%= link_to marcar_resuelto_user_ticket_path(@ticket), data: {turbo_method: :post}, class: "button is-rounded is-success" do %>
+        <span class="icon mr-2">
+          <%= image_tag 'cloud-check-svgrepo-com.svg', alt: 'volver' %>
+        </span>
+        Marcar como resuelto
+      <% end %>
+    <% end %>
   </div>
 </div>
 <%= render "shared/ticket_info", ticket: @ticket %>
@@ -26,10 +34,4 @@
   <% else %>
     <%= render "shared/ticket_closed_notice", ticket: @ticket %>
   <% end %>
-</div>
-<div class="columns">
-  <div class="column is-8">
-  </div>
-  <div class="column is-4">
-  </div>
 </div>

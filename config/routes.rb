@@ -187,6 +187,9 @@ Rails.application.routes.draw do
     end
 
     resources :tickets, controller: "user_panel/tickets", only: %i[index show new create], as: :user_tickets do
+      member do
+        post :marcar_resuelto
+      end
       resources :ticket_messages, controller: "user_panel/ticket_messages", only: :create, as: :user_ticket_messages
     end
   end
