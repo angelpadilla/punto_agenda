@@ -1,5 +1,5 @@
 class Ticket < ApplicationRecord
-  belongs_to :corp
+  belongs_to :corp, optional: true
   belongs_to :admin, optional: true
   has_many :ticket_messages, dependent: :destroy
 

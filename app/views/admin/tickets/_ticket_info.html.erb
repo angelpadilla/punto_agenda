@@ -61,7 +61,11 @@
         <div class="column is-6-mobile is-6-tablet is-4-desktop">
           <div class="labell">Cliente</div>
           <p>
-            <%= ticket.corp.name&.titleize %> (<%= ticket.corp.sku %>-<%= ticket.corp.id %>)
+            <% if ticket.corp %>
+              <%= ticket.corp.name&.titleize %> (<%= ticket.corp.sku %>-<%= ticket.corp.id %>)
+            <% else %>
+              -
+            <% end %>
           </p>
         </div>
         <% if ticket.admin %>

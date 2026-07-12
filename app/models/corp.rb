@@ -1,19 +1,18 @@
 class Corp < ApplicationRecord
   audited max_audits: 100
 
-  has_many :users, dependent: :nullify
-  has_many :items, dependent: :destroy
-  has_many :events, dependent: :nullify
-  has_many :providers, dependent: :nullify
-  has_many :brands, dependent: :destroy
-  has_many :orders, dependent: :nullify
-  has_many :sat_products, dependent: :destroy
+  has_many :events, dependent: :destroy
   has_many :purchases, dependent: :destroy
-
+  has_many :items, dependent: :destroy
+  has_many :providers, dependent: :destroy
+  has_many :brands, dependent: :destroy
+  has_many :orders, dependent: :destroy
+  
   has_many :corp_customers, dependent: :destroy
   has_many :customers, through: :corp_customers
   has_many :bills, dependent: :nullify
-  has_many :tickets, dependent: :destroy
+  has_many :tickets, dependent: :nullify
+  has_many :users, dependent: :destroy
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy

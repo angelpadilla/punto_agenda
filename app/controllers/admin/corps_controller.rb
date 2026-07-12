@@ -1,5 +1,5 @@
 class Admin::CorpsController < AdminController
-  before_action :set_corp, only: %i[show edit update extend_prueba]
+  before_action :set_corp, only: %i[show edit update extend_prueba destroy_corp] 
 
   def index
     corps = Corp.default
@@ -38,6 +38,13 @@ class Admin::CorpsController < AdminController
     else
       redirect_back fallback_location: admin_corp_path(@corp), alert: "Error al extender la prueba: #{@corp.errors.full_messages.join(', ')}"
     end
+  end
+
+  def destroy_corp
+    return redirect_to admin_corp_path(@corp), alert: "Tu no puedes hacer esto" unless current_admin.super?
+    @corp.destroy
+
+    redirect_to admin_corps_path, alert: "Cliente eliminado totalmente del sistema."
   end
 
   private

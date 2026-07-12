@@ -1,0 +1,13 @@
+<% content_for :title, "Zona de peligro" %>
+<div class="box is-danger">
+  <h2>Destruir mi cuenta y todos los datos relacionados</h2>
+  <p class="mb-4">
+    No hay vuelta atras, este es un paso permanente.
+  </p>
+  <%= button_to destroy_corp_path, data: {turbo_confirm: "Estas seguro?"}, method: :post, class: "button is-rounded is-danger is-fullwidth" do  %>
+    <span class="icon mr-2">
+      <%= image_tag 'danger-triangle-svgrepo-com.svg', alt: 'danger' %>
+    </span>
+    Destruir
+  <% end %>
+</div>

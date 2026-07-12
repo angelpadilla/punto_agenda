@@ -4,7 +4,7 @@
       <% if message.sender.is_a?(Admin) %>
         <span class="has-text-neon">🛡️ MiiNegocio</span>
       <% else %>
-        💬 <%= message.sender.email %>
+        💬 <%= message.sender&.email || "usuario" %>
       <% end %>
     </span>
     <span class="msg-time"><%= l(message.created_at, format: :short) %></span>

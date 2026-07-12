@@ -259,6 +259,15 @@ class UserPanel::CorpController < UserPanelController
     end
   end
 
+  def danger_zone
+  end
+
+  def destroy_corp
+    @corp.destroy
+
+    redirect_to root_path, alert: "Cuenta eliminada correctamente."
+  end
+
   private
 
   def set_stripe_client

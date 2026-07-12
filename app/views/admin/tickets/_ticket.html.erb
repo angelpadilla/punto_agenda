@@ -1,6 +1,6 @@
 <tr onclick="window.location='<%= admin_ticket_path(ticket) %>'" style="cursor: pointer;">
   <td>#<%= ticket.id %></td>
-  <td><%= ticket.corp.name&.titleize %></td>
+  <td><%= ticket.corp&.name&.titleize || "-" %></td>
   <td><%= ticket.title.truncate(60) %></td>
   <td>
     <% if ticket.abierto? %>

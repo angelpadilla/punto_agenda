@@ -63,6 +63,12 @@
               </span>
               Extender prueba
             <% end %>
+            <%= button_to destroy_corp_admin_corp_path(@corp), method: :post, data: {turbo_confirm: "Estas seguro?"}, class: "dropdown-item" do %>
+              <span class="icon">
+                <%= image_tag 'danger-triangle-svgrepo-com.svg', alt: 'settings', class: 'invert' %>
+              </span>
+              Eliminar cliente
+            <% end %>
           <% end %>
         </div>
       </div>

@@ -82,6 +82,8 @@ Rails.application.routes.draw do
       post "charge_timbres", to: "user_panel/corp#charge_timbres", as: :charge_timbres
       post "update_spei", to: "user_panel/corp#update_spei", as: :update_spei
       post "retiro_fondos", to: "user_panel/corp#retiro_fondos", as: :retiro_fondos
+      get "danger_zone", to: "user_panel/corp#danger_zone", as: :danger_zone
+      post "destroy_corp", to: "user_panel/corp#destroy_corp", as: :destroy_corp
     end
 
     resources :bills, controller: "user_panel/bills", only: %i[index show] do
@@ -207,6 +209,7 @@ Rails.application.routes.draw do
     resources :corps, controller: "admin/corps", only: %i[index show edit update], as: :admin_corps do
       member do
         post :extend_prueba
+        post :destroy_corp
       end
     end
     resources :admins, controller: "admin/admins", as: :admin_admins do

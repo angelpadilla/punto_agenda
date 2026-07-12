@@ -52,7 +52,7 @@
             <tr class="is-clickable" onclick="window.location.href='<%= admin_bill_path(o) %>'">
               <td><span class="tag is-rounded" style="font-family:monospace;font-size:0.75rem;"><%= o.folio %>-<%= o.id %></span></td>
               <td><span class="labell"><%= l(o.created_at, format: :short)%></span></td>
-              <td><%= o.corp.name&.titleize || "—" %></td>
+              <td><%= o.corp&.name&.titleize || "—" %></td>
               <td>
                 <% if o.pagado? %><span class="tag is-rounded is-success">Pagado</span>
                 <% elsif o.depositado? %><span class="tag is-rounded is-success">Depositado</span>

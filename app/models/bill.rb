@@ -1,5 +1,5 @@
 class Bill < ApplicationRecord
-  belongs_to :corp
+  belongs_to :corp, optional: true
   has_many :bill_items, dependent: :destroy
 
   ## ransack search
