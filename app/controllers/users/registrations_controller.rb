@@ -38,7 +38,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if resource.save
         corp = Corp.new(
           tipo_negocio: params[:tipo_negocio] || "otro",
-          tipo_plan: :premium, # 30 dias de prueba en premium gratis
+          tipo_plan: :premium, # 15 dias de prueba en premium gratis
           calendar: calendar,
           regimen: "616",
           phone: params[:user][:tel].to_s,
@@ -46,7 +46,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           name: "Compañía de #{params[:user][:full_name]}",
           email: params[:user][:email],
           subscription_trial_start: Time.current,
-          subscription_trial_end: 30.days.from_now,
+          subscription_trial_end: 15.days.from_now,
           # status: :probando
         )
         if corp.save # Guardar el Corp solo si el usuario se guarda correctamente
