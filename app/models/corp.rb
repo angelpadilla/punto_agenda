@@ -45,10 +45,10 @@ class Corp < ApplicationRecord
 
 
   TipoNegocios = [
+    [ "💊 Salud", "salud" ],
     [ "💈 Barberia", "barberia" ],
     [ "💇‍♀️ Salon de belleza", "salon_belleza" ],
     [ "☕ Cafetería", "cafeteria" ],
-    [ "🛒 Tienda", "tienda" ],
     [ "🛠️ Servicios", "servicios" ],
     [ "❓ Otro", "otro" ]
   ].freeze

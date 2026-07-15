@@ -40,12 +40,12 @@
       </div>
       <div class="field has-addons">
         <div class="control <%= f.object.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
-          <%= f.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, resource.tel_prefix),
+          <%= f.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, "+52"),
                     {prompt: "Prefijo", required: field_required?(User, :tel_prefix)},
                     { "data-controller": "slimselect", class: "ss2"}
                     %>
         </div>
-        <%= t_field(f, :tel, placeholder: "Ej. 1234567890", clas: "control is-expanded") %>
+        <%= t_field(f, :tel, placeholder: "Telefono", clas: "control is-expanded") %>
       </div>
       <div class="field">
         <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input is-rounded #{f.object.errors.include?(:email) ? 'is-danger' : ''}", placeholder: 'Email', required: true %>
