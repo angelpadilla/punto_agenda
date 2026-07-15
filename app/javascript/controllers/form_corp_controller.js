@@ -184,7 +184,7 @@ export default class extends Controller {
         const actionAttr = `data-action="change->form-corp#validateHourRange" data-form-corp-wday-param="${wday}"`
 
         const removeBtn = idx > 0
-            ? `<button type="button" class="button is-small is-danger is-light ml-1"
+            ? `<button type="button" class="button is-small is-rounded is-danger is-light ml-1"
                        data-action="form-corp#removeHour"
                        data-form-corp-wday-param="${wday}"
                        data-form-corp-index-param="${idx}"${disAttr}>✕</button>`
@@ -195,11 +195,11 @@ export default class extends Controller {
         div.dataset.wday = wday
         div.dataset.index = idx
         div.innerHTML = `
-            <div class="select is-small mr-1">
+            <div class="select is-small is-rounded mr-1">
               <select name="corp[business_hours][${wday}][hours][${idx}][open]" class="select-time" ${actionAttr}${disAttr}>${openOpts}</select>
             </div>
             <span class="mx-1">–</span>
-            <div class="select is-small mr-1">
+            <div class="select is-small is-rounded mr-1">
               <select name="corp[business_hours][${wday}][hours][${idx}][close]" class="select-time" ${actionAttr}${disAttr}>${closeOpts}</select>
             </div>
             ${removeBtn}
