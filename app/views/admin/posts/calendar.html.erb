@@ -1,0 +1,53 @@
+<%
+# Serialize posts grouped by date for the Stimulus controller
+posts_json = @grouped.transform_keys { |d| d.to_s }.transform_values { |posts|
+  posts.map { |p| {
+    id: p.id,
+    title: p.title,
+    extract: p.extract&.truncate(120),
+    borrador: p.borrador?,
+    scheduled: p.publicado? && p.publish_at.present? && p.publish_at > Time.current,
+    publish_at: p.publish_at&.strftime("%d/%m/%Y %I:%M %p")
+  }}
+}.to_json
+%>
+<% content_for :head_extra do %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@calendarjs/ce/dist/style.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons" />
+  <script src="https://cdn.jsdelivr.net/npm/lemonadejs/dist/lemonade.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@calendarjs/ce/dist/index.min.js"></script>
+<% end %>
+<% content_for :title, "Calendario de Articulos" %>
+<div class="flexx space-b flex-end mb-4">
+  <h2 class="titlee">Calendario de Articulos</h2>
+  <div class="actions">
+    <%= link_to posts_path, class: "button is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'layers.svg', alt: 'lista', class: 'invert' %>
+      </span>
+      Lista
+    <% end %>
+    <%= link_to new_post_path, class: "button is-primary is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'plus.svg', alt: 'nuevo' %>
+      </span>
+      Nuevo articulo
+    <% end %>
+  </div>
+</div>
+<hr>
+<div data-controller="post-calendar"
+     data-post-calendar-posts-value='<%= posts_json %>'
+     class="columns is-multiline">
+  <div class="column is-4-desktop is-12-tablet">
+    <div data-calendar-grid></div>
+  </div>
+  <div class="column is-8-desktop is-12-tablet">
+    <h4 class="subtitle mb-3">
+      Artículos del <strong data-post-calendar-target="dateLabel">—</strong>
+    </h4>
+    <div data-post-calendar-target="panel">
+      <p class="has-text-grey-light">Selecciona un día para ver los artículos</p>
+    </div>
+  </div>
+</div>

@@ -8,6 +8,20 @@
       </span>
       Nuevo articulo
     <% end %>
+    <%= link_to calendar_posts_path, class: "button is-rounded", data: { turbo: false } do %>
+      <span class="icon mr-2">
+        <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
+      </span>
+      Calendario
+    <% end %>
+    <%= link_to import_soro_rss_posts_path,
+                  data: { turbo_method: :post, turbo_confirm: "¿Importar artículos desde Soro RSS ahora?" },
+                  class: "button is-info is-rounded" do %>
+      <span class="icon mr-2">
+        <%= image_tag 'download.svg', alt: 'importar rss', class: 'invert' %>
+      </span>
+      Importar RSS
+    <% end %>
     <div class="dropdown is-right is-hoverable">
       <div class="dropdown-trigger">
         <button class="button is-rounded" aria-haspopup="true">
@@ -46,6 +60,11 @@
         <%= f.select :cate_eq, Post.cates.map { |k, v| [k.titleize, v] }, { include_blank: 'Categoría' } %>
       </div>
     </div>
+    <div class="column is-2-desktop is-3-tablet is-3-mobile">
+      <div class="select is-rounded">
+        <%= f.select :status_eq, Post.statuses.map { |k, v| [k.to_s.humanize, v] }, { include_blank: 'Estado' } %>
+      </div>
+    </div>
     <div class="column is-3-desktop is-6-tablet is-6-mobile">
       <div class="buttons">
         <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
@@ -65,8 +84,9 @@
       <tr>
         <th><%= sort_link(@q, :id, 'ID') %></th>
         <th><%= sort_link(@q, :cate, 'Categoria') %></th>
+        <th><%= sort_link(@q, :status, 'Estado') %></th>
         <th><%= sort_link(@q, :title, 'Titulo') %></th>
-        <th><%= sort_link(@q, :extract, 'Extracto') %></th>
+        <th><%= sort_link(@q, :publish_at, 'Programado') %></th>
         <th><%= sort_link(@q, :created_at, 'Creacion') %></th>
         <th><%= sort_link(@q, :updated_at, 'Actualizacion') %></th>
         <th><%= sort_link(@q, :visits, 'Visitas') %></th>

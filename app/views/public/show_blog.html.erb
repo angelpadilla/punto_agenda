@@ -1,18 +1,32 @@
 <% content_for :body_class, "blog_index" %>
 <% set_page_meta(title: @post.title, description: @post.extract, image: @post.cover.attached? ? url_for(@post.cover) : nil) %>
-<section class="heroo pad_top_nav" style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= @post.cover.attached? ? url_for(@post.cover) : asset_path("home1.png") %>); background-size: cover; background-position: top;">
-  <div class="container flexx horizontal-center vertical-center">
-    <h1 class="title is-2"><%= @post.title.humanize %></h1>
-  </div>
-</section>
+<% if @post.url_image %>
+  <section class="heroo pad_top_nav" style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= @post.url_image %>); background-size: cover; background-position: top;">
+    <div class="container flexx horizontal-center vertical-center">
+      <h1 class="title is-2"><%= @post.title.humanize %></h1>
+    </div>
+  </section>
+<% else %>
+  <section class="heroo pad_top_nav" style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= @post.cover.attached? ? url_for(@post.cover) : asset_path("home1.png") %>); background-size: cover; background-position: top;">
+    <div class="container flexx horizontal-center vertical-center">
+      <h1 class="title is-2"><%= @post.title.humanize %></h1>
+    </div>
+  </section>
+<% end %>
 <div class="container">
   <div class="article">
-    <div class="box">
+    <div class="box is-super-black">
       <div class="mb-2">
-        <span class="tag is-rounded is-info"><%= @post.cate&.titleize %></span>
+        <span class="tag is-rounded"><%= @post.cate&.titleize %></span>
       </div>
       <p class="subtitle is-6 mt-2">
         <%= l(@post.updated_at, format: :short) %>
+        <% if @post.author %>
+          | <%= @post.author %>
+        <% end %>
+        <% if @post.source %>
+          - <%= @post.source %>
+        <% end %>
       </p>
       <% if @post.youtube_url.present? %>
         <div class="mb-4">
@@ -36,6 +50,12 @@
       <div class="mt-2">
         <%= @post.content %>
       </div>
+      <% if @post.source %>
+        <div class="mt-4">
+          <strong>Fuente (leer noticia completa):</strong>
+          <%= link_to @post.source, @post.url, target: "_blank" %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

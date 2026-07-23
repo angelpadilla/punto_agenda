@@ -25,9 +25,20 @@
         </div>
       </div>
       <%= s_field(form, :cate, options: Post.cates.map {|k, v| [k.humanize, k]}, label: "Categoria", clas: "field column is-6") %>
-      <%= t_field(form, :youtube_url, label: "Youtube URL", clas: "field column is-6") %>
-      <%= t_field(form, :title, label: "Titulo (min 15 caracteres, max 100 caracteres)") %>
+      <%= s_field(form, :status, options: Post.statuses.map {|k, v| [k.to_s.humanize, k]}, label: "Estado", clas: "field column is-3") %>
+      <%= t_field(form, :youtube_url, label: "Youtube URL", clas: "field column is-3") %>
+      <%= t_field(form, :title, label: "Titulo (min 15 caracteres, max 250 caracteres)") %>
       <%= t_field(form, :extract, label: "Extracto (min 50 caracteres, max 550 caracteres)") %>
+      <div class="field column is-12" data-controller="recurrence-toggle">
+        <label class="checkbox is-rounded mt-3">
+          <%= check_box_tag :schedule_later, "1", post.publish_at.present?, class: "mr-2", data: { action: "change->recurrence-toggle#toggle" } %>
+          Programar para más tarde
+        </label>
+        <div class="mt-3" data-recurrence-toggle-target="fields" style="<%= 'display:none;' unless post.publish_at.present? %>">
+          <label class="label">Fecha y hora de publicación</label>
+          <%= form.datetime_local_field :publish_at, class: "input is-rounded", value: post.publish_at&.strftime("%Y-%m-%dT%H:%M") %>
+        </div>
+      </div>
       <div class="field column is-12 form_trix">
         <label class="label">Contenido</label>
         <% if post.errors.include?(:content) %>

@@ -2408,6 +2408,7 @@ tr.is-clickable {
 
 .catalog_card .card-content .title {
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -2575,5 +2576,4 @@ tr.is-clickable {
         opacity: 1;
         transform: translateY(0);
     }
-}
 }

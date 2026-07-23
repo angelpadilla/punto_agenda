@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="theme-dark darkk">
+<html class="theme-dark darkk" lang="<%= I18n.locale %>">
   <head>
     <title><%= content_for(:title) || "MiiNegocio" %></title>
     <meta name="turbo-prefetch" content="false">
@@ -15,7 +15,6 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head_extra %>
-    <%# stylesheet_link_tag "vendor/air-datepicker", "data-turbo-track": "reload" %>
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
     <link rel="icon" href="<%= asset_url 'icon.svg' %>" type="image/svg+xml">
@@ -24,19 +23,40 @@
     <link rel="icon" type="image/x-icon" href="<%= asset_url 'icon.ico' %>">
     <link rel="apple-touch-icon" href="<%= asset_url 'icon.png' %>">
     <%= render 'shared/meta' %>
+    <%# Structured Data JSON-LD %>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "<%= content_for(:schema_type) || 'Organization' %>",
+        "name": "MiiNegocio",
+        "url": "<%= root_url %>",
+        "logo": "<%= asset_path('icon.png') %>",
+        "description": "Plataforma de gestión de ventas, eventos y reservas online",
+        "sameAs": [
+          "https://www.facebook.com/profile.php?id=61590667013847",
+          "https://www.instagram.com/MiiNegocio"
+        ]
+        <% if content_for(:breadcrumbs) %>
+          , "breadcrumb": <%= content_for(:breadcrumbs).html_safe %>
+        <% end %>
+      }
+    </script>
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= Sentry.get_trace_propagation_meta.html_safe %>
   </head>
-  <body class="user_panel">
-    <div id="turbo-flash">
-      <%= render 'shared/flash' %>
-    </div>
-    <%= render 'shared/nav_user' %>
-    <div class="container pb-6">
+  <body class="<%= content_for(:body_class) || "public_view" %>">
+    <%= render 'shared/flash' %>
+    <% if controller_name == 'sessions' or controller_name == 'registrations' or controller_name == 'passwords' or controller_name == 'confirmations' or controller_name == 'unlocks' %>
+      <div class="container is-fluid">
+        <%= yield %>
+      </div>
+    <% else %>
+      <%= render 'shared/nav' %>
       <%= yield %>
-    </div>
+      <%= render 'shared/footer' %>
+    <% end %>
     <%= yield :body_extra %>
   </body>
 </html>

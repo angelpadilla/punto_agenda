@@ -19,13 +19,23 @@
             <div>
               <span class="tag is-rounded is-info"><%= item.cate&.titleize %></span>
             </div>
-            <div class="coverr" 
+            <% if item.url_image %>
+              <div class="coverr" 
+                style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= item.url_image %>); background-size: cover; background-position: top;"
+              >
+              </div>
+            <% else %>
+              <div class="coverr" 
               style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= (item.cover.attached? and item.cover.persisted?) ? url_for(item.cover.variant(:small)) : asset_path("blog_index.jpg") %>); background-size: cover; background-position: top;"
             >
-            </div>
+              </div>
+            <% end %>
             <h1 class="title is-4"><%= item.title.humanize %></h1>
             <p class="subtitle is-6 mt-2">
               <%= l(item.updated_at, format: :short) %>
+              <% if item.source %>
+                | <%= item.source %>
+              <% end %>
             </p>
             <div class="mt-2 extract">
               <%= item.extract %>

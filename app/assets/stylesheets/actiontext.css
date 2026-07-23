@@ -452,8 +452,18 @@ trix-editor .attachment__metadata .attachment__size {
   word-break: break-word;
   /* color: #2d3748; */
 
+  ul {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+  }
+
+  ol {
+    list-style-type: decimal;
+    margin-left: 1.5rem;
+  }
+
   h1 {
-    font-size: clamp(2rem, 3vw + 1.25rem, 3rem);
+    font-size: clamp(1.5rem, 3vw + 1.25rem, 2rem);
     line-height: 1.2;
     font-weight: 700;
     margin-top: 2rem;
@@ -466,7 +476,7 @@ trix-editor .attachment__metadata .attachment__size {
   }
 
   strong {
-    font-weight: 600;
+    font-weight: 900;
   }
 
 }
@@ -474,8 +484,8 @@ trix-editor .attachment__metadata .attachment__size {
 
 .trix-content * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  /* margin: 0;
+  padding: 0; */
 }
 
 .trix-content blockquote {
@@ -633,4 +643,26 @@ trix-editor .attachment__metadata .attachment__size {
     max-height: 100rem;
     overflow-y: auto;
   }
+}
+
+/* Fix and normalize for Rss feeds when displaying Trix content */
+
+.trix-content> :where(p, div, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure) {
+  margin: 0;
+}
+
+.trix-content> :where(p, div, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure)+ :where(p, div, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure) {
+  margin-top: 1rem;
+}
+
+.trix-content :where(h1, h2, h3) {
+  line-height: 1.25;
+  margin-top: 1.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.trix-content br+br {
+  content: "";
+  display: block;
+  margin-top: 0.9rem;
 }

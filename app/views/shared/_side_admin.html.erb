@@ -55,6 +55,16 @@
           Tickets
         </a>
       </li>
+      <% if current_admin.admin? %>
+        <li>
+          <a href="<%= mission_control_jobs_path %>" target="_blank">
+            <span class="icon mr-2">
+              <%= image_tag 'chat-round-call-svgrepo-com.svg', alt: "Configuración" %>
+            </span>
+            Background Jobs
+          </a>
+        </li>
+      <% end %>
       <li>
         <a href="<%= admin_panel_experimental_path %>" class="<%= request.path.include?('experimental') ? 'is-active' : '' %>">
           <span class="icon mr-2">

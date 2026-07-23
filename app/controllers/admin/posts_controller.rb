@@ -12,6 +12,29 @@ class Admin::PostsController < AdminController
   def show
   end
 
+  def calendar
+    posts = Post.default
+    @grouped = posts.group_by { |p| p.display_publish_date.to_date }
+    puts @grouped.to_json
+  end
+
+  def import_soro_rss
+    result = ImportSoroRssPostsJob.perform_now
+
+    if result[:success]
+      notice = "Importación RSS completada. " \
+               "Items: #{result[:total_items]}, " \
+               "Creados: #{result[:created]}, " \
+               "Duplicados: #{result[:duplicates]}, " \
+               "Errores: #{result[:errors]}"
+      puts "✅ #{result}"
+      redirect_to posts_path, notice: notice
+    else
+      error_msg = result[:error_details]&.first&.dig(:error) || "Error desconocido"
+      redirect_to posts_path, alert: "Falló importación RSS: #{error_msg}"
+    end
+  end
+
 
   # GET /admin/posts/new
   def new
@@ -25,6 +48,7 @@ class Admin::PostsController < AdminController
   # POST /admin/posts or /admin/posts.json
   def create
     @post = Post.new(post_params)
+    @post.author = current_admin.full_name || current_admin.email
 
     if @post.save
       redirect_to posts_path, notice: "Articulo creado exitosamente."
@@ -57,6 +81,6 @@ class Admin::PostsController < AdminController
 
     # Only allow a list of trusted parameters through.
     def post_params
-      params.require(:post).permit(:title, :visits, :extract, :cate, :cover, :content, :youtube_url)
+      params.require(:post).permit(:title, :visits, :extract, :cate, :cover, :content, :youtube_url, :publish_at, :status)
     end
 end

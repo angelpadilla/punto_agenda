@@ -9,24 +9,24 @@ class Item < ApplicationRecord
   has_many :orders, through: :line_items
 
   has_one_attached :img1, dependent: :destroy do |at|
-    at.variant :small, resize_to_limit: [ 300,  300 ], preprocessed: true
-    at.variant :thumb, resize_to_limit: [ 600,  600 ], preprocessed: true
+    at.variant :small, resize_to_limit: [ 300,  300 ], format: :webp, preprocessed: true
+    at.variant :thumb, resize_to_limit: [ 600,  600 ], format: :webp, preprocessed: true
   end
   has_one_attached :img2, dependent: :destroy do |at|
-    at.variant :small, resize_to_limit: [ 300,  300 ], preprocessed: true
-    at.variant :thumb, resize_to_limit: [ 600,  600 ], preprocessed: true
+    at.variant :small, resize_to_limit: [ 300,  300 ], format: :webp, preprocessed: true
+    at.variant :thumb, resize_to_limit: [ 600,  600 ], format: :webp, preprocessed: true
   end
   has_one_attached :img3, dependent: :destroy do |at|
-    at.variant :small, resize_to_limit: [ 300,  300 ], preprocessed: true
-    at.variant :thumb, resize_to_limit: [ 600,  600 ], preprocessed: true
+    at.variant :small, resize_to_limit: [ 300,  300 ], format: :webp, preprocessed: true
+    at.variant :thumb, resize_to_limit: [ 600,  600 ], format: :webp, preprocessed: true
   end
   has_one_attached :img4, dependent: :destroy do |at|
-    at.variant :small, resize_to_limit: [ 300,  300 ], preprocessed: true
-    at.variant :thumb, resize_to_limit: [ 600,  600 ], preprocessed: true
+    at.variant :small, resize_to_limit: [ 300,  300 ], format: :webp, preprocessed: true
+    at.variant :thumb, resize_to_limit: [ 600,  600 ], format: :webp, preprocessed: true
   end
   has_one_attached :img5, dependent: :destroy do |at|
-    at.variant :small, resize_to_limit: [ 300,  300 ], preprocessed: true
-    at.variant :thumb, resize_to_limit: [ 600,  600 ], preprocessed: true
+    at.variant :small, resize_to_limit: [ 300,  300 ], format: :webp, preprocessed: true
+    at.variant :thumb, resize_to_limit: [ 600,  600 ], format: :webp, preprocessed: true
   end
 
   enum :status, activo: 0, activo_interno: 1, inactivo: 2

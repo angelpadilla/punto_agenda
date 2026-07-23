@@ -4,7 +4,7 @@
       <div class="avatar-group">
         <% 10.times do |index| %>
           <div class="avatar">
-            <%= image_tag "https://api.dicebear.com/10.x/micah/svg?backgroundColor=bdf5df&mouthVariant=laughing,pucker,smile,smirk,surprised&seed=#{index}", loading: "lazy" %>
+            <%= image_tag "https://api.dicebear.com/10.x/micah/svg?backgroundColor=bdf5df&mouthVariant=laughing,pucker,smile,smirk,surprised&seed=#{index}", alt: "avatar_#{index}", loading: "lazy" %>
           </div>
         <% end %>
       </div>

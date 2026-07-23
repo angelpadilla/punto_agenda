@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   # Telegram bot webhook (public, no auth)
   post "telegram/webhook", to: "telegram_webhook#receive"
 
-  mount MissionControl::Jobs::Engine, at: "/jobss"
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
@@ -223,7 +223,12 @@ Rails.application.routes.draw do
     resources :items, controller: "admin/items"
     resources :orders, controller: "admin/orders"
     resources :deposits, controller: "admin/deposits"
-    resources :posts, controller: "admin/posts"
+    resources :posts, controller: "admin/posts" do
+      collection do
+        get :calendar
+        post :import_soro_rss
+      end
+    end
     resources :tickets, controller: "admin/tickets", only: %i[index show edit update], as: :admin_tickets do
       resources :ticket_messages, controller: "admin/ticket_messages", only: :create, as: :admin_ticket_messages
     end

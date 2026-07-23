@@ -1,8 +1,17 @@
 <tr onclick="window.location='<%= post_path(post) %>'" style="cursor: pointer;">
   <td><%= post.id %></td>
   <td><span class="tag is-rounded"><%= post.cate %></span></td>
+  <td>
+    <% if post.borrador? %>
+      <span class="tag is-rounded is-warning">Borrador</span>
+    <% elsif post.publish_at.present? && post.publish_at > Time.current %>
+      <span class="tag is-rounded is-info">Programado</span>
+    <% else %>
+      <span class="tag is-rounded is-success">Publicado</span>
+    <% end %>
+  </td>
   <td><%= post.title.truncate(70) %></td>
-  <td><%= post.extract.truncate(200) %></td>
+  <td><%= post.publish_at.present? ? post.publish_at.strftime("%d/%m/%Y %I:%M %p") : "—" %></td>
   <td><%= post.created_at.strftime("%d/%m/%Y %I:%M:%S %p") %></td>
   <td><%= post.updated_at.strftime("%d/%m/%Y %I:%M:%S %p") %></td>
   <td>

@@ -1,19 +1,25 @@
 class PublicController < ApplicationController
   before_action :find_corp_by_sku, only: [ :show_corp, :show_corp_calendar, :show_corp_menu, :book_event, :new_booking ]
+  layout "blog", only: [ :index_blog, :show_blog ]
 
   def home
-    @last_articles = Post.default.limit(6)
+    @last_articles = Post.published.limit(6)
   end
 
   def index_blog
-    posts = Post.default
+    posts = Post.published
 
     @q = posts.ransack(params[:q])
     @pagy, @posts = pagy(@q.result(distinct: true), limit: 8)
   end
 
   def show_blog
-    @post = Post.find_by(slug: params[:slug])
+    if current_admin
+      @post = Post.find_by(slug: params[:slug])
+    else
+      @post = Post.published.find_by(slug: params[:slug])
+      @post&.increment!(:visits)
+    end
     redirect_to index_blog_path, alert: "Artículo no encontrado" unless @post
   end
 
@@ -329,7 +335,7 @@ class PublicController < ApplicationController
 
     @event.update!(status: :cancelado)
     @order.update!(status_pago: :cancelado)
-    
+
     if params[:session_id].present?
       @stripe_client = set_stripe_client
       session  = @stripe_client.v1.checkout.sessions.retrieve(params[:session_id])

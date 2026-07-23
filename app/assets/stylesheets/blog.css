@@ -18,8 +18,17 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 30rem;
+        padding: 10rem 0;
         background-color: green;
+
+        .container {
+            padding: 0 2rem;
+        }
+
+        .title {
+            font-size: clamp(1.5rem, 5vw, 3rem);
+        }
+
         /* height: 500px; */
     }
 
@@ -45,11 +54,11 @@
         }
 
         .article {
-            margin-top: -50px;
+            margin-top: -30px;
         }
 
         .heroo {
-            height: 20rem;
+            padding: 5rem 0;
         }
 
         .blog_search {

@@ -25,6 +25,12 @@ production:
   cobranza_automatica:
     class: CobranzaJob
     schedule: every 1 day at 6am
+  import_soro_rss_posts:
+    class: ImportSoroRssPostsJob
+    schedule: every 6 hours
+  import_news_api_posts:
+    command: Post.get_external_posts
+    schedule: every 1 day at 4am
 
 development:
   clear_solid_queue_finished_jobs:

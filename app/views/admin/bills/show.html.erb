@@ -8,7 +8,7 @@
       </span>
       Volver a listado 
     <% end %>
-    <% if !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and current_admin.super? and @bill.ingreso? %>
+    <% if @corp and !@bill.timbre? and @corp.me_pueden_facturar? and @bill.pagado? and current_admin.super? and @bill.ingreso? %>
       <button class="mtrigger button is-rounded" data-target="timbraa">
         <span class="icon mr-2">
           <%= image_tag 'timbre.svg', alt: 'cancelar', class: "invert" %>
@@ -218,7 +218,7 @@
   </div>
 <% end %>
 <%# modals %>
-<% if !@bill.timbre? and @corp.me_pueden_facturar? %>
+<% if @corp and !@bill.timbre? and @corp.me_pueden_facturar? %>
   <div id="timbraa" class="modal">
     <div class="modal-background"></div>
     <div class="modal-content">

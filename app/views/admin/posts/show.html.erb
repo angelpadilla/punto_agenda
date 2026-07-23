@@ -47,7 +47,9 @@
 <div class="box mt-4">
   <div class="columns">
     <div class="column is-2">
-      <% if @post.cover.attached? %>
+      <% if @post.url_image %>
+        <%= image_tag @post.url_image, loading: "lazy", class: "image" %>
+      <% elsif @post.cover.attached? %>
         <%= image_tag @post.cover.variant(resize_to_limit: [600, 600]), loading: "lazy", class: "image" %>
       <% else %>
         <%= image_tag 'documento.svg', alt: 'item', class: 'invert is-hidden-touch', loading: 'lazy' %>
@@ -56,6 +58,13 @@
     <div class="column is-10">
       <div class="tags">
         <span class="tag is-info is-rounded"><%= @post.cate.titleize %></span>
+        <% if @post.borrador? %>
+          <span class="tag is-rounded is-warning">Borrador</span>
+        <% elsif @post.publish_at.present? && @post.publish_at > Time.current %>
+          <span class="tag is-rounded is-info">Programado</span>
+        <% else %>
+          <span class="tag is-rounded is-success">Publicado</span>
+        <% end %>
       </div>
       <h3 class="titlee2 mb-4"><%= @post.title %></h3>
       <div class="columns is-multiline is-mobile">
@@ -81,13 +90,43 @@
         </div>
       </div>
       <div class="columns is-multiline is-mobile">
-        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="column is-12">
+          <div class="labell">Autor</div>
+          <% if @post.author %>
+            <p class=""><%= @post.author %></p>
+          <% else %>
+            <p>-</p>
+          <% end %>
+        </div>
+        <% if @post.source %>
+          <div class="column is-12-mobile is-6-tablet is-6-desktop">
+            <div class="labell">Fuente</div>
+            <p class=""><%= @post.source %></p>
+          </div>
+        <% end %>
+        <% if @post.url %>
+          <div class="column is-12-mobile is-6-tablet is-6-desktop">
+            <div class="labell">URL</div>
+            <%= link_to @post.url.truncate(40), @post.url, target: "_blank" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="columns is-multiline is-mobile">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="labell">Fecha de creación</div>
           <p class=""><%= l(@post.created_at, format: :long) %></p>
         </div>
-        <div class="column is-12-mobile is-6-tablet is-6-desktop">
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="labell">Fecha de última actualización</div>
           <p class=""><%= l(@post.updated_at, format: :long) %></p>
+        </div>
+        <div class="column is-12-mobile is-6-tablet is-4-desktop">
+          <div class="labell">Programado</div>
+          <% if @post.publish_at %>
+            <p class=""><%= l(@post.publish_at, format: :long) %></p>
+          <% else %>
+            <p>-</p>
+          <% end %>
         </div>
       </div>
     </div>
