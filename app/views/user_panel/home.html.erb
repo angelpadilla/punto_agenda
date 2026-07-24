@@ -72,7 +72,8 @@
         <% first_order = @corp.orders.any? ? true : false %>
         <% first_event = @corp.events.any? ? true : false %>
         <% corp_ready = @corp.corp_ready? %>
-        <% alltrue = [first_item, first_order, first_event, corp_ready].all?(&:itself) %>
+        <% user_hours_ready = @userr.work_hours_customized? %>
+        <% alltrue = [first_item, first_order, first_event, corp_ready, user_hours_ready].all?(&:itself) %>
         <% unless alltrue %>
           <div class="box">
             <div class="onboarding_header">
@@ -92,6 +93,18 @@
                   <a href="#!" class="button is-rounded is-small">Completado</a>
                 <% else %>
                   <%= link_to "Ajustes", edit_user_corp_path, class: "button is-rounded is-small is-primary" %>
+                <% end %>
+              </div>
+              <div class="onboarding_item <%= user_hours_ready ? 'is-done' : '' %>">
+                <div class="onboarding_check"></div>
+                <div class="onboarding_info">
+                  <div class="onboarding_title">Configura tu horario laboral</div>
+                  <div class="labell">Define tus horas de entrada y salida para que el calendario y las citas respeten tu disponibilidad.</div>
+                </div>
+                <% if user_hours_ready %>
+                  <a href="#!" class="button is-rounded is-small">Completado</a>
+                <% else %>
+                  <%= link_to "Editar", edit_user_path(@userr), class: "button is-rounded is-small is-primary" %>
                 <% end %>
               </div>
               <div class="onboarding_item <%= first_item ? 'is-done' : '' %>">

@@ -72,6 +72,7 @@
             </span>
             Horario laboral
           </h2>
+          <span class="tag <%= @user.work_hours_customized? ? 'is-success' : 'is-light' %>"><%= @user.work_hours_customized? ? 'Personalizado' : 'Por defecto' %></span>
           <span class="icon toggle_icon">
             <%= image_tag 'down.svg', alt: "toggle open", class: 'invert' %>
           </span>
@@ -87,6 +88,9 @@
               <p class="contentt"><%= @user.work_end_time.strftime("%I:%M %p") %></p>
             </div>
           </div>
+          <% unless @user.work_hours_customized? %>
+            <p class="labell mt-3">Este horario sigue usando el valor predeterminado completo.</p>
+          <% end %>
         </div>
       </div>
     <% end %>

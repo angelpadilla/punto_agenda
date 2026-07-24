@@ -76,6 +76,21 @@ class User < ApplicationRecord
     tipo == "colaborador"
   end
 
+  def work_hours_default?
+    return true if work_start_time.blank? && work_end_time.blank?
+
+    work_start_time.present? &&
+      work_end_time.present? &&
+      work_start_time.hour == 0 &&
+      work_start_time.min == 0 &&
+      work_end_time.hour == 23 &&
+      work_end_time.min == 59
+  end
+
+  def work_hours_customized?
+    work_start_time.present? && work_end_time.present? && !work_hours_default?
+  end
+
   # ¿Este agente trabaja durante el slot dado?
   # Si no tiene work_start_time/work_end_time definidos, se asume que trabaja todo el día
   # @param slot_start [Time] inicio del slot
