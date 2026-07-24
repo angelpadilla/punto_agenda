@@ -23,7 +23,6 @@ class UserPanel::CustomersController < UserPanelController
     @customer = Customer.new(customer_params)
     @customer.password = token
     @customer.password_confirmation = token
-    @customer.passs = token
 
     respond_to do |format|
       if @customer.save
@@ -42,7 +41,6 @@ class UserPanel::CustomersController < UserPanelController
     @customer = Customer.new(customer_params)
     @customer.password = token
     @customer.password_confirmation = token
-    @customer.passs = token
 
     respond_to do |format|
       if @customer.save

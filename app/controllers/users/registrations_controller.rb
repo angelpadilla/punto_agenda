@@ -34,6 +34,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       build_resource(sign_up_params)
       resource.tipo = "propietario"
       resource.tel_prefix = params[:user][:tel_prefix] || "+52"
+      resource.work_start_time = Time.parse("00:00")
+      resource.work_end_time = Time.parse("23:59")
 
       if resource.save
         corp = Corp.new(

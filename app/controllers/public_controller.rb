@@ -176,7 +176,8 @@ class PublicController < ApplicationController
     slot_range  = (day_config&.dig("hours") || []).find { |r| Time.zone.parse("#{slot.to_date} #{r['open']}") == slot }
     hora_final  = slot_range ? Time.zone.parse("#{slot.to_date} #{slot_range['close']}") : slot + 60.minutes
 
-    necesita_pago_online = @corp.online_payments and @corp.min_book_amount and @corp.min_book_amount > 0
+    monto = @corp.min_book_amount.present? && @corp.min_book_amount > 100.0 ? @corp.min_book_amount : 100.0
+    necesita_pago_online = @corp.online_payments and monto > 0
 
     event = Event.new(
       corp:        @corp,
@@ -206,7 +207,7 @@ class PublicController < ApplicationController
         end
         customer.reload
 
-        do_order_monto(corp: @corp, event: event, customer: customer, user: user, monto: @corp.min_book_amount, concepto: "Reserva de cita - #{event.title}")
+        do_order_monto(corp: @corp, event: event, customer: customer, user: user, monto: monto, concepto: "Reserva de cita - #{event.title}")
 
       else
         # si no se necesita pago en línea, simplemente esperamos a que el cliente pague en fisico

@@ -44,6 +44,10 @@ class UserPanel::UsersController < UserPanelController
     check_limit
     @user = @corp.users.new(user_params)
 
+    # si el usuario no intriduco horario laboral para el usuario, se le asigna horario de todo el dia por default
+    @user.work_start_time ||= Time.parse("00:00")
+    @user.work_end_time ||= Time.parse("23:59")
+
     if @user.save
       redirect_to @user, notice: "Usuario creado exitosamente."
     else

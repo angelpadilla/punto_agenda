@@ -155,7 +155,7 @@ module Gtools
     end
 
     unless corp.stripe_payment_method_id.present?
-      puts "🚫 Corp sin método de pago para pago Stripe, corp: #{corp.id}"
+      Rails.logger.warn("Stripe charge skipped: corp sin metodo de pago. corp_id=#{corp.id}")
       return { success: false, status: nil, error: "Corp sin método de pago para pago Stripe", error_message: "Corp sin método de pago para pago Stripe", body: nil }
     end
 
@@ -171,7 +171,7 @@ module Gtools
     })
 
     if payment_intent.status == "succeeded"
-      puts "✅ Pago Stripe exitoso para Corp #{corp.id}, Monto: #{amount}"
+      Rails.logger.info("Stripe payment_intent confirmado. corp_id=#{corp.id} status=#{payment_intent.status}")
       {
         success: true,
         status: payment_intent.status,
@@ -180,7 +180,7 @@ module Gtools
         body: payment_intent
       }
     else
-      puts "❌ Pago Stripe no exitoso para Corp #{corp.id}, Status: #{payment_intent.status}"
+      Rails.logger.warn("Stripe payment_intent no exitoso. corp_id=#{corp.id} status=#{payment_intent.status}")
       {
         success: false,
         status: payment_intent.status,
@@ -190,13 +190,13 @@ module Gtools
       }
     end
   rescue Stripe::CardError => e
-    puts "🚫 Error de tarjeta al procesar pago Stripe: #{e}"
+    Rails.logger.error("Stripe card error al crear payment_intent: #{e}")
     { success: false, status: nil,  error: e, error_message: e.message, body: nil }
   rescue Stripe::StripeError => e
-    puts "🚫 Error de Stripe al procesar pago: #{e}"
+    Rails.logger.error("Stripe error al crear payment_intent: #{e}")
     { success: false, status: nil,  error: e, error_message: e.message, body: nil }
   rescue => e
-    puts "🚫 Error inesperado al procesar pago Stripe: #{e}"
+    Rails.logger.error("Error inesperado al crear payment_intent: #{e}")
     { success: false, status: nil,  error: e, error_message: e.message, body: nil }
   end
 

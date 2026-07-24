@@ -448,7 +448,7 @@ class Corp < ApplicationRecord
     if customer && customer.id
       update(stripe_customer_id: customer.id)
     else
-      puts "-- Error creating Stripe customer for Corp #{id}: #{customer.inspect}"
+      Rails.logger.warn("Stripe customer no creado para corp_id=#{id}")
     end
   end
 

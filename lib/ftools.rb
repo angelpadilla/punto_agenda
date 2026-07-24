@@ -49,22 +49,22 @@ module Ftools
       puts response.inspect
       puts "--------------------------------"
 
-      order.xml = response[:xml]
-      order.sat_uuid = response[:uuid]
-      order.sat_timbre_fecha = response[:fecha_timbrado]
-      order.sat_cfdi = response[:sello_cfd]
-      order.sat_sello = response[:sello_sat]
-      order.sat_sello_emisor = response[:no_certificado_sat]
-      order.sat_serial = @factura.serial
-      order.tipo = "factura"
+      bill.xml = response[:xml]
+      bill.sat_uuid = response[:uuid]
+      bill.sat_timbre_fecha = response[:fecha_timbrado]
+      bill.sat_cfdi = response[:sello_cfd]
+      bill.sat_sello = response[:sello_sat]
+      bill.sat_sello_emisor = response[:no_certificado_sat]
+      bill.sat_serial = @factura.serial
+      bill.tipo = "factura"
 
-      order.error = nil
-      order.save
+      bill.error = nil
+      bill.save
 
       ## Si la orden era a credito y remision y ya tenia algunos depositos, timbrarlos
-      if order.deposits.any? and order.credito?
-        order.deposits.each do |dep|
-          self.timbra_deposito(order, dep)
+      if bill.deposits.any? and bill.credito?
+        bill.deposits.each do |dep|
+          self.timbra_deposito(bill, dep)
         end
       end
       true
@@ -72,9 +72,9 @@ module Ftools
       puts " --- Timbrado fallido"
       puts "Status: #{response[:status]}"
       puts "Error details: #{response[:message_error]}"
-      order.error = response[:message_error]
-      order.tipo = "remision"
-      order.save
+      bill.error = response[:message_error]
+      bill.tipo = "remision"
+      bill.save
       false
     end
   end
