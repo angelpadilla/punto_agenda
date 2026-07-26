@@ -1,0 +1,13 @@
+<% if @meta_pixel_events.present? %>
+  <% @meta_pixel_events.each do |event| %>
+    <script>
+      fbq('track', '<%= event[:event_name] %>'<% if event[:user_data].present? %>, {
+        value: <%= event[:value].present? ? event[:value] : 'undefined' %>,
+        currency: '<%= event[:currency] %>',
+        <% if event[:user_data].present? %>
+          userIds: <%= event[:user_data].to_json %>
+        <% end %>
+      }<% end %>);
+    </script>
+  <% end %>
+<% end %>

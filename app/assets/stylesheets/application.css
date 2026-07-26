@@ -59,10 +59,6 @@ html {
     color: var(--white) !important;
 }
 
-#tidio-chat {
-    bottom: 4rem !important;
-}
-
 .grotesk {
     font-family: "Space Grotesk", sans-serif;
     font-optical-sizing: auto;
