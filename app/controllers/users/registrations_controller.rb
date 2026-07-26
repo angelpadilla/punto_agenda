@@ -57,13 +57,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
           if resource.active_for_authentication?
             set_flash_message! :notice, :signed_up
             sign_up(resource_name, resource)
-            # Track registration in Meta Pixel for ads optimization
-            @meta_pixel_events = [
-              MetaPixel.track_event('CompleteRegistration', {
-                email: resource.email,
-                phone: "#{resource.tel_prefix}#{resource.tel}"
-              })
-            ]
             respond_with resource, location: after_sign_up_path_for(resource)
           else
             set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
