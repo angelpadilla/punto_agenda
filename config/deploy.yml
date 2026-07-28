@@ -56,6 +56,11 @@ env:
     # Use posagenda-db for a db accessory server on same machine via local kamal docker network.
     DB_HOST: 64.23.234.167
 
+    WEB_CONCURRENCY: 4              # 4 procesos Puma
+    RAILS_MAX_THREADS: 10           # 10 threads/proceso
+    # JOB_CONCURRENCY: 3              # 3 jobs en paralelo
+    DB_POOL_SIZE: 50
+
     # RAILS_MAX_THREADS: 3
 
     # Log everything from Rails
