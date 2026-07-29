@@ -94,6 +94,7 @@ document.addEventListener("turbo:load", (e) => {
         }, 3500);
     }
     if (alert) {
+        console.log("alert found");
         setTimeout(function () {
             alert.style.opacity = 0;
             alert.style.top = "-100px";

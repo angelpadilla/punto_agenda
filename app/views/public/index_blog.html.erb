@@ -7,47 +7,56 @@
     <% end %>
   </div>
 </section>
-<section class="container articles">
-  <div class="flexx space-b flex-end mb-4">
-    <span class="tag is-success is-rounded">Recientes</span>
-  </div>
-  <div class="columns is-multiline is-mobile articles-grid">
-    <% @posts.each do |item| %>
-      <div class="column is-6-desktop is-6-tablet is-12-mobile">
-        <%= link_to show_blog_path(item.slug), class: "is-full-height" do %>
-          <div class="box cursor-pointer mb-4 is-article-card">
-            <div>
-              <span class="tag is-rounded is-info"><%= item.cate&.titleize %></span>
-            </div>
-            <% if item.url_image %>
-              <div class="coverr" 
+<% if @posts.any? %>
+  <section class="container articles">
+    <div class="flexx space-b flex-end mb-4">
+      <span class="tag is-success is-rounded">Recientes</span>
+    </div>
+    <div class="columns is-multiline is-mobile articles-grid">
+      <% @posts.each do |item| %>
+        <div class="column is-6-desktop is-6-tablet is-12-mobile">
+          <%= link_to show_blog_path(item.slug), class: "is-full-height" do %>
+            <div class="box cursor-pointer mb-4 is-article-card">
+              <div>
+                <span class="tag is-rounded is-info"><%= item.cate&.titleize %></span>
+              </div>
+              <% if item.url_image %>
+                <div class="coverr" 
                 style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= item.url_image %>); background-size: cover; background-position: top;"
               >
-              </div>
-            <% else %>
-              <div class="coverr" 
+                </div>
+              <% else %>
+                <div class="coverr" 
               style="background-image: linear-gradient(rgba(12, 12, 12, 0.7), rgba(12, 12, 12, 1)), url(<%= (item.cover.attached? and item.cover.persisted?) ? url_for(item.cover.variant(:small)) : asset_path("blog_index.jpg") %>); background-size: cover; background-position: top;"
             >
-              </div>
-            <% end %>
-            <h1 class="title is-4"><%= item.title.humanize %></h1>
-            <p class="subtitle is-6 mt-2">
-              <%= l(item.updated_at, format: :short) %>
-              <% if item.source %>
-                | <%= item.source %>
+                </div>
               <% end %>
-            </p>
-            <div class="mt-2 extract">
-              <%= item.extract %>
+              <h1 class="title is-4"><%= item.title.humanize %></h1>
+              <p class="subtitle is-6 mt-2">
+                <%= l(item.updated_at, format: :short) %>
+                <% if item.source %>
+                  | <%= item.source %>
+                <% end %>
+              </p>
+              <div class="mt-2 extract">
+                <%= item.extract %>
+              </div>
             </div>
-          </div>
-        <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <% if @pagy.pages > 1 %>
+      <div class="mt-6 mb-6">
+        <%== @pagy.series_nav(:bulma) %>
       </div>
     <% end %>
-  </div>
-  <% if @pagy.pages > 1 %>
-    <div class="mt-6 mb-6">
-      <%== @pagy.series_nav(:bulma) %>
+  </section>
+<% else %>
+  <section class="container articles">
+    <div class="box has-text-centered">
+      <h1 class="title is-4">No se encontraron artículos</h1>
+      <p class="subtitle is-6">Intenta buscar con otra palabra clave</p>
     </div>
-  <% end %>
-</section>
+  </section>
+<% end %>
