@@ -39,6 +39,7 @@ class UserPanel::ItemsController < UserPanelController
   # POST /items or /items.json
   def create
     check_limit
+    @item = @corp.items.new(item_params)
 
     respond_to do |format|
       if @item.save
