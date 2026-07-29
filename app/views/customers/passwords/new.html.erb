@@ -1,0 +1,29 @@
+<% content_for :title, "¿Olvidaste tu contraseña?" %>
+<div class="login">
+  <div class="login_box flexx-1">
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { class: 'login_form' }) do |f| %>
+      <%= render "users/shared/error_messages", resource: resource %>
+      <div class="login_box_textt">
+        <div class="login_box_logo">
+          <%= link_to root_path do %>
+            <%= image_tag 'logo2.svg', alt: 'MiiNegocio', class: 'logo' %>
+          <% end %>
+        </div>
+        <div class="login_box_title">¿Olvidaste tu contraseña?</div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'input is-rounded', placeholder: 'Email' %>
+        </div>
+      </div>
+      <button type="submit" class="button is-rounded is-primary is-fullwidth">
+        <span class="icon mr-2">
+          <%= image_tag 'login.svg', alt: 'login' %>
+        </span>
+        Enviame instrucciones
+      </button>
+      <br>
+      <%= render "users/shared/links" %>
+    <% end %>
+  </div>
+</div>

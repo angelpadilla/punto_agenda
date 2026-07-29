@@ -4,15 +4,15 @@ class Admins::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
   prepend_before_action :verify_turnstile, only: [ :create ]
 
-  # 1. Burst Control: Max 3 requests every 2 seconds
-  rate_limit to: 3, within: 2.seconds, name: "burst_control",
-    by: -> { request.ip },
-    with: -> { redirect_to new_admin_session_path, alert: "Demasiados intentos de inicio de sesión. Por favor, inténtalo de nuevo en unos segundos." }
+  # # 1. Burst Control: Max 3 requests every 2 seconds
+  # rate_limit to: 3, within: 2.seconds, name: "burst_control",
+  #   by: -> { request.ip },
+  #   with: -> { redirect_to new_admin_session_path, alert: "Demasiados intentos de inicio de sesión. Por favor, inténtalo de nuevo en unos segundos." }
 
-  # 2. Daily protection: Max 1000 requests every 1 hour
-  rate_limit to: 1000, within: 1.hour, name: "daily_protection",
-    by: -> { request.ip },
-    with: -> { redirect_to new_admin_session_path, alert: "Demasiados intentos de inicio de sesión. Por favor, inténtalo de nuevo más tarde." }
+  # # 2. Daily protection: Max 1000 requests every 1 hour
+  # rate_limit to: 1000, within: 1.hour, name: "daily_protection",
+  #   by: -> { request.ip },
+  #   with: -> { redirect_to new_admin_session_path, alert: "Demasiados intentos de inicio de sesión. Por favor, inténtalo de nuevo más tarde." }
 
   # GET /resource/sign_in
   # def new
