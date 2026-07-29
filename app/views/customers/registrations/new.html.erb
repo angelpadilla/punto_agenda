@@ -24,28 +24,7 @@
         <div class="login_box_logo">
           <%= image_tag 'logo2.svg', alt: 'MiiNegocio', class: 'logo' %>
         </div>
-        <div class="login_box_title">Registro</div>
-        <div class="login_box_p">Potencia tu productividad y tu negocio, prueba nuestra plataforma por 15 días gratis</div>
-      </div>
-      <%# tipo negocio Corp::TipoNegocios %>
-      <div class="field">
-        <div class="control">
-          <div class="select">
-            <%= select_tag :tipo_negocio, options_for_select(Corp::TipoNegocios, nil), prompt: "Selecciona tipo de emprendimiento", class: "" %>
-          </div>
-        </div>
-      </div>
-      <div class="field">
-        <%= f.text_field :full_name, class: "input is-rounded #{f.object.errors.include?(:full_name) ? 'is-danger' : ''}", placeholder: 'Nombre completo', required: true %>
-      </div>
-      <div class="field has-addons">
-        <div class="control <%= f.object.errors.include?(:tel_prefix) ? 'select-is-danger' : '' %>">
-          <%= f.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, "+52"),
-                    {prompt: "Prefijo", required: field_required?(User, :tel_prefix)},
-                    { "data-controller": "slimselect", class: "ss2"}
-                    %>
-        </div>
-        <%= t_field(f, :tel, placeholder: "Telefono", clas: "control is-expanded") %>
+        <div class="login_box_title">Registro usuario</div>
       </div>
       <div class="field">
         <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input is-rounded #{f.object.errors.include?(:email) ? 'is-danger' : ''}", placeholder: 'Email', required: true %>
