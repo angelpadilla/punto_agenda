@@ -26,6 +26,11 @@
   <%= stat_card(@bills_month, "Facturacion mes", icon: "dollar", box_class: "is-main", currency: true) %>
 </div>
 <div class="columns is-multiline is-mobile mb-2 mt-4">
+  <%= stat_card(@fb_visits_7d, "Facebook · 7 días", icon: "planet-3-svgrepo-com", box_class: "is-main") %>
+  <%= stat_card(@fb_visits_month, "Facebook · este mes", icon: "planet-3-svgrepo-com", box_class: "is-main") %>
+  <%= stat_card(@fb_visits_total, "Facebook · histórico", icon: "planet-3-svgrepo-com", box_class: "is-main") %>
+</div>
+<div class="columns is-multiline is-mobile mb-2 mt-4">
   <%= stat_card(@retiros_pendientes.count, "Retiros pendientes", icon: "danger-circle-svgrepo-com", box_class: "is-warning", currency: false, link: admin_bills_path(q: { status_pago_eq: "pendiente", direccion_eq: 1 })) %>
 </div>
 <%# ordenes recientes %>

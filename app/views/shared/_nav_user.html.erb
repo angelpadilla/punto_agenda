@@ -116,26 +116,22 @@
     <div class="inner">
       <%= link_to user_panel_home_path, class: 'icon' do %>
         <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
-        inicio
       <% end %>
       <%= link_to user_panel_landing_orders_path, class: 'icon' do %>
         <span class="icon">
           <%= image_tag 'ticket.svg', alt: 'carrito', class: 'invert' %>
-          ventas
         </span>
       <% end %>
       <% if @corp.calendar %>
         <%= link_to weekly_events_path, class: 'icon' do %>
           <span class="icon">
             <%= image_tag 'calendar.svg', alt: 'event', class: 'invert' %>
-            eventos
           </span>
         <% end %>
       <% end %>
       <%= link_to customers_path, class: 'icon' do %>
         <span class="icon">
           <%= image_tag 'clientes.svg', alt: 'carrito', class: 'invert' %>
-          clientes
         </span>
       <% end %>
       <%= link_to items_path, class: 'icon' do %>
@@ -144,17 +140,15 @@
           <% if 1 > 0 %>
             <div class="notification_dot2"></div>
           <% end %>
-          inventario
         </span>
       <% end %>
       <% if @corp.plus? or @corp.premium? %>
         <%= link_to items_path, class: 'icon' do %>
           <span class="icon">
-            <%= image_tag 'items.svg', alt: 'carrito', class: 'invert' %>
+            <%= image_tag 'compras.svg', alt: 'carrito', class: 'invert' %>
             <% if 1 > 0 %>
               <div class="notification_dot2"></div>
             <% end %>
-            compras
           </span>
         <% end %>
       <% end %>
@@ -162,13 +156,11 @@
         <%= link_to user_corp_landing_path, class: 'icon' do %>
           <span class="icon">
             <%= image_tag 'opciones.svg', alt: 'carrito', class: 'invert' %>
-            ajustes
           </span>
         <% end %>
       <% end %>
-      <%= link_to user_corp_landing_path, class: 'icon' do %>
+      <%= link_to user_path(current_user), class: 'icon' do %>
         <%= image_tag 'user.svg', alt: 'mi perfil', class: 'invert' %>
-        mi perfil
       <% end %>
     </div>
   </div>

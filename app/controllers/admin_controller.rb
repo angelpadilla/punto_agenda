@@ -10,6 +10,10 @@ class AdminController < ApplicationController
     # @total_events = Event.count
     # @total_items  = Item.count
 
+    @fb_visits_7d = TrafficVisit.facebook.where(created_at: 7.days.ago..noww).count
+    @fb_visits_month = TrafficVisit.facebook.where(created_at: noww.beginning_of_month..noww.end_of_month).count
+    @fb_visits_total = TrafficVisit.facebook.count
+
     # Bills el dia de hoy
     bills = Bill.default.includes(:corp)
     @recent_bills = bills.limit(10)

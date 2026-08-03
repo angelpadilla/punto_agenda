@@ -1,0 +1,85 @@
+<% content_for :title, "Traffic Visits" %>
+<div class="flexx space-b flex-end">
+  <h2 class="titlee">Visitas de tráfico</h2>
+</div>
+<div class="columns is-multiline is-mobile mt-4">
+  <div class="column is-3-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">Total</div>
+    <p><%= TrafficVisit.count %></p>
+  </div>
+  <div class="column is-3-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">Facebook</div>
+    <p class="has-text-link"><%= TrafficVisit.facebook.count %></p>
+  </div>
+  <div class="column is-3-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">Últimos 7 días</div>
+    <p><%= TrafficVisit.where(created_at: 7.days.ago..Time.current).count %></p>
+  </div>
+  <div class="column is-3-desktop is-6-tablet is-12-mobile has-text-centered">
+    <div class="labell">Con fbclid</div>
+    <p><%= TrafficVisit.where.not(fbclid: [nil, ""]).count %></p>
+  </div>
+</div>
+<hr>
+<%= search_form_for @q, url: admin_traffic_visits_path do |f| %>
+  <div class="columns is-multiline">
+    <div class="column is-3">
+      <%= f.search_field :referer_or_path_or_fbclid_or_source_cont, class: "is-rounded search_input", placeholder: "Buscar referer, ruta, fbclid o fuente" %>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :source_eq, TrafficVisit::Sources, { include_blank: 'Status' } %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="select is-rounded">
+        <%= f.select :event_type_eq, TrafficVisit::Types, { include_blank: 'Tipo' } %>
+      </div>
+    </div>
+    <div class="column is-2">
+      <%= f.search_field :path_cont, class: "is-rounded search_input", placeholder: "Ruta" %>
+    </div>
+    <div class="column is-3-desktop is-6-tablet is-6-mobile">
+      <div class="buttons">
+        <%= f.submit 'Buscar', class: "button is-rounded is-primary" %>
+        <%= link_to admin_traffic_visits_path, class: "button is-rounded has_tooltip" do %>
+          <span class="icon reset">
+            <%= image_tag 'trash.svg', alt: 'clear', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Limpiar busqueda</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="table-container">
+  <table class="table is-fullwidth is-hoverable mt-4">
+    <thead>
+      <tr>
+        <th><%= sort_link(@q, :created_at, 'Fecha') %></th>
+        <th><%= sort_link(@q, :source, 'Fuente') %></th>
+        <th><%= sort_link(@q, :path, 'Ruta') %></th>
+        <th><%= sort_link(@q, :event_type, 'Evento') %></th>
+        <th><%= sort_link(@q, :referer, 'Referer') %></th>
+        <th><%= sort_link(@q, :fbclid, 'Fbclid') %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @traffic_visits.each do |visit| %>
+        <tr>
+          <td><%= l(visit.created_at, format: :short) %></td>
+          <td><span class="tag is-rounded <%= visit.source == 'facebook' ? 'is-link' : 'is-light' %>"><%= visit.source %></span></td>
+          <td><%= visit.path %></td>
+          <td><%= visit.event_type %></td>
+          <td title="<%= visit.referer %>"><%= visit.referer.present? ? truncate(visit.referer, length: 20) : "-" %></td>
+          <td title="<%= visit.fbclid %>"><%= visit.fbclid.present? ? truncate(visit.fbclid, length: 20) : "-" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<% if @pagy.pages > 1 %>
+  <br>
+  <%== @pagy.series_nav(:bulma) %>
+  <br>
+<% end %>

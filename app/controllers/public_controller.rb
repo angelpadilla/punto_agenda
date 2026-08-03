@@ -3,6 +3,12 @@ class PublicController < ApplicationController
   layout "blog", only: [ :index_blog, :show_blog ]
 
   def home
+    TrafficVisit.track!(request: request, event_type: "visit")
+    puts "--- ✅✅✅✅ PublicController#home ---"
+    puts request.path
+    puts request.referer
+    puts request.params
+    puts request.query_parameters
     @last_articles = Post.published.limit(6)
   end
 

@@ -235,5 +235,6 @@ Rails.application.routes.draw do
     resources :tickets, controller: "admin/tickets", only: %i[index show edit update], as: :admin_tickets do
       resources :ticket_messages, controller: "admin/ticket_messages", only: :create, as: :admin_ticket_messages
     end
+    resources :traffic_visits, controller: "admin/traffic_visits", only: :index, as: :admin_traffic_visits
   end
 end

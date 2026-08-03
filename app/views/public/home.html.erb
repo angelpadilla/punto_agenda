@@ -17,27 +17,29 @@
     <h2 class="psubtitle text-gray mt-5 mb-6">
       Controla tu negocio, que no te controle a ti.
     </h2>
-    <% if current_user %>
-      <%= link_to user_panel_home_path, class: "button is-primary is-rounded mr-4" do %>
-        <span class="icon mr-2">
-          <%= image_tag 'shop.svg', alt: 'login' %>
-        </span>
-        Panel de control
+    <div class="buttons is-centered">
+      <% if current_user %>
+        <%= link_to user_panel_home_path, class: "button is-primary is-rounded" do %>
+          <span class="icon mr-2">
+            <%= image_tag 'shop.svg', alt: 'login' %>
+          </span>
+          Panel de control
+        <% end %>
+      <% else %>
+        <%= link_to new_user_session_path, class: "button is-primary is-rounded" do %>
+          <span class="icon mr-2">
+            <%= image_tag 'login.svg', alt: 'login' %>
+          </span>
+          Acceder
+        <% end %>
+        <%= link_to new_user_registration_path, class: "button is-info is-rounded" do %>
+          <span class="icon mr-2">
+            <%= image_tag 'login.svg', alt: 'registro', class: 'invert' %>
+          </span>
+          Registrarse gratis
+        <% end %>
       <% end %>
-    <% else %>
-      <%= link_to new_user_session_path, class: "button is-primary is-rounded mr-4" do %>
-        <span class="icon mr-2">
-          <%= image_tag 'login.svg', alt: 'login' %>
-        </span>
-        Acceder
-      <% end %>
-      <%= link_to new_user_registration_path, class: "button is-info is-rounded" do %>
-        <span class="icon mr-2">
-          <%= image_tag 'login.svg', alt: 'registro', class: 'invert' %>
-        </span>
-        Registrarse gratis
-      <% end %>
-    <% end %>
+    </div>
   </div>
 </section>
 <%# splide slider mostrando los tipos diferentes de negocios aplicables %>
@@ -80,7 +82,7 @@
   }
 
 } %>
-<section class="container" data-controller="splide" data-splide-autoplay="true" data-splide-type="loop" data-splide-pagination="true" data-splide-arrows="false" data-splide-click-to-go="true">
+<section class="container" data-controller="splide" data-splide-autoplay="false" data-splide-type="loop" data-splide-pagination="true" data-splide-arrows="false" data-splide-click-to-go="true">
   <div class="flexx space-b flex-end mb-4">
     <span class="tag is-success is-rounded">Usos</span>
     <div class="splide__arrows splide__arrows--custom">
@@ -161,7 +163,7 @@
         </div>
       </div>
       <div class="inner">
-        <p class="tag is-success is-rounded mb-4">Únete a los negocios que ya confían en nosotros</p>
+        <p class="help mb-4">Únete a los negocios que ya confían en nosotros</p>
         <h2 class="ptitle2">
           Gestiona tu negocio de manera eficiente y hazlo crecer con MiiNegocio
         </h2>

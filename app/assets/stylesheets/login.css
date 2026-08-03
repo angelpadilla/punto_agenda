@@ -20,6 +20,7 @@
 
         .header {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
 
@@ -27,6 +28,14 @@
             .logo_container {
                 img {
                     height: 3rem;
+                }
+            }
+
+            @media (max-width: 769px) {
+                justify-content: center;
+
+                .logo_container {
+                    display: none;
                 }
             }
         }

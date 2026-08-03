@@ -15,6 +15,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 
+
+/* Bulma has 4 breakpoints which defines 5 screen sizes: 
+mobile: up to 768px 
+tablet: from 769px 
+desktop: from 1024px 
+widescreen: from 1216px 
+fullhd: from 1408px */
+
 @view-transition {
     navigation: auto;
 }
@@ -1262,11 +1270,16 @@ div.navbar-dropdown {
 
         .splide__slide {
             height: 25rem;
+            /* width: 100%; */
             aspect-ratio: 3 / 2;
             background: none;
             border-radius: 0;
             padding: 10px;
             text-align: left;
+
+            @media (max-width: 769px) {
+                width: 100%;
+            }
 
             img {
                 width: 100%;
@@ -1372,21 +1385,30 @@ div.navbar-dropdown {
 
     .splide__pagination {
         gap: 5px;
+        padding: 0 1rem;
 
         li {
             line-height: 0;
+            /* flex: 1; */
+            width: 40px;
         }
 
         .splide__pagination__page {
             background-color: var(--gray) !important;
             border: 1px solid var(--gray) !important;
             height: 4px;
-            width: 40px;
+            width: 100%;
             border-radius: 10px;
 
             &.is-active {
                 background-color: var(--neon-green) !important;
                 border: 1px solid var(--neon-green) !important;
+            }
+        }
+
+        @media (max-width: 769px) {
+            li {
+                flex: 1;
             }
         }
     }

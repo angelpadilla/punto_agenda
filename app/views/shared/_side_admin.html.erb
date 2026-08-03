@@ -57,6 +57,14 @@
       </li>
       <% if current_admin.admin? %>
         <li>
+          <a href="<%= admin_traffic_visits_path %>" class="<%= request.path.include?('traffic_visits') ? 'is-active' : '' %>">
+            <span class="icon mr-2">
+              <%= image_tag 'atom-svgrepo-com.svg', alt: "Traffic" %>
+            </span>
+            Traffic Visits
+          </a>
+        </li>
+        <li>
           <a href="<%= mission_control_jobs_path %>" target="_blank">
             <span class="icon mr-2">
               <%= image_tag 'chat-round-call-svgrepo-com.svg', alt: "Configuración" %>
