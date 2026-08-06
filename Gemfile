@@ -103,7 +103,7 @@ gem "prawn-svg"
 gem "prawn-table"
 
 # https://github.com/whomwah/rqrcode
-gem "rqrcode", "~> 2.0"
+gem "rqrcode", "~> 3.2"
 
 # https://github.com/toretore/barby
 gem "barby"
