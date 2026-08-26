@@ -6,162 +6,177 @@
       <% end %>
     </div>
     <div id="navbarBasicExample" class="navbar-menu">
-      <% if user_signed_in? %>
-        <div class="navbar-start">
-          <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
-            <span class="icon">
-              <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
-            </span>
-            <div class="tooltip down">Inicio</div>
-          <% end %>
-          <%= link_to user_panel_landing_orders_path, class: 'navbar-item has_tooltip' do %>
-            <span class="icon">
-              <%= image_tag 'ticket.svg', alt: 'ventas', class: 'invert' %>
-            </span>
-            <div class="tooltip down">Ventas</div>
-          <% end %>
-          <% if @corp.calendar %>
-            <%= link_to weekly_events_path, class: 'navbar-item has_tooltip' do %>
-              <span class="icon">
-                <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
-              </span>
-              <div class="tooltip down">Eventos</div>
-            <% end %>
-          <% end %>
-          <%= link_to customers_path, class: 'navbar-item has_tooltip' do %>
-            <span class="icon">
-              <%= image_tag 'clientes.svg', alt: 'clientes y proveedores', class: 'invert' %>
-            </span>
-            <div class="tooltip down">Clientes</div>
-          <% end %>
-          <%= link_to items_path, class: 'navbar-item has_tooltip' do %>
-            <span class="icon">
-              <%= image_tag 'items.svg', alt: 'inventario', class: 'invert' %>
-            </span>
-            <div class="tooltip down">Inventario</div>
-          <% end %>
-          <% if @corp.plus? or @corp.premium? %>
-            <%= link_to user_panel_landing_purchases_path, class: 'navbar-item has_tooltip' do %>
-              <span class="icon">
-                <%= image_tag 'compras.svg', alt: 'compras y gastos', class: 'invert' %>
-              </span>
-              <div class="tooltip down">Compras y Gastos</div>
-            <% end %>
-          <% end %>
-          <% if current_user.prop? %>
-            <%= link_to user_corp_landing_path, class: 'navbar-item has_tooltip' do %>
-              <span class="icon">
-                <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
-              </span>
-              <div class="tooltip down">Ajustes</div>
-            <% end %>
-          <% end %>
-        </div>
-      <% end %>
-      <div class="navbar-end">
-        <% if user_signed_in? %>
-          <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link">
-              <span class="icon">
-                <%= image_tag 'user.svg', alt: 'user', class: 'invert' %>
-              </span>
-            </a>
-            <div class="navbar-dropdown is-boxed is-right">
-              <div class="navbar-item">
-                <%= current_user.email %>
-              </div>
-              <%= link_to user_path(current_user), class: 'navbar-item' do  %>
-                <span class="icon">
-                  <%= image_tag 'user.svg', alt: 'inicio', class: 'invert' %>
-                </span>
-                Mi perfil
-              <% end %>
-              <% if current_user.prop? %>
-                <%= link_to user_corp_path, class: 'navbar-item' do  %>
-                  <span class="icon">
-                    <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
-                  </span>
-                  Ajustes
-                <% end %>
-              <% end %>
-              <hr class="navbar-divider">
-              <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: 'navbar-item' do %>
-                <span class="icon">
-                  <%= image_tag 'login.svg', alt: 'Salir', class: 'invert' %>
-                </span>
-                Salir
-              <% end %>
-              <p class="navbar-item">
-                <%= Version %>
-              </p>
-            </div>
-          </div>
-        <% else %>
-          <div class="navbar-item">
-            <%= link_to new_user_session_path, class: 'button is-rounded is-primary is-fullwidth has_tooltip' do %>
-              <span class="icon">
-                <%= image_tag 'login.svg', alt: 'login' %>
-              </span>
-              <span>Acceder</span>
-              <span class="tooltip down">esto es un tooltip</span>
-            <% end %>
-          </div>
+      <div class="navbar-start">
+        <%= link_to user_panel_home_path, class: 'navbar-item has_tooltip' do %>
+          <span class="icon">
+            <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Inicio</div>
         <% end %>
+        <%= link_to user_panel_landing_orders_path, class: 'navbar-item has_tooltip' do %>
+          <span class="icon">
+            <%= image_tag 'ticket.svg', alt: 'ventas', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Ventas</div>
+        <% end %>
+        <% if @corp.calendar %>
+          <%= link_to weekly_events_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'calendar.svg', alt: 'calendario', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Eventos</div>
+          <% end %>
+        <% end %>
+        <%= link_to customers_path, class: 'navbar-item has_tooltip' do %>
+          <span class="icon">
+            <%= image_tag 'clientes.svg', alt: 'clientes y proveedores', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Clientes</div>
+        <% end %>
+        <%= link_to items_path, class: 'navbar-item has_tooltip' do %>
+          <span class="icon">
+            <%= image_tag 'items.svg', alt: 'inventario', class: 'invert' %>
+          </span>
+          <div class="tooltip down">Inventario</div>
+        <% end %>
+        <% if @corp.plus? or @corp.premium? %>
+          <%= link_to user_panel_landing_purchases_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'compras.svg', alt: 'compras y gastos', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Compras y Gastos</div>
+          <% end %>
+        <% end %>
+        <% if current_user.prop? %>
+          <%= link_to user_corp_landing_path, class: 'navbar-item has_tooltip' do %>
+            <span class="icon">
+              <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
+            </span>
+            <div class="tooltip down">Ajustes</div>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            <span class="icon">
+              <%= image_tag 'user.svg', alt: 'user', class: 'invert' %>
+            </span>
+          </a>
+          <div class="navbar-dropdown is-boxed is-right">
+            <div class="navbar-item">
+              <%= current_user.email %>
+            </div>
+            <%= link_to user_path(current_user), class: 'navbar-item' do  %>
+              <span class="icon">
+                <%= image_tag 'user.svg', alt: 'inicio', class: 'invert' %>
+              </span>
+              Mi perfil
+            <% end %>
+            <% if current_user.prop? %>
+              <%= link_to user_corp_path, class: 'navbar-item' do  %>
+                <span class="icon">
+                  <%= image_tag 'opciones.svg', alt: 'ajustes', class: 'invert' %>
+                </span>
+                Ajustes
+              <% end %>
+            <% end %>
+            <hr class="navbar-divider">
+            <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: 'navbar-item' do %>
+              <span class="icon">
+                <%= image_tag 'login.svg', alt: 'Salir', class: 'invert' %>
+              </span>
+              Salir
+            <% end %>
+            <p class="navbar-item">
+              <%= Version %>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </nav>
-<% if user_signed_in? %>
-  <div class="is-hidden-desktop nav_movil_user">
-    <div class="inner">
-      <%= link_to user_panel_home_path, class: 'icon' do %>
-        <%= image_tag 'house.svg', alt: 'inicio', class: 'invert' %>
-      <% end %>
-      <%= link_to user_panel_landing_orders_path, class: 'icon' do %>
-        <span class="icon">
-          <%= image_tag 'ticket.svg', alt: 'carrito', class: 'invert' %>
-        </span>
-      <% end %>
-      <% if @corp.calendar %>
-        <%= link_to weekly_events_path, class: 'icon' do %>
-          <span class="icon">
-            <%= image_tag 'calendar.svg', alt: 'event', class: 'invert' %>
-          </span>
-        <% end %>
-      <% end %>
-      <%= link_to customers_path, class: 'icon' do %>
-        <span class="icon">
-          <%= image_tag 'clientes.svg', alt: 'carrito', class: 'invert' %>
-        </span>
-      <% end %>
-      <%= link_to items_path, class: 'icon' do %>
-        <span class="icon">
-          <%= image_tag 'items.svg', alt: 'carrito', class: 'invert' %>
-          <% if 1 > 0 %>
-            <div class="notification_dot2"></div>
-          <% end %>
-        </span>
-      <% end %>
-      <% if @corp.plus? or @corp.premium? %>
-        <%= link_to items_path, class: 'icon' do %>
-          <span class="icon">
-            <%= image_tag 'compras.svg', alt: 'carrito', class: 'invert' %>
-            <% if 1 > 0 %>
-              <div class="notification_dot2"></div>
-            <% end %>
-          </span>
-        <% end %>
-      <% end %>
-      <% if current_user.prop? %>
-        <%= link_to user_corp_landing_path, class: 'icon' do %>
-          <span class="icon">
-            <%= image_tag 'opciones.svg', alt: 'carrito', class: 'invert' %>
-          </span>
-        <% end %>
-      <% end %>
-      <%= link_to user_path(current_user), class: 'icon' do %>
-        <%= image_tag 'user.svg', alt: 'mi perfil', class: 'invert' %>
-      <% end %>
-    </div>
+<div data-controller="side-nav" class="side_nav is-hidden-desktop">
+  <div class="side_nav_launcher flexx vertical-center horizontal-center" data-target="sideNavLauncher" data-action="click->side-nav#toggle">
+    <%= image_tag 'dots.svg', alt: 'salir', class: "invert" %>
   </div>
-<% end %>
+  <div class="blur_for_nav" data-action="click->side-nav#close">
+  </div>
+  <div class="glass_nav">
+    <div class="glass_nav_cont">
+      <div class="glass_nav_header">
+        <%= link_to user_path(current_user), class: "nav_glass_link" do %>
+          <div class="glass_nav_header_button flexx vertical-center ">
+            <div class="glass_nav_header_icon flexx vertical-center horizontal-center">
+              <%= current_user.email[0].upcase %>
+            </div>
+            <div class="glass_nav_header_text">
+              <%= truncate(current_user.email, length: 20) %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="glass_nav_body">
+        <a href="<%= user_panel_home_path %>" class="<%= request.path == "/panel" ? 'is_active' : '' %>">
+          <span class="icon mr-2">
+            <%= image_tag 'house.svg', alt: "Configuración" %>
+          </span>
+          Inicio
+        </a>
+        <a href="<%= user_panel_landing_orders_path %>" class="<%= request.path.include?('orders') ? 'is_active' : '' %>">
+          <span class="icon mr-2">
+            <%= image_tag 'ticket.svg', alt: "Configuración" %>
+          </span>
+          Ventas
+        </a>
+        <% if @corp.calendar %>
+          <a href="<%= weekly_events_path %>" class="<%= request.path.include?('events') ? 'is_active' : '' %>">
+            <span class="icon mr-2">
+              <%= image_tag 'calendar.svg', alt: "Configuración" %>
+            </span>
+            Eventos
+          </a>
+        <% end %>
+        <a href="<%= customers_path %>" class="<%= request.path.include?('customers') ? 'is_active' : '' %>">
+          <span class="icon mr-2">
+            <%= image_tag 'clientes.svg', alt: "Clientes" %>
+          </span>
+          Clientes
+        </a>
+        <a href="<%= items_path %>" class="<%= request.path.include?('items') ? 'is_active' : '' %>">
+          <span class="icon mr-2">
+            <%= image_tag 'items.svg', alt: "Inventario" %>
+          </span>
+          Inventario
+        </a>
+        <% if @corp.plus? or @corp.premium? %>
+          <a href="<%= user_panel_landing_purchases_path %>" class="<%= request.path.include?('purchases') ? 'is_active' : '' %>">
+            <span class="icon mr-2">
+              <%= image_tag 'compras.svg', alt: "Compras y Gastos" %>
+            </span>
+            Compras y Gastos
+          </a>
+        <% end %>
+        <% if current_user.prop? %>
+          <a href="<%= user_corp_landing_path %>" class="<%= request.path.include?('corp') ? 'is_active' : '' %>">
+            <span class="icon mr-2">
+              <%= image_tag 'opciones.svg', alt: "Configuración" %>
+            </span>
+            Ajustes
+          </a>
+        <% end %>
+      </div>
+      <div class="glass_nav_footer">
+        <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: 'button is-rounded is-fullwidth nav_glass_link' do %>
+          <span class="icon mr-2">
+            <%= image_tag 'logout-svgrepo-com.svg', alt: 'salir', class: "invert" %>
+          </span>
+          Cerrar sesión
+        <% end %>
+      </div>
+    </div>
+    <div class="glass_frost"></div>
+    <div class="glass_gray"></div>
+  </div>
+</div>

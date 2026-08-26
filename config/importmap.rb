@@ -10,3 +10,4 @@ pin "@rails/actiontext", to: "actiontext.esm.js"
 pin "slim-select" # @3.4.3
 pin "air-datepicker" # @3.5.3
 pin "@splidejs/splide", to: "@splidejs--splide.js" # @4.1.4
+pin "html2canvas", to: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.esm.js"

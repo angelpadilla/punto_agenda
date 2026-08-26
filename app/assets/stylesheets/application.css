@@ -1642,7 +1642,11 @@ div.navbar-dropdown {
 
     .day.prev-month,
     .day.next-month {
-        background-color: rgba(72, 72, 72, 0.1);
+        background: repeating-linear-gradient(-45deg,
+                transparent,
+                transparent 8px,
+                rgba(231, 231, 224, 0.20) 8px,
+                rgba(169, 169, 164, 0.20) 10px);
     }
 
     /* &.week .day.prev-month:first-child {
@@ -2401,8 +2405,8 @@ tr.is-clickable {
 /* boton flotante en touch para ir a ticket resumen */
 .cart_button {
     position: fixed;
-    bottom: 8rem;
-    right: 1rem;
+    bottom: 4rem;
+    right: 1.5rem;
     z-index: 1000;
     background: var(--neon-green);
     color: var(--dark);
@@ -2496,7 +2500,7 @@ tr.is-clickable {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* padding: 0.4rem; */
+    padding: 0.6rem;
 }
 
 .avatar-group .avatar:not(:first-child) {
@@ -2511,7 +2515,7 @@ tr.is-clickable {
 }
 
 /* =============================================
-   Ticket Chat Messages
+    Ticket Chat Messages
    ============================================= */
 
 .ticket-messages-box {

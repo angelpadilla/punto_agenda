@@ -34,7 +34,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       puts body
       build_resource(sign_up_params)
       resource.tipo = "propietario"
-      resource.tel_prefix = params[:user][:tel_prefix] || "+52"
+      resource.tel_prefix = "+52"
       resource.work_start_time = Time.parse("00:00")
       resource.work_end_time = Time.parse("23:59")
 
@@ -45,7 +45,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           calendar: calendar,
           regimen: "616",
           phone: params[:user][:tel].to_s,
-          tel_prefix: params[:user][:tel_prefix].to_s,
+          tel_prefix: resource.tel_prefix,
           name: "Compañía de #{params[:user][:full_name]}",
           email: params[:user][:email],
           subscription_trial_start: Time.current,

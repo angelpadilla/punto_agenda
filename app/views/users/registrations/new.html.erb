@@ -38,17 +38,12 @@
       <div class="field">
         <%= f.text_field :full_name, class: "input is-rounded #{f.object.errors.include?(:full_name) ? 'is-danger' : ''}", placeholder: 'Nombre completo', required: true %>
       </div>
-      <div class="field">
-        <div class="control">
-          <div class="select is-rounded">
-            <%= f.select :tel_prefix, options_for_select(Customer::TelPrefixes.map { |k, v| ["#{v} (#{k})", k] }, "+52"),
-                    {prompt: "Prefijo", required: field_required?(User, :tel_prefix)},
-                    { "data-controller": "slimselect", class: "ss2"}
-                    %>
-          </div>
-        </div>
-      </div>
       <div class="field has-addons">
+        <p class="control">
+          <a class="button is-static is-rounded">
+            +52
+          </a>
+        </p>
         <%= t_field(f, :tel, placeholder: "Telefono", clas: "control is-expanded") %>
       </div>
       <div class="field">

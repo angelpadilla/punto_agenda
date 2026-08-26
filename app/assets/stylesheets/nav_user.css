@@ -85,15 +85,237 @@
 
 .user_panel {
     padding-top: 4.5rem;
-    padding-bottom: 1rem;
+    padding-bottom: 2rem;
+}
+
+.side_nav_launcher {
+    /* background-color: green; */
+    position: fixed;
+    z-index: 89;
+    right: 1rem;
+    top: 1rem;
+    cursor: pointer;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--dark);
+    border: 1px solid var(--gray);
+
+    -webkit-tap-highlight-color: transparent;
+
+    /* feedback alternativo */
+    &:active {
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+
+    img {
+        width: 100%;
+        /* height: 100%; */
+    }
+}
+
+.blur_for_nav {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99;
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    opacity: 0;
+    display: none;
+    transition: opacity 0.3s ease, display 0.3s ease;
+    transition-behavior: allow-discrete;
+
+
+    &.is_active {
+        opacity: 1;
+        display: block;
+    }
+
+}
+
+.glass_nav {
+    --radius_interno: 22px;
+    --padding: 1rem;
+    position: fixed;
+    left: -40rem;
+    bottom: 1rem;
+    top: 1rem;
+    width: 40vw;
+    min-width: 300px;
+    z-index: 100;
+    transition: left 0.3s ease;
+    /* height: 100dvh; */
+    /* padding: 3rem 0; */
+
+    opacity: 0;
+    /* display: none; */
+    transition: opacity 0.4s, left 0.2s;
+    transition-behavior: allow-discrete;
+
+    &.is_active {
+        opacity: 1;
+        /* display: block; */
+        left: 1.5rem;
+
+    }
+
+    .glass_nav_cont {
+        /* opacity: 0.9; */
+        position: relative;
+        z-index: 2;
+        color: white;
+        padding: var(--padding);
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        align-items: center;
+        align-content: center;
+        justify-content: space-between;
+        height: stretch;
+
+        .glass_nav_header {
+            width: 100%;
+            padding-bottom: 1rem;
+
+            .glass_nav_header_button {
+                background-color: rgba(255, 255, 255, 0.1);
+                gap: 0.5rem;
+                border-radius: var(--radius_interno);
+                padding: 0.5rem;
+                color: white;
+                flex-wrap: nowrap;
+
+                .glass_nav_header_icon {
+                    border-radius: 50%;
+                    width: 3rem;
+                    height: 3rem;
+                    background: rgba(255, 255, 255, 0.2);
+                }
+
+                .glass_nav_header_text {
+                    max-width: 100%;
+                    text-overflow: ellipsis;
+                }
+            }
+
+
+        }
+
+        .glass_nav_body {
+            /* background-color: rgba(255, 255, 255, 0.1); */
+            /* max-height: 100%; */
+            overflow-y: auto;
+
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0.1rem;
+            height: 100%;
+            width: 100%;
+
+            a {
+                color: white;
+                opacity: 0.6;
+                padding: var(--padding);
+                border-radius: var(--radius_interno);
+                background-color: transparent;
+
+                img {
+                    filter: invert(1);
+                }
+
+                &:hover {
+                    background-color: var(--gray);
+                    opacity: 1;
+
+                    img {
+                        /* filter: invert(0); */
+                    }
+                }
+
+                &.is_active {
+                    background-color: var(--neon-green);
+                    color: var(--dark);
+                    opacity: 1;
+
+                    img {
+                        filter: invert(0);
+                    }
+                }
+            }
+        }
+
+        .glass_nav_footer {
+            width: 100%;
+            padding: 1rem 0;
+            /* background-color: #e44545; */
+        }
+    }
+
+    .glass_frost {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 30px;
+        background: url(grain.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        mix-blend-mode: soft-light;
+        z-index: 1;
+        opacity: 0.1;
+    }
+
+    .glass_gray {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(26, 26, 26, 0.8), rgba(30, 30, 30, 0.6));
+        position: absolute;
+        top: 0;
+        left: 0;
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.7));
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 30px;
+        /*border: 1px solid rgba(250, 250, 250, 0.2);*/
+    }
+}
+
+@starting-style {
+    .blur_for_nav.is_active {
+        opacity: 0;
+    }
+
+    .glass_nav.is_active {
+        left: -40rem;
+        opacity: 0;
+    }
+}
+
+
+html.nav-open,
+body.nav-open {
+    overflow: hidden;
+    height: 100%;
+    overscroll-behavior: contain;
 }
 
 
 /* en mobil .container tiene padding a los lados */
 @media (max-width: 1023px) {
     .user_panel {
-        padding-top: 1rem;
-        padding-bottom: 5rem;
+        padding-top: 4rem;
+        /* padding-bottom: 0; */
     }
 
 }

@@ -16,7 +16,7 @@
   <% content_for :body_extra do %>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <% end %>
-  <div data-controller="auto-refresh" data-auto-refresh-interval-value="30">
+  <div data-controller="auto-refresh" data-auto-refresh-interval-value="240">
     <%# ── Header ──────────────────────────────────────────────────────── %>
     <div class="flexx space-b flex-end mb-5">
       <div>
@@ -28,6 +28,16 @@
         <p class="labell"><%= l(Time.current, format: :long) %></p>
       </div>
       <div class="actions">
+        <button type="button" class="button is-rounded mtrigger" data-target="share_store_modal">
+          <span class="icon mr-1"><%= image_tag 'share-svgrepo-com.svg', class: 'invert' %></span>
+          Compartir tienda
+        </button>
+        <% if @corp.calendar %>
+          <button type="button" class="button is-rounded mtrigger" data-target="share_calendar_modal">
+            <span class="icon mr-1"><%= image_tag 'calendar-date-svgrepo-com.svg', class: 'invert' %></span>
+            Compartir calendario
+          </button>
+        <% end %>
         <%= link_to new_order_path, class: "button is-primary is-rounded" do %>
           <span class="icon mr-1"><%= image_tag 'plus.svg', alt: 'nueva venta' %></span>
           Nueva venta
@@ -885,6 +895,210 @@
       <div class="column">
         <%= link_to "Realizar pago", user_corp_landing_path, class: "button is-rounded is-fullwidth is-danger" %>
       </div>
+    </div>
+  </div>
+<% end %>
+<%# ══════════════════════════════════════════════════════════════════════ %>
+<%# MODALES DE COMPARTIR TIENDA Y CALENDARIO %>
+<%# ══════════════════════════════════════════════════════════════════════ %>
+<% store_url = corp_home_url(@corp.sku) %>
+<% store_short_url = corp_home_url(@corp.sku) %>
+<div id="share_store_modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head" style="background:#18181b; border-bottom:1px solid #27272a;">
+      <p class="modal-card-title has-text-white has-text-weight-bold is-size-6">Descarga tu tarjeta de tienda para redes sociales</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body" style="background:#18181b;" data-controller="share-card" data-share-card-filename-value="tienda-<%= @corp.sku %>" data-share-card-url-value="<%= store_url %>">
+      <div class="share-modal-container">
+        <!-- Controls Panel -->
+        <div class="share-controls-box">
+          <!-- Formato -->
+          <div class="share-control-group">
+            <label class="share-control-label">Formato</label>
+            <div class="share-format-pills">
+              <button type="button" class="format-pill-btn is-active is-selected" data-share-card-target="aspectBtn" data-aspect="1:1" data-action="click->share-card#changeAspect">1:1 (Post)</button>
+              <button type="button" class="format-pill-btn" data-share-card-target="aspectBtn" data-aspect="3:4" data-action="click->share-card#changeAspect">3:4 (Retrato)</button>
+              <button type="button" class="format-pill-btn" data-share-card-target="aspectBtn" data-aspect="9:16" data-action="click->share-card#changeAspect">9:16 (Historia)</button>
+            </div>
+          </div>
+          <!-- Estilo -->
+          <div class="share-control-group">
+            <label class="share-control-label">Estilo</label>
+            <div class="share-theme-swatches">
+              <button type="button" class="theme-swatch-btn is-active" data-share-card-target="themeBtn" data-theme="blue-purple" data-action="click->share-card#changeTheme" title="Azul / Morado"></button>
+              <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="neon-green" data-action="click->share-card#changeTheme" title="Verde Neón"></button>
+              <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="pink-rose" data-action="click->share-card#changeTheme" title="Rosa"></button>
+              <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="lime-yellow" data-action="click->share-card#changeTheme" title="Lima / Amarillo"></button>
+              <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="sunset-orange" data-action="click->share-card#changeTheme" title="Naranja"></button>
+              <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="dark-graphite" data-action="click->share-card#changeTheme" title="Grafito / Oscuro"></button>
+              <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="light-slate" data-action="click->share-card#changeTheme" title="Claro / Blanco"></button>
+            </div>
+          </div>
+          <!-- Toggle Brand -->
+          <div class="share-toggle-row">
+            <label class="share-control-label">Mostrar nombre y logo de tienda?</label>
+            <label class="share-switch-label">
+              <span class="share-switch">
+                <input type="checkbox" checked data-action="change->share-card#toggleBrand">
+                <span class="share-slider"></span>
+              </span>
+            </label>
+          </div>
+          <!-- Extra Text -->
+          <div class="share-control-group">
+            <label class="share-control-label">Texto extra</label>
+            <textarea class="share-extra-textarea" rows="2" data-share-card-target="extraTextInput" data-action="input->share-card#updateExtraText">Escanea el código QR o visita el enlace para ver todos nuestros productos</textarea>
+          </div>
+        </div>
+        <!-- Real-time Designer Preview Card Canvas -->
+        <div class="share-preview-wrapper">
+          <div class="share-card-canvas" data-share-card-target="card" data-aspect="1:1" data-theme="blue-purple">
+            <!-- Store Logo & Name -->
+            <div class="card-brand-header" data-share-card-target="brandHeader">
+              <div class="card-brand-logo-circle">
+                <% if @corp.logo.attached? %>
+                  <%= image_tag @corp.logo.variant(:small) %>
+                <% else %>
+                  <span>logo</span>
+                <% end %>
+              </div>
+              <h3 class="card-brand-name"><%= @corp.name.presence || "Nombre de tienda aqui" %></h3>
+            </div>
+            <!-- Central QR Code Centerpiece -->
+            <div class="store-card-center">
+              <div class="store-qr-wrapper">
+                <%= qr_code_svg(store_url, size: 4) %>
+              </div>
+              <div class="store-url-pill">
+                <%= store_short_url %>
+              </div>
+            </div>
+            <!-- Bottom Details -->
+            <div class="card-bottom-details">
+              <p class="card-extra-text" data-share-card-target="extraTextPreview">Escanea el código QR o visita el enlace para ver todos nuestros productos</p>
+              <div class="card-brand-watermark">miinegocio.com</div>
+            </div>
+          </div>
+        </div>
+        <!-- Action Buttons -->
+        <div class="modal-bottom-actions">
+          <button type="button" class="button btn-copy-gray is-flex-grow-1" data-share-card-target="copyBtn" data-action="click->share-card#copyLink">
+            <span class="icon mr-1"><%= image_tag 'documento.svg', class: 'invert', style: 'width:1.1rem;' %></span>
+            Copiar enlace
+          </button>
+          <button type="button" class="button btn-download-green is-flex-grow-1" data-share-card-target="downloadBtn" data-action="click->share-card#downloadSnapshot">
+            <span class="icon mr-1"><%= image_tag 'download.svg', style: 'width:1.1rem; filter: brightness(0);' %></span>
+            Descargar
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<% if @corp.calendar %>
+  <% cal_url = corp_calendar_url(@corp.sku) %>
+  <% cal_short_url = corp_calendar_url(@corp.sku) %>
+  <div id="share_calendar_modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head" style="background:#18181b; border-bottom:1px solid #27272a;">
+        <p class="modal-card-title has-text-white has-text-weight-bold is-size-6">Descarga tu calendario del mes para redes sociales</p>
+        <button class="delete" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body" style="background:#18181b;" data-controller="share-card" data-share-card-filename-value="calendario-<%= @corp.sku %>" data-share-card-url-value="<%= cal_url %>">
+        <div class="share-modal-container">
+          <!-- Controls Panel -->
+          <div class="share-controls-box">
+            <!-- Formato -->
+            <div class="share-control-group">
+              <label class="share-control-label">Formato</label>
+              <div class="share-format-pills">
+                <button type="button" class="format-pill-btn is-active is-selected" data-share-card-target="aspectBtn" data-aspect="1:1" data-action="click->share-card#changeAspect">1:1 (Post)</button>
+                <button type="button" class="format-pill-btn" data-share-card-target="aspectBtn" data-aspect="3:4" data-action="click->share-card#changeAspect">3:4 (Retrato)</button>
+                <button type="button" class="format-pill-btn" data-share-card-target="aspectBtn" data-aspect="9:16" data-action="click->share-card#changeAspect">9:16 (Historia)</button>
+              </div>
+            </div>
+            <!-- Estilo -->
+            <div class="share-control-group">
+              <label class="share-control-label">Estilo</label>
+              <div class="share-theme-swatches">
+                <button type="button" class="theme-swatch-btn is-active" data-share-card-target="themeBtn" data-theme="blue-purple" data-action="click->share-card#changeTheme" title="Azul / Morado"></button>
+                <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="neon-green" data-action="click->share-card#changeTheme" title="Verde Neón"></button>
+                <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="pink-rose" data-action="click->share-card#changeTheme" title="Rosa"></button>
+                <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="lime-yellow" data-action="click->share-card#changeTheme" title="Lima / Amarillo"></button>
+                <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="sunset-orange" data-action="click->share-card#changeTheme" title="Naranja"></button>
+                <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="dark-graphite" data-action="click->share-card#changeTheme" title="Grafito / Oscuro"></button>
+                <button type="button" class="theme-swatch-btn" data-share-card-target="themeBtn" data-theme="light-slate" data-action="click->share-card#changeTheme" title="Claro / Blanco"></button>
+              </div>
+            </div>
+            <!-- Toggle Brand -->
+            <div class="share-toggle-row">
+              <label class="share-control-label">Mostrar nombre y logo de tienda?</label>
+              <label class="share-switch-label">
+                <span class="share-switch">
+                  <input type="checkbox" checked data-action="change->share-card#toggleBrand">
+                  <span class="share-slider"></span>
+                </span>
+              </label>
+            </div>
+            <!-- Extra Text -->
+            <div class="share-control-group">
+              <label class="share-control-label">Texto extra</label>
+              <textarea class="share-extra-textarea" rows="2" data-share-card-target="extraTextInput" data-action="input->share-card#updateExtraText">Visita mi link o mandame mensaje directo para agendarte</textarea>
+            </div>
+          </div>
+          <!-- Real-time Designer Preview Card Canvas -->
+          <div class="share-preview-wrapper">
+            <div class="share-card-canvas" data-share-card-target="card" data-aspect="1:1" data-theme="blue-purple">
+              <!-- Store Logo & Name -->
+              <div class="card-brand-header" data-share-card-target="brandHeader">
+                <div class="card-brand-logo-circle">
+                  <% if @corp.logo.attached? %>
+                    <%= image_tag @corp.logo %>
+                  <% else %>
+                    <span>logo</span>
+                  <% end %>
+                </div>
+                <h3 class="card-brand-name"><%= @corp.name.presence || "Nombre de tienda aqui" %></h3>
+              </div>
+              <div class="calendar_header_cont">
+                <!-- Legend Bar -->
+                <div class="calendar-legend-bar">
+                  <span class="legend-item">
+                    <span class="legend-dot green-dot"></span>
+                    <span>Disponibilidad</span>
+                  </span>
+                  <span class="legend-item">
+                    <span class="legend-dot red-dot"></span>
+                    <span>Ocupado/Lleno</span>
+                  </span>
+                </div>
+                <!-- Mini Calendar Grid Box -->
+                <%= render_mini_calendar_html(@corp) %>
+              </div>
+              <!-- Bottom Details -->
+              <div class="card-bottom-details">
+                <p class="card-extra-text" data-share-card-target="extraTextPreview">Visita mi link o mandame mensaje directo para agendarte</p>
+                <div class="card-short-link"><%= cal_short_url %></div>
+                <div class="card-brand-watermark">miinegocio.com</div>
+              </div>
+            </div>
+          </div>
+          <!-- Action Buttons -->
+          <div class="modal-bottom-actions">
+            <button type="button" class="button btn-copy-gray is-flex-grow-1" data-share-card-target="copyBtn" data-action="click->share-card#copyLink">
+              <span class="icon mr-1"><%= image_tag 'documento.svg', class: 'invert', style: 'width:1.1rem;' %></span>
+              Copiar enlace
+            </button>
+            <button type="button" class="button btn-download-green is-flex-grow-1" data-share-card-target="downloadBtn" data-action="click->share-card#downloadSnapshot">
+              <span class="icon mr-1"><%= image_tag 'download.svg', style: 'width:1.1rem; filter: brightness(0);' %></span>
+              Descargar
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 <% end %>

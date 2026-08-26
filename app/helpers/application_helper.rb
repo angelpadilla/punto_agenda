@@ -147,4 +147,87 @@ module ApplicationHelper
       end
     end
   end
+
+  def qr_code_svg(url, size: 4, fill: "fff", color: "000")
+    return "" if url.blank?
+
+    qrcode = RQRCode::QRCode.new(url)
+    svg = qrcode.as_svg(
+      offset: 0,
+      color: color,
+      fill: fill,
+      shape_rendering: "crispEdges",
+      module_size: size,
+      use_path: true,
+      viewbox: true
+    )
+    svg.sub(/\A<\?xml[^>]*\?>\s*/, "").html_safe
+  end
+
+  def render_mini_calendar_html(corp = nil)
+    today = Date.today
+    first_day = today.beginning_of_month
+    last_day = today.end_of_month
+    start_date = first_day.beginning_of_week(:monday)
+    end_date = last_day.end_of_week(:monday)
+    dates = (start_date..end_date).to_a
+
+    month_name = (I18n.l(today, format: "%B %Y") rescue today.strftime("%B %Y")).titleize
+
+    day_status_map = {}
+    if corp.present?
+      (first_day..last_day).each do |d|
+        info = corp.available_slots_for_day(d) rescue nil
+        if info.present? && info[:disponibles].to_i > 0
+          day_status_map[d] = :open
+        else
+          day_status_map[d] = :busy
+        end
+      end
+    end
+
+    header = content_tag(:div, class: "cal-box-header") do
+      content_tag(:h4, month_name, class: "cal-box-title")
+    end
+
+    days_header = content_tag(:div, class: "cal-box-weekdays") do
+      safe_join(%w[L M M J V S D].map do |d|
+        content_tag(:span, d, class: "cal-weekday")
+      end)
+    end
+
+    grid = content_tag(:div, class: "cal-box-grid") do
+      safe_join(dates.map do |d|
+        is_current_month = d.month == today.month
+        is_past = d < today
+        unless is_current_month
+          content_tag(:div, "", class: "cal-day-cell is-empty")
+        else
+          day_st = day_status_map[d] || :busy
+          clas = [ "cal-day-cell" ]
+          clas << "is-today" if d == today
+          clas << "is-past" if is_past
+
+          badge_class = if is_past
+                          "cal-day-badge is-past"
+          else
+                          "cal-day-badge #{day_st == :open ? 'is-available' : 'is-occupied'}"
+          end
+
+          title_text = if is_past
+                         "#{d.strftime('%d/%m')}: Pasado"
+          else
+                         "#{d.strftime('%d/%m')}: #{day_st == :open ? 'Disponible' : 'Ocupado / Sin cupo'}"
+          end
+
+          content_tag(:div, class: clas.join(" "), title: title_text) do
+            content_tag(:span, d.day, class: badge_class)
+          end
+        end
+      end)
+    end
+
+
+    content_tag(:div, safe_join([ header, days_header, grid ]), class: "calendar-main-box")
+  end
 end

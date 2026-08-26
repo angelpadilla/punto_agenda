@@ -16,7 +16,10 @@ class Corp < ApplicationRecord
 
   has_one_attached :key, dependent: :destroy
   has_one_attached :cer, dependent: :destroy
-  has_one_attached :logo, dependent: :destroy
+  has_one_attached :logo, dependent: :destroy do |at|
+    at.variant :small, resize_to_limit: [ 300,  300 ], format: :webp, preprocessed: true
+    at.variant :thumb, resize_to_limit: [ 600,  600 ], format: :webp, preprocessed: true
+  end
 
   serialize :business_hours, coder: JSON
 
