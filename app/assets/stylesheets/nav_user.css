@@ -99,8 +99,9 @@
     height: 2.5rem;
     padding: 0.5rem;
     border-radius: 50%;
-    background-color: var(--dark);
-    border: 1px solid var(--gray);
+    background-color: var(--gray);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.7);
 
     -webkit-tap-highlight-color: transparent;
 
@@ -273,7 +274,7 @@
         background-repeat: no-repeat;
         mix-blend-mode: soft-light;
         z-index: 1;
-        opacity: 0.1;
+        opacity: 0.01;
     }
 
     .glass_gray {

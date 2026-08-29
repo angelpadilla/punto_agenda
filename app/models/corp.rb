@@ -474,6 +474,11 @@ class Corp < ApplicationRecord
       )
   end
 
+  def direccion_completa
+    chars = "#{calle.titleize} #{num_ext} #{num_int} #{colonia.titleize} #{ciudad.titleize} #{estado.titleize} #{cp}"
+    chars.strip
+  end
+
 
 
   private

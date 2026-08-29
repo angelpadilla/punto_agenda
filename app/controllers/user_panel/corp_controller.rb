@@ -6,6 +6,18 @@ class UserPanel::CorpController < UserPanelController
     @balance = @corp.balance
   end
 
+  def experimental
+  end
+
+  def experimental_save
+    @corp.printer_nativo = params[:printer_nativo] == "1"
+    if @corp.save!
+      redirect_to experimental_path, notice: "Configuración guardada exitosamente."
+    else
+      render :experimental, status: :unprocessable_entity
+    end
+  end
+
   def show
   end
 

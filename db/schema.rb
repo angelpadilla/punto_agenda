@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_02_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_28_190127) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -203,6 +203,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_000001) do
     t.boolean "online_payments", default: false
     t.integer "payment_attempts", default: 0
     t.string "phone"
+    t.boolean "printer_nativo", default: false
     t.boolean "public_calendar", default: false
     t.boolean "public_site", default: false
     t.string "razon"

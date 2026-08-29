@@ -87,6 +87,8 @@ Rails.application.routes.draw do
       post "retiro_fondos", to: "user_panel/corp#retiro_fondos", as: :retiro_fondos
       get "danger_zone", to: "user_panel/corp#danger_zone", as: :danger_zone
       post "destroy_corp", to: "user_panel/corp#destroy_corp", as: :destroy_corp
+      get 'experimental', to: "user_panel/corp#experimental", as: :experimental
+      post "experimental-save", to: "user_panel/corp#experimental_save", as: :experimental_save
     end
 
     resources :bills, controller: "user_panel/bills", only: %i[index show] do

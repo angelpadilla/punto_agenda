@@ -67,11 +67,215 @@
                 XML
               <% end %>
             <% end %>
-            <%= link_to ticket80_path(@order.folio), class: "dropdown-item" do %>
-              <span class="icon">
-                <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
-              </span>
-              Ticket 80mm
+            <% if @corp.printer_nativo? %>
+              <% data_ticket = {
+                store_name: @corp.name.titleize,
+                logo_url: @corp.logo.attached? ? rails_blob_url(@corp.logo.variant(:small)) : nil,
+                text_lines_before_items: [
+                  {
+                    label: "Hora de impresion: ",
+                    value: Time.current.strftime("%d/%m/%Y %H:%M"),
+                    font_size: "small",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Folio: ",
+                    label_bold: true,
+                    value: @order.folio,
+                    value_bold: true,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "Fecha venta: ",
+                    label_bold: true,
+                    value: l(@order.fecha ? @order.fecha : @order.created_at, format: :long),
+                    value_bold: false,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "Forma de pago: ",
+                    label_bold: true,
+                    value: @order.forma_pago&.titleize,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "Status de venta: ",
+                    label_bold: true,
+                    value: @order.status_pago.titleize,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "",
+                    value: "",
+                  },
+                  {
+                    label: "Emisor",
+                    label_bold: true,
+                    value: "",
+                    font_size: "medium",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Razon Social: ",
+                    label_bold: true,
+                    value: @corp.razon.present? ? @corp.razon.titleize : @corp.name.titleize,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "RFC: ",
+                    label_bold: true,
+                    value: @corp.rfc,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "Direccion: ",
+                    label_bold: true,
+                    value: @corp.direccion_completa,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "Tel: ",
+                    label_bold: true,
+                    value: @corp.full_tel,
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "",
+                    value: "",
+                  },
+                  {
+                    label: "Receptor (cliente)",
+                    label_bold: true,
+                    value: "",
+                    font_size: "medium",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Razon Social: ",
+                    label_bold: true,
+                    value: @order.customer&.razon.present? ? @order.customer.razon.titleize : "-",
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "RFC: ",
+                    label_bold: true,
+                    value: @order.customer&.rfc.present? ? @order.customer.rfc : "-",
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "Estado: ",
+                    label_bold: true,
+                    value: @order.customer&.estado.present? ? @order.customer.estado.titleize : "-",
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "C.P.: ",
+                    label_bold: true,
+                    value: @order.customer&.cp.present? ? @order.customer.cp : "-",
+                    font_size: "small",
+                    alignment: "space_between"
+                  },
+                  {
+                    label: "Ciudad: ",
+                    label_bold: true,
+                    value: @order.customer&.ciudad.present? ? @order.customer.ciudad.titleize : "-",
+                    font_size: "small",
+                    alignment: "space_between"
+                  }
+                ],
+                items: @order.line_items.map do |line|
+                  {
+                    name: line.item ? line.item.name.titleize : line.name,
+                    price: line.precio,
+                    qty: line.cantidad
+                  }
+                end,
+                subtotal: @order.subtotal,
+                iva: @order.impuestos,
+                total: @order.total,
+                text_lines_after_items: [
+                  { label: "¡Gracias por su compra!", font_size: "medium", alignment: "center" }
+                ],
+                barcode: {
+                  type: "qr",
+                  value: ticket_url(@order.folio),
+                  alignment: "center"
+              }
+              } %>
+              <% if @order.factura? and @order.xml.present? %>
+                <% data_ticket[:barcode] = {
+                  type: "qr",
+                  value: "https://verificacfdi.facturaelectronica.sat.gob.mx/?id=#{@order.sat_uuid}&re=#{@corp.rfc}&rr=#{@order.customer.rfc}&tt=#{@order.total}&fe=#{@order.sat_cfdi[-8..-1]}",
+                  alignment: "center"
+                } %>
+                <% data_ticket[:text_lines_after_items] += [{
+                    label: "Folio fiscal: ",
+                    label_bold: true,
+                    value: @order.sat_uuid,
+                    font_size: "small",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Sello digital del CFDI: ",
+                    label_bold: true,
+                    value: @order.sat_cfdi,
+                    font_size: "small",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Sello del SAT: ",
+                    label_bold: true,
+                    value: @order.sat_sello,
+                    font_size: "small",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Número de serie del certificado del SAT: ",
+                    label_bold: true,
+                    value: @order.sat_serial,
+                    font_size: "small",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Fecha y hora de certificación: ",
+                    label_bold: true,
+                    value: @order.sat_timbre_fecha,
+                    font_size: "small",
+                    alignment: "left"
+                  },
+                  {
+                    label: "Este documento es una representación impresa de un CFDI",
+                    label_bold: false,
+                    value: "",
+                    font_size: "small",
+                    alignment: "left"
+                  }
+                ] %>
+              <% end %>
+              <%= link_to "#", class: "dropdown-item", data: { controller: "printer", action: "click->printer#print", printer_ticket_param: data_ticket } do %>
+                <span class="icon">
+                  <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+                </span>
+                Ticket
+              <% end %>
+            <% else %>
+              <%= link_to ticket80_path(@order.folio), class: "dropdown-item" do %>
+                <span class="icon">
+                  <%= image_tag 'download.svg', alt: 'download', class: 'invert' %>
+                </span>
+                Ticket 80mm
+              <% end %>
             <% end %>
             <a class="mtrigger dropdown-item" data-target="send_order_email">
               <span class="icon">

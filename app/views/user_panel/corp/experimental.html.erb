@@ -1,0 +1,211 @@
+<%# ── Telegram ── %>
+<div class="box expandable mt-4">
+  <div class="box_header">
+    <h2>
+      <span class="icon mr-2">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0m5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394a.76.76 0 0 1-.6.295h-.005l.213-3.054 5.56-5.023c.24-.213-.054-.334-.373-.121l-6.87 4.326-2.96-.924c-.64-.203-.658-.64.135-.954L17.06 7.28c.538-.196 1.006.128.832.941z"/></svg>
+      </span>
+      Notificaciones Telegram
+    </h2>
+    <span class="icon toggle_icon">
+      <%= image_tag 'down.svg', alt: "toggle icon", class: 'invert' %>
+    </span>
+  </div>
+  <div class="box_content">
+    <% if @corp.telegram_id.present? %>
+      <p class="mb-3">
+        <span class="tag is-success">Vinculado</span>
+      </p>
+      <p class="help mb-3">
+        Vinculado el <%= l(@corp.telegram_linked_at, format: :short) %>
+      </p>
+      <%= link_to telegram_unlink_path, data: { turbo_method: :delete, turbo_confirm: "¿Desvincular Telegram?" }, class: "button is-small is-rounded is-danger" do %>
+        Desvincular
+      <% end %>
+    <% else %>
+      <p class="help mb-3">
+        Recibe notificaciones de tu negocio directamente en Telegram.
+      </p>
+      <% if Rails.application.credentials.dig(:telegram, :bot_username).present? %>
+        <div class="mb-3">
+          <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="<%= Rails.application.credentials.dig(:telegram, :bot_username) %>" data-size="medium" data-auth-url="<%= telegram_callback_url %>" data-request-access="write"></script>
+        </div>
+        <p class="has-text-centered text-gray mb-3" style="font-size: 0.8rem;">o</p>
+      <% end %>
+      <%= link_to telegram_link_corp_path, class: "button is-small is-rounded is-info" do %>
+        <span class="icon is-small mr-1">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0m5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394a.76.76 0 0 1-.6.295h-.005l.213-3.054 5.56-5.023c.24-.213-.054-.334-.373-.121l-6.87 4.326-2.96-.924c-.64-.203-.658-.64.135-.954L17.06 7.28c.538-.196 1.006.128.832.941z"/></svg>
+        </span>
+        Vincular vía bot
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<%= expandable_box "Impresora POS", icon: "dots.svg", inverted_icon: true, active: true do  %>
+  <%= form_with url: experimental_save_path, method: :post do |f|  %>
+    <div class="columns">
+    </div>
+    <label class="toggle_field">
+      <div class="toggle_info">
+        <span class="toggle_label">Impresora nativa?</span>
+        <span class="toggle_desc">Activa si tu negocio utiliza impresora nativa</span>
+      </div>
+      <%= f.check_box :printer_nativo, class: "toggle_input", checked: @corp.printer_nativo %>
+      <span class="toggle_track">
+        <span class="toggle_thumb"></span>
+      </span>
+    </label>
+    <button class="button is-rounded is-primary is-fullwidth mt-4" type="submit">Guardar</button>
+  <% end %>
+  <% data_ticket = {
+  store_name: @corp.name.titleize,
+  logo_url: @corp.logo.attached? ? url_for(@corp.logo) : nil,
+  text_lines_before_items: [
+    {
+      label: "Hora de impresion: ",
+      value: Time.current.strftime("%d/%m/%Y %H:%M"),
+      font_size: "small",
+      alignment: "left"
+    },
+    {
+      label: "Folio: ",
+      label_bold: true,
+      value: "0987a9s8d",
+      value_bold: true,
+      font_size: "small",
+      alignment: "space_between"
+    },
+    {
+      label: "Fecha venta: ",
+      label_bold: true,
+      value: Time.current.strftime("%d/%m/%Y"),
+      value_bold: false,
+      font_size: "small",
+      alignment: "space_between"
+    },
+    {
+      label: "Forma de pago: ",
+      label_bold: true,
+      value: "Efectivo",
+      font_size: "small",
+      alignment: "space_between"
+    },
+    {
+      label: "Status de venta: ",
+      label_bold: true,
+      value: "Pagado",
+      font_size: "small",
+      alignment: "space_between"
+    },
+    {
+      label: "",
+      value: "",
+    },
+    {
+    label: "Emisor",
+    label_bold: true,
+    value: "",
+    font_size: "medium",
+    alignment: "left"
+    },
+    {
+    label: "RFC: ",
+    label_bold: true,
+    value: "XAXX010101000",
+    font_size: "small",
+    alignment: "space_between"
+    },
+    {
+    label: "Direccion: ",
+    label_bold: true,
+    value: "Calle Falsa 123, Ciudad",
+    font_size: "small",
+    alignment: "space_between"
+    },
+    {
+    label: "Tel: ",
+    label_bold: true,
+    value: "555-1234123",
+    font_size: "small",
+    alignment: "space_between"
+    },
+    {
+    label: "",
+    value: "",
+    },
+    {
+    label: "Receptor",
+    label_bold: true,
+    value: "",
+    font_size: "medium",
+    alignment: "left"
+    },
+    {
+    label: "Razon Social: ",
+    label_bold: true,
+    value: "Cliente Ejemplo S.A. de C.V.",
+    font_size: "small",
+    alignment: "space_between"
+    },
+    {
+    label: "RFC: ",
+    label_bold: true,
+    value: "XAXX010101000",
+    font_size: "small",
+    alignment: "space_between"
+    },
+    {
+    label: "Estado: ",
+    label_bold: true,
+    value: "México",
+    font_size: "small",
+    alignment: "space_between"
+    },
+    {
+    label: "C.P.: ",
+    label_bold: true,
+    value: "01234",
+    font_size: "small",
+    alignment: "space_between"
+    },
+    {
+    label: "Ciudad: ",
+    label_bold: true,
+    value: "Ciudad de México",
+    font_size: "small",
+    alignment: "space_between"
+    }
+
+    
+  ],
+  items: [
+    { 
+      name: "Café Americano hola si como no asoidjoais jdoaisj doias jdoais jdoais jdoiasd josaijd siauiuash aisdiaus diausd aisud iuasd asid ", 
+      price: 50.00, qty: 2 },
+    { name: "Croissant", price: 50.00, qty: 2 }
+  ],
+  subtotal: 172.41379,
+  iva: 27.58620,
+  total: 200.00,
+  text_lines_after_items: [
+    { label: "Forma de pago: ", value: "Tarjeta de crédito", font_size: "small", alignment: "left" },
+    { label: "¡Gracias por su compra!", font_size: "medium", alignment: "center" }
+  ],
+  barcode: {
+    type: "bar",
+    value: "123123123",
+    alignment: "center",
+  }
+} %>
+  <button class="button is-rounded is-fullwidth mt-4" 
+  data-controller="printer"
+  data-action="click->printer#print"
+    data-printer-ticket-param="<%= data_ticket.to_json %>"
+    >
+    Probar ticket
+  </button>
+  <p class="help">
+    Descarga la app puente aqui:
+    <a href="https://github.com/angelpadilla/miinegocio_printer/releases" target="_blank">Descargar</a>
+  </p>
+<% end %>

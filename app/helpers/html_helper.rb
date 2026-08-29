@@ -23,4 +23,37 @@ module HtmlHelper
       end)
     end
   end
+
+  def expandable_box(title, icon: nil, inverted_icon: false, classes: "mt-4", active: false, &block)
+    content_tag(:div, class: "box expandable #{classes} #{'is_active' if active}") do
+      header = content_tag(:div, class: "box_header") do
+        title_header = content_tag(:h2) do
+          title_content = []
+
+          if icon.present?
+            icon_classes = ["mr-2"]
+            icon_classes << "invert" if inverted_icon
+
+            title_content << content_tag(:span, class: "icon #{icon_classes.join(' ')}") do
+              image_tag(icon, alt: title)
+            end
+          end
+
+          title_content << title.to_s
+
+          safe_join(title_content)
+        end
+
+        toggle_icon = content_tag(:span, class: "icon toggle_icon") do
+          image_tag("down.svg", alt: "toggle icon", class: "invert")
+        end
+
+        safe_join([title_header, toggle_icon])
+      end
+
+      body = content_tag(:div, capture(&block), class: "box_content")
+
+      safe_join([header, body])
+    end
+  end
 end
